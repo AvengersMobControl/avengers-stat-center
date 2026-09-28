@@ -1,22 +1,13 @@
 # AVENGERS Stat Center
 
-Static Mob Control clan dashboard generated from **Avengers Scorelog(1).xlsx**.
+This repository contains the AVENGERS Mob Control clan stat dashboard.
 
-## What is included
-- Overview dashboard
-- Piggy Race overall / weekly event / last-three / PB & new-member views
-- Space Race overall / weekly event / last-three / PB & new-member views
-- Overall Player Ratings
-- Searchable player profiles
-- Records board
-- CSV exports
-
-## Data snapshot
-- Arena start: 2026-08-01
-- Latest Piggy Race: 2026-09-25
+## Current data snapshot
+- Source workbook: `Avengers Scorelog(1).xlsx`
+- Arena era starts: 2026-08-01
+- Latest Piggy: 2026-09-25
 - Latest Space Race: 2026-09-18
 
-## Netlify
-Connect this GitHub repository to Netlify. No build command is required. Publish directory: repository root (`.`).
+The website is self-contained in `index.html`. It includes the Piggy/Space historical data, player ratings, player profiles, records, AVENGERS/AV-2 filtering, and CSV export.
 
-The repository is the source of truth for the website, so future site updates can be made by committing updated files here instead of uploading ZIP files.
+A GitHub Pages workflow is included so the site can be published from this repository without Netlify.

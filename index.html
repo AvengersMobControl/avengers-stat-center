@@ -198,7 +198,8 @@ tbody tr:last-child td{border-bottom:0}
 }
 
   </style>
-  <link rel="stylesheet" href="phase2.css" />\n</head>
+  <link rel="stylesheet" href="phase2.css" />
+</head>
 <body>
   <div class="app-shell">
     <aside class="sidebar">
@@ -213,7 +214,8 @@ tbody tr:last-child td{border-bottom:0}
       <nav class="nav">
         <button class="nav-btn active" data-page="overview"><span>⌂</span> Overview</button>
         <button class="nav-btn" data-page="piggy"><span>🐷</span> Piggy Race</button>
-        <button class="nav-btn" data-page="space"><span>🚀</span> Space Race</button>\n        <button class="nav-btn" data-page="trends"><span>↗</span> Trends</button>
+        <button class="nav-btn" data-page="space"><span>🚀</span> Space Race</button>
+        <button class="nav-btn" data-page="trends"><span>↗</span> Trends</button>
         <button class="nav-btn" data-page="ratings"><span>★</span> Player Ratings</button>
         <button class="nav-btn" data-page="players"><span>◉</span> Players</button>
         <button class="nav-btn" data-page="records"><span>♛</span> Records</button>
@@ -280,6 +282,10 @@ tbody tr:last-child td{border-bottom:0}
         <div id="spaceContent"></div>
       </section>
 
+      <section class="page" id="page-trends">
+        <div id="trendsContent"></div>
+      </section>
+
       <section class="page" id="page-ratings">
         <div id="ratingsContent"></div>
       </section>
@@ -329,7 +335,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   const PAGE_META = {
     overview:['Overview','Clan performance at a glance'],
     piggy:['Piggy Race','Overall, event, recent-form and personal-best views'],
-    space:['Space Race','Lightyears, event results and recent-form views'],\n    trends:['Trends','Clan trends, recent form and player comparisons'],
+    space:['Space Race','Lightyears, event results and recent-form views'],
+    trends:['Trends','Clan trends, recent form and player comparisons'],
     ratings:['Player Ratings','Combined PB and average performance rating'],
     players:['Players','Individual performance history and profiles'],
     records:['Records','Current AVENGERS benchmark board']
@@ -817,5 +824,6 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
 })();
 
   </script>
-  <script src="phase2.js"></script>\n</body>
+  <script src="phase2.js"></script>
+</body>
 </html>

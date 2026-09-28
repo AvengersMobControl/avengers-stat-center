@@ -199,6 +199,7 @@ tbody tr:last-child td{border-bottom:0}
 
   </style>
   <link rel="stylesheet" href="phase2.css" />
+  <link rel="stylesheet" href="avengers-theme.css" />
 </head>
 <body>
   <div class="app-shell">
@@ -455,40 +456,118 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const spRecord=maxOf(cm,'spacePB');
     const krRecord=maxOf(cm,'krakenPB');
 
+    const pigTrend=D.piggy.clanTrend||[];
+    const spTrend=D.space.clanTrend||[];
+    const pigNow=pigTrend.length?Number(pigTrend.at(-1).avg)||0:0;
+    const pigPrev=pigTrend.length>1?Number(pigTrend.at(-2).avg)||0:0;
+    const spNow=spTrend.length?Number(spTrend.at(-1).avg)||0:0;
+    const spPrev=spTrend.length>1?Number(spTrend.at(-2).avg)||0:0;
+    const pigDelta=pigPrev?((pigNow-pigPrev)/pigPrev):0;
+    const spDelta=spPrev?((spNow-spPrev)/spPrev):0;
+
     $('#overviewContent').innerHTML = `
-      <div class="notice">Phase 1 is reading directly from your existing master workbook structure. The site is not replacing Excel yet; it is turning the same data into a faster dashboard.</div>
-      <div class="grid kpi-grid">
-        <div class="kpi"><div class="kpi-label">Current AV Roster</div><div class="kpi-value">${fmtNum(active)}</div><div class="kpi-note">${fmtNum(av2)} tracked in AV-2</div></div>
-        <div class="kpi"><div class="kpi-label">Piggy Record</div><div class="kpi-value">${pigRecord?fmtNum(pigRecord.piggyPB):'—'}</div><div class="kpi-note">${pigRecord?escapeHtml(pigRecord.name):''}</div></div>
-        <div class="kpi"><div class="kpi-label">Space Record</div><div class="kpi-value">${spRecord?fmtB(spRecord.spacePB):'—'}</div><div class="kpi-note">${spRecord?escapeHtml(spRecord.name):''}</div></div>
-        <div class="kpi"><div class="kpi-label">Kraken Record</div><div class="kpi-value">${krRecord?fmtNum(krRecord.krakenPB,1):'—'}</div><div class="kpi-note">${krRecord?escapeHtml(krRecord.name):''}</div></div>
+      <div class="overview-kicker">
+        <div class="overview-kicker-copy">
+          <span class="overview-eyebrow">AVENGERS // COMMAND CENTER</span>
+          <strong>Clan Intelligence Dashboard</strong>
+          <span>Live view of the current roster, Arena-era trends and event leaders.</span>
+        </div>
+        <div class="overview-kicker-status"><span class="status-dot"></span> DATA ONLINE</div>
       </div>
 
-      <div class="content-grid">
-        <div class="card">
-          <div class="card-header"><div><div class="card-title">Piggy — Clan Average</div><div class="card-sub">Arena era • since Aug 1, 2026</div></div><strong>${D.piggy.clanTrend.length?fmtNum(D.piggy.clanTrend.at(-1).avg):'—'}</strong></div>
-          <div class="card-body">${lineChart(D.piggy.clanTrend,'avg',v=>fmtNum(v))}</div>
+      <div class="grid kpi-grid overview-kpis">
+        <div class="kpi roster-kpi">
+          <div class="kpi-icon">A</div>
+          <div class="kpi-label">Current AV Roster</div>
+          <div class="kpi-value">${fmtNum(active)}</div>
+          <div class="kpi-note"><strong>${fmtNum(av2)}</strong> tracked in AV-2</div>
         </div>
-        <div class="card">
-          <div class="card-header"><div><div class="card-title">Space — Clan Average</div><div class="card-sub">Arena era • billions of lightyears</div></div><strong>${D.space.clanTrend.length?fmtB(D.space.clanTrend.at(-1).avg):'—'}</strong></div>
-          <div class="card-body">${lineChart(D.space.clanTrend,'avg',v=>fmtB(v))}</div>
+        <div class="kpi piggy-kpi">
+          <div class="kpi-icon">🐷</div>
+          <div class="kpi-label">Piggy Record</div>
+          <div class="kpi-value">${pigRecord?fmtNum(pigRecord.piggyPB):'—'}</div>
+          <div class="kpi-note">${pigRecord?escapeHtml(pigRecord.name):''}</div>
+        </div>
+        <div class="kpi space-kpi">
+          <div class="kpi-icon">🚀</div>
+          <div class="kpi-label">Space Record</div>
+          <div class="kpi-value">${spRecord?fmtB(spRecord.spacePB):'—'}</div>
+          <div class="kpi-note">${spRecord?escapeHtml(spRecord.name):''}</div>
+        </div>
+        <div class="kpi kraken-kpi">
+          <div class="kpi-icon">♜</div>
+          <div class="kpi-label">Kraken Record</div>
+          <div class="kpi-value">${krRecord?fmtNum(krRecord.krakenPB,1):'—'}</div>
+          <div class="kpi-note">${krRecord?escapeHtml(krRecord.name):''}</div>
         </div>
       </div>
 
-      <div class="dual-cards" style="margin-top:16px">
-        <div class="card">
-          <div class="card-header"><div><div class="card-title">Latest Piggy — ${fmtDate(D.meta.latestPiggy)}</div><div class="card-sub">${latestPig.length} tracked players</div></div></div>
-          <div class="card-body">${rankRows(topPig,'lines',v=>fmtNum(v),r=>`${fmtCompact(r.stars)} stars • ${fmtPct(r.share)}`)}</div>
+      <div class="content-grid overview-trends">
+        <div class="card overview-trend piggy-trend">
+          <div class="card-header">
+            <div>
+              <div class="card-title"><span class="event-glyph piggy-glyph">🐷</span> Piggy — Clan Average</div>
+              <div class="card-sub">Arena era • since Aug 1, 2026</div>
+            </div>
+            <div class="trend-score">
+              <strong>${pigTrend.length?fmtNum(pigNow):'—'}</strong>
+              <span class="${pigDelta>=0?'positive':'negative'}">${pigDelta>=0?'↑':'↓'} ${fmtPct(Math.abs(pigDelta))}</span>
+            </div>
+          </div>
+          <div class="card-body">${lineChart(pigTrend,'avg',v=>fmtNum(v))}</div>
         </div>
-        <div class="card">
-          <div class="card-header"><div><div class="card-title">Latest Space — ${fmtDate(D.meta.latestSpace)}</div><div class="card-sub">${latestSpace.length} tracked players</div></div></div>
-          <div class="card-body">${rankRows(topSp,'yearsB',v=>fmtB(v),r=>`${fmtCompact(r.stars)} stars • ${fmtPct(r.share)}`)}</div>
+
+        <div class="card overview-trend space-trend">
+          <div class="card-header">
+            <div>
+              <div class="card-title"><span class="event-glyph space-glyph">🚀</span> Space — Clan Average</div>
+              <div class="card-sub">Arena era • billions of lightyears</div>
+            </div>
+            <div class="trend-score">
+              <strong>${spTrend.length?fmtB(spNow):'—'}</strong>
+              <span class="${spDelta>=0?'positive':'negative'}">${spDelta>=0?'↑':'↓'} ${fmtPct(Math.abs(spDelta))}</span>
+            </div>
+          </div>
+          <div class="card-body">${lineChart(spTrend,'avg',v=>fmtB(v))}</div>
         </div>
       </div>
 
-      <div class="card" style="margin-top:16px">
-        <div class="card-header"><div><div class="card-title">Overall Player Rating</div><div class="card-sub">PB score + average score from your master rating model</div></div><strong>${topRating?fmtNum(topRating.ratingTotal,2):'—'}</strong></div>
-        <div class="card-body">${rankRows([...cm].sort((a,b)=>b.ratingTotal-a.ratingTotal),'ratingTotal',v=>fmtNum(v,2),r=>`PB ${fmtNum(r.ratingPB,2)} • Avg ${fmtNum(r.ratingAvg,2)}`,8)}</div>
+      <div class="dual-cards overview-leaders" style="margin-top:16px">
+        <div class="card leaderboard-card piggy-board">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Latest Piggy</div>
+              <div class="card-sub">${fmtDate(D.meta.latestPiggy)} • ${latestPig.length} tracked players</div>
+            </div>
+            <span class="event-chip">LINES</span>
+          </div>
+          <div class="card-body">${rankRows(topPig,'lines',v=>fmtNum(v),r=>`${fmtCompact(r.stars)} stars • ${fmtPct(r.share)}`,6)}</div>
+        </div>
+
+        <div class="card leaderboard-card space-board">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Latest Space</div>
+              <div class="card-sub">${fmtDate(D.meta.latestSpace)} • ${latestSpace.length} tracked players</div>
+            </div>
+            <span class="event-chip">LIGHTYEARS</span>
+          </div>
+          <div class="card-body">${rankRows(topSp,'yearsB',v=>fmtB(v),r=>`${fmtCompact(r.stars)} stars • ${fmtPct(r.share)}`,6)}</div>
+        </div>
+      </div>
+
+      <div class="card rating-command-card" style="margin-top:16px">
+        <div class="rating-command-score">
+          <span>OVERALL PLAYER RATING</span>
+          <strong>${topRating?fmtNum(topRating.ratingTotal,2):'—'}</strong>
+          <small>PB score + average score</small>
+        </div>
+        <div class="rating-command-list">
+          <div class="card-header">
+            <div><div class="card-title">Top Rated Players</div><div class="card-sub">Current roster • master rating model</div></div>
+          </div>
+          <div class="card-body">${rankRows([...cm].sort((a,b)=>b.ratingTotal-a.ratingTotal),'ratingTotal',v=>fmtNum(v,2),r=>`PB ${fmtNum(r.ratingPB,2)} • Avg ${fmtNum(r.ratingAvg,2)}`,8)}</div>
+        </div>
       </div>`;
   }
 

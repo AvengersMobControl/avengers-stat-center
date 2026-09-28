@@ -333,7 +333,10 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     spaceView: 'overall',
     piggyEvent: D.meta.latestPiggy,
     spaceEvent: D.meta.latestSpace,
+    piggyPBSort: 'newpb',
+    piggyPBEvent: D.meta.latestPiggy,
     spacePBSort: 'newpb',
+    spacePBEvent: D.meta.latestSpace,
     playerSearch: ''
   };
 
@@ -610,6 +613,35 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     return D.space.overall.filter(r=>allowedStatus(r.status) && Number(r.avgYears)>0);
   }
 
+  function historicalPBs(kind,date,valueKey){
+    const K=D[kind]||{};
+    const eventRows=(K.events?.[date]||[]).filter(r=>r && r.name && r.name!=='Total' && r.name!=='#N/A' && (Number(r[valueKey])||0)>0);
+    const seen=new Set();
+    const pbs=[];
+    const first=[];
+    eventRows.forEach(r=>{
+      const name=r.name;
+      if(seen.has(name)) return;
+      seen.add(name);
+      const status=MEMBERS.get(name)?.status || r.status || '';
+      if(!allowedStatus(status)) return;
+      const score=Number(r[valueKey])||0;
+      const hist=(K.history?.[name]||[])
+        .filter(x=>(Number(x[valueKey])||0)>0)
+        .sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
+      const prior=hist.filter(x=>String(x.date||'')<date);
+      if(!prior.length){
+        first.push({name,score,status});
+        return;
+      }
+      const previous=Math.max(...prior.map(x=>Number(x[valueKey])||0));
+      if(score>previous){
+        pbs.push({name,score,previous,improvement:previous>0?(score-previous)/previous:null,status});
+      }
+    });
+    return {pbs,first};
+  }
+
   function renderPiggy(){
     const el=$('#piggyContent');
     const view=state.piggyView;
@@ -662,14 +694,60 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       el.innerHTML=tableShell('Last Three Big Pigs','Sorted by average lines over each player’s last three logged Piggy events',
         [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Last 3 Avg'},{label:'Arena Avg',num:true},{label:'Vs Avg',num:true},{label:'PB',num:true},{label:'Events',num:true}],body);
     } else {
-      const pbs=(D.piggy.latestPBs||[]).filter(x=>allowedStatus(MEMBERS.get(x.name)?.status||''));
-      const newM=(D.piggy.latestNewMembers||[]).filter(x=>allowedStatus(MEMBERS.get(x.name)?.status||''));
-      el.innerHTML=`<div class="callout-grid">
-        <div class="card"><div class="card-header"><div><div class="card-title">New Personal Bests</div><div class="card-sub">${fmtDate(D.meta.latestPiggy)}</div></div></div>
-          <div class="card-body"><div class="callout-list">${pbs.length?pbs.map(x=>`<div class="callout"><div class="callout-icon">🔥</div><div><div class="callout-name">${escapeHtml(x.name)}</div><div class="callout-detail">${fmtNum(x.previous)} → <strong>${fmtNum(x.score)}</strong>${x.improvement!=null?` • +${fmtPct(x.improvement)}`:''}</div></div></div>`).join(''):`<div class="empty">No PBs detected.</div>`}</div></div></div>
-        <div class="card"><div class="card-header"><div><div class="card-title">New / First Arena Event</div><div class="card-sub">Players with one Arena-era event logged</div></div></div>
-          <div class="card-body"><div class="callout-list">${newM.length?newM.map(x=>`<div class="callout"><div class="callout-icon">🆕</div><div><div class="callout-name">${escapeHtml(x.name)}</div><div class="callout-detail">${fmtNum(x.score)} lines</div></div></div>`).join(''):`<div class="empty">No new players detected.</div>`}</div></div></div>
-      </div>`;
+      const dates=Object.keys(D.piggy.events||{}).sort().reverse();
+      if(!D.piggy.events?.[state.piggyPBEvent]) state.piggyPBEvent=dates[0]||D.meta.latestPiggy;
+      const hist=historicalPBs('piggy',state.piggyPBEvent,'lines');
+      const pbsSorters={
+        newpb:(a,b)=>(Number(b.score)||0)-(Number(a.score)||0),
+        previouspb:(a,b)=>(Number(b.previous)||0)-(Number(a.previous)||0),
+        pctincrease:(a,b)=>(Number(b.improvement)||0)-(Number(a.improvement)||0)
+      };
+      const pbs=[...hist.pbs].sort(pbsSorters[state.piggyPBSort]||pbsSorters.newpb);
+      const newM=[...hist.first].sort((a,b)=>(Number(b.score)||0)-(Number(a.score)||0));
+
+      const pbRows=pbs.map((x,i)=>`<tr>
+        <td class="num">${i+1}</td>
+        <td><div class="player-cell compact-player"><div class="avatar">${initials(x.name)}</div><button class="linkish" data-player="${escapeHtml(x.name)}">${escapeHtml(x.name)}</button></div></td>
+        <td class="num">${fmtNum(x.previous)}</td>
+        <td class="num">${fmtNum(x.score)}</td>
+        <td class="num positive">+${fmtPct(x.improvement||0)}</td>
+      </tr>`).join('') || `<tr><td colspan="5" class="empty">No returning-player PBs in this race.</td></tr>`;
+
+      const newRows=newM.map((x,i)=>`<tr>
+        <td class="num">${i+1}</td>
+        <td><div class="player-cell compact-player"><div class="avatar">${initials(x.name)}</div><button class="linkish" data-player="${escapeHtml(x.name)}">${escapeHtml(x.name)}</button></div></td>
+        <td class="num">${fmtNum(x.score)}</td>
+      </tr>`).join('') || `<tr><td colspan="3" class="empty">No first-time tracked players in this race.</td></tr>`;
+
+      el.innerHTML=`
+        <div class="space-pb-toolbar">
+          <div>
+            <div class="space-pb-toolbar-title">PBs & New</div>
+            <div class="small-muted">Choose any tracked Piggy Race to see the PBs set in that specific event.</div>
+          </div>
+          <div class="pb-toolbar-controls">
+            <label class="inline-control">Event
+              <select id="piggyPBEventSelect">
+                ${dates.map(d=>`<option value="${d}" ${d===state.piggyPBEvent?'selected':''}>${fmtDate(d)}</option>`).join('')}
+              </select>
+            </label>
+            <label class="inline-control">Sort personal bests
+              <select id="piggyPBSortSelect">
+                <option value="newpb" ${state.piggyPBSort==='newpb'?'selected':''}>New PB</option>
+                <option value="previouspb" ${state.piggyPBSort==='previouspb'?'selected':''}>Previous PB</option>
+                <option value="pctincrease" ${state.piggyPBSort==='pctincrease'?'selected':''}>% Increase</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <div class="callout-grid tabular-grid">
+          ${tableShell('Piggy Personal Bests',`${fmtDate(state.piggyPBEvent)} • ${pbs.length} returning-player PB${pbs.length===1?'':'s'}`,
+            [{label:'#',num:true},{label:'Member'},{label:'Previous PB',num:true},{label:'New PB',num:true},{label:'% Increase',num:true}],pbRows)}
+          ${tableShell('First Tracked Event',`${newM.length} player${newM.length===1?'':'s'} with no earlier Piggy result in our data`,
+            [{label:'#',num:true},{label:'Member'},{label:'Lines',num:true}],newRows)}
+        </div>`;
+      $('#piggyPBEventSelect',el)?.addEventListener('change',e=>{state.piggyPBEvent=e.target.value;renderPiggy();});
+      $('#piggyPBSortSelect',el)?.addEventListener('change',e=>{state.piggyPBSort=e.target.value;renderPiggy();});
     }
     el.insertAdjacentHTML('afterbegin',`
       <div class="roster-separation-note">
@@ -744,19 +822,16 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       el.innerHTML=tableShell('Last Three Space Races','Sorted by average lightyears over each player’s last three logged Space events',
         [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Last 3 Avg'},{label:'Overall Avg',num:true},{label:'Vs Avg',num:true},{label:'PB',num:true},{label:'Events',num:true}],body);
     } else {
-      const newM=(D.space.latestNewMembers||[]).filter(x=>allowedStatus(MEMBERS.get(x.name)?.status||''));
-      const newNames=new Set(newM.map(x=>x.name));
-      let pbs=(D.space.latestPBs||[])
-        .filter(x=>allowedStatus(MEMBERS.get(x.name)?.status||''))
-        .filter(x=>!newNames.has(x.name))
-        .filter(x=>Number(x.previous)>0 && Number(x.score)>Number(x.previous));
-
+      const dates=Object.keys(D.space.events||{}).sort().reverse();
+      if(!D.space.events?.[state.spacePBEvent]) state.spacePBEvent=dates[0]||D.meta.latestSpace;
+      const hist=historicalPBs('space',state.spacePBEvent,'yearsB');
       const pbsSorters={
         newpb:(a,b)=>(Number(b.score)||0)-(Number(a.score)||0),
         previouspb:(a,b)=>(Number(b.previous)||0)-(Number(a.previous)||0),
         pctincrease:(a,b)=>(Number(b.improvement)||0)-(Number(a.improvement)||0)
       };
-      pbs=[...pbs].sort(pbsSorters[state.spacePBSort]||pbsSorters.newpb);
+      const pbs=[...hist.pbs].sort(pbsSorters[state.spacePBSort]||pbsSorters.newpb);
+      const newM=[...hist.first].sort((a,b)=>(Number(b.score)||0)-(Number(a.score)||0));
 
       const pbRows=pbs.map((x,i)=>`<tr>
         <td class="num">${i+1}</td>
@@ -764,34 +839,42 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <td class="num">${fmtB(x.previous)}</td>
         <td class="num">${fmtB(x.score)}</td>
         <td class="num positive">+${fmtPct(x.improvement||0)}</td>
-      </tr>`).join('') || `<tr><td colspan="5" class="empty">No returning-player PBs detected.</td></tr>`;
+      </tr>`).join('') || `<tr><td colspan="5" class="empty">No returning-player PBs in this race.</td></tr>`;
 
       const newRows=newM.map((x,i)=>`<tr>
         <td class="num">${i+1}</td>
         <td><div class="player-cell compact-player"><div class="avatar">${initials(x.name)}</div><button class="linkish" data-player="${escapeHtml(x.name)}">${escapeHtml(x.name)}</button></div></td>
         <td class="num">${fmtB(x.score)}</td>
-      </tr>`).join('') || `<tr><td colspan="3" class="empty">No new players detected.</td></tr>`;
+      </tr>`).join('') || `<tr><td colspan="3" class="empty">No first-time tracked players in this race.</td></tr>`;
 
       el.innerHTML=`
         <div class="space-pb-toolbar">
           <div>
             <div class="space-pb-toolbar-title">PBs & New</div>
-            <div class="small-muted">Returning-player PBs only; first-time Space results are kept separate.</div>
+            <div class="small-muted">Choose any tracked Space Race to see the PBs set in that specific event.</div>
           </div>
-          <label class="inline-control">Sort personal bests
-            <select id="spacePBSortSelect">
-              <option value="newpb" ${state.spacePBSort==='newpb'?'selected':''}>New PB</option>
-              <option value="previouspb" ${state.spacePBSort==='previouspb'?'selected':''}>Previous PB</option>
-              <option value="pctincrease" ${state.spacePBSort==='pctincrease'?'selected':''}>% Increase</option>
-            </select>
-          </label>
+          <div class="pb-toolbar-controls">
+            <label class="inline-control">Event
+              <select id="spacePBEventSelect">
+                ${dates.map(d=>`<option value="${d}" ${d===state.spacePBEvent?'selected':''}>${fmtDate(d)}</option>`).join('')}
+              </select>
+            </label>
+            <label class="inline-control">Sort personal bests
+              <select id="spacePBSortSelect">
+                <option value="newpb" ${state.spacePBSort==='newpb'?'selected':''}>New PB</option>
+                <option value="previouspb" ${state.spacePBSort==='previouspb'?'selected':''}>Previous PB</option>
+                <option value="pctincrease" ${state.spacePBSort==='pctincrease'?'selected':''}>% Increase</option>
+              </select>
+            </label>
+          </div>
         </div>
         <div class="callout-grid tabular-grid">
-          ${tableShell('New Space Personal Bests',`${fmtDate(D.meta.latestSpace)} • ${pbs.length} returning-player PB${pbs.length===1?'':'s'}`,
+          ${tableShell('Space Personal Bests',`${fmtDate(state.spacePBEvent)} • ${pbs.length} returning-player PB${pbs.length===1?'':'s'}`,
             [{label:'#',num:true},{label:'Member'},{label:'Previous PB',num:true},{label:'New PB',num:true},{label:'% Increase',num:true}],pbRows)}
-          ${tableShell('New / First Arena Event',`${newM.length} first-time Arena-era Space result${newM.length===1?'':'s'}`,
+          ${tableShell('First Tracked Event',`${newM.length} player${newM.length===1?'':'s'} with no earlier Space result in our data`,
             [{label:'#',num:true},{label:'Member'},{label:'Lightyears',num:true}],newRows)}
         </div>`;
+      $('#spacePBEventSelect',el)?.addEventListener('change',e=>{state.spacePBEvent=e.target.value;renderSpace();});
       $('#spacePBSortSelect',el)?.addEventListener('change',e=>{state.spacePBSort=e.target.value;renderSpace();});
     }
     el.insertAdjacentHTML('afterbegin',`
@@ -966,8 +1049,10 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       .linkish:hover{color:#72ddff;text-decoration:underline}
       .space-pb-toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:0 0 12px}
       .space-pb-toolbar-title{font-size:14px;font-weight:800;color:#e8eff8;margin-bottom:2px}
+      .pb-toolbar-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}
       .inline-control{display:flex;align-items:center;gap:10px;font-size:13px;color:#9ab0c8;font-weight:700;white-space:nowrap}
       .inline-control select{min-width:145px}
+      .pb-toolbar-controls .inline-control:first-child select{min-width:175px}
       .tabular-grid{grid-template-columns:minmax(0,1.35fr) minmax(320px,.65fr);align-items:stretch;gap:16px}
       .tabular-grid>.table-card{height:100%;min-width:0}
       .tabular-grid .table-wrap{overflow-x:auto}
@@ -979,6 +1064,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       .tabular-grid .linkish{font-size:13px}
       @media(max-width:980px){
         .space-pb-toolbar{align-items:flex-start;flex-direction:column}
+        .pb-toolbar-controls{justify-content:flex-start;width:100%}
         .tabular-grid{grid-template-columns:1fr}
       }
     `;

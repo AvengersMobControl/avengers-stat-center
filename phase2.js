@@ -8,9 +8,9 @@
   var memberByName = {};
   (D.members || []).forEach(function(m){ memberByName[m.name] = m; });
   var allNames = Array.from(new Set(
-    Object.keys((D.piggy && D.piggy.history) || {})
-      .concat(Object.keys((D.space && D.space.history) || {}))
-      .concat((D.members || []).map(function(m){ return m.name; }))
+    (D.members || [])
+      .filter(function(m){ return m.status==='Active' || m.status==='AV2'; })
+      .map(function(m){ return m.name; })
   )).sort(function(a,b){ return a.localeCompare(b); });
 
   var colors = ['#43d7ff','#a476ff','#5fe28b','#ffd35c','#ff9a55','#ff6b78'];

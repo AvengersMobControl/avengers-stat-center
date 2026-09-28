@@ -131,12 +131,17 @@ tbody tr:last-child td{border-bottom:0}
 .mini-stat{padding:8px;background:#0c1829;border-radius:8px}
 .mini-stat strong{display:block;font-size:13px}
 .mini-stat span{font-size:9px;color:#778ca6;text-transform:uppercase}
-.records-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.records-note{margin:0 0 14px;padding:11px 13px;border:1px solid #263a57;border-left:3px solid #43d7ff;border-radius:10px;background:#0b192b;color:#9db2ca;font-size:12px}
+.records-note strong{color:#e9f2ff}
+.records-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start}
 .record-card .card-body{padding-top:8px}
-.record-row{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:9px;padding:10px 0;border-bottom:1px solid #20334d;align-items:center}
+.record-row{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:9px;padding:9px 0;border-bottom:1px solid #20334d;align-items:center}
 .record-row:last-child{border-bottom:0}
 .record-badge{color:#ffd463;font-weight:900}
-.record-value{font-weight:900}
+.record-player{display:flex;align-items:center;gap:7px;min-width:0}
+.record-player .linkish{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.record-player .status{flex:0 0 auto;padding:2px 6px;font-size:9px}
+.record-value{font-weight:900;white-space:nowrap}
 .benchmark{margin-top:12px;padding:10px;border-radius:9px;background:#0b192b;color:#9db2ca;font-size:11px}
 .modal{display:none;position:fixed;inset:0;z-index:100}
 .modal.open{display:block}
@@ -920,19 +925,31 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   }
 
   function renderRecords(){
-    const rows=currentMembers();
+    const rows=[...D.members];
     const groups=[
       {title:'Piggy Records',sub:'Lines',key:'piggyPB',fmt:fmtNum,bench:'1.0 PB benchmark: 35,000 lines'},
       {title:'Space Records',sub:'Lightyears',key:'spacePB',fmt:fmtB,bench:'1.0 PB benchmark: 350B lightyears'},
       {title:'Kraken Records',sub:'Score',key:'krakenPB',fmt:v=>fmtNum(v,1),bench:'1.0 PB benchmark: 3,500 score'}
     ];
-    $('#recordsContent').innerHTML=`<div class="records-grid">${groups.map(g=>{
-      const top=[...rows].filter(r=>Number(r[g.key])>0).sort((a,b)=>b[g.key]-a[g.key]).slice(0,10);
-      return `<div class="card record-card"><div class="card-header"><div><div class="card-title">${g.title}</div><div class="card-sub">${g.sub} • current roster filter</div></div></div><div class="card-body">
-        ${top.map((r,i)=>`<div class="record-row"><div class="record-badge">${i+1}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button><div class="record-value">${g.fmt(r[g.key])}</div></div>`).join('')}
-        <div class="benchmark">${g.bench}</div>
-      </div></div>`;
-    }).join('')}</div>`;
+    $('#recordsContent').innerHTML=`
+      <div class="records-note">
+        <strong>Full tracked record lists.</strong>
+        Rankings include Active, AV-2 and Inactive players; each player's current status is shown beside their name.
+      </div>
+      <div class="records-grid">${groups.map(g=>{
+        const ranked=[...rows].filter(r=>Number(r[g.key])>0).sort((a,b)=>(Number(b[g.key])||0)-(Number(a[g.key])||0));
+        return `<div class="card record-card"><div class="card-header"><div><div class="card-title">${g.title}</div><div class="card-sub">${g.sub} • ${ranked.length} tracked players</div></div></div><div class="card-body">
+          ${ranked.map((r,i)=>`<div class="record-row">
+            <div class="record-badge">${i+1}</div>
+            <div class="record-player">
+              <button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button>
+              ${statusBadge(r.status)}
+            </div>
+            <div class="record-value">${g.fmt(r[g.key])}</div>
+          </div>`).join('')}
+          <div class="benchmark">${g.bench}</div>
+        </div></div>`;
+      }).join('')}</div>`;
     bindPlayerButtons($('#recordsContent'));
   }
 

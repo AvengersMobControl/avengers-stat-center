@@ -21,7 +21,7 @@
     {group:2,rank:4,name:'AV-I.S.O',username:'AV-I.S.O',yearsB:248.2,stars:1810000,sparks:180679,share:.12},
     {group:2,rank:5,name:'AV-no',username:'AV-no',yearsB:207.4,stars:1500000,sparks:150566,share:.10},
     {group:2,rank:6,name:'AV-Obajoba',username:'AV-Obajoba',yearsB:205.3,stars:1200000,sparks:120453,share:.08},
-    {group:2,rank:7,name:'AV-ZoopZ',username:'AV-ZoopZ',yearsB:159.1,stars:601979,sparks:60226,share:.04},
+    {group:2,rank:7,name:'AV-Hoops',username:'AV-ZoopZ',yearsB:159.1,stars:601979,sparks:60226,share:.04},
     {group:2,rank:8,name:'AV-7-STAR',username:'AV-7-ZOLISTAR',yearsB:140.3,stars:300990,sparks:30113,share:.02},
     {group:2,rank:9,name:'AV-Finnie',username:'AV-FinZO',yearsB:4.1,stars:150495,sparks:15057,share:.01},
 
@@ -35,7 +35,7 @@
     {group:3,rank:8,name:'AV-TheOli',username:'AV-TheZOli',yearsB:101.1,stars:243064,sparks:24321,share:.02},
     {group:3,rank:9,name:'AV-Nicefellow',username:'AV-Nicefellow',yearsB:89.2,stars:121532,sparks:12161,share:.01},
 
-    {group:4,rank:1,name:'AV-FrankAbagn',username:'AV-FrankAbagn…',yearsB:325.1,stars:2410000,sparks:240898,share:.25},
+    {group:4,rank:1,name:'AV-Addicted',username:'AV-FrankAbagn…',yearsB:325.1,stars:2410000,sparks:240898,share:.25},
     {group:4,rank:2,name:'AV-Bubba0816',username:'AV-Bubba0816',yearsB:261.3,stars:1930000,sparks:192718,share:.20},
     {group:4,rank:3,name:'AV-HN',username:'AV-HN',yearsB:232.3,stars:1730000,sparks:173447,share:.18},
     {group:4,rank:4,name:'AV-Brisket',username:'AV-Brisket',yearsB:142.3,stars:1160000,sparks:115631,share:.12},
@@ -55,19 +55,41 @@
     {group:5,rank:8,name:'AV-DaG',username:'AV-DaG',yearsB:86.2,stars:245839,sparks:24599,share:.02},
     {group:5,rank:9,name:'AV-SiFra',username:'AV-ZoFra',yearsB:65.6,stars:122919,sparks:12299,share:.01},
 
-    {group:6,rank:1,name:'AV-Zolikong',username:'(S9)AV-Zolikong',yearsB:310.0,stars:1270000,sparks:126761,share:.25},
+    {group:6,rank:1,name:'AV.Saberkong',username:'(S9)AV-Zolikong',yearsB:310.0,stars:1270000,sparks:126761,share:.25},
     {group:6,rank:2,name:'AV-23',username:'AV-23',yearsB:144.0,stars:1010000,sparks:101409,share:.20},
     {group:6,rank:3,name:'AV-Deviantdan',username:'AV-DeviantDan',yearsB:103.2,stars:911642,sparks:91268,share:.18},
     {group:6,rank:4,name:'AV-SMILINGBANDIT',username:'AV-SmiLiNgBaN…',yearsB:81.6,stars:607761,sparks:60845,share:.12},
     {group:6,rank:5,name:'AV-EventHorizon',username:'AV-EventHorizon',yearsB:42.2,stars:506468,sparks:50704,share:.10}
   ];
 
+  // Canonical player-name migrations confirmed after the 9/27 screenshots.
+  // AV-ZoopZ is the same player previously stored as AV-hoops-SCT.
+  const renameCanonical=(from,to)=>{
+    (D.members||[]).forEach(m=>{ if(m.name===from) m.name=to; });
+    ['piggy','space'].forEach(kind=>{
+      const K=D[kind];
+      if(!K) return;
+      if(K.history && K.history[from]){
+        const merged=[...(K.history[to]||[]),...K.history[from]];
+        const byKey=new Map();
+        merged.forEach(x=>byKey.set((x.date||'')+'|'+(x.code||''),x));
+        K.history[to]=[...byKey.values()].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+        delete K.history[from];
+      }
+      (K.overall||[]).forEach(r=>{ if(r.name===from) r.name=to; });
+      Object.values(K.events||{}).forEach(rows=>(rows||[]).forEach(r=>{ if(r.name===from) r.name=to; }));
+      (K.latestPBs||[]).forEach(r=>{ if(r.name===from) r.name=to; });
+      (K.latestNewMembers||[]).forEach(r=>{ if(r.name===from) r.name=to; });
+    });
+  };
+  renameCanonical('AV-hoops-SCT','AV-Hoops');
+
   const existing=new Map((D.members||[]).map(m=>[m.name,m]));
   const currentStatus=name=>existing.get(name)?.status || 'Active';
 
-  // New names visible in the 9/27 screenshots were members of AVENGERS at event time.
-  // Until the workbook roster is refreshed, they are treated as current Active members.
-  ['AV-ZoopZ','AV-FrankAbagn','AV-Brisket','AV-Zolikong','AV-23'].forEach(name=>{
+  // Brisket and AV-23 are genuinely new members from the 9/27 screenshots.
+  // The other apparent new names are aliases merged into existing player records.
+  ['AV-Brisket','AV-23'].forEach(name=>{
     if(!existing.has(name)){
       const m={name,status:'Active',piggyPB:0,spacePB:0,krakenPB:0,piggyAvg:0,spaceAvg:0,krakenAvgL3:0,krakenAvg:0,rankingScore:0,krakenPBMonth:0,ratingPB:0,ratingAvg:0,ratingTotal:0,eventsPlayed:0,totalSparks:0};
       D.members.push(m); existing.set(name,m);
@@ -75,13 +97,16 @@
   });
 
   newRows.forEach(r=>{
-    r.status=currentStatus(r.name);
+    // Event membership comes from the clan shown in the source screenshot,
+    // not from the player's current roster location.
+    r.clan='AVENGERS';
+    r.status='Active';
     r.years=Math.round(r.yearsB*1e9);
   });
 
   D.space.events[date]=newRows;
   D.meta.latestSpace=date;
-  D.meta.generated='2026-09-28T15:08:00-05:00';
+  D.meta.generated='2026-09-28T15:20:00-05:00';
 
   // Merge this event into each player's history.
   newRows.forEach(r=>{
@@ -139,10 +164,10 @@
   D.space.latestPBs=latestPBs.sort((a,b)=>b.score-a.score);
   D.space.latestNewMembers=latestNewMembers.sort((a,b)=>b.score-a.score);
 
-  // Clan trends are AVENGERS-only: current AV-2 / inactive players stay in their
-  // individual history but are not mixed into AVENGERS averages or star totals.
+  // Clan trends are event-clan based. A player counts for AVENGERS when the source
+  // screenshot shows AVENGERS for that event, even if they later move to AV-2.
   D.space.clanTrend=Object.keys(D.space.events).sort().filter(d=>d>=D.meta.arenaStart).map(d=>{
-    const rows=(D.space.events[d]||[]).filter(r=>r.name!=='Total' && r.name!=='#N/A' && currentStatus(r.name)==='Active' && (Number(r.yearsB)||0)>0);
+    const rows=(D.space.events[d]||[]).filter(r=>r.name!=='Total' && r.name!=='#N/A' && ((r.clan && r.clan==='AVENGERS') || (!r.clan && r.status==='Active')) && (Number(r.yearsB)||0)>0);
     const vals=rows.map(r=>Number(r.yearsB)||0);
     return {
       date:d,
@@ -171,6 +196,10 @@
     'AV-Abu//GO!S9//':'AV-Abu//npjp',
     'AV-Vadik-Zol.UA':'AV-Vadik-UA',
     'AV-MendiZOria':'AV-Mendoria',
-    'AV-ZoFra':'AV-SiFra'
+    'AV-ZoFra':'AV-SiFra',
+    'AV-ZoopZ':'AV-Hoops',
+    'AV-hoops-SCT':'AV-Hoops',
+    'AV-FrankAbagn':'AV-Addicted',
+    'AV-Zolikong':'AV.Saberkong'
   });
 })();

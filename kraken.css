@@ -1,0 +1,31 @@
+.overview-trends{grid-template-columns:repeat(3,minmax(0,1fr))}
+.kraken-trend{border-color:rgba(255,164,82,.28)}
+.kraken-trend .chart-line{stroke:#ff9f56}
+.kraken-trend .chart-dot{stroke:#ffb56f}
+.kraken-glyph{box-shadow:inset 0 0 14px rgba(255,155,86,.10)}
+.kr-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px;flex-wrap:wrap}
+.kr-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.kr-kpi{background:linear-gradient(145deg,rgba(31,28,60,.98),rgba(13,22,43,.98));border:1px solid rgba(255,154,86,.19);border-radius:14px;padding:14px;box-shadow:inset 0 0 24px rgba(255,136,67,.03)}
+.kr-kpi span{display:block;color:#9d9bc0;font-size:9px;letter-spacing:.09em;text-transform:uppercase;font-weight:850}
+.kr-kpi strong{display:block;font-size:25px;margin-top:7px}
+.kr-kpi small{display:block;color:#7f91ad;margin-top:3px}
+.kr-grid-two{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);gap:16px}
+.kr-trend-card{border-color:rgba(255,147,73,.21)}
+.kr-chart{height:230px}
+.kr-chart svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 5px rgba(255,145,70,.10))}
+.kr-grid{stroke:rgba(127,124,193,.18);stroke-width:1}
+.kr-line{fill:none;stroke:#ff9f56;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.kr-area{fill:url(#krArea)}
+.kr-dot{fill:#0e172c;stroke:#ffd18f;stroke-width:2}
+.kr-label{fill:#7f90b0;font-size:10px}
+.kr-chip{color:#ffd08f;border-color:rgba(255,168,93,.22);background:rgba(174,94,34,.08)}
+.kr-player-link{border:0;background:transparent;color:#eef2ff;font:inherit;font-weight:800;padding:0;text-align:left;cursor:pointer}
+.kr-player-link:hover{color:#ffc06f;text-decoration:underline}
+.kr-bar{position:relative;min-width:110px}
+.kr-bar:before{content:"";position:absolute;left:0;top:2px;bottom:2px;width:var(--w);border-radius:4px;background:linear-gradient(90deg,rgba(255,153,86,.23),rgba(255,153,86,.04))}
+.kr-bar span{position:relative;z-index:1}
+#page-kraken .table-card{border-color:rgba(255,145,72,.16)}
+#page-kraken .rank-row:first-child{background:linear-gradient(90deg,rgba(255,207,94,.065),transparent)}
+@media(max-width:1250px){.overview-trends{grid-template-columns:1fr 1fr}.overview-trends .kraken-trend{grid-column:1/-1}.kr-kpis{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.overview-trends,.kr-grid-two{grid-template-columns:1fr}.overview-trends .kraken-trend{grid-column:auto}.kr-kpis{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.kr-kpis{grid-template-columns:1fr 1fr}.kr-kpi strong{font-size:21px}}

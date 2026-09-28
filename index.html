@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#08111f" />
+  <title>AVENGERS Stat Center</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">A</div>
+        <div>
+          <div class="brand-title">AVENGERS</div>
+          <div class="brand-sub">STAT CENTER</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-btn active" data-page="overview"><span>⌂</span> Overview</button>
+        <button class="nav-btn" data-page="piggy"><span>🐷</span> Piggy Race</button>
+        <button class="nav-btn" data-page="space"><span>🚀</span> Space Race</button>
+        <button class="nav-btn" data-page="ratings"><span>★</span> Player Ratings</button>
+        <button class="nav-btn" data-page="players"><span>◉</span> Players</button>
+        <button class="nav-btn" data-page="records"><span>♛</span> Records</button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="small-label">DATA SOURCE</div>
+        <div class="source-name">Avengers Scorelog</div>
+        <div class="source-time" id="generatedAt"></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button id="menuBtn" class="menu-btn" aria-label="Menu">☰</button>
+        <div>
+          <h1 id="pageTitle">Overview</h1>
+          <p id="pageSubtitle">Clan performance at a glance</p>
+        </div>
+        <div class="top-actions">
+          <select id="globalStatusFilter" title="Roster filter">
+            <option value="current">Active + AV-2</option>
+            <option value="active">Active only</option>
+            <option value="av2">AV-2 only</option>
+            <option value="all">All historical</option>
+          </select>
+          <button class="ghost-btn" id="printBtn">Print View</button>
+        </div>
+      </header>
+
+      <section class="page active" id="page-overview"><div id="overviewContent"></div></section>
+
+      <section class="page" id="page-piggy">
+        <div class="section-toolbar">
+          <div class="segmented" id="piggyTabs">
+            <button class="active" data-view="overall">Overall</button>
+            <button data-view="event">Event</button>
+            <button data-view="last3">Last 3</button>
+            <button data-view="pbs">PBs & New</button>
+          </div>
+          <div class="toolbar-right">
+            <select id="piggyEventSelect"></select>
+            <button class="ghost-btn" data-export="piggy">Export CSV</button>
+          </div>
+        </div>
+        <div id="piggyContent"></div>
+      </section>
+
+      <section class="page" id="page-space">
+        <div class="section-toolbar">
+          <div class="segmented" id="spaceTabs">
+            <button class="active" data-view="overall">Overall</button>
+            <button data-view="event">Event</button>
+            <button data-view="last3">Last 3</button>
+            <button data-view="pbs">PBs & New</button>
+          </div>
+          <div class="toolbar-right">
+            <select id="spaceEventSelect"></select>
+            <button class="ghost-btn" data-export="space">Export CSV</button>
+          </div>
+        </div>
+        <div id="spaceContent"></div>
+      </section>
+
+      <section class="page" id="page-ratings"><div id="ratingsContent"></div></section>
+
+      <section class="page" id="page-players">
+        <div class="players-toolbar">
+          <input id="playerSearch" placeholder="Search player…" autocomplete="off" />
+          <div class="small-muted">Click a player for their profile and event history.</div>
+        </div>
+        <div id="playersContent"></div>
+      </section>
+
+      <section class="page" id="page-records"><div id="recordsContent"></div></section>
+    </main>
+  </div>
+
+  <div id="playerModal" class="modal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-card">
+      <button class="modal-close" data-close-modal>×</button>
+      <div id="playerModalContent"></div>
+    </div>
+  </div>
+
+  <script src="data-01.js"></script>
+  <script src="data-02.js"></script>
+  <script src="data-03.js"></script>
+  <script src="data-04.js"></script>
+  <script src="data-05.js"></script>
+  <script src="data-06.js"></script>
+  <script src="data-07.js"></script>
+  <script src="app-01.js"></script>
+  <script src="app-02.js"></script>
+  <script src="app-03.js"></script>
+  <script src="app-04.js"></script>
+  <script src="boot.js"></script>
+</body>
+</html>

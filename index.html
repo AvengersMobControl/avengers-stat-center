@@ -240,10 +240,9 @@ tbody tr:last-child td{border-bottom:0}
         </div>
         <div class="top-actions">
           <select id="globalStatusFilter" title="Roster filter">
-            <option value="current">Active + AV-2</option>
-            <option value="active">Active only</option>
-            <option value="av2">AV-2 only</option>
-            <option value="all">All historical</option>
+            <option value="active" selected>AVENGERS</option>
+            <option value="av2">AV-2</option>
+            <option value="all">All tracked</option>
           </select>
           <button class="ghost-btn" id="printBtn">Print View</button>
         </div>
@@ -320,6 +319,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
 
   </script>
   <script src="kraken-data.js"></script>
+  <script src="space-2026-09-27.js"></script>
   <script>
 
 (() => {
@@ -328,7 +328,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   const $$ = (s, el=document) => [...el.querySelectorAll(s)];
   const state = {
     page: 'overview',
-    status: 'current',
+    status: 'active',
     piggyView: 'overall',
     spaceView: 'overall',
     piggyEvent: D.meta.latestPiggy,
@@ -670,6 +670,11 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
           <div class="card-body"><div class="callout-list">${newM.length?newM.map(x=>`<div class="callout"><div class="callout-icon">🆕</div><div><div class="callout-name">${escapeHtml(x.name)}</div><div class="callout-detail">${fmtNum(x.score)} lines</div></div></div>`).join(''):`<div class="empty">No new players detected.</div>`}</div></div></div>
       </div>`;
     }
+    el.insertAdjacentHTML('afterbegin',`
+      <div class="roster-separation-note">
+        <strong>AVENGERS metrics = Active roster only.</strong>
+        AV-2 is tracked separately and is not included in AVENGERS averages or star totals.
+      </div>`);
     bindPlayerButtons(el);
   }
 
@@ -705,7 +710,19 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <td class="num">${fmtPct(r.share)}</td>
         <td class="num">${r.group??'—'}</td>
       </tr>`).join('');
-      el.innerHTML=tableShell(`Space Race — ${fmtDate(state.spaceEvent)}`,`${rows.length} players across the tracked groups`,
+      const eventAll=(D.space.events[state.spaceEvent]||[]).filter(r=>r.name!=='Total'&&r.name!=='#N/A');
+      const eventAV=eventAll.filter(r=>statusNorm(r.status)==='active'&&(Number(r.yearsB)||0)>0);
+      const eventAV2=eventAll.filter(r=>statusNorm(r.status)==='av2'&&(Number(r.yearsB)||0)>0);
+      const avAvg=eventAV.length?eventAV.reduce((s,r)=>s+(Number(r.yearsB)||0),0)/eventAV.length:0;
+      const avStars=eventAV.reduce((s,r)=>s+(Number(r.stars)||0),0);
+      const av2Avg=eventAV2.length?eventAV2.reduce((s,r)=>s+(Number(r.yearsB)||0),0)/eventAV2.length:0;
+      const av2Stars=eventAV2.reduce((s,r)=>s+(Number(r.stars)||0),0);
+      const split=`<div class="space-event-split">
+        <div class="split-stat avengers"><span>AVENGERS</span><strong>${fmtB(avAvg)}</strong><small>${eventAV.length} players • ${fmtCompact(avStars)} stars</small></div>
+        <div class="split-divider">≠</div>
+        <div class="split-stat av2"><span>AV-2 — separate</span><strong>${eventAV2.length?fmtB(av2Avg):'—'}</strong><small>${eventAV2.length} players • ${fmtCompact(av2Stars)} stars • excluded from AV totals</small></div>
+      </div>`;
+      el.innerHTML=split+tableShell(`Space Race — ${fmtDate(state.spaceEvent)}`,`${rows.length} players in selected roster view`,
         [{label:'Rank',num:true},{label:'Member'},{label:'Status'},{label:'Lightyears'},{label:'Stars',num:true},{label:'Sparks',num:true},{label:'Share',num:true},{label:'Group',num:true}],body||`<tr><td colspan="8" class="empty">No event data.</td></tr>`);
     } else if(view==='last3'){
       const rows=[...spaceRowsForStatus()].filter(r=>Number(r.avgLast3)>0).sort((a,b)=>b.avgLast3-a.avgLast3);
@@ -735,6 +752,11 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
           <div class="card-body"><div class="callout-list">${newM.length?newM.map(x=>`<div class="callout"><div class="callout-icon">🆕</div><div><div class="callout-name">${escapeHtml(x.name)}</div><div class="callout-detail">${fmtB(x.score)}</div></div></div>`).join(''):`<div class="empty">No new players detected.</div>`}</div></div></div>
       </div>`;
     }
+    el.insertAdjacentHTML('afterbegin',`
+      <div class="roster-separation-note">
+        <strong>AVENGERS metrics = Active roster only.</strong>
+        AV-2 is tracked separately and is not included in AVENGERS averages or star totals.
+      </div>`);
     bindPlayerButtons(el);
   }
 

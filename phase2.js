@@ -18,7 +18,7 @@
     kind:'piggy',
     metric:'primary',
     scope:'arena',
-    roster:'current',
+    roster:'active',
     selected:[]
   };
   var explorerPlayer = '';
@@ -237,13 +237,13 @@
         '<div class="p2-field"><label>Event</label><select id="p2TrendKind"><option value="piggy" '+(trendState.kind==='piggy'?'selected':'')+'>Piggy Race</option><option value="space" '+(trendState.kind==='space'?'selected':'')+'>Space Race</option></select></div>'+
         '<div class="p2-field"><label>Metric</label><select id="p2TrendMetric">'+metricOptions+'</select></div>'+
         '<div class="p2-field"><label>Time range</label><select id="p2TrendScope"><option value="arena" '+(trendState.scope==='arena'?'selected':'')+'>Arena era</option><option value="all" '+(trendState.scope==='all'?'selected':'')+'>All 2026 history</option></select></div>'+
-        '<div class="p2-field"><label>Roster</label><select id="p2TrendRoster"><option value="current" '+(trendState.roster==='current'?'selected':'')+'>Active + AV-2</option><option value="active" '+(trendState.roster==='active'?'selected':'')+'>Active only</option><option value="av2" '+(trendState.roster==='av2'?'selected':'')+'>AV-2 only</option><option value="all" '+(trendState.roster==='all'?'selected':'')+'>All historical</option></select></div>'+
+        '<div class="p2-field"><label>Roster</label><select id="p2TrendRoster"><option value="active" '+(trendState.roster==='active'?'selected':'')+'>AVENGERS</option><option value="av2" '+(trendState.roster==='av2'?'selected':'')+'>AV-2</option><option value="all" '+(trendState.roster==='all'?'selected':'')+'>All tracked</option></select></div>'+
       '</div>'+
       '<div class="p2-kpis">'+
         '<div class="p2-kpi"><div class="label">Latest clan avg</div><div class="value">'+(latest?fmtMetric(latest.average):'—')+'</div><div class="note">'+(latest?longDate(latest.date):'No event')+' · '+esc(metricLabel())+'</div></div>'+
         '<div class="p2-kpi"><div class="label">Peak event avg</div><div class="value">'+fmtMetric(peak)+'</div><div class="note">'+(trendState.scope==='arena'?'Since '+longDate(arenaStart):'All available events')+'</div></div>'+
         '<div class="p2-kpi"><div class="label">Change vs prior event</div><div class="value">'+changeText(ch)+'</div><div class="note">Clan average</div></div>'+
-        '<div class="p2-kpi"><div class="label">Latest participants</div><div class="value">'+(latest?latest.players:0)+'</div><div class="note">'+esc(trendState.roster==='current'?'Active + AV-2':trendState.roster)+'</div></div>'+
+        '<div class="p2-kpi"><div class="label">Latest participants</div><div class="value">'+(latest?latest.players:0)+'</div><div class="note">'+esc(trendState.roster==='active'?'AVENGERS':(trendState.roster==='av2'?'AV-2':'All tracked'))+'</div></div>'+
       '</div>'+
       '<div class="p2-grid">'+
         '<div class="card"><div class="card-header"><div><div class="p2-section-title">Clan Trend</div><div class="p2-section-sub">Average '+esc(metricLabel())+' by event</div></div></div><div class="card-body">'+lineChart(clanSeries,280)+'</div></div>'+

@@ -81,6 +81,7 @@
 
   D.space.events[date]=newRows;
   D.meta.latestSpace=date;
+  D.meta.generated='2026-09-28T15:08:00-05:00';
 
   // Merge this event into each player's history.
   newRows.forEach(r=>{

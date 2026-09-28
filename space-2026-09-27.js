@@ -106,7 +106,7 @@
 
   D.space.events[date]=newRows;
   D.meta.latestSpace=date;
-  D.meta.generated='2026-09-28T15:20:00-05:00';
+  D.meta.generated='2026-09-28T15:35:00-05:00';
 
   // Merge this event into each player's history.
   newRows.forEach(r=>{
@@ -163,6 +163,23 @@
   D.space.overall=overall;
   D.space.latestPBs=latestPBs.sort((a,b)=>b.score-a.score);
   D.space.latestNewMembers=latestNewMembers.sort((a,b)=>b.score-a.score);
+
+  // Refresh Player Ratings after merging the new Space event.
+  // Rating formula mirrors the Members sheet:
+  // PB = Piggy/35k + Space/350B + Kraken/3500, each capped at 1.
+  // AVG = Piggy/25k + Space/200B + Kraken L3/2800, each capped at 1.
+  const capped=(value,benchmark)=>Math.min(1,Math.max(0,(Number(value)||0)/benchmark));
+  (D.members||[]).forEach(member=>{
+    member.ratingPB=
+      capped(member.piggyPB,35000)+
+      capped(member.spacePB,350)+
+      capped(member.krakenPB,3500);
+    member.ratingAvg=
+      capped(member.piggyAvg,25000)+
+      capped(member.spaceAvg,200)+
+      capped(member.krakenAvgL3,2800);
+    member.ratingTotal=member.ratingPB+member.ratingAvg;
+  });
 
   // Clan trends are event-clan based. A player counts for AVENGERS when the source
   // screenshot shows AVENGERS for that event, even if they later move to AV-2.

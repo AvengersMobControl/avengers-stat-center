@@ -297,7 +297,9 @@ tbody tr:last-child td{border-bottom:0}
         <div id="spaceContent"></div>
       </section>
 
-      <section class="page" id="page-kraken">\n        <div id="krakenContent"></div>\n      </section>\n\n      <section class="page" id="page-trends">
+      <section class="page" id="page-kraken">
+        <div id="krakenContent"></div>
+      </section>\n\n      <section class="page" id="page-trends">
         <div id="trendsContent"></div>
       </section>
 
@@ -336,6 +338,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
 
   </script>
   <script src="kraken-data.js"></script>
+  <script src="kraken-history-complete.js"></script>
   <script src="space-2026-09-27.js"></script>
   <script src="sparks-snapshot-2026-09-29.js"></script>
   <script src="canonical-names-2026-09-29.js"></script>
@@ -717,19 +720,44 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       el.innerHTML=tableShell('Overall Piggy Performance','Sorted by Arena-era average; full-2026 average shown separately',
         [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Arena Avg'},{label:'2026 Avg',num:true},{label:'PB',num:true},{label:'Last 3',num:true},{label:'Arena Avg Stars',num:true},{label:'Events',num:true}],body);
     } else if(view==='event'){
-      const rows=(D.piggy.events[state.piggyEvent]||[]).filter(r=>r.name!=='Total'&&r.name!=='#N/A'&&allowedCurrentRow(r)).sort((a,b)=>(Number(a.rank)||999)-(Number(b.rank)||999));
-      const max=Math.max(...rows.map(r=>Number(r.lines)||0),1);
-      const body=rows.map(r=>`<tr>
-        <td class="num">${fmtNum(r.rank)}</td>
-        <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></div></td>
-        <td>${statusBadge(currentStatusFor(r.name,r.status))}</td>
-        <td>${barCell(r.lines,max,v=>fmtNum(v))}</td>
-        <td class="num">${fmtNum(r.stars)}</td>
-        <td class="num">${fmtNum(r.sparks)}</td>
-        <td class="num">${fmtPct(r.share)}</td>
-      </tr>`).join('');
-      el.innerHTML=tableShell(`Piggy Race — ${fmtDate(state.piggyEvent)}`,`${rows.length} players in current roster filter`,
-        [{label:'Rank',num:true},{label:'Member'},{label:'Current Status'},{label:'Lines'},{label:'Stars',num:true},{label:'Sparks',num:true},{label:'Share',num:true}],body||`<tr><td colspan="7" class="empty">No event data.</td></tr>`);
+      const eventAll=(D.piggy.events[state.piggyEvent]||[])
+        .filter(r=>r.name!=='Total'&&r.name!=='#N/A'&&(Number(r.lines)||0)>0);
+      const eventAV=eventAll.filter(r=>statusNorm(eventStatusForRow(r))==='active')
+        .sort((a,b)=>(Number(a.rank)||999)-(Number(b.rank)||999));
+      const eventAV2=eventAll.filter(r=>statusNorm(eventStatusForRow(r))==='av2')
+        .sort((a,b)=>(Number(a.rank)||999)-(Number(b.rank)||999));
+
+      const makeRows=(rows)=>{
+        const max=Math.max(...rows.map(r=>Number(r.lines)||0),1);
+        return rows.map(r=>`<tr>
+          <td class="num">${fmtNum(r.rank)}</td>
+          <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></div></td>
+          <td>${statusBadge(currentStatusFor(r.name,r.status))}</td>
+          <td>${barCell(r.lines,max,v=>fmtNum(v))}</td>
+          <td class="num">${fmtNum(r.stars)}</td>
+          <td class="num">${fmtNum(r.sparks)}</td>
+          <td class="num">${fmtPct(r.share)}</td>
+        </tr>`).join('');
+      };
+
+      const avAvg=eventAV.length?eventAV.reduce((s,r)=>s+(Number(r.lines)||0),0)/eventAV.length:0;
+      const avStars=eventAV.reduce((s,r)=>s+(Number(r.stars)||0),0);
+      const av2Avg=eventAV2.length?eventAV2.reduce((s,r)=>s+(Number(r.lines)||0),0)/eventAV2.length:0;
+      const av2Stars=eventAV2.reduce((s,r)=>s+(Number(r.stars)||0),0);
+
+      const split=`<div class="space-event-split">
+        <div class="split-stat avengers"><span>AVENGERS</span><strong>${fmtNum(avAvg)}</strong><small>${eventAV.length} players • ${fmtCompact(avStars)} stars</small></div>
+        <div class="split-divider">≠</div>
+        <div class="split-stat av2"><span>AV-2 — separate</span><strong>${eventAV2.length?fmtNum(av2Avg):'—'}</strong><small>${eventAV2.length} players • ${fmtCompact(av2Stars)} stars • excluded from AV totals</small></div>
+      </div>`;
+
+      const headers=[{label:'Rank',num:true},{label:'Member'},{label:'Current Status'},{label:'Lines'},{label:'Stars',num:true},{label:'Sparks',num:true},{label:'Share',num:true}];
+      el.innerHTML=split+`<div class="event-result-grid">
+        ${tableShell(`AVENGERS — ${fmtDate(state.piggyEvent)}`,`${eventAV.length} historical AVENGERS participants`,headers,
+          makeRows(eventAV)||`<tr><td colspan="7" class="empty">No AVENGERS event data.</td></tr>`)}
+        ${tableShell(`AV-2 — ${fmtDate(state.piggyEvent)}`,`${eventAV2.length} historical AV-2 participants • kept separate`,headers,
+          makeRows(eventAV2)||`<tr><td colspan="7" class="empty">No AV-2 event data.</td></tr>`)}
+      </div>`;
     } else if(view==='last3'){
       const rows=(D.piggy.overall||[]).filter(r=>allowedStatus(r.status)&&Number(r.avgLast3)>0).map(r=>({
         ...r,
@@ -1291,6 +1319,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       .roster-toolbar{margin-bottom:14px}
       .roster-sparks{font-weight:900;color:#dff7ff}\n      .roster-unlogged{font-weight:850;color:#ffd779}\n      .snapshot-only-name{font-weight:750;color:#dce6f2}
       #page-rosters .table-wrap{max-height:calc(100vh - 320px)}
+      .event-result-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(360px,.65fr);gap:16px;align-items:start}
+      .event-result-grid .table-card{min-width:0}
       .event-totals-grid{display:grid;grid-template-columns:1fr;gap:16px}
       #page-eventTotals .table-wrap{max-height:none}
       #page-eventTotals .table-card{overflow:visible}
@@ -1299,6 +1329,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         .space-pb-toolbar{align-items:flex-start;flex-direction:column}
         .pb-toolbar-controls{justify-content:flex-start;width:100%}
         .roster-summary-grid{grid-template-columns:1fr}
+        .event-result-grid{grid-template-columns:1fr}
         .tabular-grid{grid-template-columns:1fr}
       }
     `;

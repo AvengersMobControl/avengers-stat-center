@@ -18,6 +18,8 @@
 .kr-area{fill:url(#krArea)}
 .kr-dot{fill:#0e172c;stroke:#ffd18f;stroke-width:2}
 .kr-label{fill:#7f90b0;font-size:10px}
+.kr-axis-value{fill:#7186a3;font-size:9px}
+.kr-value-label{fill:#fff0d7;font-size:9px;font-weight:800;paint-order:stroke;stroke:#0e172c;stroke-width:3px;stroke-linejoin:round}
 .kr-chip{color:#ffd08f;border-color:rgba(255,168,93,.22);background:rgba(174,94,34,.08)}
 .kr-player-link{border:0;background:transparent;color:#eef2ff;font:inherit;font-weight:800;padding:0;text-align:left;cursor:pointer}
 .kr-player-link:hover{color:#ffc06f;text-decoration:underline}
@@ -29,3 +31,7 @@
 @media(max-width:1250px){.overview-trends{grid-template-columns:1fr 1fr}.overview-trends .kraken-trend{grid-column:1/-1}.kr-kpis{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:900px){.overview-trends,.kr-grid-two{grid-template-columns:1fr}.overview-trends .kraken-trend{grid-column:auto}.kr-kpis{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.kr-kpis{grid-template-columns:1fr 1fr}.kr-kpi strong{font-size:21px}}
+.kr-top-table-wrap{overflow:auto}
+.kr-top-table{font-size:12px}
+.kr-top-table th,.kr-top-table td{padding:7px 8px}
+.kr-top-table strong{font-weight:900}

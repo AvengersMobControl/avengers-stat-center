@@ -449,6 +449,32 @@
       {group:3,rank:9,name:'AV-Finnie',username:'AV-Finnie',yearsB:11.4}
     ],
 
+    '2026-06-11':[
+      {group:1,rank:1,name:'AV-Supreeth',username:'AV-Supreeth',yearsB:74.7},
+      {group:1,rank:2,name:'AV-FrenchieUSA',username:'AV-FrenchieUSA',yearsB:28.5},
+      {group:1,rank:3,name:'AV-Animosity',username:'AV-Animosity',yearsB:23.1},
+      {group:1,rank:4,name:'AV-SMILINGBANDIT',username:'AV-SmilingBaN…',yearsB:22.4},
+      {group:1,rank:5,name:'AV-MONSTER',username:'AV-MONSTER.',yearsB:18.2},
+      {group:1,rank:6,name:'AV-JAKE',username:'AV-JAKE',yearsB:17.2},
+      {group:1,rank:7,name:'AV-Adigarian',username:'AV-Adigarian',yearsB:11.0},
+
+      {group:2,rank:1,name:'AV-HarryBallsagna',username:'AV-HarryBallso…',yearsB:50.2},
+      {group:2,rank:2,name:'AV-BLISTER',username:'AV-BLISTER-USA',yearsB:27.4},
+      {group:2,rank:3,name:'AV-UANGELES',username:'AV-UANGELES',yearsB:22.8},
+      {group:2,rank:4,name:'AV-ColdCreeps',username:'AV-take.them.out',yearsB:20.2},
+      {group:2,rank:5,name:'AV-Nicefellow',username:'AV-Nicefellow',yearsB:20.1},
+      {group:2,rank:6,name:'AV-Starred',username:'AV-Starred',yearsB:17.9},
+      {group:2,rank:7,name:'AV-Anamiko',username:'AV-Anamiko',yearsB:12.0},
+      {group:2,rank:8,name:'AV-InvisibleSpy',username:'AV-InvisibleSpy',yearsB:9.6},
+
+      {group:3,rank:1,name:'AV-J',username:'AV-J',yearsB:63.5},
+      {group:3,rank:2,name:'AV-jacko',username:'AV-jacko',yearsB:30.5},
+      {group:3,rank:3,name:'AV-CHEN1972',username:'AV-CHEN1972',yearsB:21.7},
+      {group:3,rank:4,name:'AV-Deviantdan',username:'AV-Deviantdan',yearsB:18.6},
+      {group:3,rank:5,name:'AV-OblivX',username:'AV-OblivX',yearsB:18.4},
+      {group:3,rank:6,name:'AV-GNSK',username:'AV-GNSK',yearsB:17.5}
+    ],
+
     '2026-06-19':[
       {group:1,rank:1,name:'AV-Abu//npjp',username:'AV-Abu//npjp',yearsB:79.6,stars:376452,sparks:37646,share:.25},
       {group:1,rank:2,name:'AV-UANGELES',username:'AV-UANGELES',yearsB:52.9,stars:301162,sparks:30117,share:.20},
@@ -1568,6 +1594,7 @@
     '2026-05-20':"Recovered from Discord final-result screenshots; ambiguous/cropped/non-AVENGERS rows omitted.",
     '2026-05-27':"Recovered from Discord final-result screenshots; ambiguous/cropped/non-AVENGERS rows omitted.",
     '2026-06-07':"Recovered from Discord final-result screenshots; ambiguous/cropped/non-AVENGERS rows omitted.",
+    '2026-06-11':"Recovered from three final Discord leaderboards; exact duplicate repost of the first lobby was deduplicated. One truncated historical username and cropped lower rows were omitted rather than guessed.",
     '2026-06-19':"Recovered from Discord final-result screenshots; ambiguous/cropped/non-AVENGERS rows omitted.",
     '2026-06-24':"Recovered from final Discord screenshots; AV-Tornado score cropped and omitted; AV-DaG star reward cropped and left unknown.",
     '2026-07-09':"Recovered from Discord final-result screenshots; ambiguous/cropped/non-AVENGERS rows omitted."

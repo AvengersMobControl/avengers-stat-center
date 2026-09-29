@@ -37,6 +37,25 @@
       {group:4,rank:8,name:'AV-no',username:'AV-no',yearsB:9.8,stars:40974,sparks:4097,share:.02}
     ],
 
+    '2026-05-14':[
+      {group:1,rank:1,name:'AV-EventHorizon',username:'AV-EventHorizon',yearsB:57.8},
+      {group:1,rank:2,name:'AV.Saberkong',username:'AV.Saberkong',yearsB:45.8},
+      {group:1,rank:3,name:'AV-hoops-SCT',username:'AV-hoops-SCT',yearsB:36.5},
+      {group:1,rank:4,name:'AV<STAR-LORD>',username:'AV<STAR-LOR…',yearsB:32.5},
+      {group:1,rank:5,name:'AV-MONSTER',username:'AV-MONSTER.',yearsB:24.1},
+      {group:1,rank:6,name:'AV-SMILINGBANDIT',username:'AV-SMILINGBA…',yearsB:21.6},
+      {group:1,rank:7,name:'AV-Adigarian',username:'AV-Adigarian',yearsB:11.5},
+      {group:1,rank:8,name:'AV-Rocket!!!',username:'AV-Rocket!!!',yearsB:11.4},
+      {group:1,rank:9,name:'AV-OblivX',username:'AV-OblivX',yearsB:3.4},
+
+      {group:2,rank:1,name:'AV-HarryBallsagna',username:'AV-HarryBallsa…',yearsB:75.2},
+      {group:2,rank:2,name:'AV-UANGELES',username:'AV-UANGELES',yearsB:69.0},
+      {group:2,rank:3,name:'AV-Deviantdan',username:'AV-DeviantDan',yearsB:32.8},
+      {group:2,rank:4,name:'AV-BaBaVooS',username:'AV-BaBaVooS…',yearsB:32.5},
+      {group:2,rank:5,name:'AV-CowPoke',username:'AV-CowPoke',yearsB:31.6},
+      {group:2,rank:6,name:'AV-LiamUSA',username:'AV-LiamUSA',yearsB:26.7}
+    ],
+
     '2026-05-20':[
       {group:1,rank:1,name:'AV-HarryBallsagna',username:'AV-HarryBallsa…',yearsB:82.9},
       {group:1,rank:2,name:'AV-UANGELES',username:'AV-UANGELES',yearsB:47.0},
@@ -58,7 +77,16 @@
       {group:3,rank:4,name:'AV-EventHorizon',username:'AV-EventHorizon',yearsB:33.5},
       {group:3,rank:5,name:'AV-BaBaVooS',username:'AV-BaBaVooS…',yearsB:24.8},
       {group:3,rank:7,name:'AV-HarveySpecter',username:'AV-HarveySpec…',yearsB:21.1},
-      {group:3,rank:9,name:'AV-DrDetroit',username:'AV-DrDetroit-U…',yearsB:5.5}
+      {group:3,rank:9,name:'AV-DrDetroit',username:'AV-DrDetroit-U…',yearsB:5.5},
+
+      {group:4,rank:1,name:'AV-Supreeth',username:'AV-Supreeth',yearsB:101.3},
+      {group:4,rank:2,name:'AV-CHEN1972',username:'AV-CHEN1972',yearsB:54.0},
+      {group:4,rank:3,name:'AV-INTEN',username:'AV-INTEN',yearsB:37.4},
+      {group:4,rank:4,name:'AV-BEEN',username:'AV-BEEN',yearsB:33.9},
+      {group:4,rank:5,name:'AV-Attila-AZE',username:'AV-Atilla-AZE',yearsB:21.3},
+      {group:4,rank:7,name:'AV-DaG',username:'AV-DaG',yearsB:17.5},
+      {group:4,rank:8,name:'AV-Rocket!!!',username:'AV-Rocket!!!',yearsB:7.0},
+      {group:4,rank:9,name:'AV-OblivX',username:'AV-OblivX',yearsB:5.5}
     ],
 
     '2026-05-27':[
@@ -238,7 +266,8 @@
 
   D.space.historicalSourceNotes=Object.assign({},D.space.historicalSourceNotes||{},{
     '2026-07-09':'Recovered from Discord final-result screenshots; 27 AVENGERS rows.',
-    '2026-05-20':'Recovered from Discord final-result screenshots; 19 clearly readable AVENGERS rows across three lobbies. Ambiguous names in the mixed lobby were omitted.',
+    '2026-05-14':'Recovered from final Discord screenshots; 15 clearly readable AVENGERS rows across two lobbies. A separate preliminary-results post from the same date was intentionally ignored.',
+    '2026-05-20':'Recovered from Discord final-result screenshots; 27 clearly readable AVENGERS rows across four lobbies. Ambiguous names in one mixed lobby were omitted.',
     '2026-05-27':'Recovered from Discord final-result screenshots; 17 scored AVENGERS rows across two lobbies. One minimum-not-reached row omitted.',
     '2026-06-07':'Recovered from Discord final-result screenshots; 21 clearly readable AVENGERS rows across three lobbies. Cropped lower rows omitted.',
     '2026-06-19':'Recovered from Discord final-result screenshots; 44 AVENGERS rows.',

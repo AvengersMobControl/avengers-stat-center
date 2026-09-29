@@ -37,6 +37,113 @@
       {group:4,rank:8,name:'AV-no',username:'AV-no',yearsB:9.8,stars:40974,sparks:4097,share:.02}
     ],
 
+    '2026-02-04':[
+      {group:1,rank:1,name:'AV-CHEN1972',username:'AV-CHEN1972',yearsB:36.9},
+      {group:1,rank:2,name:'AV-INTEN',username:'AV-INTEN',yearsB:31.4},
+      {group:1,rank:3,name:'AV-Andre-DE',username:'AV-Andre<DE>',yearsB:23.6},
+      {group:1,rank:4,name:'AV-Push-Ups',username:'AV-Push-Ups',yearsB:22.2},
+      {group:1,rank:5,name:'AV-AG',username:'AV-AG',yearsB:19.8},
+      {group:1,rank:6,name:'AV-Attila-AZE',username:'AV-Attila',yearsB:15.0},
+      {group:1,rank:7,name:'AV-Morre',username:'AV-Morre',yearsB:14.1},
+      {group:1,rank:8,name:'AV#Rafa#Tun',username:'AV#Rafa#',yearsB:11.0},
+      {group:1,rank:9,name:'AV-MTBlue',username:'AV-MTBlue',yearsB:6.9},
+
+      {group:2,rank:1,name:'AV-UANGELES',username:'AV-UANGELES',yearsB:37.2},
+      {group:2,rank:2,name:'AV-Caklet',username:'AV-Caklet',yearsB:36.5},
+      {group:2,rank:3,name:'AV-Ironeagle',username:'AV-Ironeagle',yearsB:26.5},
+      {group:2,rank:4,name:'AV-RkHendrix',username:'AV-RkHendrix',yearsB:18.0},
+      {group:2,rank:5,name:'AV-LiamUSA',username:'AV-Liam',yearsB:17.2},
+      {group:2,rank:6,name:'AV-GNSK',username:'AV-GNSK',yearsB:16.5},
+
+      {group:3,rank:1,name:'AV-M',username:'AV-M',yearsB:53.8},
+      {group:3,rank:2,name:'AV-Robcorp',username:'AV-Robcorp',yearsB:38.4},
+      {group:3,rank:3,name:'AV-Rocket!!!',username:'AV-Rocket!!!',yearsB:31.9},
+      {group:3,rank:4,name:'Iam',username:'Iam',yearsB:21.7},
+      {group:3,rank:5,name:'AV<STAR-LORD>',username:'AV<STAR-LORD>',yearsB:16.5},
+      {group:3,rank:6,name:'AV-DrDetroit',username:'AV-DrDetroit',yearsB:15.1}
+    ],
+
+    '2026-02-11':[
+      {group:1,rank:1,name:'AV-Caklet',username:'AV-Caklet',yearsB:78.2},
+      {group:1,rank:2,name:'AV-Adigarian',username:'AV-Adigarian',yearsB:54.5},
+      {group:1,rank:3,name:'AV-M',username:'AV-M',yearsB:52.0},
+      {group:1,rank:4,name:'Iam',username:'Iam',yearsB:46.4},
+      {group:1,rank:5,name:'AV-UANGELES',username:'AV-UANGELES',yearsB:27.6},
+      {group:1,rank:6,name:'AV-tyranitatay',username:'AV-tyranitatay',yearsB:25.4},
+      {group:1,rank:7,name:'AV-CRISPIN.97',username:'AV-CRISPIN.27…',yearsB:25.1},
+      {group:1,rank:8,name:'AV-KitKat',username:'AV-KitKat',yearsB:14.5},
+      {group:1,rank:9,name:'AV-Push-Ups',username:'AV-Push-Ups',yearsB:3.8},
+
+      {group:2,rank:1,name:'AV-WeaponX',username:'AV-WeaponX',yearsB:38.1},
+      {group:2,rank:3,name:'AV-AP',username:'AV-AP',yearsB:23.5},
+      {group:2,rank:4,name:'AV-JIM80Y',username:'AV-JIM80Y',yearsB:22.4},
+      {group:2,rank:5,name:'AV-RkHendrix',username:'AV-RkHendrix',yearsB:17.9},
+      {group:2,rank:6,name:'AV-DrDetroit',username:'AV-DrDetroit',yearsB:12.5},
+
+      {group:3,rank:1,name:'AV-HiddenFrenchie',username:'(AV)HiddenFren…',yearsB:12.3},
+      {group:4,rank:2,name:'AV#Rafa#Tun',username:'AV#Rafa#',yearsB:11.4},
+      {group:5,rank:2,name:'AV-Warrior',username:'AV-Warrior',yearsB:20.7},
+      {group:5,rank:3,name:'AV-I.S.O',username:'AV-I.S.O',yearsB:16.0},
+      {group:6,rank:1,name:'AV-PanCake',username:'AV-PanCake',yearsB:33.4},
+      {group:6,rank:2,name:'AV-EventHorizon',username:'AV-EventHorizon',yearsB:30.3}
+    ],
+
+    '2026-02-22':[
+      {group:1,rank:1,name:'AV<STAR-LORD>',username:'AV<STAR-LORD>',yearsB:28.1},
+
+      {group:2,rank:1,name:'AV-AG',username:'AV-AG',yearsB:112.3},
+      {group:2,rank:2,name:'AV-CHEN1972',username:'AV-CHEN1972',yearsB:75.6},
+      {group:2,rank:3,name:'AV-INTEN',username:'AV-INTEN',yearsB:49.6},
+      {group:2,rank:4,name:'AV-PanCake',username:'AV-PanCake',yearsB:45.0},
+      {group:2,rank:5,name:'AV-JIM80Y',username:'AV-JIM80Y',yearsB:32.8},
+      {group:2,rank:6,name:'AV-Spectris',username:'AV-Spectris',yearsB:24.3},
+
+      {group:3,rank:1,name:'AV-LiamUSA',username:'AV-Liam',yearsB:75.7},
+      {group:3,rank:2,name:'AV-Andre-DE',username:'AV-Andre<DE>',yearsB:63.2},
+      {group:3,rank:3,name:'AV-Warrior',username:'AV-Warrior',yearsB:45.0},
+      {group:3,rank:4,name:'AV-Morre',username:'AV-Morre',yearsB:40.8},
+      {group:3,rank:5,name:'AV-EventHorizon',username:'AV-EventHorizon',yearsB:31.5},
+      {group:3,rank:6,name:'AV-RkHendrix',username:'AV-RkHendrix',yearsB:24.1},
+      {group:3,rank:7,name:'AV-Rocket!!!',username:'AV-Rocket!!!',yearsB:14.5},
+      {group:3,rank:9,name:'AV-Mr.Mar.Berry',username:'AV-Mr.Mar.Berry',yearsB:11.3}
+    ],
+
+    '2026-02-24':[
+      {group:1,rank:1,name:'AV-OblivX',username:'AV-OblivX',yearsB:62.3},
+      {group:1,rank:2,name:'AV-WeaponX',username:'AV-WeaponX',yearsB:44.7},
+      {group:1,rank:3,name:'AV-CHEN1972',username:'AV-CHEN1972',yearsB:37.6},
+      {group:1,rank:4,name:'AV-Attila-AZE',username:'AV-Attila',yearsB:29.1},
+      {group:1,rank:5,name:'AV-Vadik-UA',username:'AV-Vadik',yearsB:29.1},
+      {group:1,rank:6,name:'AV-TiN',username:'AV-TIN',yearsB:23.2},
+      {group:1,rank:7,name:'AV-CRISPIN.97',username:'AV-CRISPIN.27…',yearsB:10.8},
+      {group:1,rank:8,name:'AV-MTBlue',username:'AV-MTBlue',yearsB:9.5},
+      {group:1,rank:9,name:'AV-JIM80Y',username:'AV-Jim80y',yearsB:9.4},
+
+      {group:2,rank:1,name:'AV-Caklet',username:'AV-Caklet',yearsB:20.3},
+      {group:2,rank:2,name:'AV-Jay',username:'AV-Jay',yearsB:18.8},
+      {group:2,rank:3,name:'AV-Mr.Mar.Berry',username:'AV-Mr.Mar.Berry',yearsB:10.9},
+      {group:2,rank:4,name:'AV#Rafa#Tun',username:'AV#Rafa#',yearsB:10.3},
+      {group:2,rank:5,name:'AV-Adigarian',username:'AV-Adigarian',yearsB:9.2},
+
+      {group:3,rank:1,name:'AV-HarryBallsagna',username:'AV-SaddamMiser',yearsB:40.5},
+      {group:3,rank:2,name:'AV-Andre-DE',username:'AV-Andre<DE>',yearsB:30.9},
+      {group:3,rank:3,name:'AV-PanCake',username:'AV-PanCake',yearsB:28.1},
+      {group:3,rank:4,name:'AV-Warrior',username:'AV-Warrior',yearsB:24.0},
+      {group:3,rank:5,name:'AV-Blister2',username:'AV-Blister2',yearsB:19.5},
+      {group:3,rank:6,name:'AV-Spectris',username:'AV-Spectris',yearsB:13.2},
+      {group:3,rank:7,name:'tgves',username:'tgves',yearsB:12.2},
+      {group:3,rank:8,name:'AV-RkHendrix',username:'AV-RkHendrix',yearsB:12.1}
+    ],
+
+    '2026-02-25':[
+      {group:1,rank:1,name:'Iam',username:'Iam',yearsB:44.9},
+      {group:1,rank:2,name:'AV-M',username:'AV-M',yearsB:33.9},
+      {group:1,rank:3,name:'AV-INTEN',username:'AV-INTEN',yearsB:30.7},
+      {group:1,rank:4,name:'AV-DrDetroit',username:'AV-DrDetroit',yearsB:14.0},
+      {group:1,rank:5,name:'AV-UANGELES',username:'AV-UANGELES',yearsB:13.5},
+      {group:1,rank:6,name:'AV-Morre',username:'AV-Morre',yearsB:13.4}
+    ],
+
     '2026-03-03':[
       {group:1,rank:1,name:'AV-FeniXistential',username:'AV-FeniXistential',yearsB:32.1},
       {group:1,rank:2,name:'AV-Andre-DE',username:'AV-Andre',yearsB:28.2},
@@ -505,6 +612,11 @@
 
   D.space.historicalSourceNotes=Object.assign({},D.space.historicalSourceNotes||{},{
     '2026-07-09':'Recovered from Discord final-result screenshots; 27 AVENGERS rows.',
+    '2026-02-04':'Recovered from three unique final Discord leaderboards; duplicate reposts and non-result gameplay images were ignored.',
+    '2026-02-11':'Recovered from six final Discord posts. Lower duplicate AV-Caklet result (33B) was omitted in favor of the clearly final 78.2B result. Non-AVENGERS rows and minimum-not-reached rows were omitted.',
+    '2026-02-22':'Recovered from three unique final leaderboards. One exact repost of the 2/11 AV-Caklet leaderboard was intentionally not duplicated.',
+    '2026-02-24':'Recovered from three unique final leaderboards; duplicate owner reposts were deduplicated and minimum-not-reached rows omitted.',
+    '2026-02-25':'Recovered from one final Discord leaderboard; only clearly readable rows entered.',
     '2026-03-03':'Recovered from three final Discord lobbies; only clearly readable AVENGERS rows entered.',
     '2026-03-06':'Recovered from five unique final Discord lobbies; duplicate reposts were deduplicated and unreadable lower rows omitted.',
     '2026-03-11':'Recovered from two unique final Discord lobbies; duplicate reposts were deduplicated.',

@@ -37,6 +37,57 @@
       {group:4,rank:8,name:'AV-no',username:'AV-no',yearsB:9.8,stars:40974,sparks:4097,share:.02}
     ],
 
+    '2026-06-19':[
+      {group:1,rank:1,name:'AV-Abu//npjp',username:'AV-Abu//npjp',yearsB:79.6,stars:376452,sparks:37646,share:.25},
+      {group:1,rank:2,name:'AV-UANGELES',username:'AV-UANGELES',yearsB:52.9,stars:301162,sparks:30117,share:.20},
+      {group:1,rank:3,name:'AV-Deviantdan',username:'AV-DeviantDan',yearsB:46.1,stars:271046,sparks:27105,share:.18},
+      {group:1,rank:4,name:'AV-Nicefellow',username:'AV-Nicefellow',yearsB:42.6,stars:180697,sparks:18070,share:.12},
+      {group:1,rank:5,name:'AV-EventHorizon',username:'AV-EventHorizon',yearsB:34.1,stars:150581,sparks:15058,share:.10},
+      {group:1,rank:6,name:'AV-no',username:'AV-no',yearsB:33.2,stars:120465,sparks:12047,share:.08},
+      {group:1,rank:7,name:'AV-Starred',username:'AV-Starred',yearsB:22.0,stars:60232,sparks:6023,share:.04},
+      {group:1,rank:8,name:'AV-jacko',username:'AV-jacko',yearsB:17.1,stars:30116,sparks:3012,share:.02},
+      {group:1,rank:9,name:'AV-Adigarian',username:'AV-Adigarian',yearsB:11.9,stars:15058,sparks:1506,share:.01},
+
+      {group:2,rank:1,name:'AV-Jess-PT',username:'AV-Jess-PT',yearsB:80.4,stars:255978,sparks:25598,share:.25},
+      {group:2,rank:2,name:'AV-ColdCreeps',username:'AV-take.them.out',yearsB:37.7,stars:204782,sparks:20479,share:.20},
+      {group:2,rank:3,name:'AV-BLISTER',username:'AV-BLISTER-USA',yearsB:27.1,stars:184304,sparks:18431,share:.18},
+      {group:2,rank:4,name:'AV-Animosity',username:'AV-Animosity',yearsB:23.6,stars:122869,sparks:12287,share:.12},
+      {group:2,rank:5,name:'AV-MONSTER',username:'AV-MONSTER.',yearsB:20.0,stars:102391,sparks:10239,share:.10},
+      {group:2,rank:6,name:'AV-Raj',username:'AV-Raj',yearsB:17.0,stars:81913,sparks:8192,share:.08},
+      {group:2,rank:7,name:'AV-BaBaVooS',username:'AV-BaBaVooS…',yearsB:16.9,stars:40956,sparks:4096,share:.04},
+      {group:2,rank:8,name:'AV-Anamiko',username:'AV-Anamiko',yearsB:15.6,stars:20478,sparks:2048,share:.02},
+
+      {group:3,rank:1,name:'AV-Supreeth',username:'AV-Supreeth',yearsB:90.4,stars:472780,sparks:47278,share:.25},
+      {group:3,rank:2,name:'AV-INTEN',username:'AV-INTEN',yearsB:63.6,stars:378224,sparks:37822,share:.20},
+      {group:3,rank:3,name:'AV-8!l...Bil',username:'AV-8!l…Bil',yearsB:60.0,stars:340402,sparks:34040,share:.18},
+      {group:3,rank:4,name:'AV-J',username:'AV-J',yearsB:59.3,stars:226934,sparks:22693,share:.12},
+      {group:3,rank:5,name:'AV-Attila-AZE',username:'AV-Atilla-AZE',yearsB:47.4,stars:189112,sparks:18911,share:.10},
+      {group:3,rank:6,name:'AV-Suwako',username:'AV-Suwako',yearsB:43.0,stars:151290,sparks:15129,share:.08},
+      {group:3,rank:7,name:'AV-DaG',username:'AV-DaG',yearsB:22.9,stars:75645,sparks:7564,share:.04},
+      {group:3,rank:8,name:'AV-InvisibleSpy',username:'AV-InvisibleSpy',yearsB:16.1,stars:37822,sparks:3782,share:.02},
+      {group:3,rank:9,name:'AV-FIREN',username:'AV-FIREN',yearsB:13.9,stars:18911,sparks:1891,share:.01},
+
+      {group:4,rank:1,name:'AV-HarryBallsagna',username:'AV-HarryBallso…',yearsB:87.2,stars:356405,sparks:35640,share:.25},
+      {group:4,rank:2,name:'AV<STAR-LORD>',username:'AV/<STAR-LOR…',yearsB:49.3,stars:285124,sparks:28512,share:.20},
+      {group:4,rank:3,name:'AV-OblivX',username:'AV-OblivX',yearsB:37.7,stars:256612,sparks:25661,share:.18},
+      {group:4,rank:4,name:'AV#Rafa#Tun',username:'AV#Rafa#Tun',yearsB:31.2,stars:171074,sparks:17107,share:.12},
+      {group:4,rank:5,name:'AV-SMILINGBANDIT',username:'AV-SmiLiNgBaN…',yearsB:29.1,stars:142562,sparks:14256,share:.10},
+      {group:4,rank:6,name:'AV-hoops-SCT',username:'AV-hoops-SCT',yearsB:28.6,stars:114050,sparks:11405,share:.08},
+      {group:4,rank:7,name:'AV-Finnie',username:'AV-Finnie',yearsB:23.0,stars:57025,sparks:5702,share:.04},
+      {group:4,rank:8,name:'AV-RkHendrix',username:'AV-RkHendrix-…',yearsB:19.9,stars:28512,sparks:2851,share:.02},
+      {group:4,rank:9,name:'AV-Tornado',username:'AV-Tornado',yearsB:17.5,stars:14256,sparks:1426,share:.01},
+
+      {group:5,rank:1,name:'AV-CHEN1972',username:'AV-CHEN1972',yearsB:71.0,stars:409155,sparks:40916,share:.25},
+      {group:5,rank:2,name:'AV-Mr.Mar.Berry',username:'AV-Mr.Mar.Berr…',yearsB:63.5,stars:327324,sparks:32732,share:.20},
+      {group:5,rank:3,name:'AV-7-STAR',username:'AV-7-STAR',yearsB:47.3,stars:294592,sparks:29459,share:.18},
+      {group:5,rank:4,name:'AV-JeffKintz05',username:'AV-JefhKintz05',yearsB:36.4,stars:196394,sparks:19639,share:.12},
+      {group:5,rank:5,name:'AV-I.S.O',username:'AV-I.S.O',yearsB:34.1,stars:163662,sparks:16366,share:.10},
+      {group:5,rank:6,name:'AV-GNSK',username:'AV-GNSK',yearsB:33.6,stars:130930,sparks:13093,share:.08},
+      {group:5,rank:7,name:'AV-FrenchieUSA',username:'AV-Frenchie(-4)',yearsB:31.6,stars:65465,sparks:6546,share:.04},
+      {group:5,rank:8,name:'AV-JIM',username:'AV-JIM',yearsB:26.1,stars:32732,sparks:3273,share:.02},
+      {group:5,rank:9,name:'AV-KitKat',username:'AV-KitKat',yearsB:22.1,stars:16366,sparks:1637,share:.01}
+    ],
+
     '2026-06-24':[
       {group:1,rank:1,name:'AV-EventHorizon',username:'AV-EventHorizon',yearsB:13.8,stars:54444,sparks:5449,share:.253},
 
@@ -94,7 +145,7 @@
     });
   };
 
-  ['AV-Witch-king','AV-InvisibleSpy'].forEach(addHistoricalMember);
+  Object.values(events).flat().forEach(r=>addHistoricalMember(r.name));
 
   Object.entries(events).forEach(([date,rows])=>{
     rows.forEach(r=>{
@@ -116,6 +167,7 @@
 
   D.space.historicalSourceNotes=Object.assign({},D.space.historicalSourceNotes||{},{
     '2026-07-09':'Recovered from Discord final-result screenshots; 27 AVENGERS rows.',
+    '2026-06-19':'Recovered from Discord final-result screenshots; 44 AVENGERS rows.',
     '2026-06-24':'Recovered from Discord final-result screenshots; one AV-Tornado row is visibly present but its score is cropped, so it was not entered. AV-DaG score/sparks are entered but the star reward is cropped and left unknown.'
   });
 })();

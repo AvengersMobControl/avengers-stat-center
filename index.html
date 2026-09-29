@@ -635,6 +635,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
           <div class="card-body">${rankRows([...cm].sort((a,b)=>b.ratingTotal-a.ratingTotal),'ratingTotal',v=>fmtNum(v,2),r=>`PB ${fmtNum(r.ratingPB,2)} • Avg ${fmtNum(r.ratingAvg,2)}`,8)}</div>
         </div>
       </div>`;
+    bindPlayerButtons($('#overviewContent'));
   }
 
   function tableShell(title, sub, headers, rowsHtml){
@@ -835,7 +836,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       const body=rows.map((r,i)=>`<tr>
         <td class="num">${i+1}</td>
         <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></div></td>
-        <td>${statusBadge(r.status)}</td>
+        <td>${statusBadge(currentStatusFor(r.name,r.status))}</td>
         <td>${barCell(r.yearsB,max,v=>fmtB(v))}</td>
         <td class="num">${fmtNum(r.stars)}</td>
         <td class="num">${fmtNum(r.sparks)}</td>

@@ -67,7 +67,7 @@ module.exports = async function handler(req,res){
   const channel=config.channels[channelKey];
   if(!channel) return json(res,400,{error:'Unknown channelKey',allowed:Object.keys(config.channels)});
 
-  const maxMessages=Math.max(1,Math.min(Number(body.maxMessages)||100,500));
+  const maxMessages=Math.max(1,Math.min(Number(body.maxMessages)||1000,5000));
   const stopAfterId=body.afterMessageId?BigInt(String(body.afterMessageId)):null;
   let before=body.beforeMessageId?String(body.beforeMessageId):null;
   const candidates=[];

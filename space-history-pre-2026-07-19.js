@@ -37,6 +37,32 @@
       {group:4,rank:8,name:'AV-no',username:'AV-no',yearsB:9.8,stars:40974,sparks:4097,share:.02}
     ],
 
+    '2026-06-07':[
+      {group:1,rank:1,name:'AV-Abu//npjp',username:'AV-Abu//npjp',yearsB:171.0},
+      {group:1,rank:2,name:'AV-BeerMan',username:'AV-BeerMan',yearsB:101.9},
+      {group:1,rank:3,name:'AV-J',username:'AV-J',yearsB:64.0},
+      {group:1,rank:4,name:'AV-8!l...Bil',username:'AV-8!l…Bil',yearsB:43.8},
+      {group:1,rank:5,name:'AV-JIM',username:'AV-JIM',yearsB:38.0},
+      {group:1,rank:6,name:'AV-Suwair',username:'AV-Suwair',yearsB:29.2},
+
+      {group:2,rank:1,name:'AV-UANGELES',username:'AV-UANGELES',yearsB:105.0},
+      {group:2,rank:2,name:'AV-EventHorizon',username:'AV-EventHorizon',yearsB:82.2},
+      {group:2,rank:3,name:'AV-ColdCreeps',username:'AV-take.them.out',yearsB:72.2},
+      {group:2,rank:4,name:'AV-Supreeth',username:'AV-Supreeth',yearsB:66.4},
+      {group:2,rank:5,name:'AV-MONSTER',username:'AV-MONSTER.',yearsB:47.9},
+      {group:2,rank:6,name:'AV-Starred',username:'AV-Starred',yearsB:37.1},
+
+      {group:3,rank:1,name:'AV-Nicefellow',username:'AV-Nicefellow',yearsB:120.9},
+      {group:3,rank:2,name:'AV-INTEN',username:'AV-INTEN',yearsB:88.8},
+      {group:3,rank:3,name:'AV-HarryBallsagna',username:'AV-HarryBallsa…',yearsB:84.5},
+      {group:3,rank:4,name:'AV-Jess-PT',username:'AV-Jess-PT',yearsB:63.2},
+      {group:3,rank:5,name:'AV-Deviantdan',username:'AV-DeviantDan',yearsB:50.9},
+      {group:3,rank:6,name:'AV-DaG',username:'AV-DaG',yearsB:30.0},
+      {group:3,rank:7,name:'AV<STAR-LORD>',username:'AV<STAR-LOR…',yearsB:19.2},
+      {group:3,rank:8,name:'AV-Raj',username:'AV-Raj',yearsB:14.9},
+      {group:3,rank:9,name:'AV-Finnie',username:'AV-Finnie',yearsB:11.4}
+    ],
+
     '2026-06-19':[
       {group:1,rank:1,name:'AV-Abu//npjp',username:'AV-Abu//npjp',yearsB:79.6,stars:376452,sparks:37646,share:.25},
       {group:1,rank:2,name:'AV-UANGELES',username:'AV-UANGELES',yearsB:52.9,stars:301162,sparks:30117,share:.20},
@@ -167,6 +193,7 @@
 
   D.space.historicalSourceNotes=Object.assign({},D.space.historicalSourceNotes||{},{
     '2026-07-09':'Recovered from Discord final-result screenshots; 27 AVENGERS rows.',
+    '2026-06-07':'Recovered from Discord final-result screenshots; 21 clearly readable AVENGERS rows across three lobbies. Cropped lower rows omitted.',
     '2026-06-19':'Recovered from Discord final-result screenshots; 44 AVENGERS rows.',
     '2026-06-24':'Recovered from Discord final-result screenshots; one AV-Tornado row is visibly present but its score is cropped, so it was not entered. AV-DaG score/sparks are entered but the star reward is cropped and left unknown.'
   });

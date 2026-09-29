@@ -996,12 +996,12 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
 
     const materialize=name=>{
       const stored=baseMap.get(name);
-      const m=stored||{name,status:'Active',piggyPB:0,spacePB:0,krakenPB:0,ratingTotal:0,eventsPlayed:0,totalSparks:0};
+      const m=stored||{name,status:'Inactive',piggyPB:0,spacePB:0,krakenPB:0,ratingTotal:0,eventsPlayed:0,totalSparks:0};
       const snapshot=snapMap.get(name);
       const logged=Math.max(0,Number(m.totalSparks)||0);
       const snapshotTotal=snapshot?Math.max(0,Number(snapshot.allTimeSparks)||0):null;
       const unlogged=snapshotTotal==null?0:Math.max(0,snapshotTotal-logged);
-      return {...m,status:currentAvNames.has(name)?'Active':m.status,hasProfile:!!stored,
+      return {...m,status:m.status,hasProfile:!!stored,
         loggedSparks:logged,unloggedSparks:unlogged,totalCombinedSparks:logged+unlogged,snapshotTotal};
     };
 
@@ -1009,10 +1009,10 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     let rows=[],label='';
     if(target==='active'){
       label='AVENGERS';
-      rows=snapRows.map(x=>materialize(x.name));
+      rows=[...allNames].map(materialize).filter(r=>statusNorm(r.status)==='active');
     }else if(target==='av2'){
       label='AV-2';
-      rows=[...allNames].map(materialize).filter(r=>statusNorm(r.status)==='av2'&&!currentAvNames.has(r.name));
+      rows=[...allNames].map(materialize).filter(r=>statusNorm(r.status)==='av2');
     }else{
       label='All Members';
       rows=[...allNames].map(materialize);
@@ -1044,8 +1044,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const sourceNote=target==='all'
       ? 'Current and former tracked members, plus the Sep 29 current-roster snapshot.'
       : target==='active'
-        ? `Current AVENGERS roster from the ${fmtDate(snap.date||'2026-09-29')} all-time Sparks screenshots.`
-        : 'Current AV-2 roster from the Stat Center member-status data.';
+        ? 'Current AVENGERS roster from the Stat Center status data; Sep 29 screenshot used only to supplement Sparks.'
+        : 'Current AV-2 roster from the Stat Center status data; Sep 29 screenshot used only to supplement Sparks.';
 
     root.innerHTML=`
       <div class="section-toolbar roster-toolbar">

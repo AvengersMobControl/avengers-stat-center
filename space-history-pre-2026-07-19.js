@@ -37,6 +37,27 @@
       {group:4,rank:8,name:'AV-no',username:'AV-no',yearsB:9.8,stars:40974,sparks:4097,share:.02}
     ],
 
+    '2026-05-27':[
+      {group:1,rank:1,name:'AV-UANGELES',username:'AV-UANGELES',yearsB:42.3},
+      {group:1,rank:2,name:'AV-Jess-PT',username:'AV-Jess-PT',yearsB:42.3},
+      {group:1,rank:3,name:'AV-HarryBallsagna',username:'AV-HarryBalls…',yearsB:37.8},
+      {group:1,rank:4,name:'AV-J',username:'AV-J',yearsB:22.9},
+      {group:1,rank:5,name:'AV-Attila-AZE',username:'AV-Atilla-AZE',yearsB:16.1},
+      {group:1,rank:6,name:'AV-DaG',username:'AV-DaG',yearsB:14.2},
+      {group:1,rank:7,name:'AV-CC',username:'AV-CC',yearsB:5.3},
+      {group:1,rank:8,name:'AV-DrDetroit',username:'AV-DrDetroit-U…',yearsB:3.0},
+
+      {group:2,rank:1,name:'AV-EventHorizon',username:'AV-EventHorizon',yearsB:45.7},
+      {group:2,rank:2,name:'AV-MONSTER',username:'AV-MONSTER.',yearsB:43.2},
+      {group:2,rank:3,name:'AV-BLISTER',username:'AV-BLISTER-USA',yearsB:27.3},
+      {group:2,rank:4,name:'AV<STAR-LORD>',username:'AV<STAR-LOR…',yearsB:17.3},
+      {group:2,rank:5,name:'AV-Starred',username:'AV-Starred',yearsB:10.1},
+      {group:2,rank:6,name:'AV-I.S.O',username:'AV-I.S.O',yearsB:9.2},
+      {group:2,rank:7,name:'AV-GNSK',username:'AV-GNSK',yearsB:3.3},
+      {group:2,rank:8,name:'AV-Mr.Mar.Berry',username:'AV-Mr.Mar.Berr…',yearsB:0.1416},
+      {group:2,rank:9,name:'AV-InvisibleSpy',username:'AV-InvisibleSpy',yearsB:0.1248}
+    ],
+
     '2026-06-07':[
       {group:1,rank:1,name:'AV-Abu//npjp',username:'AV-Abu//npjp',yearsB:171.0},
       {group:1,rank:2,name:'AV-BeerMan',username:'AV-BeerMan',yearsB:101.9},
@@ -193,6 +214,7 @@
 
   D.space.historicalSourceNotes=Object.assign({},D.space.historicalSourceNotes||{},{
     '2026-07-09':'Recovered from Discord final-result screenshots; 27 AVENGERS rows.',
+    '2026-05-27':'Recovered from Discord final-result screenshots; 17 scored AVENGERS rows across two lobbies. One minimum-not-reached row omitted.',
     '2026-06-07':'Recovered from Discord final-result screenshots; 21 clearly readable AVENGERS rows across three lobbies. Cropped lower rows omitted.',
     '2026-06-19':'Recovered from Discord final-result screenshots; 44 AVENGERS rows.',
     '2026-06-24':'Recovered from Discord final-result screenshots; one AV-Tornado row is visibly present but its score is cropped, so it was not entered. AV-DaG score/sparks are entered but the star reward is cropped and left unknown.'

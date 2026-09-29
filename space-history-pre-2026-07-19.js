@@ -37,7 +37,26 @@
       {group:4,rank:8,name:'AV-no',username:'AV-no',yearsB:9.8,stars:40974,sparks:4097,share:.02}
     ],
 
+    '2026-04-01':[
+      {group:1,rank:1,name:'AV-HarryBallsagna',username:'AV-SaddamMiser',yearsB:71.5,sourceNote:'Highlighted owner row from HarryBallsagna Discord post.'}
+    ],
+
+    '2026-04-02':[
+      {group:1,rank:5,name:'AV-Phoenix',username:'AV-Phoenix',yearsB:19.4,sourceNote:'Highlighted owner row from Phoenix Discord post; historical display name is truncated in the screenshot.'}
+    ],
+
+    '2026-04-03':[
+      {group:1,rank:1,name:'AV-HarryBallsagna',username:'AV-SaddamMiser',yearsB:56.3,sourceNote:'Highlighted owner row from HarryBallsagna Discord post.'},
+      {group:2,rank:1,name:'AV-M-usa',username:'AV-M-usa',yearsB:22.6,sourceNote:'Highlighted owner row from M-usa Discord post.'},
+      {group:3,rank:7,name:'AV#Rafa#Tun',username:'AV#Rafa#Tun',yearsB:6.6,sourceNote:'Highlighted owner row from Rafa Discord post.'}
+    ],
+
+    '2026-04-08':[
+      {group:1,rank:4,name:'AV-JIM',username:'AV-JIM',yearsB:19.9,sourceNote:'Highlighted owner row from JIM Discord post. Rafa post on 4/8 is an exact repost of the 4/3 leaderboard and was not duplicated.'}
+    ],
+
     '2026-04-11':[
+      {group:0,rank:1,name:'AV-HarryBallsagna',username:'AV-SaddamMiser',yearsB:114.1,sourceNote:'Highlighted owner row from HarryBallsagna Discord post.'},
       {group:1,rank:1,name:'AV-EventHorizon',username:'AV-EventHorizon',yearsB:49.2},
       {group:1,rank:2,name:'AV-UANGELES',username:'AV-UANGELES',yearsB:48.7},
       {group:1,rank:3,name:'AV-Adigarian',username:'AV-Adigarian',yearsB:47.5},
@@ -414,7 +433,11 @@
 
   D.space.historicalSourceNotes=Object.assign({},D.space.historicalSourceNotes||{},{
     '2026-07-09':'Recovered from Discord final-result screenshots; 27 AVENGERS rows.',
-    '2026-04-11':'Recovered from five final Discord posts representing four unique lobbies; duplicate posts of the same leaderboard were deduplicated. Non-AVENGERS competitors and one unreadable historical username were omitted.',
+    '2026-04-01':'Recovered from highlighted owner row in final Discord screenshot.',
+    '2026-04-02':'Recovered from highlighted owner row in final Discord screenshot; historical display name is truncated, canonicalized to AV-Phoenix.',
+    '2026-04-03':'Recovered from highlighted owner rows in three final Discord posts.',
+    '2026-04-08':'Recovered from highlighted owner row in JIM final screenshot. A Rafa post dated 4/8 is an exact repost of the 4/3 leaderboard and was intentionally not duplicated.',
+    '2026-04-11':'Recovered from five final Discord posts representing four unique lobbies; duplicate posts of the same leaderboard were deduplicated. Added HarryBallsagna from his highlighted owner row. Non-AVENGERS competitors and one unreadable historical username were omitted.',
     '2026-04-19':'Recovered from three final Discord posts. Non-AVENGERS competitors, minimum-not-reached rows, and unreadable/truncated usernames were omitted rather than guessed.',
     '2026-04-29':'Recovered from four final Discord posts. Non-AVENGERS competitors, minimum-not-reached rows, and several truncated/ambiguous historical usernames were omitted rather than guessed.',
     '2026-05-06':'Recovered from final Discord screenshots; duplicate posts of the same leaderboard were deduplicated. Minimum-not-reached and ambiguous cropped rows were omitted.',

@@ -337,6 +337,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   </script>
   <script src="kraken-data.js"></script>
   <script src="space-2026-09-27.js"></script>
+  <script src="sparks-snapshot-2026-09-29.js"></script>
   <script>
 
 (() => {
@@ -986,19 +987,53 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
 
   function renderRosters(){
     const root=$('#rostersContent');
-    const target=state.rosterView==='av2'?'av2':'active';
-    const label=target==='active'?'AVENGERS':'AV-2';
-    const rows=(D.members||[])
-      .filter(m=>statusNorm(m.status)===target)
-      .slice()
-      .sort((a,b)=>(Number(b.totalSparks)||0)-(Number(a.totalSparks)||0));
-    const totalSparks=rows.reduce((s,r)=>s+(Number(r.totalSparks)||0),0);
-    const avgSparks=rows.length?totalSparks/rows.length:0;
+    const snap=window.AVENGERS_SPARKS_SNAPSHOT||{currentAvengers:[]};
+    const snapRows=snap.currentAvengers||[];
+    const snapMap=new Map(snapRows.map(x=>[x.name,x]));
+    const currentAvNames=new Set(snapRows.map(x=>x.name));
+    const baseMap=new Map((D.members||[]).map(m=>[m.name,m]));
+    const allNames=new Set([...(D.members||[]).map(m=>m.name),...snapRows.map(x=>x.name)]);
+
+    const materialize=name=>{
+      const stored=baseMap.get(name);
+      const m=stored||{name,status:'Active',piggyPB:0,spacePB:0,krakenPB:0,ratingTotal:0,eventsPlayed:0,totalSparks:0};
+      const snapshot=snapMap.get(name);
+      const logged=Math.max(0,Number(m.totalSparks)||0);
+      const snapshotTotal=snapshot?Math.max(0,Number(snapshot.allTimeSparks)||0):null;
+      const unlogged=snapshotTotal==null?0:Math.max(0,snapshotTotal-logged);
+      return {...m,status:currentAvNames.has(name)?'Active':m.status,hasProfile:!!stored,
+        loggedSparks:logged,unloggedSparks:unlogged,totalCombinedSparks:logged+unlogged,snapshotTotal};
+    };
+
+    const target=state.rosterView||'active';
+    let rows=[],label='';
+    if(target==='active'){
+      label='AVENGERS';
+      rows=snapRows.map(x=>materialize(x.name));
+    }else if(target==='av2'){
+      label='AV-2';
+      rows=[...allNames].map(materialize).filter(r=>statusNorm(r.status)==='av2'&&!currentAvNames.has(r.name));
+    }else{
+      label='All Members';
+      rows=[...allNames].map(materialize);
+    }
+    rows.sort((a,b)=>b.totalCombinedSparks-a.totalCombinedSparks||a.name.localeCompare(b.name));
+
+    const loggedTotal=rows.reduce((s,r)=>s+r.loggedSparks,0);
+    const unloggedTotal=rows.reduce((s,r)=>s+r.unloggedSparks,0);
+    const combinedTotal=rows.reduce((s,r)=>s+r.totalCombinedSparks,0);
+
+    const playerNameCell=r=>r.hasProfile
+      ? `<button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button>`
+      : `<span class="snapshot-only-name" title="Current roster snapshot; no event history logged yet">${escapeHtml(r.name)}</span>`;
+
     const body=rows.map((r,i)=>`<tr>
       <td class="num">${i+1}</td>
-      <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></div></td>
+      <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div>${playerNameCell(r)}</div></td>
       <td>${statusBadge(r.status)}</td>
-      <td class="num roster-sparks">${fmtNum(r.totalSparks,0)}</td>
+      <td class="num">${fmtNum(r.loggedSparks,0)}</td>
+      <td class="num roster-unlogged">${fmtNum(r.unloggedSparks,0)}</td>
+      <td class="num roster-sparks">${fmtNum(r.totalCombinedSparks,0)}</td>
       <td class="num">${fmtNum(r.ratingTotal,2)}</td>
       <td class="num">${fmtNum(r.piggyPB)}</td>
       <td class="num">${fmtB(r.spacePB)}</td>
@@ -1006,22 +1041,35 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       <td class="num">${fmtNum(r.eventsPlayed)}</td>
     </tr>`).join('');
 
+    const sourceNote=target==='all'
+      ? 'Current and former tracked members, plus the Sep 29 current-roster snapshot.'
+      : target==='active'
+        ? `Current AVENGERS roster from the ${fmtDate(snap.date||'2026-09-29')} all-time Sparks screenshots.`
+        : 'Current AV-2 roster from the Stat Center member-status data.';
+
     root.innerHTML=`
       <div class="section-toolbar roster-toolbar">
         <div class="segmented" id="rosterTabs">
           <button data-roster="active" class="${target==='active'?'active':''}">AVENGERS</button>
           <button data-roster="av2" class="${target==='av2'?'active':''}">AV-2</button>
+          <button data-roster="all" class="${target==='all'?'active':''}">All Members</button>
         </div>
-        <div class="small-muted">Current roster status • sorted by tracked total sparks</div>
+        <div class="small-muted">${sourceNote}</div>
       </div>
       <div class="roster-summary-grid">
-        <div class="kpi"><div class="kpi-label">${label} Members</div><div class="kpi-value">${fmtNum(rows.length)}</div><div class="kpi-note">current roster</div></div>
-        <div class="kpi"><div class="kpi-label">Total Sparks Earned</div><div class="kpi-value">${fmtNum(totalSparks,0)}</div><div class="kpi-note">all tracked event sources</div></div>
-        <div class="kpi"><div class="kpi-label">Avg Sparks / Member</div><div class="kpi-value">${fmtNum(avgSparks,0)}</div><div class="kpi-note">current ${label} roster</div></div>
+        <div class="kpi"><div class="kpi-label">${label} Members</div><div class="kpi-value">${fmtNum(rows.length)}</div><div class="kpi-note">shown in this view</div></div>
+        <div class="kpi"><div class="kpi-label">Logged Sparks</div><div class="kpi-value">${fmtNum(loggedTotal,0)}</div><div class="kpi-note">captured in tracked events</div></div>
+        <div class="kpi"><div class="kpi-label">Unlogged Sparks</div><div class="kpi-value">${fmtNum(unloggedTotal,0)}</div><div class="kpi-note">supplemental from all-time screenshot</div></div>
+        <div class="kpi"><div class="kpi-label">Combined Total</div><div class="kpi-value">${fmtNum(combinedTotal,0)}</div><div class="kpi-note">logged + unlogged</div></div>
       </div>
-      ${tableShell(`${label} Current Roster`,`${rows.length} members • total sparks includes tracked Piggy, Space and Kraken event rewards`,
-        [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Total Sparks',num:true},{label:'Rating',num:true},{label:'Piggy PB',num:true},{label:'Space PB',num:true},{label:'Kraken PB',num:true},{label:'Events',num:true}],body||`<tr><td colspan="9" class="empty">No roster members found.</td></tr>`)}
+      <div class="records-note"><strong>Sparks reconciliation:</strong>
+        for players visible in the Sep 29 all-time leaderboard, Unlogged is the amount by which the screenshot total exceeds our logged event total. If the database is already higher, Unlogged stays at 0 so history is never subtracted or double-counted.
+      </div>
+      ${tableShell(`${label} Sparks Ledger`,`${rows.length} members • sorted by combined Sparks`,
+        [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Logged Sparks',num:true},{label:'Unlogged Sparks',num:true},{label:'Total Sparks',num:true},{label:'Rating',num:true},{label:'Piggy PB',num:true},{label:'Space PB',num:true},{label:'Kraken PB',num:true},{label:'Events',num:true}],
+        body||`<tr><td colspan="11" class="empty">No roster members found.</td></tr>`)}
     `;
+
     $('#rosterTabs',root)?.addEventListener('click',e=>{
       const b=e.target.closest('button[data-roster]');
       if(!b)return;
@@ -1237,9 +1285,9 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       .mini-rank-pos{width:32px;color:#9db1c8;font-weight:850}
       .mini-rank-meta{color:#8195ae;font-size:11px}
       .mini-rank-score{font-weight:900}
-      .roster-summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}
+      .roster-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
       .roster-toolbar{margin-bottom:14px}
-      .roster-sparks{font-weight:900;color:#dff7ff}
+      .roster-sparks{font-weight:900;color:#dff7ff}\n      .roster-unlogged{font-weight:850;color:#ffd779}\n      .snapshot-only-name{font-weight:750;color:#dce6f2}
       #page-rosters .table-wrap{max-height:calc(100vh - 320px)}
       .event-totals-grid{display:grid;grid-template-columns:1fr;gap:16px}
       #page-eventTotals .table-wrap{max-height:none}

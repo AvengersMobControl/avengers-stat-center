@@ -15,89 +15,108 @@
     body{margin:0;background:radial-gradient(circle at 75% 0%,rgba(129,92,255,.14),transparent 34%),var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
     button,select,input{font:inherit}
     button{cursor:pointer}
-    .shell{max-width:1320px;margin:0 auto;padding:28px}
-    .top{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:20px}
-    h1{margin:0 0 6px;font-size:28px}
+    .shell{max-width:1380px;margin:0 auto;padding:24px}
+    .top{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:18px}
+    h1{margin:0 0 5px;font-size:28px}
     .muted{color:var(--muted)}
     .small{font-size:12px}
     .back{color:#cdefff;text-decoration:none;font-weight:800}
-    .notice{border:1px solid rgba(67,215,255,.3);border-left:4px solid var(--cyan);border-radius:12px;background:#0b192b;padding:14px 16px;margin-bottom:18px}
+    .notice{border:1px solid rgba(67,215,255,.3);border-left:4px solid var(--cyan);border-radius:12px;background:#0b192b;padding:12px 14px;margin-bottom:15px;font-size:13px}
     .notice strong{color:white}
-    .controls{display:grid;grid-template-columns:1.2fr .7fr auto auto;gap:10px;align-items:end;background:linear-gradient(180deg,#11203a,#0d1a2d);border:1px solid #213653;border-radius:15px;padding:16px;margin-bottom:14px}
+    .controls{display:grid;grid-template-columns:1.25fr .55fr auto auto;gap:10px;align-items:end;background:linear-gradient(180deg,#11203a,#0d1a2d);border:1px solid #213653;border-radius:15px;padding:14px;margin-bottom:12px}
     label{display:grid;gap:6px;color:#9db1c8;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
     select,input{background:#0d1a2c;border:1px solid #263a57;color:#eaf1fa;border-radius:9px;padding:10px 11px;outline:none}
     .btn{border:1px solid #355275;color:#eef7ff;background:#152843;padding:10px 14px;border-radius:9px;font-weight:800}
     .btn.primary{background:linear-gradient(135deg,var(--purple),#5b42ca);border-color:#8a72eb}
     .btn:hover{filter:brightness(1.08)}
-    .toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:14px 0}
+    .btn:disabled{opacity:.45;cursor:not-allowed;filter:none}
+    .toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:12px 0}
     .toolbar .spacer{flex:1}
-    .status{min-height:22px;color:#b8c9dc;font-size:13px}
-    .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0 18px}
-    .kpi{background:#0d1a2c;border:1px solid #223752;border-radius:12px;padding:13px}
-    .kpi span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;font-weight:800;letter-spacing:.08em}
-    .kpi strong{display:block;font-size:22px;margin-top:5px}
-    .cards{display:grid;gap:16px}
-    .review-card{background:linear-gradient(180deg,#11203a,#0d1a2d);border:1px solid #223752;border-radius:15px;overflow:hidden}
-    .review-card.flagged{border-color:rgba(255,211,92,.55)}
-    .card-head{padding:13px 15px;border-bottom:1px solid #20344f;display:flex;gap:12px;align-items:center}
+    .status{min-height:24px;color:#b8c9dc;font-size:13px}
+    .status strong{color:#fff}
+    .checkpoint{color:#96abc4;font-size:11px;margin-top:2px}
+    .progressbar{height:7px;border-radius:999px;background:#101c2d;overflow:hidden;margin:9px 0 2px;display:none}
+    .progressbar>div{height:100%;width:0;background:linear-gradient(90deg,var(--purple),var(--cyan));transition:width .15s}
+    .summary{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 16px}
+    .kpi{background:#0d1a2c;border:1px solid #223752;border-radius:12px;padding:12px}
+    .kpi span{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;font-weight:800;letter-spacing:.08em}
+    .kpi strong{display:block;font-size:21px;margin-top:4px}
+    .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+    .review-card{background:linear-gradient(180deg,#11203a,#0d1a2d);border:1px solid #223752;border-radius:14px;overflow:hidden;min-width:0}
+    .card-head{padding:11px 13px;border-bottom:1px solid #20344f;display:flex;gap:10px;align-items:center}
     .card-head-main{min-width:0;flex:1}
-    .card-title{font-weight:900}
-    .meta{color:var(--muted);font-size:11px;margin-top:3px;word-break:break-word}
-    .tag{display:inline-flex;border-radius:999px;padding:4px 8px;font-size:10px;font-weight:900}
-    .tag.pending{background:rgba(67,215,255,.10);color:#8ce8ff}
-    .tag.warn{background:rgba(255,211,92,.12);color:#ffe07d}
-    .card-body{padding:14px 15px}
-    .message{font-size:12px;color:#b8c9dc;margin-bottom:12px;white-space:pre-wrap}
-    .images{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
-    .shot{background:#07101d;border:1px solid #1f334d;border-radius:12px;padding:9px}
-    .shot img{display:block;width:100%;height:auto;max-height:900px;object-fit:contain;border-radius:8px;background:#02060b}
-    .shot-meta{margin-top:7px;color:#8398b1;font-size:10px;overflow-wrap:anywhere}
-    .include{display:flex;align-items:center;gap:8px;color:#dce8f6;font-size:12px;font-weight:750;white-space:nowrap}
-    .empty{padding:42px;text-align:center;color:#7f93ad;border:1px dashed #314966;border-radius:14px}
+    .card-title{font-weight:900;font-size:14px}
+    .meta{color:var(--muted);font-size:10px;margin-top:2px;word-break:break-word}
+    .tag{display:inline-flex;border-radius:999px;padding:4px 8px;font-size:9px;font-weight:900;white-space:nowrap}
+    .tag.final{background:rgba(95,226,139,.12);color:#8ff0ae}
+    .tag.check{background:rgba(255,211,92,.12);color:#ffe07d}
+    .card-body{padding:10px 11px}
+    .message{font-size:11px;color:#b8c9dc;margin-bottom:8px;white-space:pre-wrap}
+    .images{display:flex;gap:8px;align-items:flex-start;justify-content:center;min-height:160px}
+    .shot{flex:1 1 0;min-width:0;background:#07101d;border:1px solid #1f334d;border-radius:9px;padding:5px}
+    .shot img{display:block;width:100%;height:360px;object-fit:contain;border-radius:6px;background:#02060b}
+    .shot-meta{margin-top:5px;color:#8398b1;font-size:9px;overflow-wrap:anywhere}
+    .include{display:flex;align-items:center;gap:6px;color:#dce8f6;font-size:10px;font-weight:750;white-space:nowrap;text-transform:none;letter-spacing:0}
+    .empty{grid-column:1/-1;padding:38px;text-align:center;color:#7f93ad;border:1px dashed #314966;border-radius:14px}
     .error{color:#ff9aa3}
-    .checkpoint{color:#96abc4;font-size:11px}
+    .diag{margin-top:12px;border:1px solid #263a57;border-radius:11px;background:#0a1626}
+    .diag summary{cursor:pointer;padding:10px 12px;color:#9eb2ca;font-size:11px;font-weight:800}
+    .diag-body{padding:0 12px 12px;color:#8298b1;font-size:10px;white-space:pre-wrap}
+    .print-header{display:none}
+    @media(max-width:1000px){.cards{grid-template-columns:1fr}.summary{grid-template-columns:repeat(3,1fr)}}
     @media(max-width:800px){
-      .shell{padding:16px}
+      .shell{padding:14px}
       .controls{grid-template-columns:1fr 1fr}
       .summary{grid-template-columns:1fr 1fr}
       .top{flex-direction:column}
+      .shot img{height:300px}
     }
+    @page{size:landscape; margin:.28in}
     @media print{
       body{background:white;color:#111}
-      .no-print,.top .back,.notice,.controls,.toolbar{display:none!important}
+      .no-print,.top,.notice,.controls,.toolbar,.status,.checkpoint,.progressbar,.summary,.diag{display:none!important}
       .shell{max-width:none;padding:0}
-      .summary{display:none}
-      .review-card{break-inside:avoid;background:white;border:1px solid #bbb;margin:0 0 12px}
+      .print-header{display:block!important;height:.38in;margin:0 0 .06in;font-size:10px;color:#333}
+      .print-header h1{display:inline;font-size:15px;margin:0 10px 0 0}
+      .print-header p{display:inline;margin:0 8px 0 0}
+      .cards{display:block}
+      .review-card{height:7.55in;page-break-after:always;break-after:page;break-inside:avoid;background:white;border:1px solid #bbb;border-radius:8px;margin:0;overflow:hidden}
+      .review-card:last-child{page-break-after:auto;break-after:auto}
       .review-card.not-selected{display:none!important}
-      .card-head{border-bottom:1px solid #ddd}
-      .card-title{color:#111}
-      .meta,.message,.shot-meta{color:#444}
-      .tag{border:1px solid #bbb;color:#222;background:#eee!important}
-      .shot{border:0;padding:0;background:white}
-      .shot img{max-height:none;background:white}
-      .print-header{display:block!important;margin-bottom:14px}
+      .card-head{height:.52in;padding:.08in .12in;border-bottom:1px solid #ddd}
+      .card-title{color:#111;font-size:11px}
+      .meta{color:#555;font-size:8px}
+      .tag{font-size:7px;border:1px solid #bbb;color:#222;background:#eee!important}
+      .include{display:none!important}
+      .card-body{height:calc(7.55in - .52in);padding:.08in}
+      .message{display:none}
+      .images{height:100%;display:flex;gap:.08in;align-items:center;justify-content:center}
+      .shot{height:100%;border:0;padding:0;background:white;display:flex;align-items:center;justify-content:center;flex-direction:column}
+      .shot img{width:auto;max-width:100%;height:auto;max-height:6.82in;object-fit:contain;background:white;border-radius:0}
+      .shot-meta{display:none}
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
 <body>
   <div class="shell">
     <div class="top no-print">
       <div>
         <h1>Discord Result Review</h1>
-        <div class="muted">Manual, read-only pulls from the approved AVENGERS result channels.</div>
+        <div class="muted">Manual pulls only. Space Race uses the spaceship/header visual signature to reject unrelated images before review.</div>
       </div>
       <a class="back" href="/">← Back to Stat Center</a>
     </div>
 
-    <div class="print-header" style="display:none">
+    <div class="print-header">
       <h1>AVENGERS Discord Review Set</h1>
       <p id="printMeta"></p>
-      <p>Review only. Nothing in this document has been imported into the Stat Center.</p>
+      <p>Review only — nothing imported.</p>
     </div>
 
     <div class="notice no-print">
-      <strong>Nothing is imported from this page.</strong>
-      Pull a channel only when you want to review it. Progress/preliminary screenshots may still appear here so they can be visually checked; screenshots whose Discord message text contains phrases such as “Preliminary Results” or “still ongoing” are highlighted automatically.
+      <strong>Space Race filtering is now visual.</strong>
+      The page first looks for the distinctive dark-blue <strong>Space Race spaceship/header</strong>. Posts without that visual signature are discarded. It then checks likely Space Race screenshots for “Preliminary / ongoing” text and excludes those from the review set.
     </div>
 
     <div class="controls no-print">
@@ -114,34 +133,41 @@
         </select>
       </label>
       <label>Messages to scan
-        <input id="maxMessages" type="number" min="1" max="500" value="100">
+        <input id="maxMessages" type="number" min="1" max="500" value="500">
       </label>
-      <button class="btn primary" id="pullRecent">Pull Recent</button>
-      <button class="btn" id="pullNew">Pull New Since Checkpoint</button>
+      <button class="btn primary" id="pullRecent">Pull + Filter</button>
+      <button class="btn" id="pullNew">Pull New + Filter</button>
     </div>
 
     <div class="toolbar no-print">
       <button class="btn" id="selectAll" disabled>Select All</button>
       <button class="btn" id="selectNone" disabled>Select None</button>
-      <button class="btn" id="printSelected" disabled>Print Selected for ChatGPT</button>
+      <button class="btn" id="printSelected" disabled>Print Compact Review PDF</button>
       <div class="spacer"></div>
       <button class="btn" id="saveCheckpoint" disabled>Save Newest as Checkpoint</button>
       <button class="btn" id="clearCheckpoint">Clear Checkpoint</button>
     </div>
 
     <div class="status no-print" id="status">Choose a channel and pull when you are ready.</div>
+    <div class="progressbar no-print" id="progress"><div></div></div>
     <div class="checkpoint no-print" id="checkpoint"></div>
 
     <div class="summary" id="summary" hidden>
       <div class="kpi"><span>Messages Scanned</span><strong id="scanned">0</strong></div>
-      <div class="kpi"><span>Image Posts</span><strong id="posts">0</strong></div>
-      <div class="kpi"><span>Images</span><strong id="images">0</strong></div>
-      <div class="kpi"><span>Message-text Flags</span><strong id="flags">0</strong></div>
+      <div class="kpi"><span>Image Posts Found</span><strong id="rawPosts">0</strong></div>
+      <div class="kpi"><span>Space Results Kept</span><strong id="kept">0</strong></div>
+      <div class="kpi"><span>Unrelated Rejected</span><strong id="rejected">0</strong></div>
+      <div class="kpi"><span>Progress Rejected</span><strong id="progressRejected">0</strong></div>
     </div>
 
     <div class="cards" id="cards">
       <div class="empty">No Discord results have been pulled in this browser session.</div>
     </div>
+
+    <details class="diag no-print" id="diagnostics" hidden>
+      <summary>Detection diagnostics</summary>
+      <div class="diag-body" id="diagBody"></div>
+    </details>
   </div>
 
 <script>
@@ -151,7 +177,9 @@
   const status=$('#status');
   const cards=$('#cards');
   const summary=$('#summary');
+  const progress=$('#progress');
   let current=null;
+  let filteredPosts=[];
 
   const labels={
     space:'Space Race',piggy:'Piggy Race',kraken:'Kraken',av2:'AV-2 — All Events',
@@ -176,6 +204,13 @@
   function setBusy(on,msg){
     $('#pullRecent').disabled=on;$('#pullNew').disabled=on;
     if(msg)status.textContent=msg;
+    progress.style.display=on?'block':'none';
+    if(!on)progress.firstElementChild.style.width='0%';
+  }
+  function setProgress(frac,msg){
+    progress.style.display='block';
+    progress.firstElementChild.style.width=Math.max(0,Math.min(100,frac*100))+'%';
+    if(msg)status.textContent=msg;
   }
   function setButtons(on){
     ['selectAll','selectNone','printSelected','saveCheckpoint'].forEach(id=>$('#'+id).disabled=!on);
@@ -188,25 +223,236 @@
       const checked=card.querySelector('.include input')?.checked!==false;
       card.classList.toggle('not-selected',!checked);
     });
-    if(current) status.textContent=
-      selectedCount()+' screenshot post(s) selected for the printable review set. Nothing has been imported.';
+    if(filteredPosts.length) status.textContent=
+      selectedCount()+' final result post(s) selected. Nothing has been imported.';
+  }
+
+  function loadImg(url){
+    return new Promise((resolve,reject)=>{
+      const img=new Image();
+      img.crossOrigin='anonymous';
+      img.onload=()=>resolve(img);
+      img.onerror=reject;
+      img.src=url;
+    });
+  }
+
+  function regionStats(img,x0,y0,x1,y1){
+    const c=document.createElement('canvas');
+    c.width=96;c.height=96;
+    const ctx=c.getContext('2d',{willReadFrequently:true});
+    ctx.drawImage(
+      img,
+      Math.floor(img.naturalWidth*x0),Math.floor(img.naturalHeight*y0),
+      Math.max(1,Math.floor(img.naturalWidth*(x1-x0))),Math.max(1,Math.floor(img.naturalHeight*(y1-y0))),
+      0,0,c.width,c.height
+    );
+    const data=ctx.getImageData(0,0,c.width,c.height).data;
+    let cyan=0,white=0,dark=0,orange=0,navy=0,n=0;
+    for(let i=0;i<data.length;i+=4){
+      const r=data[i],g=data[i+1],b=data[i+2];
+      n++;
+      if(b>150 && g>130 && r<120 && g-r>30 && b-r>50)cyan++;
+      if(r>180 && g>180 && b>180)white++;
+      if(r<80 && g<100 && b<150)dark++;
+      if(r>150 && g>50 && g<190 && b<120 && r-b>70)orange++;
+      if(r<90 && g<110 && b>80 && b<180)navy++;
+    }
+    return {cyan:cyan/n,white:white/n,dark:dark/n,orange:orange/n,navy:navy/n};
+  }
+
+  async function spaceVisualDetect(att){
+    if((att.width||0)<550 || (att.height||0)<550){
+      return {match:false,score:0,reason:'too small'};
+    }
+    try{
+      const img=await loadImg(att.proxyUrl||att.url);
+      const left=regionStats(img,0,0,.36,.30);
+      const mid=regionStats(img,.28,0,.68,.32);
+
+      // Tuned from actual accepted/rejected images in the first Space review set.
+      // It keys on the dark navy banner plus cyan/white SPACE RACE logo and light/orange ship.
+      const classic =
+        left.dark>.62 &&
+        left.cyan>.014 &&
+        (left.white>.035 || mid.white>.075) &&
+        mid.navy>.12 &&
+        mid.cyan<.24;
+
+      const topCropped =
+        left.white>.14 &&
+        left.cyan>.018 &&
+        mid.white>.14 &&
+        mid.navy>.10 &&
+        mid.cyan<.20;
+
+      const croppedHeader =
+        left.dark>.62 &&
+        left.cyan>.045 &&
+        mid.navy>.25 &&
+        mid.white>.065;
+
+      const match=classic||topCropped||croppedHeader;
+      const score=
+        (left.dark*.22)+(Math.min(left.cyan,.10)*2.1)+(Math.min(left.white,.30)*.9)+
+        (Math.min(mid.white,.50)*.75)+(Math.min(mid.navy,.45)*.45)-
+        (Math.max(0,mid.cyan-.20)*2.0);
+
+      return {match,score,left,mid,reason:match?'space banner/ship signature':'no space banner/ship signature'};
+    }catch(e){
+      return {match:false,score:0,reason:'image could not be analyzed'};
+    }
+  }
+
+  function sameScreenshotFamily(a,b){
+    if(!a||!b)return false;
+    const aw=Number(a.width)||0, ah=Number(a.height)||0, bw=Number(b.width)||0, bh=Number(b.height)||0;
+    if(!aw||!ah||!bw||!bh)return false;
+    const ar1=aw/ah,ar2=bw/bh;
+    return Math.abs(ar1-ar2)<.035 && Math.abs(aw-bw)/Math.max(aw,bw)<.15;
+  }
+
+  async function makeOcrCanvas(att){
+    const img=await loadImg(att.proxyUrl||att.url);
+    const cropH=Math.max(1,Math.floor(img.naturalHeight*.43));
+    const outW=Math.min(760,img.naturalWidth);
+    const outH=Math.max(1,Math.round(cropH*(outW/img.naturalWidth)));
+    const c=document.createElement('canvas');
+    c.width=outW;c.height=outH;
+    c.getContext('2d').drawImage(img,0,0,img.naturalWidth,cropH,0,0,outW,outH);
+    return c;
+  }
+
+  async function ocrProgress(worker,att){
+    if(!worker)return {progress:false,text:'',failed:true};
+    try{
+      const c=await makeOcrCanvas(att);
+      const result=await worker.recognize(c);
+      const text=String(result?.data?.text||'').replace(/\s+/g,' ').trim();
+      const compact=text.toUpperCase().replace(/[^A-Z]/g,'');
+      const progressFlag=
+        compact.includes('PRELIMINARY') ||
+        compact.includes('STILLONGOING') ||
+        compact.includes('ONGOING') ||
+        compact.includes('INPROGRESS') ||
+        compact.includes('CURRENTSTANDINGS') ||
+        compact.includes('NOTFINAL');
+      return {progress:progressFlag,text,failed:false};
+    }catch(e){
+      return {progress:false,text:'',failed:true};
+    }
+  }
+
+  async function filterSpace(data){
+    const raw=data.candidates||[];
+    const diagnostics=[];
+    const visual=[];
+    let checked=0;
+    const total=Math.max(1,raw.reduce((n,p)=>n+(p.attachments?.length||0),0));
+
+    for(const post of raw){
+      let matched=null;
+      const tests=[];
+      for(const att of (post.attachments||[])){
+        const result=await spaceVisualDetect(att);
+        tests.push({att,result});
+        checked++;
+        setProgress(Math.min(.70,checked/total*.70),'Finding Space Race spaceship/header… '+checked+' / '+total+' images');
+        if(result.match && (!matched || result.score>matched.result.score))matched={att,result};
+      }
+
+      if(matched){
+        const keep=(post.attachments||[]).filter(a=>a.id===matched.att.id || sameScreenshotFamily(a,matched.att));
+        visual.push({...post,attachments:keep.length?keep:[matched.att],_visual:matched.result});
+      }else{
+        diagnostics.push({
+          messageId:post.messageId,
+          result:'unrelated',
+          files:tests.map(x=>x.att.filename),
+          bestScore:Math.max(0,...tests.map(x=>x.result.score||0))
+        });
+      }
+    }
+
+    let worker=null;
+    try{
+      if(window.Tesseract){
+        setProgress(.73,'Checking likely Space Race screenshots for preliminary/ongoing text…');
+        worker=await Tesseract.createWorker('eng',1,{
+          logger:m=>{
+            if(m.status==='recognizing text' && typeof m.progress==='number'){
+              setProgress(.73+(m.progress*.24),'Checking for preliminary / ongoing screenshots…');
+            }
+          }
+        });
+      }
+    }catch(e){
+      diagnostics.push({result:'OCR unavailable',detail:String(e?.message||e)});
+      worker=null;
+    }
+
+    const finals=[];
+    let progressRejected=0;
+    for(let i=0;i<visual.length;i++){
+      const post=visual[i];
+      const primary=post.attachments[0];
+      const ocr=await ocrProgress(worker,primary);
+      const messageFlag=Boolean(post.messageTextProgressHint);
+      const isProgress=messageFlag||ocr.progress;
+      if(isProgress){
+        progressRejected++;
+        diagnostics.push({
+          messageId:post.messageId,
+          result:'progress rejected',
+          discordMessageText:post.content||'',
+          ocr:ocr.text.slice(0,400)
+        });
+      }else{
+        finals.push({...post,_ocr:ocr});
+      }
+      setProgress(.74+((i+1)/Math.max(1,visual.length))*.24,'Final-result check '+(i+1)+' / '+visual.length);
+    }
+    if(worker)try{await worker.terminate();}catch{}
+
+    return {
+      posts:finals,
+      rejectedUnrelated:raw.length-visual.length,
+      progressRejected,
+      diagnostics
+    };
+  }
+
+  async function filterOther(data){
+    // Other event-specific visual recognizers will be added separately.
+    // Keep large screenshot-like images and leave them for manual selection.
+    const raw=data.candidates||[];
+    const posts=[];
+    let rejected=0;
+    for(const post of raw){
+      const atts=(post.attachments||[]).filter(a=>(a.width||0)>=550 && (a.height||0)>=550);
+      if(atts.length)posts.push({...post,attachments:atts});
+      else rejected++;
+    }
+    return {posts,rejectedUnrelated:rejected,progressRejected:0,diagnostics:[]};
   }
 
   async function pull(useCheckpoint){
-    const maxMessages=Math.max(1,Math.min(Number($('#maxMessages').value)||100,500));
+    const maxMessages=Math.max(1,Math.min(Number($('#maxMessages').value)||500,500));
     const body={channelKey:channel.value,maxMessages};
     if(useCheckpoint){
       const cp=getCheckpoint();
       if(!cp){
-        status.textContent='There is no saved checkpoint for this channel yet. Use Pull Recent first.';
+        status.textContent='There is no saved checkpoint for this channel yet. Use Pull + Filter first.';
         return;
       }
       body.afterMessageId=cp;
     }
 
-    setBusy(true,'Pulling Discord messages…');
+    setBusy(true,'Pulling Discord message metadata…');
     setButtons(false);
-    cards.innerHTML='<div class="empty">Loading screenshots…</div>';
+    cards.innerHTML='<div class="empty">Pulling and filtering screenshots…</div>';
+    summary.hidden=true;
+    $('#diagnostics').hidden=true;
 
     try{
       const r=await fetch('/api/discord/pull',{
@@ -219,13 +465,21 @@
       if(!r.ok)throw new Error(data.error+(data.detail?' — '+data.detail:''));
 
       current=data;
-      render(data);
-      setButtons(Boolean(data.candidates?.length));
-      status.textContent=data.candidates?.length
-        ? 'Pulled successfully. Visually inspect the screenshots before creating the review PDF.'
-        : 'Pull completed; no image posts matched this range.';
+      setProgress(.05,'Pulled '+(data.candidates?.length||0)+' image posts. Filtering…');
+
+      const filtered=channel.value==='space'
+        ? await filterSpace(data)
+        : await filterOther(data);
+
+      filteredPosts=filtered.posts;
+      render(data,filtered);
+      setButtons(Boolean(filteredPosts.length));
+      status.innerHTML=filteredPosts.length
+        ? '<strong>'+filteredPosts.length+'</strong> review post(s) kept. '+filtered.rejectedUnrelated+' unrelated post(s) rejected and '+filtered.progressRejected+' progress post(s) rejected.'
+        : 'Pull completed, but no final matching result posts were found.';
     }catch(e){
       current=null;
+      filteredPosts=[];
       summary.hidden=true;
       cards.innerHTML='<div class="empty error">'+esc(e.message||e)+'</div>';
       status.textContent='Pull failed.';
@@ -234,45 +488,52 @@
     }
   }
 
-  function render(data){
-    const list=data.candidates||[];
-    const imageCount=list.reduce((n,p)=>n+(p.attachments?.length||0),0);
-    const flagCount=list.filter(p=>p.messageTextProgressHint).length;
-
+  function render(data,filtered){
+    const list=filtered.posts||[];
     summary.hidden=false;
     $('#scanned').textContent=data.scanned||0;
-    $('#posts').textContent=list.length;
-    $('#images').textContent=imageCount;
-    $('#flags').textContent=flagCount;
+    $('#rawPosts').textContent=(data.candidates||[]).length;
+    $('#kept').textContent=list.length;
+    $('#rejected').textContent=filtered.rejectedUnrelated||0;
+    $('#progressRejected').textContent=filtered.progressRejected||0;
 
     $('#printMeta').textContent=
-      (labels[data.channelKey]||data.channelKey)+' • pulled '+new Date().toLocaleString()+
-      ' • '+list.length+' image posts';
+      (labels[data.channelKey]||data.channelKey)+' • '+list.length+' final result posts • '+new Date().toLocaleString();
+
+    const diag=$('#diagnostics');
+    const diagBody=$('#diagBody');
+    if(filtered.diagnostics?.length){
+      diag.hidden=false;
+      diagBody.textContent=filtered.diagnostics.map(x=>JSON.stringify(x,null,2)).join('\n\n');
+    }else{
+      diag.hidden=true;
+      diagBody.textContent='';
+    }
 
     if(!list.length){
-      cards.innerHTML='<div class="empty">No screenshots found in this pull.</div>';
+      cards.innerHTML='<div class="empty">No final matching screenshots found in this pull.</div>';
       return;
     }
 
     cards.innerHTML=list.map((p,idx)=>{
       const author=p.author?.globalName||p.author?.username||'Unknown';
-      const flagged=Boolean(p.messageTextProgressHint);
+      const ocrFailed=Boolean(p._ocr?.failed);
       const imgs=(p.attachments||[]).map((a,i)=>`
         <div class="shot">
           <img src="${esc(a.proxyUrl||a.url)}" alt="Discord result screenshot ${idx+1}-${i+1}" loading="lazy">
-          <div class="shot-meta">${esc(a.filename||'image')} • ${a.width||'?'}×${a.height||'?'} • attachment ${esc(a.id)}</div>
+          <div class="shot-meta">${esc(a.filename||'image')} • ${a.width||'?'}×${a.height||'?'}</div>
         </div>
       `).join('');
 
       return `
-        <article class="review-card ${flagged?'flagged':''}">
+        <article class="review-card">
           <div class="card-head">
             <div class="card-head-main">
               <div class="card-title">Post ${idx+1} • ${esc(author)}</div>
               <div class="meta">${esc(niceDate(p.timestamp))} • Message ${esc(p.messageId)}</div>
             </div>
-            <span class="tag ${flagged?'warn':'pending'}">${flagged?'MESSAGE TEXT FLAGGED':'VISUAL REVIEW'}</span>
-            <label class="include no-print"><input type="checkbox" checked> Include in print</label>
+            <span class="tag ${ocrFailed?'check':'final'}">${ocrFailed?'CHECK FINAL':'FINAL CANDIDATE'}</span>
+            <label class="include no-print"><input type="checkbox" checked> Include</label>
           </div>
           <div class="card-body">
             <div class="message">${p.content?esc(p.content):'<em>No Discord message text</em>'}</div>
@@ -296,20 +557,23 @@
   });
   $('#printSelected').addEventListener('click',()=>{
     syncSelection();
-    if(!selectedCount()){status.textContent='Select at least one screenshot post first.';return;}
+    if(!selectedCount()){status.textContent='Select at least one result post first.';return;}
     window.print();
   });
   $('#saveCheckpoint').addEventListener('click',()=>{
     if(!current?.newestScannedMessageId)return;
     localStorage.setItem(checkpointKey(),current.newestScannedMessageId);
     updateCheckpoint();
-    status.textContent='Checkpoint saved. Future “Pull New Since Checkpoint” requests will stop there.';
+    status.textContent='Checkpoint saved. Future “Pull New + Filter” requests will stop there.';
   });
   $('#clearCheckpoint').addEventListener('click',()=>{
     localStorage.removeItem(checkpointKey());updateCheckpoint();
     status.textContent='Checkpoint cleared for '+labels[channel.value]+'.';
   });
-  channel.addEventListener('change',updateCheckpoint);
+  channel.addEventListener('change',()=>{
+    updateCheckpoint();
+    $('#maxMessages').value=channel.value==='space'?'500':'250';
+  });
   updateCheckpoint();
 })();
 </script>

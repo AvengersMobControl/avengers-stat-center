@@ -222,6 +222,7 @@ tbody tr:last-child td{border-bottom:0}
 
       <nav class="nav">
         <button class="nav-btn active" data-page="overview"><span>⌂</span> Overview</button>
+        <button class="nav-btn" data-page="rosters"><span>☷</span> Rosters</button>
         <button class="nav-btn" data-page="piggy"><span>🐷</span> Piggy Race</button>
         <button class="nav-btn" data-page="space"><span>🚀</span> Space Race</button>
         <button class="nav-btn" data-page="kraken"><span>🐙</span> Kraken</button>
@@ -258,6 +259,10 @@ tbody tr:last-child td{border-bottom:0}
 
       <section class="page active" id="page-overview">
         <div id="overviewContent"></div>
+      </section>
+
+      <section class="page" id="page-rosters">
+        <div id="rostersContent"></div>
       </section>
 
       <section class="page" id="page-piggy">
@@ -349,11 +354,13 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     piggyPBEvent: D.meta.latestPiggy,
     spacePBSort: 'newpb',
     spacePBEvent: D.meta.latestSpace,
+    rosterView: 'active',
     playerSearch: ''
   };
 
   const PAGE_META = {
     overview:['Overview','Clan performance at a glance'],
+    rosters:['Rosters','Current AVENGERS and AV-2 membership with tracked sparks'],
     piggy:['Piggy Race','Overall, event, recent-form and personal-best views'],
     space:['Space Race','Lightyears, event results and recent-form views'],
     kraken:['Kraken','Monthly damage, personal bests and current-roster performance'],
@@ -977,6 +984,53 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     bindPlayerButtons($('#playersContent'));
   }
 
+  function renderRosters(){
+    const root=$('#rostersContent');
+    const target=state.rosterView==='av2'?'av2':'active';
+    const label=target==='active'?'AVENGERS':'AV-2';
+    const rows=(D.members||[])
+      .filter(m=>statusNorm(m.status)===target)
+      .slice()
+      .sort((a,b)=>(Number(b.totalSparks)||0)-(Number(a.totalSparks)||0));
+    const totalSparks=rows.reduce((s,r)=>s+(Number(r.totalSparks)||0),0);
+    const avgSparks=rows.length?totalSparks/rows.length:0;
+    const body=rows.map((r,i)=>`<tr>
+      <td class="num">${i+1}</td>
+      <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></div></td>
+      <td>${statusBadge(r.status)}</td>
+      <td class="num roster-sparks">${fmtNum(r.totalSparks,0)}</td>
+      <td class="num">${fmtNum(r.ratingTotal,2)}</td>
+      <td class="num">${fmtNum(r.piggyPB)}</td>
+      <td class="num">${fmtB(r.spacePB)}</td>
+      <td class="num">${fmtNum(r.krakenPB,1)}</td>
+      <td class="num">${fmtNum(r.eventsPlayed)}</td>
+    </tr>`).join('');
+
+    root.innerHTML=`
+      <div class="section-toolbar roster-toolbar">
+        <div class="segmented" id="rosterTabs">
+          <button data-roster="active" class="${target==='active'?'active':''}">AVENGERS</button>
+          <button data-roster="av2" class="${target==='av2'?'active':''}">AV-2</button>
+        </div>
+        <div class="small-muted">Current roster status • sorted by tracked total sparks</div>
+      </div>
+      <div class="roster-summary-grid">
+        <div class="kpi"><div class="kpi-label">${label} Members</div><div class="kpi-value">${fmtNum(rows.length)}</div><div class="kpi-note">current roster</div></div>
+        <div class="kpi"><div class="kpi-label">Total Sparks Earned</div><div class="kpi-value">${fmtNum(totalSparks,0)}</div><div class="kpi-note">all tracked event sources</div></div>
+        <div class="kpi"><div class="kpi-label">Avg Sparks / Member</div><div class="kpi-value">${fmtNum(avgSparks,0)}</div><div class="kpi-note">current ${label} roster</div></div>
+      </div>
+      ${tableShell(`${label} Current Roster`,`${rows.length} members • total sparks includes tracked Piggy, Space and Kraken event rewards`,
+        [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Total Sparks',num:true},{label:'Rating',num:true},{label:'Piggy PB',num:true},{label:'Space PB',num:true},{label:'Kraken PB',num:true},{label:'Events',num:true}],body||`<tr><td colspan="9" class="empty">No roster members found.</td></tr>`)}
+    `;
+    $('#rosterTabs',root)?.addEventListener('click',e=>{
+      const b=e.target.closest('button[data-roster]');
+      if(!b)return;
+      state.rosterView=b.dataset.roster;
+      renderRosters();
+    });
+    bindPlayerButtons(root);
+  }
+
   function renderEventTotals(){
     const root=$('#eventTotalsContent');
     const eventTotals=(kind,key)=>{
@@ -1139,6 +1193,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     $$('.page').forEach(p=>p.classList.toggle('active',p.id===`page-${state.page}`));
     $$('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===state.page));
     if(state.page==='overview') renderOverview();
+    if(state.page==='rosters') renderRosters();
     if(state.page==='piggy') renderPiggy();
     if(state.page==='space') renderSpace();
     if(state.page==='kraken' && window.renderKraken) window.renderKraken();
@@ -1182,6 +1237,10 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       .mini-rank-pos{width:32px;color:#9db1c8;font-weight:850}
       .mini-rank-meta{color:#8195ae;font-size:11px}
       .mini-rank-score{font-weight:900}
+      .roster-summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}
+      .roster-toolbar{margin-bottom:14px}
+      .roster-sparks{font-weight:900;color:#dff7ff}
+      #page-rosters .table-wrap{max-height:calc(100vh - 320px)}
       .event-totals-grid{display:grid;grid-template-columns:1fr;gap:16px}
       #page-eventTotals .table-wrap{max-height:none}
       #page-eventTotals .table-card{overflow:visible}
@@ -1189,6 +1248,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       @media(max-width:980px){
         .space-pb-toolbar{align-items:flex-start;flex-direction:column}
         .pb-toolbar-controls{justify-content:flex-start;width:100%}
+        .roster-summary-grid{grid-template-columns:1fr}
         .tabular-grid{grid-template-columns:1fr}
       }
     `;

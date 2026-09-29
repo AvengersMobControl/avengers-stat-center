@@ -37,6 +37,30 @@
       {group:4,rank:8,name:'AV-no',username:'AV-no',yearsB:9.8,stars:40974,sparks:4097,share:.02}
     ],
 
+    '2026-05-20':[
+      {group:1,rank:1,name:'AV-HarryBallsagna',username:'AV-HarryBallsa…',yearsB:82.9},
+      {group:1,rank:2,name:'AV-UANGELES',username:'AV-UANGELES',yearsB:47.0},
+      {group:1,rank:3,name:'AV-TwirpSlayer',username:'AV-TwirpSlayer',yearsB:20.4},
+      {group:1,rank:4,name:'AV-hoops-SCT',username:'AV-hoops-SCT',yearsB:18.7},
+      {group:1,rank:5,name:'AV-Adigarian',username:'AV-Adigarian',yearsB:18.2},
+      {group:1,rank:6,name:'AV-CowPoke',username:'AV-CowPoke',yearsB:16.8},
+
+      {group:2,rank:1,name:'AV-Jess-PT',username:'AV-Jess-PT',yearsB:100.0},
+      {group:2,rank:2,name:'AV-I.S.O',username:'AV-I.S.O',yearsB:30.5},
+      {group:2,rank:3,name:'AV-KitKat',username:'AV-KitKat',yearsB:21.3},
+      {group:2,rank:4,name:'AV#Rafa#Tun',username:'AV#Rafa#Tun',yearsB:19.2},
+      {group:2,rank:5,name:'AV-RkHendrix',username:'AV-RkHendrix-…',yearsB:14.6},
+      {group:2,rank:6,name:'AV-jacko',username:'AV-jacko',yearsB:12.2},
+      {group:2,rank:7,name:'AV-CC',username:'AV-CC',yearsB:5.4},
+      {group:2,rank:8,name:'AV-MONSTER',username:'AV-MONSTER.',yearsB:3.8},
+      {group:2,rank:9,name:'AV-7-STAR',username:'AV-7-STAR',yearsB:0.280},
+
+      {group:3,rank:4,name:'AV-EventHorizon',username:'AV-EventHorizon',yearsB:33.5},
+      {group:3,rank:5,name:'AV-BaBaVooS',username:'AV-BaBaVooS…',yearsB:24.8},
+      {group:3,rank:7,name:'AV-HarveySpecter',username:'AV-HarveySpec…',yearsB:21.1},
+      {group:3,rank:9,name:'AV-DrDetroit',username:'AV-DrDetroit-U…',yearsB:5.5}
+    ],
+
     '2026-05-27':[
       {group:1,rank:1,name:'AV-UANGELES',username:'AV-UANGELES',yearsB:42.3},
       {group:1,rank:2,name:'AV-Jess-PT',username:'AV-Jess-PT',yearsB:42.3},
@@ -214,6 +238,7 @@
 
   D.space.historicalSourceNotes=Object.assign({},D.space.historicalSourceNotes||{},{
     '2026-07-09':'Recovered from Discord final-result screenshots; 27 AVENGERS rows.',
+    '2026-05-20':'Recovered from Discord final-result screenshots; 19 clearly readable AVENGERS rows across three lobbies. Ambiguous names in the mixed lobby were omitted.',
     '2026-05-27':'Recovered from Discord final-result screenshots; 17 scored AVENGERS rows across two lobbies. One minimum-not-reached row omitted.',
     '2026-06-07':'Recovered from Discord final-result screenshots; 21 clearly readable AVENGERS rows across three lobbies. Cropped lower rows omitted.',
     '2026-06-19':'Recovered from Discord final-result screenshots; 44 AVENGERS rows.',

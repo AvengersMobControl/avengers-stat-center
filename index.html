@@ -74,6 +74,8 @@ select:focus,input:focus{border-color:var(--purple)}
 .chart-area{fill:url(#areaGradient);opacity:.35}
 .chart-dot{fill:#fff;stroke:var(--cyan);stroke-width:2}
 .chart-label{fill:#8297b1;font-size:10px}
+.chart-y-label{fill:#7186a3;font-size:9px}
+.chart-value-label{fill:#dceeff;font-size:9px;font-weight:800;paint-order:stroke;stroke:#0b1728;stroke-width:3px;stroke-linejoin:round}
 .dual-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .mini-rank{display:grid;gap:8px}
 .rank-row{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #1e324c}
@@ -224,6 +226,7 @@ tbody tr:last-child td{border-bottom:0}
         <button class="nav-btn" data-page="space"><span>🚀</span> Space Race</button>
         <button class="nav-btn" data-page="kraken"><span>🐙</span> Kraken</button>
         <button class="nav-btn" data-page="trends"><span>↗</span> Trends</button>
+        <button class="nav-btn" data-page="eventTotals"><span>Σ</span> Event Totals</button>
         <button class="nav-btn" data-page="ratings"><span>★</span> Player Ratings</button>
         <button class="nav-btn" data-page="players"><span>◉</span> Players</button>
         <button class="nav-btn" data-page="records"><span>♛</span> Records</button>
@@ -293,6 +296,10 @@ tbody tr:last-child td{border-bottom:0}
         <div id="trendsContent"></div>
       </section>
 
+      <section class="page" id="page-eventTotals">
+        <div id="eventTotalsContent"></div>
+      </section>
+
       <section class="page" id="page-ratings">
         <div id="ratingsContent"></div>
       </section>
@@ -351,6 +358,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     space:['Space Race','Lightyears, event results and recent-form views'],
     kraken:['Kraken','Monthly damage, personal bests and current-roster performance'],
     trends:['Trends','Clan trends, recent form and player comparisons'],
+    eventTotals:['Event Totals','Historical totals for Piggy, Space and Kraken'],
     ratings:['Player Ratings','Combined PB and average performance rating'],
     players:['Players','Individual performance history and profiles'],
     records:['Records','Current AVENGERS benchmark board']
@@ -415,6 +423,34 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   }
   const MEMBERS = memberMap();
 
+  function currentStatusFor(name,fallback=''){
+    return MEMBERS.get(name)?.status || fallback || 'Inactive';
+  }
+  function eventStatusForRow(r){
+    const clan=String(r?.clan||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+    if(clan==='avengers') return 'Active';
+    if(clan==='av2') return 'AV2';
+    const raw=r?.status||'';
+    const n=statusNorm(raw);
+    if(n==='active'||n==='av2') return raw;
+    return currentStatusFor(r?.name,raw);
+  }
+  function allowedCurrentRow(r){
+    return allowedStatus(currentStatusFor(r?.name,r?.status));
+  }
+  function allowedEventMetricRow(r){
+    const s=statusNorm(eventStatusForRow(r));
+    if(state.status==='all') return true;
+    if(state.status==='active') return s==='active';
+    if(state.status==='av2') return s==='av2';
+    return s==='active'||s==='av2';
+  }
+  function historyAverage(kind,name,key,startDate='2026-01-01'){
+    const hist=(D[kind]?.history?.[name]||[])
+      .filter(x=>String(x.date||'')>=startDate && (Number(x[key])||0)>0);
+    return hist.length ? hist.reduce((sum,x)=>sum+(Number(x[key])||0),0)/hist.length : 0;
+  }
+
   function maxOf(arr,key){
     return arr.reduce((a,b)=>(Number(b[key])||0)>(Number(a?.[key])||0)?b:a,null);
   }
@@ -422,38 +458,38 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
 
   function lineChart(data, key='avg', formatter=fmtNum){
     if(!data || !data.length) return `<div class="empty">No trend data yet.</div>`;
-    const w=700,h=210,pad=26;
+    const w=700,h=230,padL=58,padR=18,padT=28,padB=30;
     const vals=data.map(d=>Number(d[key])||0);
-    const min=Math.min(...vals), max=Math.max(...vals);
+    const min=0, max=Math.max(...vals,1);
     const span=(max-min)||1;
     const pts=data.map((d,i)=>{
-      const x=pad + (i/(Math.max(data.length-1,1)))*(w-pad*2);
-      const y=h-pad - ((Number(d[key])-min)/span)*(h-pad*2);
+      const x=padL + (i/(Math.max(data.length-1,1)))*(w-padL-padR);
+      const y=padT + (1-((Number(d[key])-min)/span))*(h-padT-padB);
       return {x,y,d};
     });
     const path=pts.map((p,i)=>(i?'L':'M')+p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ');
-    const area=path+` L ${pts[pts.length-1].x.toFixed(1)},${h-pad} L ${pts[0].x.toFixed(1)},${h-pad} Z`;
-    const labels=pts.filter((_,i)=>i===0||i===pts.length-1||i===Math.floor((pts.length-1)/2));
+    const area=path+` L ${pts[pts.length-1].x.toFixed(1)},${h-padB} L ${pts[0].x.toFixed(1)},${h-padB} Z`;
+    const dateLabels=pts.filter((_,i)=>i===0||i===pts.length-1||i===Math.floor((pts.length-1)/2));
+    const grid=[1,.5,0].map(frac=>({y:padT+(1-frac)*(h-padT-padB),value:max*frac}));
     return `<div class="chart-wrap">
       <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-label="trend chart">
         <defs><linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#43d7ff"/><stop offset="100%" stop-color="#43d7ff" stop-opacity="0"/></linearGradient></defs>
-        <line class="chart-grid-line" x1="${pad}" y1="${pad}" x2="${w-pad}" y2="${pad}"/>
-        <line class="chart-grid-line" x1="${pad}" y1="${h/2}" x2="${w-pad}" y2="${h/2}"/>
-        <line class="chart-grid-line" x1="${pad}" y1="${h-pad}" x2="${w-pad}" y2="${h-pad}"/>
+        ${grid.map(g=>`<line class="chart-grid-line" x1="${padL}" y1="${g.y}" x2="${w-padR}" y2="${g.y}"/><text class="chart-y-label" x="${padL-7}" y="${g.y+4}" text-anchor="end">${escapeHtml(formatter(g.value))}</text>`).join('')}
         <path class="chart-area" d="${area}"></path>
         <path class="chart-line" d="${path}"></path>
-        ${pts.map(p=>`<circle class="chart-dot" cx="${p.x}" cy="${p.y}" r="4"><title>${fmtDate(p.d.date)}: ${formatter(p.d[key])}</title></circle>`).join('')}
-        ${labels.map(p=>`<text class="chart-label" x="${p.x}" y="${h-5}" text-anchor="${p===pts[0]?'start':p===pts[pts.length-1]?'end':'middle'}">${fmtDate(p.d.date).replace(', 2026','')}</text>`).join('')}
+        ${pts.map((p,i)=>`<circle class="chart-dot" cx="${p.x}" cy="${p.y}" r="4"><title>${fmtDate(p.d.date)}: ${formatter(p.d[key])}</title></circle><text class="chart-value-label" x="${p.x}" y="${Math.max(12,p.y-(i%2?9:7))}" text-anchor="middle">${escapeHtml(formatter(p.d[key]))}</text>`).join('')}
+        ${dateLabels.map(p=>`<text class="chart-label" x="${p.x}" y="${h-5}" text-anchor="${p===pts[0]?'start':p===pts[pts.length-1]?'end':'middle'}">${fmtDate(p.d.date).replace(', 2026','')}</text>`).join('')}
       </svg></div>`;
   }
 
   function rankRows(rows, scoreKey, scoreFmt, metaFn=()=>'', count=5){
-    return `<div class="mini-rank">${rows.slice(0,count).map((r,i)=>`
-      <div class="rank-row">
-        <div class="rank-num">${i+1}</div>
-        <div><div class="rank-name">${escapeHtml(r.name)}</div><div class="rank-meta">${metaFn(r)}</div></div>
-        <div class="rank-score">${scoreFmt(r[scoreKey])}</div>
-      </div>`).join('')}</div>`;
+    const body=rows.slice(0,count).map((r,i)=>`<tr>
+      <td class="num mini-rank-pos">${i+1}</td>
+      <td><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></td>
+      <td class="mini-rank-meta">${metaFn(r)}</td>
+      <td class="num mini-rank-score">${scoreFmt(r[scoreKey])}</td>
+    </tr>`).join('');
+    return `<div class="mini-table-wrap"><table class="mini-table"><tbody>${body}</tbody></table></div>`;
   }
 
   function renderOverview(){
@@ -461,8 +497,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const active=D.members.filter(m=>statusNorm(m.status)==='active').length;
     const av2=D.members.filter(m=>statusNorm(m.status)==='av2').length;
     const topRating=maxOf(cm,'ratingTotal');
-    const latestPig=(D.piggy.events[D.meta.latestPiggy]||[]).filter(r=>allowedStatus(r.status));
-    const latestSpace=(D.space.events[D.meta.latestSpace]||[]).filter(r=>allowedStatus(r.status));
+    const latestPig=(D.piggy.events[D.meta.latestPiggy]||[]).filter(r=>r.name!=='Total'&&r.name!=='#N/A'&&allowedCurrentRow(r));
+    const latestSpace=(D.space.events[D.meta.latestSpace]||[]).filter(r=>r.name!=='Total'&&r.name!=='#N/A'&&allowedCurrentRow(r));
     const topPig=[...latestPig].sort((a,b)=>b.lines-a.lines);
     const topSp=[...latestSpace].sort((a,b)=>b.yearsB-a.yearsB);
     const pigRecord=maxOf(cm,'piggyPB');
@@ -472,7 +508,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const participantTrend=(kind,key)=>Object.keys(D[kind].events||{}).sort()
       .filter(date=>date>=D.meta.arenaStart)
       .map(date=>{
-        const rows=(D[kind].events[date]||[]).filter(r=>r && r.name!=='Total' && r.name!=='#N/A' && allowedStatus(r.status) && (Number(r[key])||0)>0);
+        const rows=(D[kind].events[date]||[]).filter(r=>r && r.name!=='Total' && r.name!=='#N/A' && allowedEventMetricRow(r) && (Number(r[key])||0)>0);
         const vals=rows.map(r=>Number(r[key])||0);
         return {date,avg:vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0,total:vals.reduce((a,b)=>a+b,0),players:vals.length};
       }).filter(x=>x.players>0);
@@ -651,53 +687,61 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const el=$('#piggyContent');
     const view=state.piggyView;
     if(view==='overall'){
-      const rows=[...piggyRowsForStatus()].sort((a,b)=>b.avgArena-a.avgArena);
-      const max=Math.max(...rows.map(r=>Number(r.avgArena)||0),1);
+      const rows=(D.piggy.overall||[]).filter(r=>allowedStatus(r.status)).map(r=>({
+        ...r,
+        avg2026:historyAverage('piggy',r.name,'lines','2026-01-01'),
+        avgArenaCalc:historyAverage('piggy',r.name,'lines',D.meta.arenaStart)
+      })).filter(r=>r.avg2026>0||r.avgArenaCalc>0).sort((a,b)=>b.avgArenaCalc-a.avgArenaCalc||b.avg2026-a.avg2026);
+      const max=Math.max(...rows.map(r=>Number(r.avgArenaCalc)||0),1);
       const body=rows.map((r,i)=>`<tr>
         <td class="num">${i+1}</td>
         <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></div></td>
         <td>${statusBadge(r.status)}</td>
-        <td>${barCell(r.avgArena,max,v=>fmtNum(v))}</td>
+        <td>${barCell(r.avgArenaCalc,max,v=>fmtNum(v))}</td>
+        <td class="num">${fmtNum(r.avg2026)}</td>
         <td class="num">${fmtNum(r.pb)}</td>
         <td class="num">${fmtNum(r.avgLast3)}</td>
         <td class="num">${fmtNum(r.avgStarsArena)}</td>
-        <td class="num">${fmtNum(r.avgSparksArena)}</td>
         <td class="num">${fmtNum(r.eventsPlayed)}</td>
       </tr>`).join('');
-      el.innerHTML=tableShell('Overall Piggy Performance','Sorted by average lines since Arena started Aug 1, 2026',
-        [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Avg Lines'},{label:'PB',num:true},{label:'Last 3',num:true},{label:'Avg Stars',num:true},{label:'Avg Sparks',num:true},{label:'Events',num:true}],body);
+      el.innerHTML=tableShell('Overall Piggy Performance','Sorted by Arena-era average; full-2026 average shown separately',
+        [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Arena Avg'},{label:'2026 Avg',num:true},{label:'PB',num:true},{label:'Last 3',num:true},{label:'Arena Avg Stars',num:true},{label:'Events',num:true}],body);
     } else if(view==='event'){
-      const rows=(D.piggy.events[state.piggyEvent]||[]).filter(r=>allowedStatus(r.status)).sort((a,b)=>a.rank-b.rank);
+      const rows=(D.piggy.events[state.piggyEvent]||[]).filter(r=>r.name!=='Total'&&r.name!=='#N/A'&&allowedCurrentRow(r)).sort((a,b)=>(Number(a.rank)||999)-(Number(b.rank)||999));
       const max=Math.max(...rows.map(r=>Number(r.lines)||0),1);
       const body=rows.map(r=>`<tr>
         <td class="num">${fmtNum(r.rank)}</td>
         <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></div></td>
-        <td>${statusBadge(r.status)}</td>
+        <td>${statusBadge(currentStatusFor(r.name,r.status))}</td>
         <td>${barCell(r.lines,max,v=>fmtNum(v))}</td>
         <td class="num">${fmtNum(r.stars)}</td>
         <td class="num">${fmtNum(r.sparks)}</td>
         <td class="num">${fmtPct(r.share)}</td>
       </tr>`).join('');
       el.innerHTML=tableShell(`Piggy Race — ${fmtDate(state.piggyEvent)}`,`${rows.length} players in current roster filter`,
-        [{label:'Rank',num:true},{label:'Member'},{label:'Status'},{label:'Lines'},{label:'Stars',num:true},{label:'Sparks',num:true},{label:'Share',num:true}],body||`<tr><td colspan="7" class="empty">No event data.</td></tr>`);
+        [{label:'Rank',num:true},{label:'Member'},{label:'Current Status'},{label:'Lines'},{label:'Stars',num:true},{label:'Sparks',num:true},{label:'Share',num:true}],body||`<tr><td colspan="7" class="empty">No event data.</td></tr>`);
     } else if(view==='last3'){
-      const rows=[...piggyRowsForStatus()].filter(r=>Number(r.avgLast3)>0).sort((a,b)=>b.avgLast3-a.avgLast3);
+      const rows=(D.piggy.overall||[]).filter(r=>allowedStatus(r.status)&&Number(r.avgLast3)>0).map(r=>({
+        ...r,
+        avg2026:historyAverage('piggy',r.name,'lines','2026-01-01'),
+        avgArenaCalc:historyAverage('piggy',r.name,'lines',D.meta.arenaStart)
+      })).sort((a,b)=>b.avgLast3-a.avgLast3);
       const max=Math.max(...rows.map(r=>Number(r.avgLast3)||0),1);
       const body=rows.map((r,i)=>{
-        const delta=(Number(r.avgLast3)||0)-(Number(r.avgArena)||0);
+        const delta=(Number(r.avgLast3)||0)-(Number(r.avgArenaCalc)||0);
         return `<tr>
           <td class="num">${i+1}</td>
           <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></div></td>
           <td>${statusBadge(r.status)}</td>
           <td>${barCell(r.avgLast3,max,v=>fmtNum(v))}</td>
-          <td class="num">${fmtNum(r.avgArena)}</td>
+          <td class="num">${fmtNum(r.avgArenaCalc)}</td>
+          <td class="num">${fmtNum(r.avg2026)}</td>
           <td class="num ${delta>=0?'positive':'negative'}">${delta>=0?'+':''}${fmtNum(delta)}</td>
           <td class="num">${fmtNum(r.pb)}</td>
-          <td class="num">${fmtNum(r.eventsPlayed)}</td>
         </tr>`;
       }).join('');
-      el.innerHTML=tableShell('Last Three Big Pigs','Sorted by average lines over each player’s last three logged Piggy events',
-        [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Last 3 Avg'},{label:'Arena Avg',num:true},{label:'Vs Avg',num:true},{label:'PB',num:true},{label:'Events',num:true}],body);
+      el.innerHTML=tableShell('Last Three Big Pigs','Recent form compared with both Arena-era and full-2026 averages',
+        [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Last 3 Avg'},{label:'Arena Avg',num:true},{label:'2026 Avg',num:true},{label:'Vs Arena',num:true},{label:'PB',num:true}],body);
     } else {
       const dates=Object.keys(D.piggy.events||{}).sort().reverse();
       if(!D.piggy.events?.[state.piggyPBEvent]) state.piggyPBEvent=dates[0]||D.meta.latestPiggy;
@@ -766,23 +810,27 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const el=$('#spaceContent');
     const view=state.spaceView;
     if(view==='overall'){
-      const rows=[...spaceRowsForStatus()].sort((a,b)=>b.avgYears-a.avgYears);
-      const max=Math.max(...rows.map(r=>Number(r.avgYears)||0),1);
+      const rows=(D.space.overall||[]).filter(r=>allowedStatus(r.status)).map(r=>({
+        ...r,
+        avg2026:historyAverage('space',r.name,'yearsB','2026-01-01'),
+        avgArenaCalc:historyAverage('space',r.name,'yearsB',D.meta.arenaStart)
+      })).filter(r=>r.avg2026>0||r.avgArenaCalc>0).sort((a,b)=>b.avgArenaCalc-a.avgArenaCalc||b.avg2026-a.avg2026);
+      const max=Math.max(...rows.map(r=>Number(r.avgArenaCalc)||0),1);
       const body=rows.map((r,i)=>`<tr>
         <td class="num">${i+1}</td>
         <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></div></td>
-        <td>${statusBadge(r.status)}</td>
-        <td>${barCell(r.avgYears,max,v=>fmtB(v))}</td>
+        <td>${statusBadge(currentStatusFor(r.name,r.status))}</td>
+        <td>${barCell(r.avgArenaCalc,max,v=>fmtB(v))}</td>
+        <td class="num">${fmtB(r.avg2026)}</td>
         <td class="num">${fmtB(r.pb)}</td>
         <td class="num">${fmtB(r.avgLast3)}</td>
         <td class="num">${fmtNum(r.avgStars)}</td>
-        <td class="num">${fmtNum(r.avgSparks)}</td>
         <td class="num">${fmtNum(r.eventsPlayed)}</td>
       </tr>`).join('');
-      el.innerHTML=tableShell('Overall Space Performance','Average lightyears across tracked Space events',
-        [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Avg LY'},{label:'PB',num:true},{label:'Last 3',num:true},{label:'Avg Stars',num:true},{label:'Avg Sparks',num:true},{label:'Events',num:true}],body);
+      el.innerHTML=tableShell('Overall Space Performance','Sorted by Arena-era average; full-2026 average shown separately',
+        [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Arena Avg'},{label:'2026 Avg',num:true},{label:'PB',num:true},{label:'Last 3',num:true},{label:'Avg Stars',num:true},{label:'Events',num:true}],body);
     } else if(view==='event'){
-      const rows=(D.space.events[state.spaceEvent]||[]).filter(r=>allowedStatus(r.status)).sort((a,b)=>b.yearsB-a.yearsB);
+      const rows=(D.space.events[state.spaceEvent]||[]).filter(r=>r.name!=='Total'&&r.name!=='#N/A'&&allowedCurrentRow(r)).sort((a,b)=>b.yearsB-a.yearsB);
       const max=Math.max(...rows.map(r=>Number(r.yearsB)||0),1);
       const body=rows.map((r,i)=>`<tr>
         <td class="num">${i+1}</td>
@@ -795,8 +843,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <td class="num">${r.group??'—'}</td>
       </tr>`).join('');
       const eventAll=(D.space.events[state.spaceEvent]||[]).filter(r=>r.name!=='Total'&&r.name!=='#N/A');
-      const eventAV=eventAll.filter(r=>statusNorm(r.status)==='active'&&(Number(r.yearsB)||0)>0);
-      const eventAV2=eventAll.filter(r=>statusNorm(r.status)==='av2'&&(Number(r.yearsB)||0)>0);
+      const eventAV=eventAll.filter(r=>statusNorm(eventStatusForRow(r))==='active'&&(Number(r.yearsB)||0)>0);
+      const eventAV2=eventAll.filter(r=>statusNorm(eventStatusForRow(r))==='av2'&&(Number(r.yearsB)||0)>0);
       const avAvg=eventAV.length?eventAV.reduce((s,r)=>s+(Number(r.yearsB)||0),0)/eventAV.length:0;
       const avStars=eventAV.reduce((s,r)=>s+(Number(r.stars)||0),0);
       const av2Avg=eventAV2.length?eventAV2.reduce((s,r)=>s+(Number(r.yearsB)||0),0)/eventAV2.length:0;
@@ -807,25 +855,29 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <div class="split-stat av2"><span>AV-2 — separate</span><strong>${eventAV2.length?fmtB(av2Avg):'—'}</strong><small>${eventAV2.length} players • ${fmtCompact(av2Stars)} stars • excluded from AV totals</small></div>
       </div>`;
       el.innerHTML=split+tableShell(`Space Race — ${fmtDate(state.spaceEvent)}`,`${rows.length} players in selected roster view`,
-        [{label:'Rank',num:true},{label:'Member'},{label:'Status'},{label:'Lightyears'},{label:'Stars',num:true},{label:'Sparks',num:true},{label:'Share',num:true},{label:'Group',num:true}],body||`<tr><td colspan="8" class="empty">No event data.</td></tr>`);
+        [{label:'Rank',num:true},{label:'Member'},{label:'Current Status'},{label:'Lightyears'},{label:'Stars',num:true},{label:'Sparks',num:true},{label:'Share',num:true},{label:'Group',num:true}],body||`<tr><td colspan="8" class="empty">No event data.</td></tr>`);
     } else if(view==='last3'){
-      const rows=[...spaceRowsForStatus()].filter(r=>Number(r.avgLast3)>0).sort((a,b)=>b.avgLast3-a.avgLast3);
+      const rows=(D.space.overall||[]).filter(r=>allowedStatus(r.status)&&Number(r.avgLast3)>0).map(r=>({
+        ...r,
+        avg2026:historyAverage('space',r.name,'yearsB','2026-01-01'),
+        avgArenaCalc:historyAverage('space',r.name,'yearsB',D.meta.arenaStart)
+      })).sort((a,b)=>b.avgLast3-a.avgLast3);
       const max=Math.max(...rows.map(r=>Number(r.avgLast3)||0),1);
       const body=rows.map((r,i)=>{
-        const delta=(Number(r.avgLast3)||0)-(Number(r.avgYears)||0);
+        const delta=(Number(r.avgLast3)||0)-(Number(r.avgArenaCalc)||0);
         return `<tr>
           <td class="num">${i+1}</td>
           <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></div></td>
           <td>${statusBadge(r.status)}</td>
           <td>${barCell(r.avgLast3,max,v=>fmtB(v))}</td>
-          <td class="num">${fmtB(r.avgYears)}</td>
+          <td class="num">${fmtB(r.avgArenaCalc)}</td>
+          <td class="num">${fmtB(r.avg2026)}</td>
           <td class="num ${delta>=0?'positive':'negative'}">${delta>=0?'+':''}${fmtB(delta)}</td>
           <td class="num">${fmtB(r.pb)}</td>
-          <td class="num">${fmtNum(r.eventsPlayed)}</td>
         </tr>`;
       }).join('');
-      el.innerHTML=tableShell('Last Three Space Races','Sorted by average lightyears over each player’s last three logged Space events',
-        [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Last 3 Avg'},{label:'Overall Avg',num:true},{label:'Vs Avg',num:true},{label:'PB',num:true},{label:'Events',num:true}],body);
+      el.innerHTML=tableShell('Last Three Space Races','Recent form compared with both Arena-era and full-2026 averages',
+        [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Last 3 Avg'},{label:'Arena Avg',num:true},{label:'2026 Avg',num:true},{label:'Vs Arena',num:true},{label:'PB',num:true}],body);
     } else {
       const dates=Object.keys(D.space.events||{}).sort().reverse();
       if(!D.space.events?.[state.spacePBEvent]) state.spacePBEvent=dates[0]||D.meta.latestSpace;
@@ -922,6 +974,49 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <div class="player-mini-stats"><div class="mini-stat"><strong>${fmtNum(r.piggyPB)}</strong><span>Piggy PB</span></div><div class="mini-stat"><strong>${fmtB(r.spacePB)}</strong><span>Space PB</span></div></div>
       </button>`).join('')}</div>` : `<div class="empty">No matching players.</div>`;
     bindPlayerButtons($('#playersContent'));
+  }
+
+  function renderEventTotals(){
+    const root=$('#eventTotalsContent');
+    const eventTotals=(kind,key)=>{
+      return Object.keys(D[kind]?.events||{}).sort().reverse().map(date=>{
+        const all=D[kind].events[date]||[];
+        const total=all.find(r=>r?.name==='Total');
+        const rows=all.filter(r=>r&&r.name&&r.name!=='Total'&&r.name!=='#N/A');
+        const participants=rows.filter(r=>(Number(r[key])||0)>0).length;
+        const sum=k=>rows.reduce((s,r)=>s+(Number(r[k])||0),0);
+        const pick=k=>{
+          const tv=Number(total?.[k])||0;
+          return tv>0?tv:sum(k);
+        };
+        return {date,participants,primary:pick(key),stars:pick('stars'),sparks:pick('sparks')};
+      }).filter(x=>x.participants>0||x.primary>0||x.stars>0);
+    };
+    const pig=eventTotals('piggy','lines');
+    const sp=eventTotals('space','yearsB');
+    const K=window.AVENGERS_KRAKEN_DATA||{months:[],players:[]};
+    const kr=(K.months||[]).slice().reverse().map(m=>{
+      const vals=(K.players||[]).map(p=>Number(p[m.key])||0).filter(v=>v>0);
+      return {label:m.label,participants:vals.length,total:vals.reduce((s,v)=>s+v,0),avg:vals.length?vals.reduce((s,v)=>s+v,0)/vals.length:0};
+    }).filter(x=>x.participants);
+
+    const pigRows=pig.map(x=>`<tr><td>${fmtDate(x.date)}</td><td class="num">${fmtNum(x.participants)}</td><td class="num">${fmtNum(x.primary)}</td><td class="num event-total-highlight">${fmtNum(x.stars)}</td><td class="num">${fmtNum(x.sparks)}</td></tr>`).join('');
+    const spRows=sp.map(x=>`<tr><td>${fmtDate(x.date)}</td><td class="num">${fmtNum(x.participants)}</td><td class="num">${fmtB(x.primary)}</td><td class="num event-total-highlight">${fmtNum(x.stars)}</td><td class="num">${fmtNum(x.sparks)}</td></tr>`).join('');
+    const krRows=kr.map(x=>`<tr><td>${escapeHtml(x.label)} 2026</td><td class="num">${fmtNum(x.participants)}</td><td class="num event-total-highlight">${fmtNum(x.total,1)}</td><td class="num">${fmtNum(x.avg,1)}</td></tr>`).join('');
+
+    root.innerHTML=`
+      <div class="records-note">
+        <strong>Historical event totals.</strong>
+        These tables use the stored event totals themselves, not today's roster filter. For example, Jul 5 Piggy shows the original 39,321,400 stars.
+      </div>
+      <div class="event-totals-grid">
+        ${tableShell('Piggy Race Totals','All tracked 2026 Piggy events',
+          [{label:'Event'},{label:'Players',num:true},{label:'Total Lines',num:true},{label:'Total Stars',num:true},{label:'Total Sparks',num:true}],pigRows)}
+        ${tableShell('Space Race Totals','All tracked 2026 Space events',
+          [{label:'Event'},{label:'Players',num:true},{label:'Total Lightyears',num:true},{label:'Total Stars',num:true},{label:'Total Sparks',num:true}],spRows)}
+        ${tableShell('Kraken Totals','Sum of recorded monthly player damage scores in the Kraken dataset',
+          [{label:'Event'},{label:'Players',num:true},{label:'Total Damage',num:true},{label:'Avg / Player',num:true}],krRows)}
+      </div>`;
   }
 
   function renderRecords(){
@@ -1046,6 +1141,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     if(state.page==='piggy') renderPiggy();
     if(state.page==='space') renderSpace();
     if(state.page==='kraken' && window.renderKraken) window.renderKraken();
+    if(state.page==='eventTotals') renderEventTotals();
     if(state.page==='ratings') renderRatings();
     if(state.page==='players') renderPlayers();
     if(state.page==='records') renderRecords();
@@ -1079,6 +1175,16 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       .tabular-grid .compact-player{gap:8px;min-width:0}
       .tabular-grid .compact-player .avatar{width:24px;height:24px;min-width:24px;font-size:10px}
       .tabular-grid .linkish{font-size:13px}
+      .mini-table-wrap{overflow:auto}
+      .mini-table{font-size:12px}
+      .mini-table td{padding:7px 8px}
+      .mini-rank-pos{width:32px;color:#9db1c8;font-weight:850}
+      .mini-rank-meta{color:#8195ae;font-size:11px}
+      .mini-rank-score{font-weight:900}
+      .event-totals-grid{display:grid;grid-template-columns:1fr;gap:16px}
+      #page-eventTotals .table-wrap{max-height:none}
+      #page-eventTotals .table-card{overflow:visible}
+      .event-total-highlight{font-weight:900;color:#dff7ff}
       @media(max-width:980px){
         .space-pb-toolbar{align-items:flex-start;flex-direction:column}
         .pb-toolbar-controls{justify-content:flex-start;width:100%}

@@ -102,6 +102,8 @@
     r.clan='AVENGERS';
     r.status='Active';
     r.years=Math.round(r.yearsB*1e9);
+    const m=existing.get(r.name);
+    if(m) m.totalSparks=(Number(m.totalSparks)||0)+(Number(r.sparks)||0);
   });
 
   D.space.events[date]=newRows;

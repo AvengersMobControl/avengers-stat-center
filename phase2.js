@@ -162,8 +162,11 @@
       var c=s.color||colors[si%colors.length];
       var d=pts.map(function(p,idx){return (idx?'L':'M')+x(p.date).toFixed(1)+','+y(p.value).toFixed(1);}).join(' ');
       svg+='<path d="'+d+'" class="p2-line" stroke="'+c+'"/>';
-      pts.forEach(function(p){
-        svg+='<circle cx="'+x(p.date).toFixed(1)+'" cy="'+y(p.value).toFixed(1)+'" r="4" class="p2-dot" stroke="'+c+'"><title>'+esc(s.name)+' — '+esc(longDate(p.date))+': '+esc(fmtMetric(p.value))+'</title></circle>';
+      pts.forEach(function(p,pi){
+        var px=x(p.date),py=y(p.value);
+        var labelY=Math.max(11,py-7-(si%3)*9);
+        svg+='<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="4" class="p2-dot" stroke="'+c+'"><title>'+esc(s.name)+' — '+esc(longDate(p.date))+': '+esc(fmtMetric(p.value))+'</title></circle>';
+        svg+='<text x="'+px.toFixed(1)+'" y="'+labelY.toFixed(1)+'" text-anchor="middle" class="p2-value-label">'+esc(fmtMetric(p.value))+'</text>';
       });
     });
     svg+='</svg>';

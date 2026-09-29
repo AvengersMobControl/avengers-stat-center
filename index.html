@@ -489,7 +489,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       <td class="mini-rank-meta">${metaFn(r)}</td>
       <td class="num mini-rank-score">${scoreFmt(r[scoreKey])}</td>
     </tr>`).join('');
-    return `<div class="mini-table-wrap"><table class="mini-table"><tbody>${body}</tbody></table></div>`;
+    return `<div class="mini-table-wrap"><table class="mini-table"><thead><tr><th class="num">#</th><th>Member</th><th>Details</th><th class="num">Value</th></tr></thead><tbody>${body}</tbody></table></div>`;
   }
 
   function renderOverview(){

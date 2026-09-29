@@ -54,3 +54,18 @@ window.AVENGERS_SPARKS_SNAPSHOT = {
     {rank:49,name:'AV-JAMO',allTimeSparks:0}
   ]
 };
+
+(function(){
+  const D=window.AVENGERS_DATA;
+  if(!D) return;
+  if(!(D.members||[]).some(m=>m.name==='AV-JAMO')){
+    D.members.push({
+      name:'AV-JAMO',status:'Active',
+      piggyPB:0,spacePB:0,krakenPB:0,
+      piggyAvg:0,spaceAvg:0,krakenAvgL3:0,krakenAvg:0,
+      rankingScore:0,krakenPBMonth:0,
+      ratingPB:0,ratingAvg:0,ratingTotal:0,
+      eventsPlayed:0,totalSparks:0
+    });
+  }
+})();

@@ -1,0 +1,66 @@
+{
+  "guildId": "1403361698177618081",
+  "applicationClientId": "1554265799806550096",
+  "mode": "manual_pull",
+  "autoImport": false,
+  "reviewRequired": true,
+  "channels": {
+    "space": {
+      "id": "1425020832899665972",
+      "eventType": "space",
+      "rosterScope": "AVENGERS"
+    },
+    "piggy": {
+      "id": "1425022130717855836",
+      "eventType": "piggy",
+      "rosterScope": "AVENGERS"
+    },
+    "kraken": {
+      "id": "1425022685636722809",
+      "eventType": "kraken",
+      "rosterScope": "AVENGERS"
+    },
+    "av2": {
+      "id": "1548892164355006524",
+      "eventType": "mixed",
+      "rosterScope": "AV-2"
+    },
+    "piggyFlash1": {
+      "id": "1425021492629995560",
+      "eventType": "piggyFlash",
+      "rosterScope": "AVENGERS"
+    },
+    "piggyFlash2": {
+      "id": "1425021633009291396",
+      "eventType": "piggyFlash",
+      "rosterScope": "AVENGERS"
+    },
+    "piggyFlash3": {
+      "id": "1425021793835552868",
+      "eventType": "piggyFlash",
+      "rosterScope": "AVENGERS"
+    },
+    "piggyFlash4": {
+      "id": "1425021900463013919",
+      "eventType": "piggyFlash",
+      "rosterScope": "AVENGERS"
+    }
+  },
+  "rules": {
+    "acceptedClans": [
+      "AVENGERS",
+      "AV-2"
+    ],
+    "ignoreCompetitorsOutsideAcceptedClans": true,
+    "finalResultsOnly": true,
+    "progressIndicators": [
+      "Preliminary Results",
+      "still ongoing",
+      "in progress",
+      "progress results",
+      "current standings",
+      "not final"
+    ],
+    "note": "Progress detection must consider text visible inside screenshots as well as Discord message text. Do not import until a human-approved pull/review."
+  }
+}

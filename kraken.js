@@ -27,7 +27,7 @@
 
   function chart(data){
     if(!data.length)return '<div class="empty">No Kraken history for this roster filter.</div>';
-    const w=700,h=220,padL=48,padR=18,padT=18,padB=32;
+    const w=700,h=230,padL=58,padR=18,padT=28,padB=32;
     const vals=data.map(x=>x.avg);
     const max=Math.max(...vals,1), min=0;
     const pw=w-padL-padR, ph=h-padT-padB;
@@ -38,14 +38,13 @@
     }));
     const path=pts.map((p,i)=>(i?'L':'M')+p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ');
     const area=path+` L ${pts.at(-1).x},${h-padB} L ${pts[0].x},${h-padB} Z`;
+    const grid=[1,.5,0].map(frac=>({y:padT+(1-frac)*ph,value:max*frac}));
     return `<div class="kr-chart"><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
       <defs><linearGradient id="krArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffb454" stop-opacity=".28"/><stop offset="100%" stop-color="#ff7a59" stop-opacity="0"/></linearGradient></defs>
-      <line x1="${padL}" y1="${padT}" x2="${w-padR}" y2="${padT}" class="kr-grid"/>
-      <line x1="${padL}" y1="${padT+ph/2}" x2="${w-padR}" y2="${padT+ph/2}" class="kr-grid"/>
-      <line x1="${padL}" y1="${h-padB}" x2="${w-padR}" y2="${h-padB}" class="kr-grid"/>
+      ${grid.map(g=>`<line x1="${padL}" y1="${g.y}" x2="${w-padR}" y2="${g.y}" class="kr-grid"/><text x="${padL-7}" y="${g.y+4}" text-anchor="end" class="kr-axis-value">${fmt(g.value,0)}</text>`).join('')}
       <path d="${area}" class="kr-area"/>
       <path d="${path}" class="kr-line"/>
-      ${pts.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="4" class="kr-dot"><title>${esc(p.d.label)}: ${fmt(p.d.avg,1)} avg • ${p.d.players} players</title></circle>`).join('')}
+      ${pts.map((p,i)=>`<circle cx="${p.x}" cy="${p.y}" r="4" class="kr-dot"><title>${esc(p.d.label)}: ${fmt(p.d.avg,1)} avg • ${p.d.players} players</title></circle><text x="${p.x}" y="${Math.max(12,p.y-(i%2?10:7))}" class="kr-value-label" text-anchor="middle">${fmt(p.d.avg,1)}</text>`).join('')}
       ${pts.map(p=>`<text x="${p.x}" y="${h-7}" class="kr-label" text-anchor="middle">${esc(p.d.label.slice(0,3))}</text>`).join('')}
     </svg></div>`;
   }
@@ -148,8 +147,9 @@
         </div>
         <div class="card">
           <div class="card-header"><div><div class="card-title">September Top 10</div><div class="card-sub">Current roster</div></div></div>
-          <div class="card-body"><div class="mini-rank">${latestPlayers.slice().sort((a,b)=>b.sept-a.sept).slice(0,10).map((p,i)=>`
-            <div class="rank-row"><div class="rank-num">${i+1}</div><div><div class="rank-name">${playerButton(p.name)}</div><div class="rank-meta">${p.septLoadout?esc(p.septLoadout)+' • ':''}PB ${fmt(p.pb,1)}</div></div><div class="rank-score">${fmt(p.sept,1)}</div></div>`).join('')}</div></div>
+          <div class="card-body kr-top-table-wrap"><table class="kr-top-table"><thead><tr><th class="num">#</th><th>Member</th><th>Loadout</th><th class="num">PB</th><th class="num">Sept</th></tr></thead><tbody>
+            ${latestPlayers.slice().sort((a,b)=>b.sept-a.sept).slice(0,10).map((p,i)=>`<tr><td class="num">${i+1}</td><td>${playerButton(p.name)}</td><td>${p.septLoadout?esc(p.septLoadout):'—'}</td><td class="num">${fmt(p.pb,1)}</td><td class="num"><strong>${fmt(p.sept,1)}</strong></td></tr>`).join('')}
+          </tbody></table></div>
         </div>
       </div>
 

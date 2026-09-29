@@ -71,8 +71,8 @@
       .sort((a,b)=>(Number(b[key])||0)-(Number(a[key])||0));
   }
 
-  function eventSummary(key){
-    const list=eventPlayers(key,true);
+  function eventSummary(key,filtered=false){
+    const list=eventPlayers(key,filtered);
     const vals=list.map(p=>Number(p[key])||0);
     const idx=monthIndex(key);
     const prior=monthKeys().slice(0,Math.max(0,idx));
@@ -145,8 +145,8 @@
     return {pbs,first};
   }
 
-  function eventTable(key){
-    const list=eventPlayers(key,true);
+  function eventTable(key,filtered=false){
+    const list=eventPlayers(key,filtered);
     const max=Math.max(...list.map(p=>Number(p[key])||0),1);
     const rows=list.map((p,i)=>{
       const score=Number(p[key])||0;
@@ -164,7 +164,7 @@
       </tr>`;
     }).join('');
     return `<div class="table-card">
-      <div class="table-titlebar"><div><h2>Kraken — ${esc(monthLabel(key))}</h2><div class="small-muted">${list.length} players in the selected current-roster filter</div></div></div>
+      <div class="table-titlebar"><div><h2>Kraken — ${esc(monthLabel(key))}</h2><div class="small-muted">${list.length} historical participants • current status shown separately</div></div></div>
       <div class="table-wrap"><table><thead><tr>
         <th class="num">#</th><th>Member</th><th>Current Status</th><th>Damage</th><th class="num">PB Through Event</th><th class="num">Avg Through Event</th><th class="num">Events</th><th class="num">Loadout</th>
       </tr></thead><tbody>${rows||'<tr><td colspan="8" class="empty">No Kraken data for this selection.</td></tr>'}</tbody></table></div>
@@ -251,9 +251,9 @@
   function overview(){
     const t=monthlyTrend();
     const latestMeta=(K.months||[]).at(-1)||{key:'sept',label:'September'};
-    const latest=eventSummary(latestMeta.key);
+    const latest=eventSummary(latestMeta.key,true);
     const prevMeta=(K.months||[]).at(-2);
-    const prev=prevMeta?eventSummary(prevMeta.key):null;
+    const prev=prevMeta?eventSummary(prevMeta.key,true):null;
     const delta=prev&&prev.avg?((latest.avg-prev.avg)/prev.avg):0;
     const ps=players();
     const sparks=ps.reduce((s,p)=>s+(Number(p.totalSparks)||0),0);
@@ -279,7 +279,7 @@
           </tbody></table></div>
         </div>
       </div>
-      <div style="margin-top:16px">${eventTable(latestMeta.key)}</div>`;
+      <div style="margin-top:16px">${eventTable(latestMeta.key,true)}</div>`;
   }
 
   function bindPlayers(root){
@@ -311,16 +311,16 @@
     let body='';
     if(view==='overview') body=overview();
     else if(view==='event'){
-      const s=eventSummary(eventKey);
+      const s=eventSummary(eventKey,false);
       body=`
         <div class="kr-kpis kr-event-kpis">
-          <div class="kr-kpi"><span>Participants</span><strong>${s.players}</strong><small>${esc(monthLabel(eventKey))}</small></div>
+          <div class="kr-kpi"><span>Participants</span><strong>${s.players}</strong><small>all historical participants</small></div>
           <div class="kr-kpi"><span>Average Damage</span><strong>${fmt(s.avg,1)}</strong><small>per participant</small></div>
           <div class="kr-kpi"><span>Total Damage</span><strong>${fmt(s.total,1)}</strong><small>sum of recorded scores</small></div>
           <div class="kr-kpi"><span>Leader</span><strong>${s.leader?fmt(s.leader[eventKey],1):'—'}</strong><small>${s.leader?esc(s.leader.name):''}</small></div>
           <div class="kr-kpi"><span>PBs</span><strong>${s.pbCount}</strong><small>returning-player PBs</small></div>
         </div>
-        ${eventTable(eventKey)}`;
+        ${eventTable(eventKey,false)}`;
     } else if(view==='last3') body=last3Table();
     else body=pbView();
 
@@ -334,7 +334,7 @@
         </div>
         <div class="kr-history-controls">
           ${view==='event'?'<label class="inline-control">Event <select id="krakenEventSelect">'+[...(K.months||[])].reverse().map(m=>'<option value="'+esc(m.key)+'" '+(m.key===eventKey?'selected':'')+'>'+esc(m.label)+' 2026</option>').join('')+'</select></label>':''}
-          <div class="small-muted">Tracked Kraken history: ${(K.months||[]).map(m=>esc(m.label.slice(0,3))).join(' • ')}</div>
+          <div class="small-muted">${view==='event'?'Event view includes Active, AV-2 and Inactive historical participants. ':'Tracked Kraken history: '}${view==='event'?'':(K.months||[]).map(m=>esc(m.label)).join(' • ')}</div>
         </div>
       </div>
       ${body}`;

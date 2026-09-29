@@ -9,7 +9,8 @@
     ['AV-JM','AV-J1M'],
     ['AV-JIM','AV-J1M'],
     ['AV-GreenZombie','AV-BlueWave'],
-    ['AV-ZolikaLoveKira','AV-Zolika.x.Kira']
+    ['AV-ZolikaLoveKira','AV-Zolika.x.Kira'],
+    ['AV-hoops-SCT','AV-Hoops']
   ]);
   const target=name=>renameMap.get(name)||name;
 
@@ -74,10 +75,23 @@
     S.currentAvengers=[...byName.values()];
   }
 
+  if(K){
+    const byK=new Map((K.players||[]).map(p=>[p.name,p]));
+    (D.members||[]).forEach(m=>{
+      const p=byK.get(m.name);
+      if(!p) return;
+      m.krakenPB=Number(p.pb)||0;
+      m.krakenAvg=Number(p.avg)||0;
+      m.krakenAvgL3=Number(p.last3)||0;
+      m.krakenPBMonth=p.pbMonth||'';
+    });
+  }
+
   D.aliasMap=Object.assign({},D.aliasMap||{},{
     'AV-JM':'AV-J1M',
     'AV-JIM':'AV-J1M',
     'AV-GreenZombie':'AV-BlueWave',
-    'AV-ZolikaLoveKira':'AV-Zolika.x.Kira'
+    'AV-ZolikaLoveKira':'AV-Zolika.x.Kira',
+    'AV-hoops-SCT':'AV-Hoops'
   });
 })();

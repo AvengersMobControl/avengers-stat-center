@@ -35,3 +35,11 @@
 .kr-top-table{font-size:12px}
 .kr-top-table th,.kr-top-table td{padding:7px 8px}
 .kr-top-table strong{font-weight:900}
+
+.kr-history-controls{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap}
+.kr-history-controls .inline-control select{min-width:145px}
+.kr-event-kpis{margin-top:0}
+.kr-history-toolbar{margin-bottom:12px}
+@media(max-width:900px){
+  .kr-history-controls{justify-content:flex-start;width:100%}
+}

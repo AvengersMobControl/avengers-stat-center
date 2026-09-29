@@ -41,14 +41,8 @@ export default async function middleware(request){
   const url=new URL(request.url);
   const p=url.pathname;
 
-  // Public authentication and MCP protocol endpoints.
-  if(
-    p.startsWith('/api/auth/') ||
-    p.startsWith('/api/discord/') ||
-    p==='/mcp' ||
-    p.startsWith('/.well-known/') ||
-    p.startsWith('/oauth/')
-  ) return;
+  // These endpoints perform their own authentication/authorization.
+  if(p.startsWith('/api/auth/') || p.startsWith('/api/discord/')) return;
 
   const session=cookieValue(request.headers.get('cookie'),'avengers_session');
   if(await validSession(session,process.env.AUTH_SECRET)) return;

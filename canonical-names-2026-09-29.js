@@ -77,13 +77,24 @@
 
   if(K){
     const byK=new Map((K.players||[]).map(p=>[p.name,p]));
+    const capped=(value,benchmark)=>Math.min(1,Math.max(0,(Number(value)||0)/benchmark));
     (D.members||[]).forEach(m=>{
       const p=byK.get(m.name);
-      if(!p) return;
-      m.krakenPB=Number(p.pb)||0;
-      m.krakenAvg=Number(p.avg)||0;
-      m.krakenAvgL3=Number(p.last3)||0;
-      m.krakenPBMonth=p.pbMonth||'';
+      if(p){
+        m.krakenPB=Number(p.pb)||0;
+        m.krakenAvg=Number(p.avg)||0;
+        m.krakenAvgL3=Number(p.last3)||0;
+        m.krakenPBMonth=p.pbMonth||'';
+      }
+      m.ratingPB=
+        capped(m.piggyPB,35000)+
+        capped(m.spacePB,350)+
+        capped(m.krakenPB,3500);
+      m.ratingAvg=
+        capped(m.piggyAvg,25000)+
+        capped(m.spaceAvg,200)+
+        capped(m.krakenAvgL3,2800);
+      m.ratingTotal=m.ratingPB+m.ratingAvg;
     });
   }
 

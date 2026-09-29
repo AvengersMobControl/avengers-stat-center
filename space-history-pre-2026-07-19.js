@@ -37,6 +37,30 @@
       {group:4,rank:8,name:'AV-no',username:'AV-no',yearsB:9.8,stars:40974,sparks:4097,share:.02}
     ],
 
+    '2026-04-19':[
+      {group:1,rank:1,name:'AV-CRISPIN.97',username:'AV-CRISPIN.97…',yearsB:60.5},
+      {group:1,rank:3,name:'AV-BlackPearl',username:'AV-BlackPearl…',yearsB:18.6},
+      {group:1,rank:4,name:'AV-DrDetroit',username:'AV-DrDetroit-U…',yearsB:10.1},
+
+      {group:2,rank:1,name:'AV-7-STAR',username:'AV-7-STAR',yearsB:70.0},
+      {group:2,rank:2,name:'AV-Tin',username:'AV-Tin',yearsB:56.0},
+      {group:2,rank:3,name:'AV-jacko-TWN',username:'AV-jacko-TWN',yearsB:38.7},
+      {group:2,rank:4,name:'AV-M-usa',username:'AV-M-usa',yearsB:31.5},
+      {group:2,rank:5,name:'AV-I.S.O',username:'AV-I.S.O',yearsB:30.6},
+      {group:2,rank:6,name:'AV-JIM',username:'AV-JIM',yearsB:27.8},
+      {group:2,rank:7,name:'AV-INTEN',username:'AV-INTEN',yearsB:25.0},
+      {group:2,rank:8,name:'AV-CHEN1972',username:'AV-CHEN1972',yearsB:18.2},
+      {group:2,rank:9,name:'AV-InvisibleSpy',username:'AV-InvisibleSpy',yearsB:14.6},
+
+      {group:3,rank:1,name:'Iam',username:'Iam',yearsB:57.8},
+      {group:3,rank:2,name:'AV-EventHorizon',username:'AV-EventHorizon',yearsB:43.1},
+      {group:3,rank:3,name:'AV-GNSK-JPN',username:'AV-GNSK-JPN',yearsB:40.4},
+      {group:3,rank:4,name:'AV<STAR-LORD>',username:'AV<STAR-LORD>',yearsB:20.0},
+      {group:3,rank:5,name:'AV-BLISTER',username:'AV-BLISTER-USA',yearsB:18.8},
+      {group:3,rank:6,name:'AV-KitKat',username:'AV-KitKat',yearsB:16.0},
+      {group:3,rank:8,name:'AV-Vadik-UA',username:'AV-Vadik-UA',yearsB:2.2}
+    ],
+
     '2026-04-29':[
       {group:1,rank:1,name:'AV-UANGELES',username:'AV-UANGELES',yearsB:80.3},
       {group:1,rank:2,name:'AV-MONSTER',username:'AV-MONSTER.',yearsB:39.2},
@@ -357,6 +381,7 @@
 
   D.space.historicalSourceNotes=Object.assign({},D.space.historicalSourceNotes||{},{
     '2026-07-09':'Recovered from Discord final-result screenshots; 27 AVENGERS rows.',
+    '2026-04-19':'Recovered from three final Discord posts. Non-AVENGERS competitors, minimum-not-reached rows, and unreadable/truncated usernames were omitted rather than guessed.',
     '2026-04-29':'Recovered from four final Discord posts. Non-AVENGERS competitors, minimum-not-reached rows, and several truncated/ambiguous historical usernames were omitted rather than guessed.',
     '2026-05-06':'Recovered from final Discord screenshots; duplicate posts of the same leaderboard were deduplicated. Minimum-not-reached and ambiguous cropped rows were omitted.',
     '2026-05-14':'Recovered from final Discord screenshots; 32 clearly readable AVENGERS rows across four lobbies. A separate preliminary-results post from the same date was intentionally ignored.',

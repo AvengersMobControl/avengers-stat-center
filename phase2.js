@@ -126,8 +126,9 @@
       return {date:date,average:avg(vals),total:vals.reduce(function(s,x){return s+x;},0),players:vals.length};
     }).filter(function(x){return x.players>0;});
   }
-  function lineChart(series,height){
+  function lineChart(series,height,formatter){
     height=height||260;
+    formatter=formatter||fmtMetric;
     var width=760,padL=60,padR=20,padT=18,padB=35;
     var all=[];
     series.forEach(function(s){s.points.forEach(function(p){if(p.value>0)all.push(p);});});
@@ -147,7 +148,7 @@
       var yy=padT+(plotH*i/4);
       var val=maxV*(1-i/4);
       svg+='<line x1="'+padL+'" y1="'+yy+'" x2="'+(width-padR)+'" y2="'+yy+'" class="p2-gridline"/>';
-      svg+='<text x="'+(padL-8)+'" y="'+(yy+4)+'" text-anchor="end" class="p2-axis-label">'+esc(fmtMetric(val))+'</text>';
+      svg+='<text x="'+(padL-8)+'" y="'+(yy+4)+'" text-anchor="end" class="p2-axis-label">'+esc(formatter(val))+'</text>';
     }
     svg+='<line x1="'+padL+'" y1="'+(padT+plotH)+'" x2="'+(width-padR)+'" y2="'+(padT+plotH)+'" class="p2-axis"/>';
     var ticks=[minDate,dates[Math.floor((dates.length-1)/2)],maxDate];
@@ -165,8 +166,8 @@
       pts.forEach(function(p,pi){
         var px=x(p.date),py=y(p.value);
         var labelY=Math.max(11,py-7-(si%3)*9);
-        svg+='<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="4" class="p2-dot" stroke="'+c+'"><title>'+esc(s.name)+' — '+esc(longDate(p.date))+': '+esc(fmtMetric(p.value))+'</title></circle>';
-        svg+='<text x="'+px.toFixed(1)+'" y="'+labelY.toFixed(1)+'" text-anchor="middle" class="p2-value-label">'+esc(fmtMetric(p.value))+'</text>';
+        svg+='<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="4" class="p2-dot" stroke="'+c+'"><title>'+esc(s.name)+' — '+esc(longDate(p.date))+': '+esc(formatter(p.value))+'</title></circle>';
+        svg+='<text x="'+px.toFixed(1)+'" y="'+labelY.toFixed(1)+'" text-anchor="middle" class="p2-value-label">'+esc(formatter(p.value))+'</text>';
       });
     });
     svg+='</svg>';
@@ -334,6 +335,43 @@
       '</tbody></table></div>';
   }
 
+  function krakenPlayerFor(name){
+    var K=window.AVENGERS_KRAKEN_DATA||{players:[],months:[]};
+    var aliases=D.aliasMap||{};
+    return (K.players||[]).find(function(p){
+      return p.name===name || aliases[p.name]===name || aliases[name]===p.name;
+    }) || null;
+  }
+  function krakenHistoryFor(name){
+    var K=window.AVENGERS_KRAKEN_DATA||{players:[],months:[]};
+    var p=krakenPlayerFor(name);
+    if(!p)return [];
+    var monthNo={jan:'01',january:'01',feb:'02',february:'02',mar:'03',march:'03',apr:'04',april:'04',may:'05',jun:'06',june:'06',jul:'07',july:'07',aug:'08',august:'08',sep:'09',sept:'09',september:'09',oct:'10',october:'10',nov:'11',november:'11',dec:'12',december:'12'};
+    return (K.months||[]).map(function(m){
+      var v=Number(p[m.key])||0;
+      var key=String(m.key||m.label||'').toLowerCase();
+      return {
+        key:m.key,
+        label:m.label||m.key,
+        date:'2026-'+(monthNo[key]||'01')+'-01',
+        value:v
+      };
+    }).filter(function(x){return x.value>0;});
+  }
+  function krakenChart(name){
+    var h=krakenHistoryFor(name);
+    if(!h.length)return '<div class="p2-empty">No Kraken history.</div>';
+    return lineChart([{name:'Kraken score',color:'#ffb454',points:h.map(function(r){return {date:r.date,value:r.value};})}],230,function(v){return num(v,0);});
+  }
+  function krakenHistoryTable(name){
+    var h=krakenHistoryFor(name).slice().reverse();
+    if(!h.length)return '<div class="p2-empty">No Kraken event history.</div>';
+    var pb=Math.max.apply(null,h.map(function(r){return r.value;}));
+    return '<div class="p2-history"><table><thead><tr><th>Event</th><th class="num">Score</th><th class="num">% of PB</th></tr></thead><tbody>'+
+      h.map(function(r){return '<tr><td>'+esc(r.label)+' 2026</td><td class="num">'+num(r.value,0)+'</td><td class="num">'+(pb?((r.value/pb)*100).toFixed(1)+'%':'—')+'</td></tr>';}).join('')+
+      '</tbody></table></div>';
+  }
+
   function renderExplorer(name){
     var root=document.getElementById('p2ExplorerProfile');
     if(!root)return;
@@ -343,8 +381,9 @@
     }
     explorerPlayer=name;
     var s=playerHeaderStats(name),m=s.member;
-    var piggyPB=Number(m.piggyPB)||0,spacePB=Number(m.spacePB)||0,krakenPB=Number(m.krakenPB)||0;
-    var piggyAvg=Number(m.piggyAvg)||0,spaceAvg=Number(m.spaceAvg)||0,krakenL3=Number(m.krakenAvgL3)||0;
+    var kp=krakenPlayerFor(name);
+    var piggyPB=Number(m.piggyPB)||0,spacePB=Number(m.spacePB)||0,krakenPB=kp?(Number(kp.pb)||0):(Number(m.krakenPB)||0);
+    var piggyAvg=Number(m.piggyAvg)||0,spaceAvg=Number(m.spaceAvg)||0,krakenL3=kp?(Number(kp.last3)||0):(Number(m.krakenAvgL3)||0);
     var rating=Number(m.ratingTotal)||0;
     root.innerHTML=
       '<div class="p2-profile">'+
@@ -365,8 +404,10 @@
         '<div class="p2-profile-grid">'+
           '<div class="p2-mini-card"><h3>Piggy Race History</h3>'+simpleChart('piggy',name,'lines','Lines','#43d7ff')+'</div>'+
           '<div class="p2-mini-card"><h3>Space Race History</h3>'+simpleChart('space',name,'yearsB','Lightyears (B)','#a476ff')+'</div>'+
+          '<div class="p2-mini-card"><h3>Kraken Score History</h3>'+krakenChart(name)+'</div>'+
           '<div class="p2-mini-card"><h3>Recent Piggy Events</h3>'+historyTable('piggy',name)+'</div>'+
           '<div class="p2-mini-card"><h3>Recent Space Events</h3>'+historyTable('space',name)+'</div>'+
+          '<div class="p2-mini-card"><h3>Kraken Event Log</h3>'+krakenHistoryTable(name)+'</div>'+
         '</div>'+
       '</div>';
     var cmp=document.getElementById('p2ComparePlayer');

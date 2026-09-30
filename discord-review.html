@@ -868,7 +868,7 @@
       const modeLabel=p._modeLabel||'FINAL CANDIDATE';
       const imgs=(p.attachments||[]).map((a,i)=>`
         <div class="shot">
-          <img src="${esc(compactUrl(a.proxyUrl||a.url,560))}" alt="Discord result screenshot ${idx+1}-${i+1}" loading="lazy">
+          <img src="${esc(compactUrl(a.proxyUrl||a.url,560))}" alt="Discord result screenshot ${idx+1}-${i+1}" loading="eager" decoding="async">
           <div class="shot-meta">${esc(a.filename||'image')} • ${a.width||'?'}×${a.height||'?'}</div>
         </div>
       `).join('');
@@ -903,9 +903,47 @@
   $('#selectNone').addEventListener('click',()=>{
     document.querySelectorAll('.include input').forEach(x=>x.checked=false);syncSelection();
   });
-  $('#printSelected').addEventListener('click',()=>{
+  async function prepareSelectedImagesForPrint(){
+    const imgs=[...document.querySelectorAll('.review-card:not(.not-selected) .shot img')];
+    if(!imgs.length)return;
+
+    status.textContent='Preparing '+imgs.length+' screenshot'+(imgs.length===1?'':'s')+' for PDF…';
+    setButtons(false);
+
+    imgs.forEach(img=>{
+      img.loading='eager';
+      img.decoding='sync';
+    });
+
+    let done=0;
+    await Promise.all(imgs.map(img=>new Promise(resolve=>{
+      const finish=()=>{done++;status.textContent='Preparing screenshots for PDF… '+done+'/'+imgs.length;resolve();};
+      if(img.complete && img.naturalWidth>0){
+        if(typeof img.decode==='function') img.decode().catch(()=>{}).finally(finish);
+        else finish();
+        return;
+      }
+      img.addEventListener('load',()=>{
+        if(typeof img.decode==='function') img.decode().catch(()=>{}).finally(finish);
+        else finish();
+      },{once:true});
+      img.addEventListener('error',finish,{once:true});
+      // Re-assigning src after switching from lazy to eager forces Chromium to
+      // schedule images that were previously far outside the viewport.
+      const src=img.currentSrc||img.src;
+      if(src) img.src=src;
+    }));
+
+    // Give Chromium one paint frame with all decoded images in the print DOM.
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+    setButtons(true);
+    status.textContent=selectedCount()+' final result post(s) selected. All screenshots are loaded and ready to print.';
+  }
+
+  $('#printSelected').addEventListener('click',async()=>{
     syncSelection();
     if(!selectedCount()){status.textContent='Select at least one result post first.';return;}
+    await prepareSelectedImagesForPrint();
     window.print();
   });
   $('#saveCheckpoint').addEventListener('click',()=>{

@@ -51,13 +51,15 @@ module.exports=async function handler(req,res){
   }
   const now=Math.floor(Date.now()/1000);
   const ttl=60*60;
+  const maxUses=3;
   const payload={
     typ:'avengers-guest-invite',
     jti:crypto.randomBytes(18).toString('base64url'),
     creator:String(session.sub),
     creatorName:String(session.username||'AVENGERS member'),
     iat:now,
-    exp:now+ttl
+    exp:now+ttl,
+    maxUses
   };
   const token=sign(payload,secret);
   const url=origin(req)+'/api/guest/redeem?t='+encodeURIComponent(token);
@@ -73,5 +75,5 @@ module.exports=async function handler(req,res){
   h1{margin:0 0 8px;font-size:26px}.muted{color:#9fb0c7}.link{word-break:break-all;background:#07111f;border:1px solid #29405f;border-radius:12px;padding:14px;margin:18px 0;font-family:ui-monospace,monospace}
   button{background:#cf3348;color:white;border:0;border-radius:10px;padding:11px 16px;font-weight:800;cursor:pointer}.ok{margin-left:10px;color:#9fe0b0;font-weight:700}
   .note{margin-top:18px;padding:12px;border-radius:10px;background:#17253a;color:#c9d6e8;font-size:14px;line-height:1.45}
-  </style></head><body><div class="card"><h1>1-hour single-use guest link</h1><div class="muted">Expires ${html(expires)}. The first redemption activates a guest session for the remaining time.</div><div id="guestLink" class="link">${html(url)}</div><button onclick="navigator.clipboard.writeText(document.getElementById('guestLink').textContent).then(()=>document.getElementById('copied').textContent='Copied')">Copy link</button><span id="copied" class="ok"></span><div class="note"><strong>Single-use:</strong> after the first successful redemption, later uses of this invite are blocked. A repeat redemption triggers a Discord DM alert to the member who created the invite. The alert can identify that a second client attempted the invite, but it cannot prove who physically clicked it.</div></div></body></html>`);
+  </style></head><body><div class="card"><h1>1-hour guest link</h1><div class="muted">Expires ${html(expires)}. The first redemption activates a guest session for the remaining time.</div><div id="guestLink" class="link">${html(url)}</div><button onclick="navigator.clipboard.writeText(document.getElementById('guestLink').textContent).then(()=>document.getElementById('copied').textContent='Copied')">Copy link</button><span id="copied" class="ok"></span><div class="note"><strong>3-use protection:</strong> Discord and other link-preview bots do not count. The first three successful guest opens are allowed; the fourth and later attempts are blocked. You receive a Discord DM for each successful redemption and for any blocked attempt.</div></div></body></html>`);
 };

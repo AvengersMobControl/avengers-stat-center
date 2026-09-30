@@ -42,12 +42,13 @@
       .flash-chart-head h2{font-size:16px;margin:0 0 3px}
       .flash-chart-body{padding:14px 16px}
       .flash-pb-scroll{max-height:620px;overflow:auto;padding-right:5px}
-      .flash-pb-row{display:grid;grid-template-columns:minmax(120px,1fr) minmax(110px,3fr) 72px;gap:9px;align-items:center;margin:7px 0}
+      .flash-pb-row{display:grid;grid-template-columns:minmax(150px,1fr) minmax(160px,3fr) 72px 44px;gap:8px;align-items:center;min-height:28px;margin:3px 0}
       .flash-pb-name{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
       .flash-pb-track{height:18px;background:rgba(125,135,155,.14);border-radius:5px;overflow:hidden;position:relative}
       .flash-pb-bar{height:100%;border-radius:5px;background:linear-gradient(90deg,#8b1e2d,#d84957);min-width:2px}
-      .flash-pb-value{text-align:right;font-weight:800;font-variant-numeric:tabular-nums;font-size:12px}
-      .flash-chip{display:inline-block;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:2px 7px;font-size:10px;margin-left:6px;opacity:.8}
+      .flash-pb-value{text-align:right;font-weight:800;font-variant-numeric:tabular-nums;font-size:12px;white-space:nowrap}
+      .flash-pb-flash{display:flex;justify-content:center;align-items:center;min-width:44px}
+      .flash-chip{display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:2px 6px;font-size:10px;opacity:.8;min-width:34px;line-height:1.2}
       .flash-svg{width:100%;height:240px;display:block}
       .flash-svg text{fill:currentColor;font-size:10px;opacity:.72}
       .flash-svg .grid{stroke:currentColor;opacity:.10}
@@ -64,7 +65,7 @@
       .flash-metric em{display:block;font-style:normal;font-size:10px;opacity:.55;margin-top:5px}
       .flash-note{font-size:11px;opacity:.68;margin-top:8px}
       @media(max-width:1000px){.flash-grid{grid-template-columns:1fr}.flash-metric-strip{grid-template-columns:repeat(2,1fr)}}
-      @media(max-width:720px){.flash-tabs{grid-template-columns:repeat(3,1fr)}.flash-pb-row{grid-template-columns:100px 1fr 62px}.flash-metric-strip{grid-template-columns:1fr 1fr}}
+      @media(max-width:720px){.flash-tabs{grid-template-columns:repeat(3,1fr)}.flash-pb-row{grid-template-columns:100px 1fr 58px 38px;gap:6px}.flash-pb-flash{min-width:38px}.flash-chip{min-width:30px;padding:2px 4px}.flash-metric-strip{grid-template-columns:1fr 1fr}}
     `;
     document.head.appendChild(style);
   }
@@ -206,7 +207,8 @@
         <div class="flash-pb-track" title="${esc(r.name)} — ${fmt(r.best)} lines">
           <div class="flash-pb-bar" style="width:${Math.max(1.5,r.best/max*100)}%"></div>
         </div>
-        <div class="flash-pb-value">${fmt(r.best)}${daily?'':'<span class="flash-chip">PF'+r.pbFlash+'</span>'}</div>
+        <div class="flash-pb-value">${fmt(r.best)}</div>
+        <div class="flash-pb-flash">${daily?'':'<span class="flash-chip">PF'+r.pbFlash+'</span>'}</div>
       </div>`).join('')}</div>`;
   }
 

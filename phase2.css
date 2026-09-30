@@ -65,3 +65,22 @@
 .p2-event-fill{height:100%;background:linear-gradient(90deg,#6b50e9,#43d7ff);border-radius:99px}
 @media(max-width:1000px){.p2-grid,.p2-profile-grid{grid-template-columns:1fr}.p2-kpis,.p2-profile-kpis{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.p2-kpis,.p2-profile-kpis{grid-template-columns:1fr 1fr}.p2-chart{height:250px}.p2-profile-actions{width:100%;margin-left:58px}.p2-toolbar{align-items:stretch}.p2-field{min-width:calc(50% - 5px)}}
+
+
+/* Roster timezone/location source */
+.tz-section{margin:14px 0 12px;padding:14px;background:linear-gradient(180deg,rgba(17,32,55,.96),rgba(12,25,44,.96));border:1px solid #263c59;border-radius:14px}
+.tz-section-head{display:flex;gap:10px;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+.tz-section-head strong{font-size:13px;color:#eef6ff}
+.tz-section-head span{font-size:10px;color:#8096b0}
+.tz-group-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.tz-group-card{background:#0a1728;border:1px solid #203653;border-radius:10px;padding:9px 10px;min-width:0}
+.tz-group-offset{font-size:13px;font-weight:900;color:#8fe9ff}
+.tz-group-count{font-size:10px;color:#d7e5f4;margin-top:3px}
+.tz-group-locations{font-size:9px;color:#7f94ae;margin-top:4px;white-space:normal;line-height:1.3}
+.tz-group-card.tz-unknown .tz-group-offset{color:#98a8ba}
+.tz-pill{display:inline-flex;align-items:center;border:1px solid #2a4666;background:#10243b;color:#bfeeff;border-radius:999px;padding:3px 7px;font-size:10px;font-weight:850;white-space:nowrap}
+.roster-location-note{margin-top:10px}
+#page-rosters .table-card{overflow:hidden}
+#page-rosters .table-wrap{overflow:auto}
+#page-rosters table{min-width:1500px}
+@media(max-width:800px){.tz-section-head{display:block}.tz-section-head span{display:block;margin-top:4px}}

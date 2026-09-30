@@ -4,6 +4,7 @@
   if(!D) return;
 
   const date='2026-09-27';
+  const RATING_SPACE_START='2026-08-01';
   const newRows=[
     {group:1,rank:1,name:'AV-ZolikaLoveKira',username:'(S9)AV-Zolika…',yearsB:740.0,stars:7700000,sparks:769994,share:.25},
     {group:1,rank:2,name:'AV-LuckY',username:'(S9)AV-LuckYZo',yearsB:577.8,stars:6160000,sparks:615995,share:.20},
@@ -160,7 +161,7 @@
 
       // Player Ratings use the Arena-era Space average only.
       // Keep the PB all-time, but average only Space races on/after Aug 1, 2026.
-      const ratingHist=hist.filter(x=>String(x.date||'')>=String(D.meta.arenaStart||'2026-08-01'));
+      const ratingHist=hist.filter(x=>String(x.date||'')>=RATING_SPACE_START);
       member.spaceAvg=ratingHist.length
         ? ratingHist.reduce((sum,x)=>sum+(Number(x.yearsB)||0),0)/ratingHist.length
         : 0;
@@ -175,7 +176,7 @@
   // Refresh Player Ratings after merging the new Space event.
   // Rating formula mirrors the Members sheet:
   // PB = Piggy/35k + Space/350B + Kraken/3500, each capped at 1.
-  // AVG = Piggy/25k + Space Arena-era avg/200B + Kraken L3/2800, each capped at 1.
+  // AVG = Piggy/25k + Space avg since 2026-08-01 /200B + Kraken L3/2800, each capped at 1.
   const capped=(value,benchmark)=>Math.min(1,Math.max(0,(Number(value)||0)/benchmark));
   (D.members||[]).forEach(member=>{
     member.ratingPB=

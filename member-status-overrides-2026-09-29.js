@@ -1,46 +1,27 @@
 (function(){
   'use strict';
   const D=window.AVENGERS_DATA;
-  if(!D) return;
+  const R=window.AVENGERS_MEMBER_TIMEZONES;
+  if(!D || !R) return;
 
-  const targets=new Set(['av-lucky']);
-  const isTarget=name=>targets.has(String(name||'').trim().toLowerCase());
+  const byName=R.byName||{};
 
+  // The supplied 2026-09-29 roster is authoritative for CURRENT member status.
+  // Anyone in tracked historical data but absent from this roster is treated as Inactive.
   (D.members||[]).forEach(m=>{
-    if(isTarget(m.name)) m.status='Inactive';
+    const row=byName[m.name];
+    m.status=row?.status||'Inactive';
   });
 
-  if(D.piggy){
-    (D.piggy.overall||[]).forEach(r=>{
-      if(isTarget(r.name)) r.status='Inactive';
-    });
-    Object.values(D.piggy.events||{}).forEach(rows=>{
-      (rows||[]).forEach(r=>{
-        if(isTarget(r.name)||isTarget(r.username)) r.status='Inactive';
-      });
-    });
-  }
-
-  if(D.space){
-    (D.space.overall||[]).forEach(r=>{
-      if(isTarget(r.name)) r.status='Inactive';
-    });
-    Object.values(D.space.events||{}).forEach(rows=>{
-      (rows||[]).forEach(r=>{
-        if(isTarget(r.name)||isTarget(r.username)) r.status='Inactive';
-      });
-    });
-  }
-
+  // Keep Kraken player cards aligned with the same current-status source.
   const K=window.AVENGERS_KRAKEN_DATA;
   if(K && Array.isArray(K.players)){
     K.players.forEach(p=>{
-      if(isTarget(p.name)) p.status='Inactive';
+      const row=byName[p.name];
+      p.status=row?.status||'Inactive';
     });
   }
 
-  const S=window.AVENGERS_SPARKS_SNAPSHOT;
-  if(S && Array.isArray(S.currentAvengers)){
-    S.currentAvengers=S.currentAvengers.filter(x=>!isTarget(x && x.name));
-  }
+  // Historical Piggy/Space event rows are intentionally NOT rewritten here.
+  // Event-time clan attribution remains independent from today's roster status.
 })();

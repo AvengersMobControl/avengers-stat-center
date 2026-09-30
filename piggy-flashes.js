@@ -100,6 +100,14 @@
       aggregateByPlayer(s.rows).sort((a,b)=>b.lines-a.lines).forEach((r,i)=>setRows.push('<tr><td>'+esc(s.id)+'</td><td class="num">'+s.flashes.size+'/4</td><td class="num">'+(i+1)+'</td><td><strong>'+esc(r.name)+'</strong></td><td class="num">'+fmt(r.lines)+'</td><td class="num">'+fmt(r.stars)+'</td><td class="num">'+fmt(r.sparks)+'</td></tr>'));
     });
     const partialEvents=(DATA.events||[]).filter(e=>!e.complete).length;
+    const potEvents=(DATA.events||[]).filter(e=>e.potStars!=null).slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))||Number(a.flash)-Number(b.flash));
+    const potRows=potEvents.map(e=>'<tr><td>'+esc(e.date||'—')+'</td><td>'+esc(channelLabels[e.channelId]||('Flash '+(e.flash||'')))+'</td><td>'+esc(e.setId||'—')+'</td><td class="num">'+esc(e.potStarsDisplay||fmt(e.potStars))+'</td></tr>').join('');
+    const potSetMap=new Map();
+    potEvents.forEach(e=>{
+      const key=e.setId||((e.date||'')+'-A');
+      const x=potSetMap.get(key)||{id:key,date:e.date,total:0,count:0};
+      x.total+=Number(e.potStars)||0; x.count++; potSetMap.set(key,x);
+    });
 
     const body=rows.slice().sort((a,b)=>String(b.eventDate).localeCompare(String(a.eventDate)) || (Number(a.rank)||999)-(Number(b.rank)||999)).map(r=>`
       <tr>
@@ -129,6 +137,13 @@
         <div class="kpi"><div class="kpi-label">Sparks</div><div class="kpi-value">${fmt(totalSparks)}</div><div class="kpi-note">current filter total</div></div>
       </div>
       <div class="table-card">
+        <div class="table-titlebar"><div><h2>Pot Stars Log</h2><div class="small-muted">Recorded only for predominantly AVENGERS Flash lobbies. Outside lobbies with only a few AVENGERS players keep the player scores but intentionally have no pot total.</div></div></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Event</th><th>Flash</th><th>Flash Set</th><th class="num">Pot Stars</th></tr></thead>
+          <tbody>${potRows||'<tr><td colspan="4" class="empty">No AVENGERS pot totals logged yet.</td></tr>'}</tbody>
+        </table></div>
+      </div>
+      <div class="table-card" style="margin-top:16px">
         <div class="table-titlebar"><div><h2>Piggy Flash Results</h2><div class="small-muted">Four Discord flash channels • event clan preserved at time of result</div></div></div>
         <div class="table-wrap"><table>
           <thead><tr><th>Event</th><th>Channel</th><th class="num">Rank</th><th>Member</th><th>Clan</th><th class="num">Lines</th><th class="num">Stars</th><th class="num">Sparks</th></tr></thead>

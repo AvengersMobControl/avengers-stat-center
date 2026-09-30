@@ -23,19 +23,20 @@ function cookies(req){
 function validSession(req){
   const secret=process.env.AUTH_SECRET;
   const token=cookies(req).avengers_session;
-  if(!secret||!token)return false;
+  if(!secret||!token)return null;
   const [body,sig]=String(token).split('.');
-  if(!body||!sig)return false;
+  if(!body||!sig)return null;
   const expected=crypto.createHmac('sha256',secret).update(body).digest('base64url');
   const a=Buffer.from(sig),b=Buffer.from(expected);
-  if(a.length!==b.length||!crypto.timingSafeEqual(a,b))return false;
+  if(a.length!==b.length||!crypto.timingSafeEqual(a,b))return null;
   try{
     const payload=JSON.parse(Buffer.from(body,'base64url').toString('utf8'));
-    return Number(payload.exp||0)>Math.floor(Date.now()/1000);
-  }catch{return false;}
+    return Number(payload.exp||0)>Math.floor(Date.now()/1000) ? payload : null;
+  }catch{return null;}
 }
 function authorized(req){
-  if(validSession(req))return true;
+  const session=validSession(req);
+  if(session && !session.guest)return true;
   const expected=process.env.DISCORD_PULL_SECRET;
   const auth=String(req.headers.authorization||'');
   return Boolean(expected && auth===`Bearer ${expected}`);

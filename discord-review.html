@@ -868,7 +868,7 @@
       const modeLabel=p._modeLabel||'FINAL CANDIDATE';
       const imgs=(p.attachments||[]).map((a,i)=>`
         <div class="shot">
-          <img src="${esc(compactUrl(a.proxyUrl||a.url,560))}" alt="Discord result screenshot ${idx+1}-${i+1}" loading="eager">
+          <img src="${esc(compactUrl(a.proxyUrl||a.url,560))}" alt="Discord result screenshot ${idx+1}-${i+1}" loading="lazy">
           <div class="shot-meta">${esc(a.filename||'image')} • ${a.width||'?'}×${a.height||'?'}</div>
         </div>
       `).join('');
@@ -903,11 +903,89 @@
   $('#selectNone').addEventListener('click',()=>{
     document.querySelectorAll('.include input').forEach(x=>x.checked=false);syncSelection();
   });
-  $('#printSelected').addEventListener('click',()=>{
+  async function compactPrintImage(img,index,total){
+    const original=img.getAttribute('src')||'';
+    if(!original)return null;
+
+    status.textContent='Compressing screenshots for PDF… '+index+' / '+total;
+
+    try{
+      const source=await new Promise((resolve,reject)=>{
+        const x=new Image();
+        x.crossOrigin='anonymous';
+        x.onload=()=>resolve(x);
+        x.onerror=()=>reject(new Error('image load failed'));
+        x.src=original;
+      });
+
+      const maxW=520;
+      const scale=Math.min(1,maxW/Math.max(1,source.naturalWidth));
+      const w=Math.max(1,Math.round(source.naturalWidth*scale));
+      const h=Math.max(1,Math.round(source.naturalHeight*scale));
+      const canvas=document.createElement('canvas');
+      canvas.width=w; canvas.height=h;
+      const ctx=canvas.getContext('2d',{alpha:false});
+      ctx.fillStyle='#fff';
+      ctx.fillRect(0,0,w,h);
+      ctx.drawImage(source,0,0,w,h);
+
+      // JPEG is dramatically smaller in browser-generated PDFs than the
+      // original Discord PNG/WebP screenshots while remaining readable.
+      return canvas.toDataURL('image/jpeg',0.58);
+    }catch{
+      return null;
+    }
+  }
+
+  async function printCompactReview(){
     syncSelection();
-    if(!selectedCount()){status.textContent='Select at least one result post first.';return;}
+    if(!selectedCount()){
+      status.textContent='Select at least one result post first.';
+      return;
+    }
+
+    const imgs=[...document.querySelectorAll('.review-card:not(.not-selected) .shot img')];
+    const originals=imgs.map(img=>img.getAttribute('src')||'');
+    $('#printSelected').disabled=true;
+    $('#pullRecent').disabled=true;
+    $('#pullNew').disabled=true;
+
+    let compressed=0;
+    for(let i=0;i<imgs.length;i++){
+      const dataUrl=await compactPrintImage(imgs[i],i+1,imgs.length);
+      if(dataUrl){
+        imgs[i].src=dataUrl;
+        imgs[i].loading='eager';
+        compressed++;
+      }
+    }
+
+    // Wait for the compact print copies to be painted before opening print preview.
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+    status.textContent='Opening compact PDF preview… '+compressed+' / '+imgs.length+' screenshots compressed.';
+
+    const restore=()=>{
+      imgs.forEach((img,i)=>{
+        img.src=originals[i];
+        img.loading='lazy';
+      });
+      $('#printSelected').disabled=false;
+      $('#pullRecent').disabled=false;
+      $('#pullNew').disabled=false;
+      status.textContent=selectedCount()+' final result post(s) selected. Nothing has been imported.';
+      window.removeEventListener('afterprint',restore);
+    };
+    window.addEventListener('afterprint',restore,{once:true});
+
     window.print();
-  });
+
+    // Fallback for browsers that do not reliably fire afterprint.
+    setTimeout(()=>{
+      if(imgs.some((img,i)=>img.getAttribute('src')!==originals[i]))restore();
+    },4000);
+  }
+
+  $('#printSelected').addEventListener('click',()=>{ printCompactReview(); });
   $('#saveCheckpoint').addEventListener('click',()=>{
     if(!current?.newestScannedMessageId)return;
     localStorage.setItem(checkpointKey(),current.newestScannedMessageId);

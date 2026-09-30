@@ -166,8 +166,11 @@
       pts.forEach(function(p,pi){
         var px=x(p.date),py=y(p.value);
         var labelY=Math.max(11,py-7-(si%3)*9);
-        svg+='<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="4" class="p2-dot" stroke="'+c+'"><title>'+esc(s.name)+' — '+esc(longDate(p.date))+': '+esc(formatter(p.value))+'</title></circle>';
-        svg+='<text x="'+px.toFixed(1)+'" y="'+labelY.toFixed(1)+'" text-anchor="middle" class="p2-value-label">'+esc(formatter(p.value))+'</text>';
+        var ek=p.eventKind||s.eventKind||'';
+        var ev=p.eventKey||p.key||p.date||'';
+        var attrs=ek&&ev?' class="graph-event-link" data-event-kind="'+esc(ek)+'" data-event-key="'+esc(ev)+'" tabindex="0"':'';
+        svg+='<g'+attrs+'><circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="4" class="p2-dot" stroke="'+c+'"><title>'+esc(s.name)+' — '+esc(longDate(p.date))+': '+esc(formatter(p.value))+' — click to open event</title></circle>';
+        svg+='<text x="'+px.toFixed(1)+'" y="'+labelY.toFixed(1)+'" text-anchor="middle" class="p2-value-label">'+esc(formatter(p.value))+'</text></g>';
       });
     });
     svg+='</svg>';
@@ -202,9 +205,9 @@
       .filter(function(x){return x.events>0;})
       .sort(function(a,b){return b.last3-a.last3;});
 
-    var clanSeries=[{name:'Clan average',color:'#43d7ff',points:es.map(function(x){return {date:x.date,value:x.average};})}];
+    var clanSeries=[{name:'Clan average',color:'#43d7ff',eventKind:trendState.kind,points:es.map(function(x){return {date:x.date,eventKey:x.date,value:x.average};})}];
     var playerSeries=trendState.selected.map(function(name,idx){
-      return {name:name,color:colors[idx%colors.length],points:playerMetricHistory(name)};
+      return {name:name,color:colors[idx%colors.length],eventKind:trendState.kind,points:playerMetricHistory(name).map(function(p){p.eventKey=p.date;return p;})};
     }).filter(function(s){return s.points.length;});
 
     var metricOptions = trendState.kind==='piggy'
@@ -324,7 +327,7 @@
   }
   function simpleChart(kind,name,key,label,color){
     var pts=historyFor(kind,name).map(function(r){return {date:r.date,value:Number(r[key])||0};}).filter(function(r){return r.value>0;});
-    return lineChart([{name:label,color:color,points:pts}],230);
+    return lineChart([{name:label,color:color,eventKind:kind,points:pts.map(function(p){p.eventKey=p.date;return p;})}],230);
   }
   function historyTable(kind,name){
     var key=kind==='piggy'?'lines':'yearsB';
@@ -361,7 +364,7 @@
   function krakenChart(name){
     var h=krakenHistoryFor(name);
     if(!h.length)return '<div class="p2-empty">No Kraken history.</div>';
-    return lineChart([{name:'Kraken score',color:'#ffb454',points:h.map(function(r){return {date:r.date,value:r.value};})}],230,function(v){return num(v,0);});
+    return lineChart([{name:'Kraken score',color:'#ffb454',eventKind:'kraken',points:h.map(function(r){return {date:r.date,eventKey:r.key,value:r.value};})}],230,function(v){return num(v,0);});
   }
   function krakenHistoryTable(name){
     var h=krakenHistoryFor(name).slice().reverse();

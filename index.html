@@ -492,7 +492,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   }
   function eventCountText(n){ return `${fmtNum(n)} event${Number(n)===1?'':'s'}`; }
 
-  function lineChart(data, key='avg', formatter=fmtNum){
+  function lineChart(data, key='avg', formatter=fmtNum, eventKind=''){
     if(!data || !data.length) return `<div class="empty">No trend data yet.</div>`;
     const w=700,h=230,padL=58,padR=18,padT=28,padB=30;
     const vals=data.map(d=>Number(d[key])||0);
@@ -513,7 +513,12 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         ${grid.map(g=>`<line class="chart-grid-line" x1="${padL}" y1="${g.y}" x2="${w-padR}" y2="${g.y}"/><text class="chart-y-label" x="${padL-7}" y="${g.y+4}" text-anchor="end">${escapeHtml(formatter(g.value))}</text>`).join('')}
         <path class="chart-area" d="${area}"></path>
         <path class="chart-line" d="${path}"></path>
-        ${pts.map((p,i)=>`<circle class="chart-dot" cx="${p.x}" cy="${p.y}" r="4"><title>${fmtDate(p.d.date)}: ${formatter(p.d[key])}</title></circle><text class="chart-value-label" x="${p.x}" y="${Math.max(12,p.y-(i%2?9:7))}" text-anchor="middle">${escapeHtml(formatter(p.d[key]))}</text>`).join('')}
+        ${pts.map((p,i)=>{
+          const ek=p.d.eventKind||eventKind||'';
+          const ev=p.d.eventKey||p.d.key||p.d.date||'';
+          const attrs=ek&&ev?` class="graph-event-link" data-event-kind="${escapeHtml(ek)}" data-event-key="${escapeHtml(ev)}" tabindex="0"`:'';
+          return `<g${attrs}><circle class="chart-dot" cx="${p.x}" cy="${p.y}" r="4"><title>${fmtDate(p.d.date)}: ${formatter(p.d[key])} — click to open event</title></circle><text class="chart-value-label" x="${p.x}" y="${Math.max(12,p.y-(i%2?9:7))}" text-anchor="middle">${escapeHtml(formatter(p.d[key]))}</text></g>`;
+        }).join('')}
         ${dateLabels.map(p=>`<text class="chart-label" x="${p.x}" y="${h-5}" text-anchor="${p===pts[0]?'start':p===pts[pts.length-1]?'end':'middle'}">${fmtDate(p.d.date).replace(', 2026','')}</text>`).join('')}
       </svg></div>`;
   }
@@ -606,7 +611,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
               <span class="${pigDelta>=0?'positive':'negative'}">${pigDelta>=0?'↑':'↓'} ${fmtPct(Math.abs(pigDelta))}</span>
             </div>
           </div>
-          <div class="card-body">${lineChart(pigTrend,'avg',v=>fmtNum(v))}</div>
+          <div class="card-body">${lineChart(pigTrend,'avg',v=>fmtNum(v),'piggy')}</div>
         </div>
 
         <div class="card overview-trend space-trend">
@@ -620,7 +625,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
               <span class="${spDelta>=0?'positive':'negative'}">${spDelta>=0?'↑':'↓'} ${fmtPct(Math.abs(spDelta))}</span>
             </div>
           </div>
-          <div class="card-body">${lineChart(spTrend,'avg',v=>fmtB(v))}</div>
+          <div class="card-body">${lineChart(spTrend,'avg',v=>fmtB(v),'space')}</div>
         </div>
         <div class="card overview-trend kraken-trend">
           <div class="card-header">
@@ -1322,10 +1327,10 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     bindPlayerButtons($('#recordsContent'));
   }
 
-  function playerHistoryChart(hist, valueKey, fmt){
+  function playerHistoryChart(hist, valueKey, fmt, eventKind=''){
     if(!hist||!hist.length) return `<div class="empty">No event history.</div>`;
-    const data=hist.map(x=>({date:x.date,avg:x[valueKey]}));
-    return lineChart(data,'avg',fmt);
+    const data=hist.map(x=>({date:x.date,avg:x[valueKey],eventKind,eventKey:x.date}));
+    return lineChart(data,'avg',fmt,eventKind);
   }
 
   function openPlayer(name){
@@ -1371,12 +1376,12 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <div class="profile-kpi"><span>Kraken Last 3</span><strong>${krakenLast3>0?fmtNum(krakenLast3,1):'—'}</strong></div>
       </div>
       <div class="profile-charts">
-        <div class="profile-chart"><h3>Piggy Lines History</h3>${playerHistoryChart(ph,'lines',fmtNum)}</div>
-        <div class="profile-chart"><h3>Space Lightyears History</h3>${playerHistoryChart(sh,'yearsB',fmtB)}</div>
+        <div class="profile-chart"><h3>Piggy Lines History</h3>${playerHistoryChart(ph,'lines',fmtNum,'piggy')}</div>
+        <div class="profile-chart"><h3>Space Lightyears History</h3>${playerHistoryChart(sh,'yearsB',fmtB,'space')}</div>
       </div>
       <div class="profile-chart kraken-profile-chart" style="margin-top:14px">
         <h3>Kraken Score History</h3>
-        ${km.length?lineChart(km,'value',v=>fmtNum(v,1)):'<div class="empty">No Kraken history logged.</div>'}
+        ${km.length?lineChart(km,'value',v=>fmtNum(v,1),'kraken'):'<div class="empty">No Kraken history logged.</div>'}
       </div>
       <div class="dual-cards" style="margin-top:14px">
         <div class="card"><div class="card-header"><div class="card-title">Piggy Snapshot</div></div><div class="card-body">
@@ -1515,6 +1520,10 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       #page-eventTotals .table-wrap{max-height:none}
       #page-eventTotals .table-card{overflow:visible}
       .event-total-highlight{font-weight:900;color:#dff7ff}
+      .graph-event-link{cursor:pointer}
+      .graph-event-link .chart-dot,.graph-event-link .p2-dot,.graph-event-link .kr-dot{transition:r .12s ease,filter .12s ease}
+      .graph-event-link:hover .chart-dot,.graph-event-link:hover .p2-dot,.graph-event-link:hover .kr-dot{filter:brightness(1.35)}
+      .graph-event-link:hover text{text-decoration:underline}
       @media(max-width:980px){
         .space-pb-toolbar{align-items:flex-start;flex-direction:column}
         .pb-toolbar-controls{justify-content:flex-start;width:100%}
@@ -1526,8 +1535,51 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     document.head.appendChild(st);
   }
 
+  function openGraphEvent(kind,key){
+    kind=String(kind||'').toLowerCase();
+    key=String(key||'');
+    if(!kind||!key)return;
+
+    if(kind==='piggy'||kind==='space'){
+      const nav=document.querySelector('.nav-btn[data-page="'+kind+'"]');
+      nav?.click();
+      setTimeout(()=>{
+        const select=document.getElementById(kind+'EventSelect');
+        if(select && [...select.options].some(o=>o.value===key)){
+          select.value=key;
+          select.dispatchEvent(new Event('change',{bubbles:true}));
+          setTimeout(()=>document.getElementById('page-'+kind)?.scrollIntoView({behavior:'smooth',block:'start'}),20);
+        }
+      },0);
+      return;
+    }
+    if(kind==='kraken'){
+      document.querySelector('.nav-btn[data-page="kraken"]')?.click();
+      setTimeout(()=>window.openKrakenEvent?.(key),0);
+      return;
+    }
+    if(kind==='flash'||kind==='flashset'){
+      document.querySelector('.nav-btn[data-page="piggyFlashes"]')?.click();
+      setTimeout(()=>window.openPiggyFlashEvent?.(kind,key),0);
+    }
+  }
+  window.AVENGERS_OPEN_EVENT=openGraphEvent;
+  document.addEventListener('click',e=>{
+    const target=e.target.closest?.('[data-event-kind][data-event-key]');
+    if(!target)return;
+    e.preventDefault();
+    openGraphEvent(target.dataset.eventKind,target.dataset.eventKey);
+  });
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Enter'&&e.key!==' ')return;
+    const target=e.target.closest?.('[data-event-kind][data-event-key]');
+    if(!target)return;
+    e.preventDefault();
+    openGraphEvent(target.dataset.eventKind,target.dataset.eventKey);
+  });
+
   // Events
-  $$('.nav-btn').forEach(b=>b.addEventListener('click',()=>{state.page=b.dataset.page;renderPage();}));
+  $('.nav-btn').forEach(b=>b.addEventListener('click',()=>{state.page=b.dataset.page;renderPage();}));
   $('#globalStatusFilter').addEventListener('change',e=>{state.status=e.target.value;renderPage();});
   $('#piggyTabs').addEventListener('click',e=>{const b=e.target.closest('button[data-view]');if(!b)return;state.piggyView=b.dataset.view;$$('#piggyTabs button').forEach(x=>x.classList.toggle('active',x===b));renderPiggy();});
   $('#spaceTabs').addEventListener('click',e=>{const b=e.target.closest('button[data-view]');if(!b)return;state.spaceView=b.dataset.view;$$('#spaceTabs button').forEach(x=>x.classList.toggle('active',x===b));renderSpace();});

@@ -436,8 +436,18 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   }
   const MEMBERS = memberMap();
 
+  function canonicalPlayerName(name){
+    let x=String(name||'');
+    const seen=new Set();
+    while(D.aliasMap?.[x] && !seen.has(x)){
+      seen.add(x);
+      x=D.aliasMap[x];
+    }
+    return x;
+  }
   function currentStatusFor(name,fallback=''){
-    return MEMBERS.get(name)?.status || fallback || 'Inactive';
+    const canonical=canonicalPlayerName(name);
+    return MEMBERS.get(canonical)?.status || MEMBERS.get(name)?.status || fallback || 'Inactive';
   }
   function eventStatusForRow(r){
     const clan=String(r?.clan||'').toLowerCase().replace(/[^a-z0-9]/g,'');
@@ -1259,8 +1269,10 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   }
 
   function openPlayer(name){
-    const m=MEMBERS.get(name) || D.members.find(x=>x.name===name);
+    const canonicalName=canonicalPlayerName(name);
+    const m=MEMBERS.get(canonicalName) || MEMBERS.get(name) || D.members.find(x=>x.name===canonicalName||x.name===name);
     if(!m) return;
+    name=canonicalName;
     const ph=D.piggy.history[name]||[];
     const sh=D.space.history[name]||[];
     const pigLast=ph.at(-1), spLast=sh.at(-1);

@@ -48,6 +48,12 @@
       "yearsB": 7.4
     },
     {
+      "group": 1,
+      "rank": 8,
+      "name": "AV-Mr.Mar",
+      "yearsB": 6.7
+    },
+    {
       "group": 2,
       "rank": 1,
       "name": "AV-LetsGo!",
@@ -165,9 +171,21 @@
     },
     {
       "group": 1,
+      "rank": 2,
+      "name": "Canyoubetme",
+      "yearsB": 17
+    },
+    {
+      "group": 1,
       "rank": 3,
       "name": "AV-DrDetroit",
       "yearsB": 14.9
+    },
+    {
+      "group": 1,
+      "rank": 4,
+      "name": "RkHendrix",
+      "yearsB": 14.7
     },
     {
       "group": 2,
@@ -1081,15 +1099,15 @@
     },
     {
       "group": 3,
-      "rank": 2,
-      "name": "AV-EventHorizon",
-      "yearsB": 10.9
-    },
-    {
-      "group": 3,
       "rank": 1,
       "name": "AV-Mr.Mar.Berry",
       "yearsB": 6.8
+    },
+    {
+      "group": 3,
+      "rank": 2,
+      "name": "AV-EventHorizon",
+      "yearsB": 10.9
     }
   ],
   "2026-01-27": [

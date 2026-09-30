@@ -64,6 +64,9 @@
       .flash-metric strong{font-size:22px;line-height:1}
       .flash-metric em{display:block;font-style:normal;font-size:10px;opacity:.55;margin-top:5px}
       .flash-note{font-size:11px;opacity:.68;margin-top:8px}
+      .flash-pb-track[data-event-kind],.flash-pb-value[data-event-kind]{cursor:pointer}
+      .flash-event-highlight{animation:flashEventPulse 2.4s ease}
+      @keyframes flashEventPulse{0%,100%{background:transparent}20%,65%{background:rgba(216,73,87,.22)}}
       @media(max-width:1000px){.flash-grid{grid-template-columns:1fr}.flash-metric-strip{grid-template-columns:repeat(2,1fr)}}
       @media(max-width:720px){.flash-tabs{grid-template-columns:repeat(3,1fr)}.flash-pb-row{grid-template-columns:100px 1fr 58px 38px;gap:6px}.flash-pb-flash{min-width:38px}.flash-chip{min-width:30px;padding:2px 4px}.flash-metric-strip{grid-template-columns:1fr 1fr}}
     `;
@@ -204,10 +207,10 @@
     return `<div class="flash-pb-scroll">${sorted.map((r,i)=>`
       <div class="flash-pb-row">
         <div class="flash-pb-name" title="${esc(r.name)}">${i+1}. <strong>${esc(r.name)}</strong></div>
-        <div class="flash-pb-track" title="${esc(r.name)} — ${fmt(r.best)} lines">
+        <div class="flash-pb-track" data-event-kind="${daily?'flashset':'flash'}" data-event-key="${esc(daily?r.pbDate:(r.pbDate+'|'+r.pbFlash))}" title="${esc(r.name)} — ${fmt(r.best)} lines — click to open event">
           <div class="flash-pb-bar" style="width:${Math.max(1.5,r.best/max*100)}%"></div>
         </div>
-        <div class="flash-pb-value">${fmt(r.best)}</div>
+        <div class="flash-pb-value" data-event-kind="${daily?'flashset':'flash'}" data-event-key="${esc(daily?r.pbDate:(r.pbDate+'|'+r.pbFlash))}">${fmt(r.best)}</div>
         <div class="flash-pb-flash">${daily?'':'<span class="flash-chip">PF'+r.pbFlash+'</span>'}</div>
       </div>`).join('')}</div>`;
   }
@@ -229,7 +232,12 @@
       if(points.length>10 && i%Math.ceil(points.length/7)!==0 && i!==points.length-1)return '';
       return '<text text-anchor="middle" x="'+x(i)+'" y="'+(H-9)+'">'+esc(String(p.label).replace(/^2026-/,'').replace('-','/'))+'</text>';
     }).join('');
-    const dots=points.map((p,i)=>'<circle class="dot" cx="'+x(i)+'" cy="'+y(p.value)+'" r="4"><title>'+esc(p.label)+' — '+fmt(p.value)+' '+esc(titleValue)+'</title></circle>').join('');
+    const dots=points.map((p,i)=>{
+      const kind=p.eventKind||'';
+      const key=p.eventKey||'';
+      const attrs=kind&&key?' class="graph-event-link" data-event-kind="'+esc(kind)+'" data-event-key="'+esc(key)+'" tabindex="0"':'';
+      return '<g'+attrs+'><circle class="dot" cx="'+x(i)+'" cy="'+y(p.value)+'" r="4"><title>'+esc(p.label)+' — '+fmt(p.value)+' '+esc(titleValue)+(kind&&key?' — click to open event':'')+'</title></circle></g>';
+    }).join('');
     return '<svg class="flash-svg" viewBox="0 0 '+W+' '+H+'" role="img">'+grid+'<path class="line" d="'+path+'"></path>'+dots+labels+'</svg>';
   }
 
@@ -279,15 +287,17 @@
 
     const potTrend=allEvs.filter(e=>e.potStars!=null)
       .sort((a,b)=>String(a.date).localeCompare(String(b.date))||a.flash-b.flash)
-      .map(e=>({label:e.date+' PF'+e.flash,value:Number(e.potStars)||0}));
+      .map(e=>({label:e.date+' PF'+e.flash,value:Number(e.potStars)||0,eventKind:'flash',eventKey:e.date+'|'+e.flash}));
 
     const dailyTrend=[...setMap.values()].sort((a,b)=>String(a.date).localeCompare(String(b.date))).map(s=>({
       label:s.id,
       value:[...s.players.values()].reduce((sum,p)=>sum+p.lines,0),
-      flashes:s.flashes.size
+      flashes:s.flashes.size,
+      eventKind:'flashset',
+      eventKey:s.id
     }));
 
-    const trendPoints=isDaily?dailyTrend:(state.tab==='all'?potTrend:evs.filter(e=>e.potStars!=null).sort((a,b)=>String(a.date).localeCompare(String(b.date))).map(e=>({label:e.date,value:Number(e.potStars)||0})));
+    const trendPoints=isDaily?dailyTrend:(state.tab==='all'?potTrend:evs.filter(e=>e.potStars!=null).sort((a,b)=>String(a.date).localeCompare(String(b.date))).map(e=>({label:e.date,value:Number(e.potStars)||0,eventKind:'flash',eventKey:e.date+'|'+e.flash})));
 
     const performanceBody=sortedOverall.map((r,i)=>{
       const total=isDaily?r.total:r.lines;
@@ -296,12 +306,12 @@
       return '<tr><td class="num">'+(i+1)+'</td><td><strong>'+esc(r.name)+'</strong></td><td class="num">'+fmt(events)+'</td><td class="num">'+fmt(total)+'</td><td class="num">'+fmt(Math.round(r.avg))+'</td><td class="num">'+fmt(best)+'</td>'+(isDaily?'':'<td class="num">'+fmt(r.stars)+'</td><td class="num">'+fmt(r.sparks)+'</td>')+'</tr>';
     }).join('');
 
-    const resultBody=isDaily?'':rows.slice().sort((a,b)=>String(b.eventDate).localeCompare(String(a.eventDate))||(Number(a.rank)||999)-(Number(b.rank)||999)).map(r=>'<tr><td>'+esc(r.eventDate||'—')+'</td><td>PF'+r.flash+'</td><td class="num">'+(r.rank??'—')+'</td><td><strong>'+esc(r.name||'—')+'</strong></td><td class="num">'+fmt(r.lines)+'</td><td class="num">'+fmt(r.stars)+'</td><td class="num">'+fmt(r.sparks)+'</td></tr>').join('');
+    const resultBody=isDaily?'':rows.slice().sort((a,b)=>String(b.eventDate).localeCompare(String(a.eventDate))||(Number(a.rank)||999)-(Number(b.rank)||999)).map(r=>'<tr data-flash-event="'+esc(r.eventDate+'|'+r.flash)+'"><td>'+esc(r.eventDate||'—')+'</td><td>PF'+r.flash+'</td><td class="num">'+(r.rank??'—')+'</td><td><strong>'+esc(r.name||'—')+'</strong></td><td class="num">'+fmt(r.lines)+'</td><td class="num">'+fmt(r.stars)+'</td><td class="num">'+fmt(r.sparks)+'</td></tr>').join('');
 
     const dailyRows=[];
     [...setMap.values()].sort((a,b)=>String(b.date).localeCompare(String(a.date))).forEach(s=>{
       [...s.players.values()].sort((a,b)=>b.lines-a.lines).forEach((p,i)=>{
-        dailyRows.push('<tr><td>'+esc(s.id)+'</td><td class="num">'+s.flashes.size+'/4</td><td class="num">'+(i+1)+'</td><td><strong>'+esc(p.name)+'</strong></td><td class="num">'+fmt(p.lines)+'</td><td class="num">'+fmt(p.stars)+'</td><td class="num">'+fmt(p.sparks)+'</td></tr>');
+        dailyRows.push('<tr data-flash-set="'+esc(s.id)+'"><td>'+esc(s.id)+'</td><td class="num">'+s.flashes.size+'/4</td><td class="num">'+(i+1)+'</td><td><strong>'+esc(p.name)+'</strong></td><td class="num">'+fmt(p.lines)+'</td><td class="num">'+fmt(p.stars)+'</td><td class="num">'+fmt(p.sparks)+'</td></tr>');
       });
     });
 
@@ -354,6 +364,38 @@
       render();
     }));
   }
+
+  window.openPiggyFlashEvent=function(kind,key){
+    kind=String(kind||'');
+    key=String(key||'');
+    if(kind==='flash'){
+      const parts=key.split('|');
+      const date=parts[0],flash=Number(parts[1])||1;
+      state.tab='pf'+flash;
+      render();
+      setTimeout(()=>{
+        const row=document.querySelector('[data-flash-event="'+CSS.escape(date+'|'+flash)+'"]');
+        if(row){
+          document.querySelectorAll('.flash-event-highlight').forEach(x=>x.classList.remove('flash-event-highlight'));
+          row.classList.add('flash-event-highlight');
+          row.scrollIntoView({behavior:'smooth',block:'center'});
+        }
+      },20);
+      return;
+    }
+    if(kind==='flashset'){
+      state.tab='daily';
+      render();
+      setTimeout(()=>{
+        const row=document.querySelector('[data-flash-set="'+CSS.escape(key)+'"]');
+        if(row){
+          document.querySelectorAll('.flash-event-highlight').forEach(x=>x.classList.remove('flash-event-highlight'));
+          row.classList.add('flash-event-highlight');
+          row.scrollIntoView({behavior:'smooth',block:'center'});
+        }
+      },20);
+    }
+  };
 
   function showPage(btn){
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));

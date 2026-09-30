@@ -102,7 +102,7 @@
     <div class="top no-print">
       <div>
         <h1>Discord Result Review</h1>
-        <div class="muted">Manual pulls only. Space Race uses the spaceship/header visual signature to reject unrelated images before review.</div>
+        <div class="muted">Manual pulls only. Space Race and Big Pig use event-specific visual recognition to reject unrelated images before review.</div>
       </div>
       <a class="back" href="/">← Back to Stat Center</a>
     </div>
@@ -114,8 +114,8 @@
     </div>
 
     <div class="notice no-print">
-      <strong>Space Race filtering is now visual.</strong>
-      The page first looks for the distinctive dark-blue <strong>Space Race spaceship/header</strong>. Posts without that visual signature are discarded. It then checks likely Space Race screenshots for “Preliminary / ongoing” text and excludes those from the review set.
+      <strong>Event-specific filtering is enabled.</strong>
+      Space Race looks for the spaceship/header. Big Pig looks for the Piggy Race pig/header, rejects unrelated images and progress screenshots, prefers the two large stitched leaderboard images when they exist, ignores isolated partial AVENGERS-lobby screenshots, and keeps full outside-lobby results when only one AVENGERS player is present.
     </div>
 
     <div class="controls no-print">
@@ -154,7 +154,7 @@
     <div class="summary" id="summary" hidden>
       <div class="kpi"><span>Messages Scanned</span><strong id="scanned">0</strong></div>
       <div class="kpi"><span>Image Posts Found</span><strong id="rawPosts">0</strong></div>
-      <div class="kpi"><span>Space Results Kept</span><strong id="kept">0</strong></div>
+      <div class="kpi"><span>Results Kept</span><strong id="kept">0</strong></div>
       <div class="kpi"><span>Unrelated Rejected</span><strong id="rejected">0</strong></div>
       <div class="kpi"><span>Progress Rejected</span><strong id="progressRejected">0</strong></div>
     </div>
@@ -258,7 +258,7 @@
       0,0,c.width,c.height
     );
     const data=ctx.getImageData(0,0,c.width,c.height).data;
-    let cyan=0,white=0,dark=0,orange=0,navy=0,n=0;
+    let cyan=0,white=0,dark=0,orange=0,navy=0,pink=0,purple=0,green=0,yellow=0,n=0;
     for(let i=0;i<data.length;i+=4){
       const r=data[i],g=data[i+1],b=data[i+2];
       n++;
@@ -267,8 +267,15 @@
       if(r<80 && g<100 && b<150)dark++;
       if(r>150 && g>50 && g<190 && b<120 && r-b>70)orange++;
       if(r<90 && g<110 && b>80 && b<180)navy++;
+      if(r>155 && b>105 && g<145 && r-g>35)pink++;
+      if(r>70 && b>95 && b>g*1.05 && r>g*1.08)purple++;
+      if(g>120 && r<150 && b<145 && g-r>20)green++;
+      if(r>165 && g>145 && b<110 && r-b>55)yellow++;
     }
-    return {cyan:cyan/n,white:white/n,dark:dark/n,orange:orange/n,navy:navy/n};
+    return {
+      cyan:cyan/n,white:white/n,dark:dark/n,orange:orange/n,navy:navy/n,
+      pink:pink/n,purple:purple/n,green:green/n,yellow:yellow/n
+    };
   }
 
   async function spaceVisualDetect(att){
@@ -312,6 +319,268 @@
     }catch(e){
       return {match:false,score:0,reason:'image could not be analyzed'};
     }
+  }
+
+
+  function imageArea(att){
+    return (Number(att?.width)||0)*(Number(att?.height)||0);
+  }
+
+  function median(values){
+    const a=values.filter(Number.isFinite).sort((x,y)=>x-y);
+    if(!a.length)return 0;
+    const m=Math.floor(a.length/2);
+    return a.length%2?a[m]:(a[m-1]+a[m])/2;
+  }
+
+  async function makeOcrCanvasRegion(att,y0=0,y1=1,width=520){
+    const img=await loadImg(compactUrl(att.proxyUrl||att.url,width));
+    const sy=Math.floor(img.naturalHeight*y0);
+    const sh=Math.max(1,Math.floor(img.naturalHeight*(y1-y0)));
+    const outW=Math.min(width,img.naturalWidth);
+    const outH=Math.max(1,Math.round(sh*(outW/img.naturalWidth)));
+    const cv=document.createElement('canvas');
+    cv.width=outW;cv.height=outH;
+    cv.getContext('2d').drawImage(img,0,sy,img.naturalWidth,sh,0,0,outW,outH);
+    return cv;
+  }
+
+  async function pigVisualGate(att){
+    if((att.width||0)<480 || (att.height||0)<600){
+      return {match:false,score:0,reason:'too small'};
+    }
+    try{
+      const img=await loadImg(compactUrl(att.proxyUrl||att.url,240));
+      const top=regionStats(img,0,0,1,.36);
+      const middle=regionStats(img,0,.18,1,.62);
+      const purpleField=(top.purple||0)+(middle.purple||0);
+      const pigAccent=(top.pink||0)+(top.yellow||0)+(top.orange||0);
+      const uiContrast=(top.white||0)+(middle.white||0);
+      const score=(purpleField*2.0)+(pigAccent*2.4)+(uiContrast*.7)+(top.dark||0)*.25;
+      const match=
+        ((top.purple||0)>.018 || (middle.purple||0)>.025 || (top.dark||0)>.35) &&
+        pigAccent>.007 &&
+        uiContrast>.025;
+      return {match,score,top,middle,reason:match?'piggy-color/header candidate':'no piggy header signature'};
+    }catch(e){
+      return {match:false,score:0,reason:'image could not be analyzed'};
+    }
+  }
+
+  async function pigOcrInspect(worker,att){
+    if(!worker)return {match:false,progress:false,text:'',avengersCount:0,rowCount:0,claim:false,failed:true};
+    try{
+      const headerCanvas=await makeOcrCanvasRegion(att,0,.43,420);
+      const headerResult=await worker.recognize(headerCanvas);
+      const headerText=String(headerResult?.data?.text||'').replace(/\s+/g,' ').trim();
+      const headerCompact=headerText.toUpperCase().replace(/[^A-Z]/g,'');
+      const pigWords=
+        headerCompact.includes('PIGGYRACE') ||
+        (headerCompact.includes('PIGGY') && headerCompact.includes('RACE')) ||
+        headerCompact.includes('PIGGYPRO');
+
+      const fullCanvas=await makeOcrCanvasRegion(att,0,1,560);
+      const fullResult=await worker.recognize(fullCanvas);
+      const text=String(fullResult?.data?.text||'').replace(/\s+/g,' ').trim();
+      const upper=text.toUpperCase();
+      const compact=upper.replace(/[^A-Z]/g,'');
+      const avengersCount=(upper.match(/AVENGERS/g)||[]).length;
+      const rowCount=(text.match(/%/g)||[]).length;
+      const claim=compact.includes('CLAIM');
+      const progressFlag=
+        compact.includes('PRELIMINARY') ||
+        compact.includes('STILLONGOING') ||
+        compact.includes('ONGOING') ||
+        compact.includes('INPROGRESS') ||
+        compact.includes('CURRENTSTANDINGS') ||
+        compact.includes('NOTFINAL');
+
+      return {
+        match:pigWords,
+        progress:progressFlag,
+        text,
+        headerText,
+        avengersCount,
+        rowCount,
+        claim,
+        failed:false
+      };
+    }catch(e){
+      return {match:false,progress:false,text:'',avengersCount:0,rowCount:0,claim:false,failed:true};
+    }
+  }
+
+  function clusterPigPosts(posts){
+    const sorted=[...posts].sort((a,b)=>new Date(a.timestamp)-new Date(b.timestamp));
+    const clusters=[];
+    const MAX_GAP=72*60*60*1000;
+    for(const post of sorted){
+      const t=+new Date(post.timestamp);
+      const last=clusters[clusters.length-1];
+      if(!last || !Number.isFinite(t) || t-last.lastTime>MAX_GAP){
+        clusters.push({posts:[post],lastTime:t});
+      }else{
+        last.posts.push(post);
+        last.lastTime=t;
+      }
+    }
+    return clusters;
+  }
+
+  function regroupSelectedPig(items,modeLabel){
+    const map=new Map();
+    for(const item of items){
+      const key=item.post.messageId;
+      let p=map.get(key);
+      if(!p){
+        p={...item.post,attachments:[],_modeLabel:modeLabel||item.modeLabel||'PIGGY RESULT',_ocr:item.inspect};
+        map.set(key,p);
+      }
+      p.attachments.push(item.att);
+      if(item.modeLabel)p._modeLabel=item.modeLabel;
+    }
+    return [...map.values()];
+  }
+
+  async function filterPiggy(data){
+    const raw=data.candidates||[];
+    const diagnostics=[];
+    const gated=[];
+    const total=Math.max(1,raw.reduce((n,p)=>n+(p.attachments?.length||0),0));
+    let checked=0;
+
+    // Cheap visual gate first so OCR only runs against Piggy-looking screenshots.
+    for(const post of raw){
+      for(const att of (post.attachments||[])){
+        const gate=await pigVisualGate(att);
+        checked++;
+        setProgress(Math.min(.28,(checked/total)*.28),'Finding Big Pig pig/header… '+checked+' / '+total+' images');
+        if(gate.match){
+          gated.push({post,att,gate});
+        }else{
+          diagnostics.push({messageId:post.messageId,file:att.filename,result:'unrelated visual',score:gate.score||0});
+        }
+      }
+    }
+
+    let worker=null;
+    try{
+      if(window.Tesseract){
+        worker=await Tesseract.createWorker('eng',1,{
+          logger:m=>{
+            if(m.status==='recognizing text' && typeof m.progress==='number'){
+              setProgress(.30+(m.progress*.12),'Confirming Piggy Race headers and leaderboard coverage…');
+            }
+          }
+        });
+      }
+    }catch(e){
+      diagnostics.push({result:'OCR unavailable',detail:String(e?.message||e)});
+    }
+
+    const pigItems=[];
+    for(let i=0;i<gated.length;i++){
+      const item=gated[i];
+      const inspect=await pigOcrInspect(worker,item.att);
+      const strongVisual=(item.gate.score||0)>.24;
+      const isPig=inspect.match || strongVisual;
+      const isProgress=Boolean(item.post.messageTextProgressHint)||inspect.progress;
+
+      if(!isPig){
+        diagnostics.push({messageId:item.post.messageId,file:item.att.filename,result:'pig/header not confirmed',header:inspect.headerText||''});
+      }else if(isProgress){
+        diagnostics.push({messageId:item.post.messageId,file:item.att.filename,result:'progress rejected',ocr:(inspect.text||'').slice(0,350)});
+      }else{
+        const av=inspect.avengersCount||0;
+        const rows=inspect.rowCount||0;
+        let kind='unknown';
+        if(av>=2)kind='main';
+        else if(av===1 && rows>=3)kind='external';
+        else if(av===1)kind='single';
+        else if(rows>=6)kind='unknown-full';
+
+        pigItems.push({...item,inspect,kind});
+      }
+      setProgress(.32+((i+1)/Math.max(1,gated.length))*.54,'Classifying Big Pig result screenshots… '+(i+1)+' / '+gated.length);
+    }
+    if(worker)try{await worker.terminate();}catch{}
+
+    // Cluster by event/week. Big Pig finals from one event are normally posted within a short window.
+    const uniquePosts=[...new Map(pigItems.map(x=>[x.post.messageId,x.post])).values()];
+    const clusters=clusterPigPosts(uniquePosts);
+    const kept=[];
+    let singleRejected=0;
+    let compactSuppressed=0;
+
+    for(const cluster of clusters){
+      const ids=new Set(cluster.posts.map(p=>p.messageId));
+      const items=pigItems.filter(x=>ids.has(x.post.messageId));
+      const external=items.filter(x=>x.kind==='external');
+      const main=items.filter(x=>x.kind==='main' || x.kind==='unknown-full');
+      const singles=items.filter(x=>x.kind==='single');
+
+      // Outside-lobby result: exactly one AVENGERS player in a full leaderboard.
+      // Keep these even when they are the only screenshot from that lobby.
+      for(const x of external){
+        kept.push({...x,modeLabel:'OUTSIDE LOBBY'});
+      }
+
+      if(main.length){
+        const areas=main.map(x=>imageArea(x.att));
+        const heights=main.map(x=>Number(x.att.height)||0);
+        const medArea=median(areas);
+        const medHeight=median(heights);
+
+        const big=main.filter(x=>{
+          const area=imageArea(x.att);
+          const h=Number(x.att.height)||0;
+          const coverage=Math.max(x.inspect.avengersCount||0,x.inspect.rowCount||0);
+          return (
+            (medArea>0 && area>=medArea*1.65) ||
+            (medHeight>0 && h>=medHeight*1.42) ||
+            coverage>=12
+          );
+        }).sort((a,b)=>{
+          const ca=Math.max(a.inspect.avengersCount||0,a.inspect.rowCount||0);
+          const cb=Math.max(b.inspect.avengersCount||0,b.inspect.rowCount||0);
+          return (cb-ca)||(imageArea(b.att)-imageArea(a.att));
+        });
+
+        // When the weekly post contains both the 8-10 ordinary captures and two
+        // large stitched/full captures, review only the two large ones.
+        if(main.length>=5 && big.length>=2){
+          kept.push({...big[0],modeLabel:'BIG PIG — LARGE 1'});
+          kept.push({...big[1],modeLabel:'BIG PIG — LARGE 2'});
+          compactSuppressed+=Math.max(0,main.length-2);
+        }else if(main.length>=2){
+          for(const x of main)kept.push({...x,modeLabel:'BIG PIG — MAIN LOBBY'});
+        }else{
+          // A lone slice of the AVENGERS lobby is normally a member posting only
+          // their own position (commonly SmilingBandit). It is not enough to
+          // reconstruct the clan race, so do not send it to review.
+          singleRejected+=main.length;
+          for(const x of main)diagnostics.push({
+            messageId:x.post.messageId,file:x.att.filename,result:'isolated AVENGERS-lobby fragment rejected'
+          });
+        }
+      }
+
+      // A one-player crop from the AVENGERS lobby is intentionally ignored.
+      singleRejected+=singles.length;
+      for(const x of singles)diagnostics.push({
+        messageId:x.post.messageId,file:x.att.filename,result:'single-player AVENGERS result rejected'
+      });
+    }
+
+    const posts=regroupSelectedPig(kept);
+    return {
+      posts,
+      rejectedUnrelated:Math.max(0,raw.length-posts.length),
+      progressRejected:diagnostics.filter(x=>x.result==='progress rejected').length,
+      diagnostics,
+      pigSingleRejected:singleRejected,
+      pigCompactSuppressed:compactSuppressed
+    };
   }
 
   function sameScreenshotFamily(a,b){
@@ -479,13 +748,19 @@
 
       const filtered=channel.value==='space'
         ? await filterSpace(data)
-        : await filterOther(data);
+        : channel.value==='piggy'
+          ? await filterPiggy(data)
+          : await filterOther(data);
 
       filteredPosts=filtered.posts;
       render(data,filtered);
       setButtons(Boolean(filteredPosts.length));
       status.innerHTML=filteredPosts.length
-        ? '<strong>'+filteredPosts.length+'</strong> review post(s) kept. '+filtered.rejectedUnrelated+' unrelated post(s) rejected and '+filtered.progressRejected+' progress post(s) rejected.'
+        ? '<strong>'+filteredPosts.length+'</strong> review post(s) kept. '+
+          filtered.rejectedUnrelated+' unrelated post(s) rejected, '+
+          filtered.progressRejected+' progress post(s) rejected'+
+          (filtered.pigCompactSuppressed?' • '+filtered.pigCompactSuppressed+' ordinary Piggy screenshots suppressed in favor of the two large captures':'')+
+          (filtered.pigSingleRejected?' • '+filtered.pigSingleRejected+' isolated/single-player Piggy screenshots ignored':'')+'.'
         : 'Pull completed, but no final matching result posts were found.';
     }catch(e){
       current=null;
@@ -528,6 +803,7 @@
     cards.innerHTML=list.map((p,idx)=>{
       const author=p.author?.globalName||p.author?.username||'Unknown';
       const ocrFailed=Boolean(p._ocr?.failed);
+      const modeLabel=p._modeLabel||'FINAL CANDIDATE';
       const imgs=(p.attachments||[]).map((a,i)=>`
         <div class="shot">
           <img src="${esc(compactUrl(a.proxyUrl||a.url,560))}" alt="Discord result screenshot ${idx+1}-${i+1}" loading="lazy">
@@ -542,7 +818,7 @@
               <div class="card-title">Post ${idx+1} • ${esc(author)}</div>
               <div class="meta">${esc(niceDate(p.timestamp))} • Message ${esc(p.messageId)}</div>
             </div>
-            <span class="tag ${ocrFailed?'check':'final'}">${ocrFailed?'CHECK FINAL':'FINAL CANDIDATE'}</span>
+            <span class="tag ${ocrFailed?'check':'final'}">${ocrFailed?'CHECK FINAL':esc(modeLabel)}</span>
             <label class="include no-print"><input type="checkbox" checked> Include</label>
           </div>
           <div class="card-body">
@@ -582,7 +858,7 @@
   });
   channel.addEventListener('change',()=>{
     updateCheckpoint();
-    $('#maxMessages').value=channel.value==='space'?'2000':'1000';
+    $('#maxMessages').value=channel.value==='space'?'2000':channel.value==='piggy'?'2500':'1000';
   });
   updateCheckpoint();
 })();

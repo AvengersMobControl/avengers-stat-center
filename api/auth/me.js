@@ -32,6 +32,7 @@ module.exports=function handler(req,res){
   res.status(200).json({
     authenticated:true,
     user:{id:session.sub,username:session.username,avatar:session.avatar||null},
+    guest:Boolean(session.guest),
     expires:session.exp
   });
 };

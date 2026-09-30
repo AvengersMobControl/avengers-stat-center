@@ -1340,9 +1340,11 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const K=window.AVENGERS_KRAKEN_DATA||{months:[],players:[]};
     const krakenNameCandidates=[name,D.aliasMap?.[name]].filter(Boolean);
     const kp=(K.players||[]).find(p=>krakenNameCandidates.includes(p.name)) || null;
+    const krakenMonthNumber={january:'01',february:'02',march:'03',april:'04',may:'05',june:'06',july:'07',aug:'08',august:'08',sept:'09',september:'09',october:'10',november:'11',december:'12'};
     const km=(K.months||[]).map(month=>({
       key:month.key,
       label:month.label,
+      date:'2026-'+(krakenMonthNumber[String(month.key||'').toLowerCase()]||krakenMonthNumber[String(month.label||'').toLowerCase()]||'01')+'-01',
       value:kp?Number(kp[month.key])||0:0
     })).filter(x=>x.value>0);
     const krakenLast=km.at(-1)||null;
@@ -1372,6 +1374,10 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <div class="profile-chart"><h3>Piggy Lines History</h3>${playerHistoryChart(ph,'lines',fmtNum)}</div>
         <div class="profile-chart"><h3>Space Lightyears History</h3>${playerHistoryChart(sh,'yearsB',fmtB)}</div>
       </div>
+      <div class="profile-chart kraken-profile-chart" style="margin-top:14px">
+        <h3>Kraken Score History</h3>
+        ${km.length?lineChart(km,'value',v=>fmtNum(v,1)):'<div class="empty">No Kraken history logged.</div>'}
+      </div>
       <div class="dual-cards" style="margin-top:14px">
         <div class="card"><div class="card-header"><div class="card-title">Piggy Snapshot</div></div><div class="card-body">
           <div class="rank-row"><div class="rank-num">PB</div><div class="rank-name">Personal Best</div><div class="rank-score">${fmtNum(m.piggyPB)}</div></div>
@@ -1391,7 +1397,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         </div></div>
       </div>
       <div class="card" style="margin-top:14px">
-        <div class="card-header"><div><div class="card-title">Kraken History</div><div class="card-sub">Monthly Kraken score history</div></div></div>
+        <div class="card-header"><div><div class="card-title">Kraken Event Log</div><div class="card-sub">Monthly Kraken score history</div></div></div>
         <div class="card-body">
           <div class="table-wrap">
             <table>

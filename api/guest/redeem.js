@@ -16,6 +16,7 @@ function verify(token,secret){
     const p=JSON.parse(Buffer.from(body,'base64url').toString('utf8'));
     if(p.typ!=='avengers-guest-invite')return null;
     if(!p.exp||p.exp<Math.floor(Date.now()/1000))return null;
+    p.maxUses=Math.max(1,Math.min(Number(p.maxUses)||1,10));
     return p;
   }catch{return null;}
 }
@@ -76,32 +77,45 @@ module.exports=async function handler(req,res){
   }
 
   const marker='AV_GUEST_INVITE:'+invite.jti;
+  const useMarker='AV_GUEST_USE:'+invite.jti;
   const fp=clientFingerprint(req,secret);
+  const ua=String(req.headers['user-agent']||'');
+  const isPreviewBot=/(Discordbot|Slackbot|Twitterbot|facebookexternalhit|LinkedInBot|WhatsApp|TelegramBot|Googlebot|bingbot)/i.test(ua);
+
+  // Unfurl/link-preview bots must never consume a guest redemption.
+  if(isPreviewBot){
+    res.setHeader('Cache-Control','no-store');
+    res.status(200).send('<!doctype html><html><head><meta charset="utf-8"><meta property="og:title" content="AVENGERS Stat Center"><meta property="og:description" content="Temporary guest access link"><meta name="viewport" content="width=device-width"></head><body style="font-family:system-ui;background:#081322;color:#eaf2ff;padding:32px">AVENGERS Stat Center temporary guest link.</body></html>');
+    return;
+  }
 
   try{
     const dm=await openDm(invite.creator,botToken);
     const messages=await recentMessages(dm.id,botToken);
-    const prior=messages.find(m=>String(m.content||'').includes(marker));
+    const successfulUses=messages.filter(m=>String(m.content||'').includes(useMarker)).length;
+    const maxUses=Number(invite.maxUses)||3;
 
-    if(prior){
+    if(successfulUses>=maxUses){
       await sendDm(dm.id,botToken,
-        '🚫 **Blocked repeat use of your AVENGERS guest link**\n'+
-        'A second redemption was attempted, so access was denied.\n'+
+        '🚫 **Blocked extra use of your AVENGERS guest link**\n'+
+        'This invite has already reached its '+maxUses+' allowed redemptions, so access was denied.\n'+
         'Client fingerprint: `'+fp.ipHash+'`\n'+
         'Browser: '+fp.ua+'\n'+marker
       );
       res.setHeader('Cache-Control','no-store');
-      res.status(410).send('This one-time guest link has already been used.');
+      res.status(410).send('This temporary guest link has reached its allowed number of uses.');
       return;
     }
 
-    // Write the use marker before issuing a session. Discord acts as the durable
-    // redemption ledger so the invite remains single-use across serverless instances.
+    const useNumber=successfulUses+1;
+    // Record a successful use before issuing the session. Discord DM history acts
+    // as the durable redemption ledger across serverless instances.
     await sendDm(dm.id,botToken,
-      '✅ **Your AVENGERS guest link was redeemed**\n'+
-      'It is now permanently consumed. The guest can browse until the invite expiry.\n'+
+      '✅ **Your AVENGERS guest link was redeemed ('+useNumber+'/'+maxUses+')**\n'+
+      'The guest can browse until the invite expiry.\n'+
       'Client fingerprint: `'+fp.ipHash+'`\n'+
-      'Browser: '+fp.ua+'\n'+marker
+      'Browser: '+fp.ua+'\n'+
+      useMarker+'\n'+marker
     );
 
     const now=Math.floor(Date.now()/1000);

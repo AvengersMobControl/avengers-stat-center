@@ -117,7 +117,7 @@
       ${grid.map(g=>`<line x1="${padL}" y1="${g.y}" x2="${w-padR}" y2="${g.y}" class="kr-grid"/><text x="${padL-7}" y="${g.y+4}" text-anchor="end" class="kr-axis-value">${fmt(g.value,0)}</text>`).join('')}
       <path d="${area}" class="kr-area"/>
       <path d="${path}" class="kr-line"/>
-      ${pts.map((p,i)=>`<circle cx="${p.x}" cy="${p.y}" r="4" class="kr-dot"><title>${esc(p.d.label)}: ${fmt(p.d.avg,1)} avg • ${p.d.players} players</title></circle><text x="${p.x}" y="${Math.max(12,p.y-(i%2?10:7))}" class="kr-value-label" text-anchor="middle">${fmt(p.d.avg,1)}</text>`).join('')}
+      ${pts.map((p,i)=>`<g class="graph-event-link" data-event-kind="kraken" data-event-key="${esc(p.d.key)}" tabindex="0"><circle cx="${p.x}" cy="${p.y}" r="4" class="kr-dot"><title>${esc(p.d.label)}: ${fmt(p.d.avg,1)} avg • ${p.d.players} players — click to open event</title></circle><text x="${p.x}" y="${Math.max(12,p.y-(i%2?10:7))}" class="kr-value-label" text-anchor="middle">${fmt(p.d.avg,1)}</text></g>`).join('')}
       ${pts.map(p=>`<text x="${p.x}" y="${h-7}" class="kr-label" text-anchor="middle">${esc(p.d.label.slice(0,3))}</text>`).join('')}
     </svg></div>`;
   }
@@ -303,6 +303,15 @@
     score.innerHTML=`<strong>${now?fmt(now.avg,1):'—'}</strong><span class="${d>=0?'positive':'negative'}">${d>=0?'↑':'↓'} ${pct(Math.abs(d))}</span>`;
     box.innerHTML=chart(t);
   }
+
+  window.openKrakenEvent=function(key){
+    if((K.months||[]).some(m=>m.key===key)){
+      eventKey=key;
+      view='event';
+      window.renderKraken?.();
+      setTimeout(()=>document.getElementById('krakenContent')?.scrollIntoView({behavior:'smooth',block:'start'}),20);
+    }
+  };
 
   window.renderKraken=function(){
     const root=document.getElementById('krakenContent');

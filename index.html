@@ -164,6 +164,11 @@ tbody tr:last-child td{border-bottom:0}
 .trend-up{color:var(--green)}
 .trend-down{color:var(--red)}
 .notice{padding:12px 14px;border:1px solid rgba(67,215,255,.22);background:rgba(67,215,255,.07);border-radius:10px;color:#a9cfe0;font-size:12px;margin-bottom:16px}
+.roster-sort-btn{appearance:none;border:0;background:transparent;color:inherit;font:inherit;font-weight:inherit;padding:0;display:inline-flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap}
+.roster-sort-btn span{font-size:9px;opacity:.5}
+.roster-sort-btn:hover,.roster-sort-btn.active{color:#fff}
+.roster-sort-btn.active span{opacity:1;color:var(--cyan)}
+
 
 @media(max-width:1150px){
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
@@ -361,6 +366,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     spacePBSort: 'newpb',
     spacePBEvent: D.meta.latestSpace,
     rosterView: 'active',
+    rosterSort: 'totalCombinedSparks',
+    rosterSortDir: 'desc',
     playerSearch: ''
   };
 
@@ -1091,7 +1098,43 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       label='All Members';
       rows=[...allNames].map(materialize);
     }
-    rows.sort((a,b)=>b.totalCombinedSparks-a.totalCombinedSparks||a.name.localeCompare(b.name));
+    const rosterSortDefs={
+      name:{label:'Member',type:'text',get:r=>r.name},
+      status:{label:'Status',type:'text',get:r=>statusLabel(r.status)},
+      utcOffset:{label:'UTC',type:'number',get:r=>r.utcOffset},
+      timeZoneGroup:{label:'TZG',type:'number',get:r=>Number(r.timeZoneGroup)||null},
+      state:{label:'State',type:'text',get:r=>r.state},
+      location:{label:'Location',type:'text',get:r=>r.location},
+      loggedSparks:{label:'Logged Sparks',type:'number',get:r=>r.loggedSparks},
+      unloggedSparks:{label:'Unlogged Sparks',type:'number',get:r=>r.unloggedSparks},
+      totalCombinedSparks:{label:'Total Sparks',type:'number',get:r=>r.totalCombinedSparks},
+      ratingTotal:{label:'Rating',type:'number',get:r=>r.ratingTotal},
+      piggyPB:{label:'Piggy PB',type:'number',get:r=>r.piggyPB},
+      spacePB:{label:'Space PB',type:'number',get:r=>r.spacePB},
+      krakenPB:{label:'Kraken PB',type:'number',get:r=>r.krakenPB},
+      eventsPlayed:{label:'Events',type:'number',get:r=>r.eventsPlayed}
+    };
+    const sortKey=rosterSortDefs[state.rosterSort]?state.rosterSort:'totalCombinedSparks';
+    const sortDef=rosterSortDefs[sortKey];
+    const sortDir=state.rosterSortDir==='asc'?'asc':'desc';
+    const dir=sortDir==='asc'?1:-1;
+    const isBlank=v=>v==null||String(v).trim()==='';
+    rows.sort((a,b)=>{
+      const av=sortDef.get(a),bv=sortDef.get(b);
+      if(isBlank(av)&&isBlank(bv))return a.name.localeCompare(b.name);
+      if(isBlank(av))return 1;
+      if(isBlank(bv))return -1;
+      let cmp=0;
+      if(sortDef.type==='number')cmp=(Number(av)||0)-(Number(bv)||0);
+      else cmp=String(av).localeCompare(String(bv),undefined,{numeric:true,sensitivity:'base'});
+      return cmp?cmp*dir:a.name.localeCompare(b.name);
+    });
+
+    const sortHeader=(label,key,num=false)=>{
+      const active=sortKey===key;
+      const arrow=active?(sortDir==='asc'?'▲':'▼'):'↕';
+      return {label:`<button class="roster-sort-btn${active?' active':''}" data-roster-sort="${key}" title="Sort by ${label}">${label}<span aria-hidden="true">${arrow}</span></button>`,num};
+    };
 
     const loggedTotal=rows.reduce((s,r)=>s+r.loggedSparks,0);
     const unloggedTotal=rows.reduce((s,r)=>s+r.unloggedSparks,0);
@@ -1176,8 +1219,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       <div class="records-note"><strong>Sparks reconciliation:</strong>
         for players visible in the Sep 29 all-time leaderboard, Unlogged is the amount by which the screenshot total exceeds our logged event total. If the database is already higher, Unlogged stays at 0 so history is never subtracted or double-counted.
       </div>
-      ${tableShell(`${label} Sparks Ledger`,`${rows.length} members • sorted by combined Sparks`,
-        [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'UTC',num:true},{label:'TZG'},{label:'State'},{label:'Location'},{label:'Logged Sparks',num:true},{label:'Unlogged Sparks',num:true},{label:'Total Sparks',num:true},{label:'Rating',num:true},{label:'Piggy PB',num:true},{label:'Space PB',num:true},{label:'Kraken PB',num:true},{label:'Events',num:true}],
+      ${tableShell(`${label} Sparks Ledger`,`${rows.length} members • sorted by ${sortDef.label} ${sortDir==='asc'?'ascending':'descending'}`,
+        [{label:'#',num:true},sortHeader('Member','name'),sortHeader('Status','status'),sortHeader('UTC','utcOffset',true),sortHeader('TZG','timeZoneGroup'),sortHeader('State','state'),sortHeader('Location','location'),sortHeader('Logged Sparks','loggedSparks',true),sortHeader('Unlogged Sparks','unloggedSparks',true),sortHeader('Total Sparks','totalCombinedSparks',true),sortHeader('Rating','ratingTotal',true),sortHeader('Piggy PB','piggyPB',true),sortHeader('Space PB','spacePB',true),sortHeader('Kraken PB','krakenPB',true),sortHeader('Events','eventsPlayed',true)],
         body||`<tr><td colspan="15" class="empty">No roster members found.</td></tr>`)}
     `;
 
@@ -1185,6 +1228,17 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       const b=e.target.closest('button[data-roster]');
       if(!b)return;
       state.rosterView=b.dataset.roster;
+      renderRosters();
+    });
+    root.addEventListener('click',e=>{
+      const b=e.target.closest('button[data-roster-sort]');
+      if(!b)return;
+      const key=b.dataset.rosterSort;
+      if(state.rosterSort===key)state.rosterSortDir=state.rosterSortDir==='asc'?'desc':'asc';
+      else{
+        state.rosterSort=key;
+        state.rosterSortDir=['name','status','state','location'].includes(key)?'asc':'desc';
+      }
       renderRosters();
     });
     bindPlayerButtons(root);

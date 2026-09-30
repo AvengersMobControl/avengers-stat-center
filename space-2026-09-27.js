@@ -157,7 +157,13 @@
     }
     if(member){
       member.spacePB=pb;
-      member.spaceAvg=row.avgYears;
+
+      // Player Ratings use the Arena-era Space average only.
+      // Keep the PB all-time, but average only Space races on/after Aug 1, 2026.
+      const ratingHist=hist.filter(x=>String(x.date||'')>=String(D.meta.arenaStart||'2026-08-01'));
+      member.spaceAvg=ratingHist.length
+        ? ratingHist.reduce((sum,x)=>sum+(Number(x.yearsB)||0),0)/ratingHist.length
+        : 0;
     }
   });
   overall.sort((a,b)=>b.avgYears-a.avgYears);
@@ -169,7 +175,7 @@
   // Refresh Player Ratings after merging the new Space event.
   // Rating formula mirrors the Members sheet:
   // PB = Piggy/35k + Space/350B + Kraken/3500, each capped at 1.
-  // AVG = Piggy/25k + Space/200B + Kraken L3/2800, each capped at 1.
+  // AVG = Piggy/25k + Space Arena-era avg/200B + Kraken L3/2800, each capped at 1.
   const capped=(value,benchmark)=>Math.min(1,Math.max(0,(Number(value)||0)/benchmark));
   (D.members||[]).forEach(member=>{
     member.ratingPB=

@@ -342,6 +342,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   <script src="space-history-archive-2025-jan.js"></script>\n  <script src="space-history-feb-mar-2026.js"></script>\n  <script src="space-history-pre-2026-07-19.js"></script>\n  <script src="space-2026-09-27.js"></script>
   <script src="sparks-snapshot-2026-09-29.js"></script>
   <script src="canonical-names-2026-09-29.js"></script>\n  <script src="member-status-overrides-2026-09-29.js"></script>
+  <script src="member-timezones-source.js"></script>
   <script>
 
 (() => {
@@ -1022,6 +1023,14 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const currentAvNames=new Set(snapRows.map(x=>x.name));
     const baseMap=new Map((D.members||[]).map(m=>[m.name,m]));
     const allNames=new Set([...(D.members||[]).map(m=>m.name),...snapRows.map(x=>x.name)]);
+    const tzSource=window.AVENGERS_MEMBER_TIMEZONES||{byName:{},formatUtc:v=>String(v??'')};
+    const tzByName=tzSource.byName||{};
+    const timezoneFor=name=>{
+      const direct=tzByName[name];
+      if(direct)return direct;
+      const alias=D.aliasMap?.[name];
+      return alias?tzByName[alias]||null:null;
+    };
 
     const materialize=name=>{
       const stored=baseMap.get(name);
@@ -1031,8 +1040,11 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       const snapshotTotal=snapshot?Math.max(0,Number(snapshot.allTimeSparks)||0):null;
       const unlogged=snapshotTotal==null?0:Math.max(0,snapshotTotal-logged);
       const displayStatus=currentAvNames.has(name)?'Active':(statusNorm(m.status)==='active'?'Inactive':m.status);
+      const tz=timezoneFor(name);
       return {...m,status:displayStatus,hasProfile:!!stored,
-        loggedSparks:logged,unloggedSparks:unlogged,totalCombinedSparks:logged+unlogged,snapshotTotal};
+        loggedSparks:logged,unloggedSparks:unlogged,totalCombinedSparks:logged+unlogged,snapshotTotal,
+        location:tz?.location||'',utcOffset:Number.isFinite(Number(tz?.utc))?Number(tz.utc):null,
+        utcLabel:tz?.utcLabel||'',timeZoneGroup:tz?.timeZoneGroup||''};
     };
 
     const target=state.rosterView||'active';
@@ -1053,6 +1065,33 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const unloggedTotal=rows.reduce((s,r)=>s+r.unloggedSparks,0);
     const combinedTotal=rows.reduce((s,r)=>s+r.totalCombinedSparks,0);
 
+    const zoneMap=new Map();
+    rows.forEach(r=>{
+      if(r.utcOffset==null)return;
+      const key=String(r.utcOffset);
+      const z=zoneMap.get(key)||{
+        utc:r.utcOffset,
+        label:r.utcLabel||tzSource.formatUtc?.(r.utcOffset)||key,
+        members:[],
+        locations:new Set()
+      };
+      z.members.push(r.name);
+      if(r.location)z.locations.add(r.location);
+      zoneMap.set(key,z);
+    });
+    const zoneGroups=[...zoneMap.values()].sort((a,b)=>a.utc-b.utc);
+    const unknownZoneCount=rows.filter(r=>r.utcOffset==null).length;
+    const zoneGroupsHtml=zoneGroups.length
+      ? `<div class="tz-group-wrap">${zoneGroups.map(z=>`
+          <div class="tz-group-card">
+            <div class="tz-group-offset">${escapeHtml(z.label)}</div>
+            <div class="tz-group-count">${z.members.length} member${z.members.length===1?'':'s'}</div>
+            <div class="tz-group-locations">${escapeHtml([...z.locations].join(' • '))}</div>
+          </div>`).join('')}
+          ${unknownZoneCount?`<div class="tz-group-card tz-unknown"><div class="tz-group-offset">Unknown</div><div class="tz-group-count">${unknownZoneCount} member${unknownZoneCount===1?'':'s'}</div><div class="tz-group-locations">Not present in the original location source</div></div>`:''}
+        </div>`
+      : '<div class="small-muted">No location/UTC information is available for this roster view.</div>';
+
     const playerNameCell=r=>r.hasProfile
       ? `<button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button>`
       : `<span class="snapshot-only-name" title="Current roster snapshot; no event history logged yet">${escapeHtml(r.name)}</span>`;
@@ -1061,6 +1100,9 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       <td class="num">${i+1}</td>
       <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div>${playerNameCell(r)}</div></td>
       <td>${statusBadge(r.status)}</td>
+      <td>${r.location?escapeHtml(r.location):'<span class="small-muted">—</span>'}</td>
+      <td class="num">${r.utcOffset==null?'<span class="small-muted">—</span>':escapeHtml(String(r.utcOffset))}</td>
+      <td>${r.timeZoneGroup?'<span class="tz-pill">'+escapeHtml(r.timeZoneGroup)+'</span>':'<span class="small-muted">—</span>'}</td>
       <td class="num">${fmtNum(r.loggedSparks,0)}</td>
       <td class="num roster-unlogged">${fmtNum(r.unloggedSparks,0)}</td>
       <td class="num roster-sparks">${fmtNum(r.totalCombinedSparks,0)}</td>
@@ -1092,12 +1134,19 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <div class="kpi"><div class="kpi-label">Unlogged Sparks</div><div class="kpi-value">${fmtNum(unloggedTotal,0)}</div><div class="kpi-note">supplemental from all-time screenshot</div></div>
         <div class="kpi"><div class="kpi-label">Combined Total</div><div class="kpi-value">${fmtNum(combinedTotal,0)}</div><div class="kpi-note">logged + unlogged</div></div>
       </div>
+      <div class="tz-section">
+        <div class="tz-section-head"><strong>Time Zone Groups</strong><span>Grouped by the UTC offset stored in the original Avengers Members sheet.</span></div>
+        ${zoneGroupsHtml}
+      </div>
+      <div class="records-note roster-location-note"><strong>Roster location source:</strong>
+        Location and UTC values come from the original Avengers Members worksheet. Blank values mean that source did not contain location data for that member.
+      </div>
       <div class="records-note"><strong>Sparks reconciliation:</strong>
         for players visible in the Sep 29 all-time leaderboard, Unlogged is the amount by which the screenshot total exceeds our logged event total. If the database is already higher, Unlogged stays at 0 so history is never subtracted or double-counted.
       </div>
       ${tableShell(`${label} Sparks Ledger`,`${rows.length} members • sorted by combined Sparks`,
-        [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Logged Sparks',num:true},{label:'Unlogged Sparks',num:true},{label:'Total Sparks',num:true},{label:'Rating',num:true},{label:'Piggy PB',num:true},{label:'Space PB',num:true},{label:'Kraken PB',num:true},{label:'Events',num:true}],
-        body||`<tr><td colspan="11" class="empty">No roster members found.</td></tr>`)}
+        [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Location'},{label:'UTC',num:true},{label:'Time Zone Group'},{label:'Logged Sparks',num:true},{label:'Unlogged Sparks',num:true},{label:'Total Sparks',num:true},{label:'Rating',num:true},{label:'Piggy PB',num:true},{label:'Space PB',num:true},{label:'Kraken PB',num:true},{label:'Events',num:true}],
+        body||`<tr><td colspan="14" class="empty">No roster members found.</td></tr>`)}
     `;
 
     $('#rosterTabs',root)?.addEventListener('click',e=>{

@@ -1010,7 +1010,11 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       <button class="player-card" data-player="${escapeHtml(r.name)}">
         <div class="player-top"><div class="avatar">${initials(r.name)}</div><div style="min-width:0"><div class="player-card-name">${escapeHtml(r.name)}</div><div>${statusBadge(r.status)}</div></div></div>
         <div class="rating-large">${fmtNum(r.ratingTotal,2)}</div><div class="rating-label">Player Rating</div>
-        <div class="player-mini-stats"><div class="mini-stat"><strong>${fmtNum(r.piggyPB)}</strong><span>Piggy PB</span></div><div class="mini-stat"><strong>${fmtB(r.spacePB)}</strong><span>Space PB</span></div></div>
+        <div class="player-mini-stats">
+          <div class="mini-stat"><strong>${fmtNum(r.piggyPB)}</strong><span>Piggy PB</span></div>
+          <div class="mini-stat"><strong>${fmtB(r.spacePB)}</strong><span>Space PB</span></div>
+          <div class="mini-stat"><strong>${Number(r.krakenPB)>0?fmtNum(r.krakenPB,1):'—'}</strong><span>Kraken PB</span></div>
+        </div>
       </button>`).join('')}</div>` : `<div class="empty">No matching players.</div>`;
     bindPlayerButtons($('#playersContent'));
   }
@@ -1260,6 +1264,26 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const ph=D.piggy.history[name]||[];
     const sh=D.space.history[name]||[];
     const pigLast=ph.at(-1), spLast=sh.at(-1);
+
+    const K=window.AVENGERS_KRAKEN_DATA||{months:[],players:[]};
+    const krakenNameCandidates=[name,D.aliasMap?.[name]].filter(Boolean);
+    const kp=(K.players||[]).find(p=>krakenNameCandidates.includes(p.name)) || null;
+    const km=(K.months||[]).map(month=>({
+      key:month.key,
+      label:month.label,
+      value:kp?Number(kp[month.key])||0:0
+    })).filter(x=>x.value>0);
+    const krakenLast=km.at(-1)||null;
+    const krakenAvg=kp?Number(kp.avg)||0:Number(m.krakenAvg)||0;
+    const krakenLast3=kp?Number(kp.last3)||0:Number(m.krakenAvgL3)||0;
+    const krakenPB=kp?Number(kp.pb)||0:Number(m.krakenPB)||0;
+    const krakenPBMonth=kp?.pbMonth||m.krakenPBMonth||'';
+    const krakenRows=km.length?km.map(x=>`<tr>
+      <td>${escapeHtml(x.label)} 2026</td>
+      <td class="num">${fmtNum(x.value,1)}</td>
+      <td class="num">${krakenPB>0?fmtPct(x.value/krakenPB,1):'—'}</td>
+    </tr>`).join(''):`<tr><td colspan="3" class="empty">No Kraken history logged.</td></tr>`;
+
     $('#playerModalContent').innerHTML=`
       <div class="profile-head"><div class="avatar">${initials(name)}</div><div><div class="profile-name">${escapeHtml(name)}</div><div class="profile-status">${statusBadge(m.status)}</div></div></div>
       <div class="profile-kpis">
@@ -1268,7 +1292,9 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <div class="profile-kpi"><span>Piggy Avg</span><strong>${fmtNum(m.piggyAvg)}</strong></div>
         <div class="profile-kpi"><span>Space PB</span><strong>${fmtB(m.spacePB)}</strong></div>
         <div class="profile-kpi"><span>Space Avg</span><strong>${fmtB(m.spaceAvg)}</strong></div>
-        <div class="profile-kpi"><span>Kraken PB</span><strong>${fmtNum(m.krakenPB,1)}</strong></div>
+        <div class="profile-kpi"><span>Kraken PB</span><strong>${krakenPB>0?fmtNum(krakenPB,1):'—'}</strong></div>
+        <div class="profile-kpi"><span>Kraken Avg</span><strong>${krakenAvg>0?fmtNum(krakenAvg,1):'—'}</strong></div>
+        <div class="profile-kpi"><span>Kraken Last 3</span><strong>${krakenLast3>0?fmtNum(krakenLast3,1):'—'}</strong></div>
       </div>
       <div class="profile-charts">
         <div class="profile-chart"><h3>Piggy Lines History</h3>${playerHistoryChart(ph,'lines',fmtNum)}</div>
@@ -1285,6 +1311,23 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
           <div class="rank-row"><div class="rank-num">AVG</div><div class="rank-name">Average</div><div class="rank-score">${fmtB(m.spaceAvg)}</div></div>
           <div class="rank-row"><div class="rank-num">NOW</div><div class="rank-name">Latest Logged</div><div class="rank-score">${spLast?fmtB(spLast.yearsB):'—'}</div></div>
         </div></div>
+        <div class="card"><div class="card-header"><div class="card-title">Kraken Snapshot</div></div><div class="card-body">
+          <div class="rank-row"><div class="rank-num">PB</div><div class="rank-name">Personal Best${krakenPBMonth?' ('+escapeHtml(String(krakenPBMonth))+')':''}</div><div class="rank-score">${krakenPB>0?fmtNum(krakenPB,1):'—'}</div></div>
+          <div class="rank-row"><div class="rank-num">AVG</div><div class="rank-name">All Logged Months</div><div class="rank-score">${krakenAvg>0?fmtNum(krakenAvg,1):'—'}</div></div>
+          <div class="rank-row"><div class="rank-num">L3</div><div class="rank-name">Last 3 Kraken Events</div><div class="rank-score">${krakenLast3>0?fmtNum(krakenLast3,1):'—'}</div></div>
+          <div class="rank-row"><div class="rank-num">NOW</div><div class="rank-name">Latest Logged${krakenLast?' ('+escapeHtml(krakenLast.label)+')':''}</div><div class="rank-score">${krakenLast?fmtNum(krakenLast.value,1):'—'}</div></div>
+        </div></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <div class="card-header"><div><div class="card-title">Kraken History</div><div class="card-sub">Monthly Kraken score history</div></div></div>
+        <div class="card-body">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Event</th><th class="num">Score</th><th class="num">% of PB</th></tr></thead>
+              <tbody>${krakenRows}</tbody>
+            </table>
+          </div>
+        </div>
       </div>`;
     $('#playerModal').classList.add('open');
     $('#playerModal').setAttribute('aria-hidden','false');

@@ -81,14 +81,6 @@
       if(piggy?.nextSibling) nav.insertBefore(btn,piggy.nextSibling); else nav.appendChild(btn);
       btn.addEventListener('click',()=>showPage(btn));
     }
-    if(nav && !nav.querySelector('[data-discord-review-link]')){
-      const review=document.createElement('button');
-      review.className='nav-btn';
-      review.setAttribute('data-discord-review-link','');
-      review.innerHTML='<span>⌕</span> Discord Review';
-      review.addEventListener('click',()=>{window.location.href='/discord-review.html';});
-      nav.appendChild(review);
-    }
     const main=document.querySelector('main.main');
     if(main && !document.getElementById('page-piggyFlashes')){
       const section=document.createElement('section');

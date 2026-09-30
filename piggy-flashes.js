@@ -136,20 +136,25 @@
     const map=new Map();
     rows.forEach(r=>{
       if(!r.name)return;
-      const x=map.get(r.name)||{name:r.name,flashes:0,lines:0,stars:0,sparks:0,best:0,pbFlash:0,pbDate:'',wins:0};
+      const x=map.get(r.name)||{name:r.name,flashes:0,lineResults:0,lines:0,stars:0,sparks:0,best:0,pbFlash:0,pbDate:'',wins:0};
       x.flashes++;
-      x.lines+=Number(r.lines)||0;
+      const lineKnown=r.lines!==null && r.lines!==undefined && Number.isFinite(Number(r.lines));
+      if(lineKnown){
+        const lv=Number(r.lines);
+        x.lineResults++;
+        x.lines+=lv;
+        if(lv>x.best){
+          x.best=lv;
+          x.pbFlash=Number(r.flash)||0;
+          x.pbDate=r.eventDate||'';
+        }
+      }
       x.stars+=Number(r.stars)||0;
       x.sparks+=Number(r.sparks)||0;
-      if((Number(r.lines)||0)>x.best){
-        x.best=Number(r.lines)||0;
-        x.pbFlash=Number(r.flash)||0;
-        x.pbDate=r.eventDate||'';
-      }
       if(Number(r.rank)===1)x.wins++;
       map.set(r.name,x);
     });
-    return [...map.values()].map(x=>({...x,avg:x.flashes?x.lines/x.flashes:0}));
+    return [...map.values()].map(x=>({...x,avg:x.lineResults?x.lines/x.lineResults:0}));
   }
 
   function buildSetMap(rows){
@@ -160,8 +165,10 @@
       s.flashes.add(r.flash);
       s.rows.push(r);
       if(String(r.eventDate)<String(s.date))s.date=r.eventDate;
-      const p=s.players.get(r.name)||{name:r.name,lines:0,stars:0,sparks:0,flashes:0};
-      p.lines+=Number(r.lines)||0;p.stars+=Number(r.stars)||0;p.sparks+=Number(r.sparks)||0;p.flashes++;
+      const p=s.players.get(r.name)||{name:r.name,lines:0,stars:0,sparks:0,flashes:0,lineFlashes:0};
+      const lineKnown=r.lines!==null && r.lines!==undefined && Number.isFinite(Number(r.lines));
+      if(lineKnown){p.lines+=Number(r.lines);p.lineFlashes++;}
+      p.stars+=Number(r.stars)||0;p.sparks+=Number(r.sparks)||0;p.flashes++;
       s.players.set(r.name,p);
       map.set(key,s);
     });
@@ -173,8 +180,10 @@
     [...setMap.values()].forEach(s=>{
       s.players.forEach(p=>{
         const x=map.get(p.name)||{name:p.name,best:0,pbDate:'',pbFlashes:0,total:0,sets:0};
-        x.total+=p.lines;x.sets++;
-        if(p.lines>x.best){x.best=p.lines;x.pbDate=s.id;x.pbFlashes=p.flashes;}
+        if(p.lineFlashes>0){
+          x.total+=p.lines;x.sets++;
+          if(p.lines>x.best){x.best=p.lines;x.pbDate=s.id;x.pbFlashes=p.lineFlashes;}
+        }
         map.set(p.name,x);
       });
     });
@@ -254,8 +263,9 @@
     const uniqueEvents=new Set(evs.map(e=>e.id||e.date+'|'+e.flash)).size;
     const players=new Set((isDaily?allRows:rows).map(r=>r.name).filter(Boolean)).size;
     const totalLines=(isDaily?allRows:rows).reduce((s,r)=>s+(Number(r.lines)||0),0);
-    const avgResult=rows.length?rows.reduce((s,r)=>s+(Number(r.lines)||0),0)/rows.length:0;
-    const medResult=median(rows.map(r=>Number(r.lines)||0));
+    const knownLineRows=rows.filter(r=>r.lines!==null && r.lines!==undefined && Number.isFinite(Number(r.lines)));
+    const avgResult=knownLineRows.length?knownLineRows.reduce((s,r)=>s+Number(r.lines),0)/knownLineRows.length:0;
+    const medResult=median(knownLineRows.map(r=>Number(r.lines)));
     const wins=rows.filter(r=>Number(r.rank)===1).length;
     const potEvents=evs.filter(e=>e.potStars!=null);
     const avgPot=potEvents.length?potEvents.reduce((s,e)=>s+(Number(e.potStars)||0),0)/potEvents.length:0;

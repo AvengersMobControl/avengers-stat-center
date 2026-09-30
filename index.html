@@ -1135,11 +1135,11 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <div class="kpi"><div class="kpi-label">Combined Total</div><div class="kpi-value">${fmtNum(combinedTotal,0)}</div><div class="kpi-note">logged + unlogged</div></div>
       </div>
       <div class="tz-section">
-        <div class="tz-section-head"><strong>Time Zone Groups</strong><span>Grouped by the UTC offset stored in the original Avengers Members sheet.</span></div>
+        <div class="tz-section-head"><strong>Time Zone Groups</strong><span>Grouped by the authoritative UTC offset in the 2026 roster source.</span></div>
         ${zoneGroupsHtml}
       </div>
       <div class="records-note roster-location-note"><strong>Roster location source:</strong>
-        Location and UTC values come from the original Avengers Members worksheet. Blank values mean that source did not contain location data for that member.
+        Location and UTC values come only from the 2026 roster columns in the Avengers Members worksheet. Older roster/location values are not used to overwrite or backfill 2026 data. Blank values mean the 2026 source did not contain location data for that member.
       </div>
       <div class="records-note"><strong>Sparks reconciliation:</strong>
         for players visible in the Sep 29 all-time leaderboard, Unlogged is the amount by which the screenshot total exceeds our logged event total. If the database is already higher, Unlogged stays at 0 so history is never subtracted or double-counted.

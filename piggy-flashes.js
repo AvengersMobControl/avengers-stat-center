@@ -58,7 +58,7 @@
       .flash-mini-row{display:grid;grid-template-columns:68px 1fr 70px;gap:8px;align-items:center;font-size:12px}
       .flash-mini-track{height:12px;border-radius:99px;background:rgba(125,135,155,.14);overflow:hidden}
       .flash-mini-fill{height:100%;background:linear-gradient(90deg,#516a9d,#9fb0d3);border-radius:99px}
-      .flash-metric-strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:14px 0 16px}
+      .flash-metric-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:14px 0 16px}
       .flash-metric{background:var(--panel,#151b27);border:1px solid var(--border,#2a3345);border-radius:12px;padding:13px}
       .flash-metric span{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.08em;opacity:.62;margin-bottom:6px}
       .flash-metric strong{font-size:22px;line-height:1}
@@ -293,7 +293,7 @@
       const total=isDaily?r.total:r.lines;
       const events=isDaily?r.sets:r.flashes;
       const best=r.best;
-      return '<tr><td class="num">'+(i+1)+'</td><td><strong>'+esc(r.name)+'</strong></td><td class="num">'+fmt(events)+'</td><td class="num">'+fmt(total)+'</td><td class="num">'+fmt(Math.round(r.avg))+'</td><td class="num">'+fmt(best)+'</td>'+(isDaily?'':'<td class="num">'+fmt(r.wins)+'</td><td class="num">'+fmt(r.stars)+'</td><td class="num">'+fmt(r.sparks)+'</td>')+'</tr>';
+      return '<tr><td class="num">'+(i+1)+'</td><td><strong>'+esc(r.name)+'</strong></td><td class="num">'+fmt(events)+'</td><td class="num">'+fmt(total)+'</td><td class="num">'+fmt(Math.round(r.avg))+'</td><td class="num">'+fmt(best)+'</td>'+(isDaily?'':'<td class="num">'+fmt(r.stars)+'</td><td class="num">'+fmt(r.sparks)+'</td>')+'</tr>';
     }).join('');
 
     const resultBody=isDaily?'':rows.slice().sort((a,b)=>String(b.eventDate).localeCompare(String(a.eventDate))||(Number(a.rank)||999)-(Number(b.rank)||999)).map(r=>'<tr><td>'+esc(r.eventDate||'—')+'</td><td>PF'+r.flash+'</td><td class="num">'+(r.rank??'—')+'</td><td><strong>'+esc(r.name||'—')+'</strong></td><td class="num">'+fmt(r.lines)+'</td><td class="num">'+fmt(r.stars)+'</td><td class="num">'+fmt(r.sparks)+'</td></tr>').join('');
@@ -313,8 +313,8 @@
       <div class="flash-metric-strip">
         <div class="flash-metric"><span>${isDaily?'Flash Sets':'Events'}</span><strong>${fmt(isDaily?setMap.size:uniqueEvents)}</strong><em>${isDaily?completeSets+' complete 4/4 sets':'recorded in this view'}</em></div>
         <div class="flash-metric"><span>Players</span><strong>${fmt(players)}</strong><em>unique players</em></div>
-        <div class="flash-metric"><span>${isDaily?'Total lines':'Avg result'}</span><strong>${fmtCompact(isDaily?totalLines:avgResult)}</strong><em>${isDaily?'all imported flashes':fmt(Math.round(medResult))+' median'}</em></div>
-        <div class="flash-metric"><span>${isDaily?'Best daily PB':'#1 finishes'}</span><strong>${isDaily?fmt(Math.max(0,...pbItems.map(x=>x.best))):fmt(wins)}</strong><em>${isDaily?'combined flash lines':'recorded wins'}</em></div>
+        <div class="flash-metric"><span>${isDaily?'Total lines':'Avg result'}</span><strong>${isDaily?fmtCompact(totalLines):fmt(Math.round(avgResult))}</strong><em>${isDaily?'all imported flashes':fmt(Math.round(medResult))+' median'}</em></div>
+        ${isDaily?'<div class="flash-metric"><span>Best daily PB</span><strong>'+fmt(Math.max(0,...pbItems.map(x=>x.best)))+'</strong><em>combined flash lines</em></div>':''}
         <div class="flash-metric"><span>Avg pot</span><strong>${avgPot?fmtCompact(avgPot):'—'}</strong><em>AVENGERS-dominant lobbies</em></div>
       </div>
 
@@ -330,8 +330,8 @@
       </div>
 
       <div class="table-card">
-        <div class="table-titlebar"><div><h2>${isDaily?'Daily Total Leaderboard':'Performance Leaderboard'}</h2><div class="small-muted">${isDaily?'Combined result across each player’s recorded PF1-PF4 scores in a Flash Set.':'Totals, averages, PBs and wins for the selected Flash view.'}</div></div></div>
-        <div class="table-wrap"><table><thead><tr><th class="num">#</th><th>Member</th><th class="num">${isDaily?'Sets':'Flashes'}</th><th class="num">Total Lines</th><th class="num">Average</th><th class="num">PB</th>${isDaily?'':'<th class="num">Wins</th><th class="num">Stars</th><th class="num">Sparks</th>'}</tr></thead><tbody>${performanceBody||'<tr><td colspan="9" class="empty">No flash data yet.</td></tr>'}</tbody></table></div>
+        <div class="table-titlebar"><div><h2>${isDaily?'Daily Total Leaderboard':'Performance Leaderboard'}</h2><div class="small-muted">${isDaily?'Combined result across each player’s recorded PF1-PF4 scores in a Flash Set.':'Totals, averages and PBs for the selected Flash view.'}</div></div></div>
+        <div class="table-wrap"><table><thead><tr><th class="num">#</th><th>Member</th><th class="num">${isDaily?'Sets':'Flashes'}</th><th class="num">Total Lines</th><th class="num">Average</th><th class="num">PB</th>${isDaily?'':'<th class="num">Stars</th><th class="num">Sparks</th>'}</tr></thead><tbody>${performanceBody||'<tr><td colspan="9" class="empty">No flash data yet.</td></tr>'}</tbody></table></div>
       </div>
 
       ${isDaily?`

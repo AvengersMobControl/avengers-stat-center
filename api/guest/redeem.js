@@ -1,0 +1,129 @@
+const crypto=require('crypto');
+
+function sign(payload,secret){
+  const body=Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const sig=crypto.createHmac('sha256',secret).update(body).digest('base64url');
+  return body+'.'+sig;
+}
+function verify(token,secret){
+  if(!token||!secret)return null;
+  const [body,sig]=String(token).split('.');
+  if(!body||!sig)return null;
+  const expected=crypto.createHmac('sha256',secret).update(body).digest('base64url');
+  const a=Buffer.from(sig),b=Buffer.from(expected);
+  if(a.length!==b.length||!crypto.timingSafeEqual(a,b))return null;
+  try{
+    const p=JSON.parse(Buffer.from(body,'base64url').toString('utf8'));
+    if(p.typ!=='avengers-guest-invite')return null;
+    if(!p.exp||p.exp<Math.floor(Date.now()/1000))return null;
+    return p;
+  }catch{return null;}
+}
+function clientFingerprint(req,secret){
+  const ip=String(req.headers['x-forwarded-for']||req.socket?.remoteAddress||'').split(',')[0].trim();
+  const ipHash=crypto.createHmac('sha256',secret).update(ip||'unknown').digest('hex').slice(0,12);
+  const ua=String(req.headers['user-agent']||'unknown').replace(/[\r\n]+/g,' ').slice(0,180);
+  return {ipHash,ua};
+}
+async function discordApi(path,botToken,options={}){
+  return fetch('https://discord.com/api/v10'+path,{
+    ...options,
+    headers:{
+      Authorization:'Bot '+botToken,
+      'content-type':'application/json',
+      ...(options.headers||{})
+    }
+  });
+}
+async function openDm(userId,botToken){
+  const r=await discordApi('/users/@me/channels',botToken,{
+    method:'POST',
+    body:JSON.stringify({recipient_id:String(userId)})
+  });
+  if(!r.ok)throw new Error('Could not open creator DM ('+r.status+')');
+  return r.json();
+}
+async function recentMessages(channelId,botToken){
+  const r=await discordApi('/channels/'+channelId+'/messages?limit=100',botToken);
+  if(!r.ok)throw new Error('Could not inspect guest-link log ('+r.status+')');
+  const x=await r.json();
+  return Array.isArray(x)?x:[];
+}
+async function sendDm(channelId,botToken,content){
+  const r=await discordApi('/channels/'+channelId+'/messages',botToken,{
+    method:'POST',
+    body:JSON.stringify({content})
+  });
+  if(!r.ok)throw new Error('Could not send guest-link alert ('+r.status+')');
+  return r.json();
+}
+
+module.exports=async function handler(req,res){
+  if(req.method!=='GET'){
+    res.status(405).send('GET required');
+    return;
+  }
+  const secret=process.env.AUTH_SECRET;
+  const botToken=process.env.DISCORD_BOT_TOKEN;
+  const invite=verify(String(req.query?.t||''),secret);
+  if(!invite){
+    res.status(410).send('This guest link is invalid or has expired.');
+    return;
+  }
+  if(!botToken){
+    res.status(503).send('Guest access is temporarily unavailable.');
+    return;
+  }
+
+  const marker='AV_GUEST_INVITE:'+invite.jti;
+  const fp=clientFingerprint(req,secret);
+
+  try{
+    const dm=await openDm(invite.creator,botToken);
+    const messages=await recentMessages(dm.id,botToken);
+    const prior=messages.find(m=>String(m.content||'').includes(marker));
+
+    if(prior){
+      await sendDm(dm.id,botToken,
+        '🚫 **Blocked repeat use of your AVENGERS guest link**\n'+
+        'A second redemption was attempted, so access was denied.\n'+
+        'Client fingerprint: `'+fp.ipHash+'`\n'+
+        'Browser: '+fp.ua+'\n'+marker
+      );
+      res.setHeader('Cache-Control','no-store');
+      res.status(410).send('This one-time guest link has already been used.');
+      return;
+    }
+
+    // Write the use marker before issuing a session. Discord acts as the durable
+    // redemption ledger so the invite remains single-use across serverless instances.
+    await sendDm(dm.id,botToken,
+      '✅ **Your AVENGERS guest link was redeemed**\n'+
+      'It is now permanently consumed. The guest can browse until the invite expiry.\n'+
+      'Client fingerprint: `'+fp.ipHash+'`\n'+
+      'Browser: '+fp.ua+'\n'+marker
+    );
+
+    const now=Math.floor(Date.now()/1000);
+    const remaining=Math.max(1,Number(invite.exp)-now);
+    const session=sign({
+      sub:'guest:'+invite.jti,
+      username:'Temporary guest',
+      avatar:null,
+      guest:true,
+      createdBy:String(invite.creator),
+      iat:now,
+      exp:Number(invite.exp)
+    },secret);
+
+    res.setHeader('Set-Cookie',
+      'avengers_session='+session+'; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age='+remaining
+    );
+    res.setHeader('Cache-Control','no-store');
+    res.redirect(302,'/');
+  }catch(err){
+    console.error('guest-redeem failure',err);
+    // Fail closed: without the durable Discord use marker we do not grant access.
+    res.status(503).send('Guest link could not be activated safely. Ask the sender to create a new link.');
+  }
+};

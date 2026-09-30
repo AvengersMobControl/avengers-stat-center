@@ -42,7 +42,7 @@ export default async function middleware(request){
   const p=url.pathname;
 
   // These endpoints perform their own authentication/authorization.
-  if(p.startsWith('/api/auth/') || p.startsWith('/api/discord/')) return;
+  if(p.startsWith('/api/auth/') || p.startsWith('/api/discord/') || p.startsWith('/api/guest/')) return;
 
   const session=cookieValue(request.headers.get('cookie'),'avengers_session');
   if(await validSession(session,process.env.AUTH_SECRET)) return;

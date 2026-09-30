@@ -37,7 +37,7 @@ AV-Megalodon\tActive\t-4\t1\t\tCanada - Ontario
 AV-Mendoria\tActive\t2\t2\t\tGermany
 AV-MONSTER\tActive\t5.5\t3\t\tIndia
 AV-MotherboardBeans\tActive\t-5\t1\tMO\tUSA-Central DST
-AV-Mr.Mar.Berry\tActive\t-6\t1\tMI\tUSA-Mountain
+AV-Mr.Mar.Berry\tActive\t-5\t1\tMS\tUSA-Central DST
 AV-neez\tActive\t-6\t1\tAZ\tUSA-Mountain
 AV-Nicefellow\tActive\t-5\t1\t\tUSA-Central DST
 AV-no\tActive\t-4\t1\t\tUSA-Eastern DST

@@ -7,10 +7,12 @@
   var arenaStart = (D.meta && D.meta.arenaStart) || '2026-08-01';
   var memberByName = {};
   (D.members || []).forEach(function(m){ memberByName[m.name] = m; });
+  // Player search includes every tracked profile, including historical/inactive members.
+  // Roster filters still control trend/roster calculations separately.
   var allNames = Array.from(new Set(
     (D.members || [])
-      .filter(function(m){ return m.status==='Active' || m.status==='AV2'; })
       .map(function(m){ return m.name; })
+      .filter(Boolean)
   )).sort(function(a,b){ return a.localeCompare(b); });
 
   var colors = ['#43d7ff','#a476ff','#5fe28b','#ffd35c','#ff9a55','#ff6b78'];
@@ -469,7 +471,7 @@
     var box=document.createElement('div');
     box.id='p2QuickFind';
     box.className='card p2-full';
-    box.innerHTML='<div class="card-body"><div class="p2-explorer-head"><div><div class="p2-section-title">Player Explorer</div><div class="p2-section-sub">Jump straight to any AVENGERS or AV-2 player profile.</div></div><div class="p2-field grow"><input id="p2QuickPlayer" list="p2QuickPlayerList" placeholder="Search player…"><datalist id="p2QuickPlayerList">'+allNames.map(function(n){return '<option value="'+esc(n)+'"></option>';}).join('')+'</datalist></div><button class="p2-primary-btn" id="p2QuickGo">Open profile</button></div></div>';
+    box.innerHTML='<div class="card-body"><div class="p2-explorer-head"><div><div class="p2-section-title">Player Explorer</div><div class="p2-section-sub">Jump straight to any tracked player profile, including inactive members.</div></div><div class="p2-field grow"><input id="p2QuickPlayer" list="p2QuickPlayerList" placeholder="Search player…"><datalist id="p2QuickPlayerList">'+allNames.map(function(n){return '<option value="'+esc(n)+'"></option>';}).join('')+'</datalist></div><button class="p2-primary-btn" id="p2QuickGo">Open profile</button></div></div>';
     root.insertBefore(box,root.firstChild);
     function go(){
       var inp=document.getElementById('p2QuickPlayer');

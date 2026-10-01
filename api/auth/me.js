@@ -17,6 +17,7 @@ function verify(token,secret){
   if(a.length!==b.length||!crypto.timingSafeEqual(a,b))return null;
   try{
     const p=JSON.parse(Buffer.from(body,'base64url').toString('utf8'));
+    if(p.guest===true && p.permanentGuest===true)return p;
     if(!p.exp||p.exp<Math.floor(Date.now()/1000))return null;
     return p;
   }catch{return null;}
@@ -33,6 +34,7 @@ module.exports=function handler(req,res){
     authenticated:true,
     user:{id:session.sub,username:session.username,avatar:session.avatar||null},
     guest:Boolean(session.guest),
-    expires:session.exp
+    permanentGuest:Boolean(session.permanentGuest),
+    expires:session.exp||null
   });
 };

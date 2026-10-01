@@ -381,7 +381,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   const PAGE_META = {
     overview:['Overview','Clan performance at a glance'],
     rosters:['Rosters','Current AVENGERS and AV-2 membership with tracked sparks'],
-    piggy:['Piggy Race','Overall, event, recent-form and personal-best views'],
+    piggy:['Piggy Race','Overall, event, pot totals, recent-form and personal-best views'],
     space:['Space Race','Lightyears, event results and recent-form views'],
     kraken:['Kraken','Monthly damage, personal bests and current-roster performance'],
     trends:['Trends','Clan trends, recent form and player comparisons'],
@@ -482,20 +482,37 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     if(state.status==='av2') return s==='av2';
     return s==='active'||s==='av2';
   }
-  const PIGGY_POT_OVERRIDES = {
-    '2026-09-06': 71390000,
-    '2026-09-13': 95280000,
-    '2026-09-20': 99150000
-  };
-  function piggyRaceRows(date){
-    return (D.piggy?.events?.[date]||[]).filter(r=>r && r.name && r.name!=='Total' && r.name!=='#N/A' && (Number(r.lines)||0)>0);
+  function piggyEventClan(r){
+    const explicit=String(r?.eventClan||r?.raceClan||r?.clan||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+    if(explicit==='avengers'||explicit==='av') return 'AVENGERS';
+    if(explicit==='av2') return 'AV2';
+    const hasReward=(Number(r?.stars)||0)>0 || (Number(r?.sparks)||0)>0 || (Number(r?.share)||0)>0;
+    return hasReward?'AVENGERS':'AV2';
+  }
+  function piggyRaceRows(date,clan='AVENGERS'){
+    const rows=(D.piggy?.events?.[date]||[]).filter(r=>r && r.name && r.name!=='Total' && r.name!=='#N/A' && (Number(r.lines)||0)>0);
+    if(clan==='all') return rows;
+    return rows.filter(r=>piggyEventClan(r)===clan);
   }
   function piggyPotTotal(date){
-    if(Object.prototype.hasOwnProperty.call(PIGGY_POT_OVERRIDES,date)) return PIGGY_POT_OVERRIDES[date];
-    const all=D.piggy?.events?.[date]||[];
-    const stored=Number(all.find(r=>r?.name==='Total')?.stars)||0;
+    const avRows=piggyRaceRows(date,'AVENGERS');
+    const top=avRows.find(r=>Number(r.rank)===1 && (Number(r.share)||0)>0) || avRows.slice().sort((a,b)=>(Number(a.rank)||999)-(Number(b.rank)||999))[0];
+    if(top){
+      let share=Number(top.share)||0;
+      if(share>1) share/=100;
+      const sparks=Number(top.sparks)||0;
+      if(sparks>0 && share>0) return sparks*10/share;
+      const stars=Number(top.stars)||0;
+      if(stars>0 && share>0) return stars/share;
+    }
+    const stored=Number((D.piggy?.events?.[date]||[]).find(r=>r?.name==='Total')?.stars)||0;
     if(stored>0) return stored;
-    return piggyRaceRows(date).reduce((sum,r)=>sum+(Number(r.stars)||0),0);
+    return avRows.reduce((sum,r)=>sum+(Number(r.stars)||0),0);
+  }
+  function piggyRowsForSelectedEventRoster(date){
+    if(state.status==='av2') return piggyRaceRows(date,'AV2');
+    if(state.status==='all') return piggyRaceRows(date,'all');
+    return piggyRaceRows(date,'AVENGERS');
   }
   function fmtMillions2(v){
     return ((Number(v)||0)/1000000).toFixed(2)+'M';
@@ -553,7 +570,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const active=D.members.filter(m=>statusNorm(m.status)==='active').length;
     const av2=D.members.filter(m=>statusNorm(m.status)==='av2').length;
     const topRating=maxOf(cm,'ratingTotal');
-    const latestPig=(D.piggy.events[D.meta.latestPiggy]||[]).filter(r=>r.name!=='Total'&&r.name!=='#N/A'&&(state.status==='av2'?statusNorm(currentStatusFor(r.name,r.status))==='av2':true));
+    const latestPig=piggyRowsForSelectedEventRoster(D.meta.latestPiggy);
     const latestSpace=(D.space.events[D.meta.latestSpace]||[]).filter(r=>r.name!=='Total'&&r.name!=='#N/A'&&allowedCurrentRow(r));
     const topPig=[...latestPig].sort((a,b)=>b.lines-a.lines);
     const topSp=[...latestSpace].sort((a,b)=>b.yearsB-a.yearsB);
@@ -566,7 +583,10 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       .map(date=>{
         const rows=(D[kind].events[date]||[]).filter(r=>{
           if(!r || r.name==='Total' || r.name==='#N/A' || !(Number(r[key])||0)) return false;
-          if(kind==='piggy' && state.status!=='av2') return true;
+          if(kind==='piggy'){
+            if(state.status==='all') return true;
+            return piggyEventClan(r)===(state.status==='av2'?'AV2':'AVENGERS');
+          }
           return allowedEventMetricRow(r);
         });
         const vals=rows.map(r=>Number(r[key])||0);
@@ -774,7 +794,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <td>${fmtDate(x.date)}</td>
         <td class="num event-total-highlight"><strong>${fmtMillions2(x.pot)}</strong></td>
       </tr>`).join('');
-      el.innerHTML=tableShell('Piggy Race Pot Totals','Official AVENGERS pot total for each recorded race • historical event roster, regardless of current member status',
+      el.innerHTML=tableShell('Piggy Race Pot Totals','Workbook-derived pot total for each recorded race • calculated from reward/share values when available',
         [{label:'Week'},{label:'Pot Stars',num:true}],body||`<tr><td colspan="2" class="empty">No Piggy pot totals recorded.</td></tr>`);
     } else if(view==='event'){
       const eventAll=piggyRaceRows(state.piggyEvent)
@@ -1451,7 +1471,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     let rows=[], headers=[];
     if(kind==='piggy'){
       if(state.piggyView==='event'){
-        rows=(D.piggy.events[state.piggyEvent]||[]).filter(r=>allowedStatus(r.status));
+        rows=piggyRowsForSelectedEventRoster(state.piggyEvent);
         headers=['Rank','Username','Lines','Stars','Sparks','Share'];
         rows=rows.map(r=>[r.rank,r.name,r.lines,r.stars,r.sparks,r.share]);
       }else{

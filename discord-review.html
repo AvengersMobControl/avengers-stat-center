@@ -216,7 +216,11 @@
     try{return new Date(v).toLocaleString();}catch{return v||'—';}
   }
   function setBusy(on,msg){
-    $('#pullRecent').disabled=on;$('#pullNew').disabled=on;$('#pullWeekly').disabled=on;$('#pullBeforeDate').disabled=on;
+    const isWeekly=channel.value==='weekly';
+    $('#pullRecent').disabled=on;
+    $('#pullNew').disabled=on||isWeekly;
+    $('#pullWeekly').disabled=on;
+    $('#pullBeforeDate').disabled=on||isWeekly;
     if(msg)status.textContent=msg;
     progress.style.display=on?'block':'none';
     if(!on)progress.firstElementChild.style.width='0%';
@@ -988,6 +992,10 @@
   }
 
   async function pullBeforeDate(){
+    if(channel.value==='weekly'){
+      status.textContent='History-before pulls are channel-specific. Choose an individual channel first.';
+      return;
+    }
     const raw=$('#beforeDate').value;
     if(!raw){
       status.textContent='Choose a history cutoff date first.';
@@ -1365,6 +1373,8 @@
     $('#pullBeforeDate').disabled=channel.value==='weekly';
   });
   updateCheckpoint();
+  $('#pullNew').disabled=channel.value==='weekly';
+  $('#pullBeforeDate').disabled=channel.value==='weekly';
 })();
 </script>
 </body>

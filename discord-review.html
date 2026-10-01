@@ -32,6 +32,8 @@
     .btn:disabled{opacity:.45;cursor:not-allowed;filter:none}
     .toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:12px 0}
     .toolbar .spacer{flex:1}
+    .history-pull{display:flex;align-items:end;gap:8px;flex-wrap:wrap}
+    .history-pull label{min-width:150px}
     .status{min-height:24px;color:#b8c9dc;font-size:13px}
     .status strong{color:#fff}
     .checkpoint{color:#96abc4;font-size:11px;margin-top:2px}
@@ -147,6 +149,12 @@
       <button class="btn" id="selectNone" disabled>Select None</button>
       <button class="btn" id="printSelected" disabled>Print Compact Review PDF</button>
       <div class="spacer"></div>
+      <div class="history-pull">
+        <label>History before
+          <input id="beforeDate" type="date" value="">
+        </label>
+        <button class="btn" id="pullBeforeDate">Pull Before Date</button>
+      </div>
       <button class="btn" id="saveCheckpoint" disabled>Save Newest as Checkpoint</button>
       <button class="btn" id="clearCheckpoint">Clear Checkpoint</button>
     </div>
@@ -207,7 +215,7 @@
     try{return new Date(v).toLocaleString();}catch{return v||'—';}
   }
   function setBusy(on,msg){
-    $('#pullRecent').disabled=on;$('#pullNew').disabled=on;$('#pullWeekly').disabled=on;
+    $('#pullRecent').disabled=on;$('#pullNew').disabled=on;$('#pullWeekly').disabled=on;$('#pullBeforeDate').disabled=on;
     if(msg)status.textContent=msg;
     progress.style.display=on?'block':'none';
     if(!on)progress.firstElementChild.style.width='0%';
@@ -929,6 +937,93 @@
     };
   }
 
+  async function scanChannelBefore(channelKey,beforeTimestamp,targetMessages=5000){
+    let before=null;
+    let scanned=0;
+    let newest=null;
+    let oldest=null;
+    const byMessage=new Map();
+    let lastMeta=null;
+
+    while(scanned<targetMessages){
+      const pageSize=Math.min(100,targetMessages-scanned);
+      const page=await fetchDiscordPage({
+        channelKey,
+        maxMessages:pageSize,
+        beforeMessageId:before||undefined,
+        beforeTimestamp:before?undefined:beforeTimestamp
+      });
+      lastMeta=page;
+      if(!newest && page.newestScannedMessageId)newest=page.newestScannedMessageId;
+      if(page.oldestScannedMessageId)oldest=page.oldestScannedMessageId;
+      scanned+=Number(page.scanned)||0;
+
+      for(const post of (page.candidates||[])){
+        const prior=byMessage.get(post.messageId);
+        if(!prior){
+          byMessage.set(post.messageId,post);
+        }else{
+          const seen=new Set((prior.attachments||[]).map(a=>a.id));
+          prior.attachments=[
+            ...(prior.attachments||[]),
+            ...(post.attachments||[]).filter(a=>!seen.has(a.id))
+          ];
+        }
+      }
+
+      if(!page.hasMore || !page.nextBeforeMessageId || Number(page.scanned)===0)break;
+      before=page.nextBeforeMessageId;
+      await sleep(Math.max(120,Number(page.recommendedDelayMs)||180));
+    }
+
+    return {
+      ...(lastMeta||{}),
+      channelKey,
+      scanned,
+      newestScannedMessageId:newest,
+      oldestScannedMessageId:oldest,
+      candidates:[...byMessage.values()].sort((a,b)=>String(b.messageId).localeCompare(String(a.messageId)))
+    };
+  }
+
+  async function pullBeforeDate(){
+    const raw=$('#beforeDate').value;
+    if(!raw){
+      status.textContent='Choose a history cutoff date first.';
+      return;
+    }
+    const beforeTimestamp=new Date(raw+'T00:00:00Z').toISOString();
+    const targetMessages=Math.max(1,Math.min(Number($('#maxMessages').value)||2000,5000));
+
+    setBusy(true,'Pulling '+labels[channel.value]+' history before '+raw+'…');
+    setButtons(false);
+    cards.innerHTML='<div class="empty">Pulling older Discord result screenshots…</div>';
+    summary.hidden=true;
+    $('#diagnostics').hidden=true;
+
+    try{
+      const data=await scanChannelBefore(channel.value,beforeTimestamp,targetMessages);
+      current=data;
+      setProgress(.25,'Pulled '+(data.candidates||[]).length+' image posts before '+raw+'. Filtering…');
+      const filtered=await filterForChannel(channel.value,data);
+      filteredPosts=filtered.posts||[];
+      filteredPosts=filteredPosts.map(p=>({...p,_sourceLabel:labels[channel.value]}));
+      render(data,{...filtered,posts:filteredPosts});
+      setButtons(Boolean(filteredPosts.length));
+      status.innerHTML=filteredPosts.length
+        ? '<strong>'+filteredPosts.length+'</strong> historical review post(s) kept before '+raw+'.'
+        : 'History pull completed, but no matching result posts were found before '+raw+'.';
+    }catch(e){
+      current=null;
+      filteredPosts=[];
+      summary.hidden=true;
+      cards.innerHTML='<div class="empty error">'+esc(e.message||e)+'</div>';
+      status.textContent='History pull failed.';
+    }finally{
+      setBusy(false);
+    }
+  }
+
   async function pullWeeklyBundle(){
     const days=Math.max(1,Math.min(Number($('#daysBack').value)||8,90));
     const since=new Date(Date.now()-(days*24*60*60*1000)).toISOString();
@@ -1152,6 +1247,7 @@
   $('#pullRecent').addEventListener('click',()=>pull(false));
   $('#pullNew').addEventListener('click',()=>pull(true));
   $('#pullWeekly').addEventListener('click',()=>pullWeeklyBundle());
+  $('#pullBeforeDate').addEventListener('click',()=>pullBeforeDate());
   $('#selectAll').addEventListener('click',()=>{
     document.querySelectorAll('.include input').forEach(x=>x.checked=true);syncSelection();
   });
@@ -1205,6 +1301,7 @@
     $('#pullRecent').disabled=true;
     $('#pullNew').disabled=true;
     $('#pullWeekly').disabled=true;
+    $('#pullBeforeDate').disabled=true;
 
     let compressed=0;
     for(let i=0;i<imgs.length;i++){
@@ -1229,6 +1326,7 @@
       $('#pullRecent').disabled=false;
       $('#pullNew').disabled=false;
       $('#pullWeekly').disabled=false;
+      $('#pullBeforeDate').disabled=false;
       status.textContent=selectedCount()+' final result post(s) selected. Nothing has been imported.';
       window.removeEventListener('afterprint',restore);
     };
@@ -1256,6 +1354,9 @@
   channel.addEventListener('change',()=>{
     updateCheckpoint();
     $('#maxMessages').value=channel.value==='space'?'2000':channel.value==='piggy'?'2500':channel.value==='kraken'?'5000':'1000';
+    const before=$('#beforeDate');
+    if(channel.value==='kraken' && !before.value)before.value='2026-02-01';
+    if(channel.value!=='kraken' && before.value==='2026-02-01')before.value='';
   });
   updateCheckpoint();
 })();

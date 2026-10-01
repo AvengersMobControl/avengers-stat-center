@@ -323,7 +323,7 @@ tbody tr:last-child td{border-bottom:0}
       <section class="page" id="page-players">
         <div class="players-toolbar">
           <input id="playerSearch" placeholder="Search player…" autocomplete="off" />
-          <div class="small-muted">Click a player for their profile and event history.</div>
+          <div class="small-muted">Search includes active, AV-2, and inactive tracked players. Click a player for their profile and event history.</div>
         </div>
         <div id="playersContent"></div>
       </section>
@@ -1134,7 +1134,11 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
 
   function renderPlayers(){
     const q=state.playerSearch.trim().toLowerCase();
-    const rows=currentMembers().filter(r=>!q||r.name.toLowerCase().includes(q)).sort((a,b)=>b.ratingTotal-a.ratingTotal);
+    // With no query, respect the selected roster/status view. Once the user
+    // searches, include every tracked profile so inactive historical members
+    // remain discoverable without changing the global roster filter.
+    const source=q ? D.members : currentMembers();
+    const rows=source.filter(r=>!q||r.name.toLowerCase().includes(q)).sort((a,b)=>b.ratingTotal-a.ratingTotal);
     $('#playersContent').innerHTML = rows.length ? `<div class="player-grid">${rows.map(r=>`
       <button class="player-card" data-player="${escapeHtml(r.name)}">
         <div class="player-top"><div class="avatar">${initials(r.name)}</div><div style="min-width:0"><div class="player-card-name">${escapeHtml(r.name)}</div><div>${statusBadge(r.status)}</div></div></div>

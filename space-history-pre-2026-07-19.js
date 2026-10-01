@@ -2690,7 +2690,7 @@
     });
   });
 
-  D.space.historicalRewardTotals=Object.assign({},D.space.historicalRewardTotals||{},{"2026-06-07":{"stars":3137893,"sparks":313799,"source":"Discord final claim screenshots"}});
+  D.space.historicalRewardTotals=Object.assign({},D.space.historicalRewardTotals||{},{"2026-06-07":{"stars":3137893,"sparks":313799,"source":"Discord final claim screenshots"},"2026-05-06":{"stars":4409006,"sparks":440935,"source":"Discord final claim screenshots; includes clearly visible AVENGERS rows omitted from the earlier lightyear-only transcription"},"2026-05-14":{"stars":4716264,"sparks":471649,"source":"Discord final claim screenshots; preliminary-results post excluded"},"2026-05-20":{"stars":3565217,"sparks":356564,"source":"Discord final claim screenshots"},"2026-05-27":{"stars":1417491,"sparks":141749.1,"source":"Discord final claim screenshots; Sparks reconstructed as Stars / 10 where the historical UI did not display them"}});
 
   D.space.historicalSourceNotes=Object.assign({},D.space.historicalSourceNotes||{},{
     '2026-07-09':'Recovered from Discord final-result screenshots; 27 AVENGERS rows.',

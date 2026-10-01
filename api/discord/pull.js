@@ -68,6 +68,11 @@ module.exports = async function handler(req,res){
   const limit=Math.max(1,Math.min(Number(body.maxMessages)||100,100));
   const stopAfterId=body.afterMessageId?BigInt(String(body.afterMessageId)):null;
   const before=body.beforeMessageId?String(body.beforeMessageId):null;
+  const sinceTimestamp=body.sinceTimestamp?String(body.sinceTimestamp):null;
+  const sinceMs=sinceTimestamp?Date.parse(sinceTimestamp):null;
+  if(sinceTimestamp && !Number.isFinite(sinceMs)){
+    return json(res,400,{error:'Invalid sinceTimestamp'});
+  }
   const params=new URLSearchParams({limit:String(limit)});
   if(before)params.set('before',before);
 
@@ -97,12 +102,20 @@ module.exports = async function handler(req,res){
   const candidates=[];
   let scanned=0;
   let done=false;
+  let reachedStartTime=false;
   let newestScannedMessageId=null;
   let oldestScannedMessageId=null;
 
   for(const m of messages){
     const mid=BigInt(String(m.id));
     if(stopAfterId && mid<=stopAfterId){done=true;break;}
+
+    const messageMs=Date.parse(String(m.timestamp||''));
+    if(Number.isFinite(sinceMs) && Number.isFinite(messageMs) && messageMs<sinceMs){
+      done=true;
+      reachedStartTime=true;
+      break;
+    }
 
     if(!newestScannedMessageId)newestScannedMessageId=m.id;
     oldestScannedMessageId=m.id;
@@ -160,7 +173,9 @@ module.exports = async function handler(req,res){
     oldestScannedMessageId,
     nextBeforeMessageId:fetchedOldestId,
     hasMore:!done && messages.length===limit,
-    reachedCheckpoint:done,
+    reachedCheckpoint:Boolean(stopAfterId && done),
+    reachedStartTime,
+    sinceTimestamp,
     recommendedDelayMs,
     candidates,
     rules:config.rules

@@ -1866,147 +1866,210 @@
       "rank": 1,
       "name": "AV-Supreeth",
       "username": "AV-Supreeth",
-      "yearsB": 74.7
+      "yearsB": 74.7,
+      "stars": 215600,
+      "sparks": 21564,
+      "rewardSource": "Discord final claim screenshot"
     },
     {
       "group": 1,
       "rank": 2,
       "name": "AV-FrenchieUSA",
       "username": "AV-FrenchieUSA",
-      "yearsB": 28.5
+      "yearsB": 28.5,
+      "stars": 172480,
+      "sparks": 17252,
+      "rewardSource": "Discord final claim screenshot"
     },
     {
       "group": 1,
       "rank": 3,
       "name": "AV-Animosity",
       "username": "AV-Animosity",
-      "yearsB": 23.1
+      "yearsB": 23.1,
+      "stars": 155232,
+      "sparks": 15526,
+      "rewardSource": "Discord final claim screenshot"
     },
     {
       "group": 1,
       "rank": 4,
       "name": "AV-SMILINGBANDIT",
       "username": "AV-SmilingBaN…",
-      "yearsB": 22.4
+      "yearsB": 22.4,
+      "stars": 103488,
+      "sparks": 10351,
+      "rewardSource": "Discord final claim screenshot"
     },
     {
       "group": 1,
       "rank": 5,
       "name": "AV-MONSTER",
       "username": "AV-MONSTER.",
-      "yearsB": 18.2
+      "yearsB": 18.2,
+      "stars": 86240,
+      "sparks": 8626,
+      "rewardSource": "Discord final claim screenshot"
     },
     {
       "group": 1,
       "rank": 6,
       "name": "AV-JAKE",
       "username": "AV-JAKE",
-      "yearsB": 17.2
+      "yearsB": 17.2,
+      "stars": 68992,
+      "sparks": 6901,
+      "rewardSource": "Discord final claim screenshot"
     },
     {
       "group": 1,
       "rank": 7,
       "name": "AV-Adigarian",
       "username": "AV-Adigarian",
-      "yearsB": 11
+      "yearsB": 11,
+      "stars": 34496,
+      "sparks": 3450,
+      "rewardSource": "Discord final claim screenshot"
     },
     {
       "group": 2,
       "rank": 1,
       "name": "AV-HarryBallsagna",
       "username": "AV-HarryBallso…",
-      "yearsB": 50.2
+      "yearsB": 50.2,
+      "stars": 186410,
+      "sparks": 18645,
+      "rewardSource": "Discord final claim screenshot"
     },
     {
       "group": 2,
       "rank": 2,
       "name": "AV-BLISTER",
       "username": "AV-BLISTER-USA",
-      "yearsB": 27.4
+      "yearsB": 27.4,
+      "stars": 149128,
+      "sparks": 14916,
+      "rewardSource": "Discord final claim screenshot"
     },
     {
       "group": 2,
       "rank": 3,
       "name": "AV-UANGELES",
       "username": "AV-UANGELES",
-      "yearsB": 22.8
+      "yearsB": 22.8,
+      "stars": 134215,
+      "sparks": 13424,
+      "rewardSource": "Discord final claim screenshot"
     },
     {
       "group": 2,
       "rank": 4,
       "name": "AV-ColdCreeps",
       "username": "AV-take.them.out",
-      "yearsB": 20.2
+      "yearsB": 20.2,
+      "stars": 89477,
+      "sparks": 8950,
+      "rewardSource": "Discord final claim screenshot"
     },
     {
       "group": 2,
       "rank": 5,
       "name": "AV-Nicefellow",
       "username": "AV-Nicefellow",
-      "yearsB": 20.1
+      "yearsB": 20.1,
+      "stars": 74564,
+      "sparks": 7458,
+      "rewardSource": "Discord final claim screenshot"
     },
     {
       "group": 2,
       "rank": 6,
       "name": "AV-Starred",
       "username": "AV-Starred",
-      "yearsB": 17.9
+      "yearsB": 17.9,
+      "stars": 59651,
+      "sparks": 5966,
+      "rewardSource": "Discord final claim screenshot"
     },
     {
       "group": 2,
       "rank": 7,
       "name": "AV-Anamiko",
       "username": "AV-Anamiko",
-      "yearsB": 12
+      "yearsB": 12,
+      "stars": 29826,
+      "sparks": 2983,
+      "rewardSource": "Discord final claim screenshot"
     },
     {
       "group": 2,
       "rank": 8,
       "name": "AV-InvisibleSpy",
       "username": "AV-InvisibleSpy",
-      "yearsB": 9.6
+      "yearsB": 9.6,
+      "stars": 14913,
+      "sparks": 1492,
+      "rewardSource": "Discord final claim screenshot"
     },
     {
       "group": 3,
       "rank": 1,
       "name": "AV-J",
       "username": "AV-J",
-      "yearsB": 63.5
+      "yearsB": 63.5,
+      "stars": 192385,
+      "sparks": 19240,
+      "rewardSource": "Discord final claim screenshot"
     },
     {
       "group": 3,
       "rank": 2,
       "name": "AV-jacko",
       "username": "AV-jacko",
-      "yearsB": 30.5
+      "yearsB": 30.5,
+      "stars": 153908,
+      "sparks": 15392,
+      "rewardSource": "Discord final claim screenshot"
     },
     {
       "group": 3,
       "rank": 3,
       "name": "AV-CHEN1972",
       "username": "AV-CHEN1972",
-      "yearsB": 21.7
+      "yearsB": 21.7,
+      "stars": 138517,
+      "sparks": 13853,
+      "rewardSource": "Discord final claim screenshot"
     },
     {
       "group": 3,
       "rank": 4,
       "name": "AV-Deviantdan",
       "username": "AV-Deviantdan",
-      "yearsB": 18.6
+      "yearsB": 18.6,
+      "stars": 92345,
+      "sparks": 9235,
+      "rewardSource": "Discord final claim screenshot"
     },
     {
       "group": 3,
       "rank": 5,
       "name": "AV-OblivX",
       "username": "AV-OblivX",
-      "yearsB": 18.4
+      "yearsB": 18.4,
+      "stars": 76954,
+      "sparks": 7696,
+      "rewardSource": "Discord final claim screenshot"
     },
     {
       "group": 3,
       "rank": 6,
       "name": "AV-GNSK",
       "username": "AV-GNSK",
-      "yearsB": 17.5
+      "yearsB": 17.5,
+      "stars": 61563,
+      "sparks": 6157,
+      "rewardSource": "Discord final claim screenshot"
     }
   ]
 };
@@ -2052,6 +2115,6 @@
       D.space.history[r.name]=prior;
     });
   });
-  D.space.historicalRewardTotals=Object.assign({},D.space.historicalRewardTotals||{},{"2026-03-11":{"stars":692501,"sparks":69256,"source":"Discord final claim screenshots"},"2026-03-18":{"stars":2488537,"sparks":248853.7,"source":"Discord final claim screenshots; Sparks reconstructed as Stars / 10 per scorelog convention"},"2026-03-21":{"stars":1938270,"sparks":193825,"source":"Discord final claim screenshots"},"2026-03-25":{"stars":888628,"sparks":88869,"source":"Discord final claim screenshots; totals cover the tracked AVENGERS rows present in this historical event"},"2026-03-28":{"stars":1062349,"sparks":106237,"source":"Discord final claim screenshots"}});
+  D.space.historicalRewardTotals=Object.assign({},D.space.historicalRewardTotals||{},{"2026-03-11":{"stars":692501,"sparks":69256,"source":"Discord final claim screenshots"},"2026-03-18":{"stars":2488537,"sparks":248853.7,"source":"Discord final claim screenshots; Sparks reconstructed as Stars / 10 per scorelog convention"},"2026-03-21":{"stars":1938270,"sparks":193825,"source":"Discord final claim screenshots"},"2026-03-25":{"stars":888628,"sparks":88869,"source":"Discord final claim screenshots; totals cover the tracked AVENGERS rows present in this historical event"},"2026-03-28":{"stars":1062349,"sparks":106237,"source":"Discord final claim screenshots"},"2026-06-11":{"stars":2290384,"sparks":229077,"source":"Discord final claim screenshots"}});
   D.space.historicalSourceNotes=Object.assign({},D.space.historicalSourceNotes||{},notes);
 })();

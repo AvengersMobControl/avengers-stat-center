@@ -123,6 +123,7 @@
     <div class="controls no-print">
       <label>Result channel
         <select id="channel">
+          <option value="weekly">All Weekly Results</option>
           <option value="space">Space Race</option>
           <option value="piggy">Piggy Race</option>
           <option value="kraken">Kraken</option>
@@ -1089,6 +1090,9 @@
   }
 
   async function pull(useCheckpoint){
+    if(channel.value==='weekly'){
+      return pullWeeklyBundle();
+    }
     const targetMessages=Math.max(1,Math.min(Number($('#maxMessages').value)||2000,5000));
     const checkpoint=useCheckpoint?getCheckpoint():'';
     if(useCheckpoint && !checkpoint){
@@ -1353,10 +1357,12 @@
   });
   channel.addEventListener('change',()=>{
     updateCheckpoint();
-    $('#maxMessages').value=channel.value==='space'?'2000':channel.value==='piggy'?'2500':channel.value==='kraken'?'5000':'1000';
+    $('#maxMessages').value=channel.value==='weekly'?'5000':channel.value==='space'?'2000':channel.value==='piggy'?'2500':channel.value==='kraken'?'5000':'1000';
     const before=$('#beforeDate');
     if(channel.value==='kraken' && !before.value)before.value='2026-02-01';
     if(channel.value!=='kraken' && before.value==='2026-02-01')before.value='';
+    $('#pullNew').disabled=channel.value==='weekly';
+    $('#pullBeforeDate').disabled=channel.value==='weekly';
   });
   updateCheckpoint();
 })();

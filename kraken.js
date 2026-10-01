@@ -9,11 +9,12 @@
   let eventKey=(K.months||[]).at(-1)?.key||'sept';
   let pbEventKey=eventKey;
   let pbSort='newpb';
+  let rosterFilter=document.getElementById('globalStatusFilter')?.value||'active';
 
   const fmt=(v,d=0)=>(Number(v)||0).toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d});
   const pct=v=>((Number(v)||0)*100).toFixed(1)+'%';
   const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
-  const rosterMode=()=>document.getElementById('globalStatusFilter')?.value||'active';
+  const rosterMode=()=>rosterFilter;
   const memberMap=new Map((D.members||[]).map(m=>[m.name,m]));
   const currentAvengers=new Set((S.currentAvengers||[]).map(x=>x.name));
 
@@ -35,6 +36,7 @@
     const st=norm(currentStatus(p.name,p.status));
     if(m==='active') return st==='active';
     if(m==='av2') return st==='av2';
+    if(m==='inactive') return st==='inactive';
     return true;
   };
   const players=()=>K.players.filter(allowed);
@@ -164,7 +166,7 @@
       </tr>`;
     }).join('');
     return `<div class="table-card">
-      <div class="table-titlebar"><div><h2>Kraken — ${esc(monthLabel(key))}</h2><div class="small-muted">${list.length} historical participants • current status shown separately</div></div></div>
+      <div class="table-titlebar"><div><h2>Kraken — ${esc(monthLabel(key))}</h2><div class="small-muted">${list.length} ${filtered?'participants in selected roster':'historical participants'} • current status shown separately</div></div></div>
       <div class="table-wrap"><table><thead><tr>
         <th class="num">#</th><th>Member</th><th>Current Status</th><th>Damage</th><th class="num">PB Through Event</th><th class="num">Avg Through Event</th><th class="num">Events</th><th class="num">Loadout</th>
       </tr></thead><tbody>${rows||'<tr><td colspan="8" class="empty">No Kraken data for this selection.</td></tr>'}</tbody></table></div>
@@ -311,16 +313,16 @@
     let body='';
     if(view==='overview') body=overview();
     else if(view==='event'){
-      const s=eventSummary(eventKey,false);
+      const s=eventSummary(eventKey,true);
       body=`
         <div class="kr-kpis kr-event-kpis">
-          <div class="kr-kpi"><span>Participants</span><strong>${s.players}</strong><small>all historical participants</small></div>
+          <div class="kr-kpi"><span>Participants</span><strong>${s.players}</strong><small>selected roster</small></div>
           <div class="kr-kpi"><span>Average Damage</span><strong>${fmt(s.avg,1)}</strong><small>per participant</small></div>
           <div class="kr-kpi"><span>Total Damage</span><strong>${fmt(s.total,1)}</strong><small>sum of recorded scores</small></div>
           <div class="kr-kpi"><span>Leader</span><strong>${s.leader?fmt(s.leader[eventKey],1):'—'}</strong><small>${s.leader?esc(s.leader.name):''}</small></div>
           <div class="kr-kpi"><span>PBs</span><strong>${s.pbCount}</strong><small>returning-player PBs</small></div>
         </div>
-        ${eventTable(eventKey,false)}`;
+        ${eventTable(eventKey,true)}`;
     } else if(view==='last3') body=last3Table();
     else body=pbView();
 
@@ -333,20 +335,30 @@
           <button data-kview="pbs" class="${view==='pbs'?'active':''}">PBs & New</button>
         </div>
         <div class="kr-history-controls">
+          <label class="inline-control">Roster
+            <select id="krakenRosterFilter">
+              <option value="active" ${rosterFilter==='active'?'selected':''}>AVENGERS</option>
+              <option value="av2" ${rosterFilter==='av2'?'selected':''}>AV-2</option>
+              <option value="inactive" ${rosterFilter==='inactive'?'selected':''}>Inactive</option>
+              <option value="all" ${rosterFilter==='all'?'selected':''}>All tracked</option>
+            </select>
+          </label>
           ${view==='event'?'<label class="inline-control">Event <select id="krakenEventSelect">'+[...(K.months||[])].reverse().map(m=>'<option value="'+esc(m.key)+'" '+(m.key===eventKey?'selected':'')+'>'+esc(m.label)+' 2026</option>').join('')+'</select></label>':''}
-          <div class="small-muted">${view==='event'?'Event view includes Active, AV-2 and Inactive historical participants. ':'Tracked Kraken history: '}${view==='event'?'':(K.months||[]).map(m=>esc(m.label)).join(' • ')}</div>
+          <div class="small-muted">${view==='event'?'Event results use the selected roster filter. ':'Tracked Kraken history: '}${view==='event'?'':(K.months||[]).map(m=>esc(m.label)).join(' • ')}</div>
         </div>
       </div>
       ${body}`;
 
     root.querySelectorAll('[data-kview]').forEach(b=>b.onclick=()=>{view=b.dataset.kview;window.renderKraken();});
+    root.querySelector('#krakenRosterFilter')?.addEventListener('change',e=>{rosterFilter=e.target.value;window.renderKraken();renderKrakenOverview();});
     root.querySelector('#krakenEventSelect')?.addEventListener('change',e=>{eventKey=e.target.value;window.renderKraken();});
     root.querySelector('#krakenPBEventSelect')?.addEventListener('change',e=>{pbEventKey=e.target.value;window.renderKraken();});
     root.querySelector('#krakenPBSortSelect')?.addEventListener('change',e=>{pbSort=e.target.value;window.renderKraken();});
     bindPlayers(root);
   };
 
-  document.getElementById('globalStatusFilter')?.addEventListener('change',()=>setTimeout(()=>{
+  document.getElementById('globalStatusFilter')?.addEventListener('change',e=>setTimeout(()=>{
+    rosterFilter=e.target.value||'active';
     renderKrakenOverview();
     if(document.getElementById('page-kraken')?.classList.contains('active')) window.renderKraken();
   },0));

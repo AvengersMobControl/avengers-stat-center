@@ -31,6 +31,7 @@ async function validSession(token,secret){
     );
     if(!ok)return false;
     const payload=JSON.parse(new TextDecoder().decode(b64urlToBytes(body)));
+    if(payload.guest===true && payload.permanentGuest===true)return true;
     return Number(payload.exp||0)>Math.floor(Date.now()/1000);
   }catch{
     return false;

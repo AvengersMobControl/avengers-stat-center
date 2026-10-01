@@ -500,7 +500,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const top=avRows.find(r=>Number(r.rank)===1 && (Number(r.share)||0)>0) || avRows.slice().sort((a,b)=>(Number(a.rank)||999)-(Number(b.rank)||999))[0];
     if(top){
       let share=Number(top.share)||0;
-      if(share>1) share/=100;
+      if(share>=1) share/=100;
       const sparks=Number(top.sparks)||0;
       if(sparks>0 && share>0) return sparks*10/share;
       const stars=Number(top.stars)||0;
@@ -522,11 +522,12 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   function spaceRewardTotals(date){
     const rows=(D.space?.events?.[date]||[]).filter(r=>r&&r.name&&r.name!=='Total'&&r.name!=='#N/A'&&(Number(r.yearsB)||0)>0);
     const total=(D.space?.events?.[date]||[]).find(r=>r?.name==='Total');
+    const historical=D.space?.historicalRewardTotals?.[date]||null;
     const sum=k=>rows.reduce((s,r)=>s+(Number(r[k])||0),0);
     const starsKnown=(Number(total?.stars)||0)>0 || rows.some(r=>(Number(r.stars)||0)>0);
     const sparksKnown=(Number(total?.sparks)||0)>0 || rows.some(r=>(Number(r.sparks)||0)>0);
-    const stars=(Number(total?.stars)||0)>0?Number(total.stars):(starsKnown?sum('stars'):null);
-    const sparks=(Number(total?.sparks)||0)>0?Number(total.sparks):(sparksKnown?sum('sparks'):null);
+    const stars=historical?.stars!=null?Number(historical.stars):((Number(total?.stars)||0)>0?Number(total.stars):(starsKnown?sum('stars'):null));
+    const sparks=historical?.sparks!=null?Number(historical.sparks):((Number(total?.sparks)||0)>0?Number(total.sparks):(sparksKnown?sum('sparks'):null));
 
     const groups=new Map();
     rows.forEach(r=>{

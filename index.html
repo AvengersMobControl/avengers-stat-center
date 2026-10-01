@@ -797,40 +797,42 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       el.innerHTML=tableShell('Piggy Race Pot Totals','Workbook-derived pot total for each recorded race • calculated from reward/share values when available',
         [{label:'Week'},{label:'Pot Stars',num:true}],body||`<tr><td colspan="2" class="empty">No Piggy pot totals recorded.</td></tr>`);
     } else if(view==='event'){
-      const eventAll=piggyRaceRows(state.piggyEvent)
+      const eventAV=piggyRaceRows(state.piggyEvent,'AVENGERS')
         .sort((a,b)=>(Number(a.rank)||999)-(Number(b.rank)||999));
-      const eventRows=state.status==='av2'
-        ? eventAll.filter(r=>statusNorm(currentStatusFor(r.name,r.status))==='av2')
-        : eventAll;
+      const eventAV2=piggyRaceRows(state.piggyEvent,'AV2')
+        .sort((a,b)=>(Number(a.rank)||999)-(Number(b.rank)||999));
 
-      const max=Math.max(...eventRows.map(r=>Number(r.lines)||0),1);
-      const body=eventRows.map(r=>`<tr>
-        <td class="num">${fmtNum(r.rank)}</td>
-        <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></div></td>
-        <td>${statusBadge(currentStatusFor(r.name,r.status))}</td>
-        <td>${barCell(r.lines,max,v=>fmtNum(v))}</td>
-        <td class="num">${fmtNum(r.stars)}</td>
-        <td class="num">${fmtNum(r.sparks)}</td>
-        <td class="num">${fmtPct(r.share)}</td>
-      </tr>`).join('');
+      const makeRows=(rows,rewardsKnown)=>{
+        const max=Math.max(...rows.map(r=>Number(r.lines)||0),1);
+        return rows.map(r=>`<tr>
+          <td class="num">${fmtNum(r.rank)}</td>
+          <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></div></td>
+          <td>${statusBadge(currentStatusFor(r.name,r.status))}</td>
+          <td>${barCell(r.lines,max,v=>fmtNum(v))}</td>
+          <td class="num">${rewardsKnown||Number(r.stars)?fmtNum(r.stars):'—'}</td>
+          <td class="num">${rewardsKnown||Number(r.sparks)?fmtNum(r.sparks):'—'}</td>
+          <td class="num">${rewardsKnown||Number(r.share)?fmtPct(r.share):'—'}</td>
+        </tr>`).join('');
+      };
 
-      const avg=eventRows.length?eventRows.reduce((s,r)=>s+(Number(r.lines)||0),0)/eventRows.length:0;
+      const avAvg=eventAV.length?eventAV.reduce((s,r)=>s+(Number(r.lines)||0),0)/eventAV.length:0;
+      const avStars=eventAV.reduce((s,r)=>s+(Number(r.stars)||0),0);
+      const av2Avg=eventAV2.length?eventAV2.reduce((s,r)=>s+(Number(r.lines)||0),0)/eventAV2.length:0;
       const officialPot=piggyPotTotal(state.piggyEvent);
-      const summary=`<div class="space-event-split">
-        <div class="split-stat avengers"><span>${state.status==='av2'?'CURRENT AV-2 FROM THIS RACE':'AVENGERS EVENT ROSTER'}</span><strong>${fmtNum(avg)}</strong><small>${eventRows.length} players • ${fmtMillions2(officialPot)} official pot</small></div>
-        <div class="split-divider">★</div>
-        <div class="split-stat avengers"><span>POT TOTAL</span><strong>${fmtMillions2(officialPot)}</strong><small>includes everyone who competed with AVENGERS that week</small></div>
+
+      const split=`<div class="space-event-split">
+        <div class="split-stat avengers"><span>AVENGERS</span><strong>${fmtNum(avAvg)}</strong><small>${eventAV.length} players • ${fmtMillions2(avStars)} AV stars • ${fmtMillions2(officialPot)} pot</small></div>
+        <div class="split-divider">≠</div>
+        <div class="split-stat av2"><span>AV-2 — separate race</span><strong>${eventAV2.length?fmtNum(av2Avg):'—'}</strong><small>${eventAV2.length} players • excluded from AVENGERS totals</small></div>
       </div>`;
 
       const headers=[{label:'Rank',num:true},{label:'Member'},{label:'Current Status'},{label:'Lines'},{label:'Stars',num:true},{label:'Sparks',num:true},{label:'Share',num:true}];
-      el.innerHTML=summary+tableShell(
-        `${state.status==='av2'?'Current AV-2 participants':'AVENGERS'} — ${fmtDate(state.piggyEvent)}`,
-        state.status==='av2'
-          ? `${eventRows.length} current AV-2 members who appear in this historical AVENGERS race`
-          : `${eventRows.length} historical AVENGERS participants • current AV-2 / inactive status does not remove a player from this race`,
-        headers,
-        body||`<tr><td colspan="7" class="empty">No Piggy event data.</td></tr>`
-      );
+      el.innerHTML=split+`<div class="event-result-grid">
+        ${tableShell(`AVENGERS — ${fmtDate(state.piggyEvent)}`,`${eventAV.length} workbook participants • current status is shown only for reference`,headers,
+          makeRows(eventAV,true)||`<tr><td colspan="7" class="empty">No AVENGERS event data.</td></tr>`)}
+        ${tableShell(`AV-2 — separate — ${fmtDate(state.piggyEvent)}`,`${eventAV2.length} separately logged AV-2 participants • not included in the AVENGERS pot or star total`,headers,
+          makeRows(eventAV2,false)||`<tr><td colspan="7" class="empty">No separate AV-2 race rows for this event.</td></tr>`)}
+      </div>`;
     } else if(view==='last3'){
       const rows=(D.piggy.overall||[]).filter(r=>allowedStatus(r.status)&&Number(r.avgLast3)>0).map(r=>({
         ...r,
@@ -911,8 +913,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     }
     el.insertAdjacentHTML('afterbegin',`
       <div class="roster-separation-note">
-        <strong>AVENGERS metrics = Active roster only.</strong>
-        AV-2 is tracked separately and is not included in AVENGERS averages or star totals.
+        <strong>Historical Piggy race membership follows the workbook.</strong>
+        A player stays in the AVENGERS event table if they competed with AVENGERS that week, regardless of their current Active / AV-2 / Inactive status. Separately logged AV-2 race rows remain separate.
       </div>`);
     bindPlayerButtons(el);
   }

@@ -20,7 +20,7 @@ AV-CHEN1972\tActive\t8\t3\t\tTaiwan
 AV-Chuck\tActive\t-5\t1\t\tUSA-Central DST
 AV-ColdCreeps\tActive\t-4\t1\t\tUSA-Eastern DST
 AV-DaG\tActive\t2\t2\t\tSwitzerland
-AV-Derya\tActive\t2\t2\t\tGermany
+AV-Derya\tAV2\t2\t2\t\tGermany
 AV-Deviantdan\tActive\t-7\t1\t\tUSA-Pacific DST
 AV-EXCALIBUR\tActive\t-4\t1\t\tCanada - Ontario
 AV-Finnie\tActive\t1\t2\t\tEngland
@@ -45,7 +45,7 @@ AV-Obajoba\tActive\t0\t2\t\tIceland
 AV-Pablin\tActive\t-3\t1\t\tArgentina
 AV-RkHendrix\tActive\t-6\t1\t\tMexico
 AV-SB\tActive\t-5\t1\tTX\tUSA-Central DST
-AV-SiFra\tActive\t5.5\t3\t\tIndia
+AV-SiFra\tAV2\t5.5\t3\t\tIndia
 AV-SMILINGBANDIT\tActive\t-4\t1\t\tUSA-Eastern DST
 AV-Supreeth\tActive\t5.5\t3\t\tIndia
 AV-TheOli\tActive\t-6\t1\tTX\tUSA-Mountain

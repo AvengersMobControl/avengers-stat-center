@@ -45,8 +45,13 @@ module.exports=async function handler(req,res){
   }
   const secret=process.env.AUTH_SECRET;
   const session=verifySession(cookies(req).avengers_session,secret);
-  if(!session || session.guest){
-    res.status(401).send('Sign in as an AVENGERS Discord member first.');
+  if(!session){
+    const returnTo='/api/guest/create'+(req.url&&req.url.includes('?')?'?'+req.url.split('?').slice(1).join('?'):'');
+    res.redirect(302,'/api/auth/discord/login?returnTo='+encodeURIComponent(returnTo));
+    return;
+  }
+  if(session.guest){
+    res.status(403).send('Guest accounts cannot create guest links. Sign in with an AVENGERS Discord member account.');
     return;
   }
   const now=Math.floor(Date.now()/1000);

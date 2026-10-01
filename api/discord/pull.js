@@ -52,6 +52,11 @@ function msFromRetry(value){
   if(!Number.isFinite(n)||n<0)return 1000;
   return Math.max(250,Math.ceil(n*1000));
 }
+function snowflakeBeforeTimestamp(ms){
+  const discordEpoch=1420070400000n;
+  const t=BigInt(Math.max(1420070400001,Math.floor(ms)));
+  return ((t-discordEpoch)<<22n).toString();
+}
 
 module.exports = async function handler(req,res){
   if(req.method!=='POST') return json(res,405,{error:'POST required'});
@@ -67,12 +72,19 @@ module.exports = async function handler(req,res){
   // pagination so a 5,000-message pull cannot time out one Vercel function.
   const limit=Math.max(1,Math.min(Number(body.maxMessages)||100,100));
   const stopAfterId=body.afterMessageId?BigInt(String(body.afterMessageId)):null;
-  const before=body.beforeMessageId?String(body.beforeMessageId):null;
   const sinceTimestamp=body.sinceTimestamp?String(body.sinceTimestamp):null;
   const sinceMs=sinceTimestamp?Date.parse(sinceTimestamp):null;
   if(sinceTimestamp && !Number.isFinite(sinceMs)){
     return json(res,400,{error:'Invalid sinceTimestamp'});
   }
+  const beforeTimestamp=body.beforeTimestamp?String(body.beforeTimestamp):null;
+  const beforeMs=beforeTimestamp?Date.parse(beforeTimestamp):null;
+  if(beforeTimestamp && !Number.isFinite(beforeMs)){
+    return json(res,400,{error:'Invalid beforeTimestamp'});
+  }
+  const before=body.beforeMessageId
+    ? String(body.beforeMessageId)
+    : (Number.isFinite(beforeMs)?snowflakeBeforeTimestamp(beforeMs):null);
   const params=new URLSearchParams({limit:String(limit)});
   if(before)params.set('before',before);
 
@@ -176,6 +188,7 @@ module.exports = async function handler(req,res){
     reachedCheckpoint:Boolean(stopAfterId && done),
     reachedStartTime,
     sinceTimestamp,
+    beforeTimestamp,
     recommendedDelayMs,
     candidates,
     rules:config.rules

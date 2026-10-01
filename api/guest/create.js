@@ -50,6 +50,7 @@ module.exports=async function handler(req,res){
     return;
   }
   const now=Math.floor(Date.now()/1000);
+  const permanent=String(req.query?.mode||'').toLowerCase()==='permanent';
   const ttl=60*60;
   const maxUses=3;
   const payload={
@@ -58,22 +59,29 @@ module.exports=async function handler(req,res){
     creator:String(session.sub),
     creatorName:String(session.username||'AVENGERS member'),
     iat:now,
-    exp:now+ttl,
-    maxUses
+    ...(permanent?{permanent:true}:{exp:now+ttl,maxUses})
   };
   const token=sign(payload,secret);
   const url=origin(req)+'/api/guest/redeem?t='+encodeURIComponent(token);
-  const expires=new Date(payload.exp*1000).toLocaleString('en-US',{
+  const expires=permanent?'Never':new Date(payload.exp*1000).toLocaleString('en-US',{
     timeZone:'America/Chicago',
     month:'short',day:'numeric',year:'numeric',
     hour:'numeric',minute:'2-digit',timeZoneName:'short'
   });
   res.setHeader('Cache-Control','no-store');
+  const heading=permanent?'Permanent guest link':'1-hour guest link';
+  const sub=permanent?'Never expires. Unlimited human redemptions; every redemption is still logged to you.':'Expires '+expires+'. The first redemption activates a guest session for the remaining time.';
+  const note=permanent
+    ?'<strong>Permanent / unlimited:</strong> Discord and other link-preview bots do not count. Human opens are never blocked for age or use count, and each successful redemption is logged to you by Discord DM.'
+    :'<strong>3-use protection:</strong> Discord and other link-preview bots do not count. The first three successful guest opens are allowed; the fourth and later attempts are blocked. You receive a Discord DM for each successful redemption and for any blocked attempt.';
+  const switchLink=permanent
+    ?'<a href="/api/guest/create" style="color:#9fc5ff">Create a standard 1-hour / 3-use link instead</a>'
+    :'<a href="/api/guest/create?mode=permanent" style="color:#9fc5ff">Create a permanent / unlimited link instead</a>';
   res.status(200).send(`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>AVENGERS Guest Link</title><style>
   body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#081322;color:#eaf2ff;margin:0;padding:32px}
   .card{max-width:760px;margin:6vh auto;background:#101d30;border:1px solid #263a55;border-radius:18px;padding:26px;box-shadow:0 18px 50px rgba(0,0,0,.3)}
   h1{margin:0 0 8px;font-size:26px}.muted{color:#9fb0c7}.link{word-break:break-all;background:#07111f;border:1px solid #29405f;border-radius:12px;padding:14px;margin:18px 0;font-family:ui-monospace,monospace}
   button{background:#cf3348;color:white;border:0;border-radius:10px;padding:11px 16px;font-weight:800;cursor:pointer}.ok{margin-left:10px;color:#9fe0b0;font-weight:700}
   .note{margin-top:18px;padding:12px;border-radius:10px;background:#17253a;color:#c9d6e8;font-size:14px;line-height:1.45}
-  </style></head><body><div class="card"><h1>1-hour guest link</h1><div class="muted">Expires ${html(expires)}. The first redemption activates a guest session for the remaining time.</div><div id="guestLink" class="link">${html(url)}</div><button onclick="navigator.clipboard.writeText(document.getElementById('guestLink').textContent).then(()=>document.getElementById('copied').textContent='Copied')">Copy link</button><span id="copied" class="ok"></span><div class="note"><strong>3-use protection:</strong> Discord and other link-preview bots do not count. The first three successful guest opens are allowed; the fourth and later attempts are blocked. You receive a Discord DM for each successful redemption and for any blocked attempt.</div></div></body></html>`);
+  </style></head><body><div class="card"><h1>${html(heading)}</h1><div class="muted">${html(sub)}</div><div id="guestLink" class="link">${html(url)}</div><button onclick="navigator.clipboard.writeText(document.getElementById('guestLink').textContent).then(()=>document.getElementById('copied').textContent='Copied')">Copy link</button><span id="copied" class="ok"></span><div class="note">${note}</div><div style="margin-top:16px">${switchLink}</div></div></body></html>`);
 };

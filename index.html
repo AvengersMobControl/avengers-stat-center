@@ -1317,7 +1317,11 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         return {date,participants,primary:pick(key),stars:pick('stars'),sparks:pick('sparks')};
       }).filter(x=>x.participants>0||x.primary>0||x.stars>0);
     };
-    const pig=eventTotals('piggy','lines').map(x=>({...x,stars:piggyPotTotal(x.date)}));
+    const pig=Object.keys(D.piggy?.events||{}).sort().reverse().map(date=>{
+      const rows=piggyRaceRows(date,'AVENGERS');
+      const sum=k=>rows.reduce((s,r)=>s+(Number(r[k])||0),0);
+      return {date,participants:rows.length,primary:sum('lines'),stars:piggyPotTotal(date),sparks:sum('sparks')};
+    }).filter(x=>x.participants>0||x.primary>0||x.stars>0);
     const sp=eventTotals('space','yearsB');
     const K=window.AVENGERS_KRAKEN_DATA||{months:[],players:[]};
     const kr=(K.months||[]).slice().reverse().map(m=>{
@@ -1332,11 +1336,11 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     root.innerHTML=`
       <div class="records-note">
         <strong>Historical event totals.</strong>
-        These tables use the stored event totals themselves, not today's roster filter. For example, Jul 5 Piggy shows the original 39,321,400 stars.
+        Piggy participant counts and line totals follow the historical AVENGERS race roster in the workbook, while Pot Stars use the workbook's reward/share values for the full race pot.
       </div>
       <div class="event-totals-grid">
-        ${tableShell('Piggy Race Totals','All tracked 2026 Piggy events',
-          [{label:'Event'},{label:'Players',num:true},{label:'Total Lines',num:true},{label:'Total Stars',num:true},{label:'Total Sparks',num:true}],pigRows)}
+        ${tableShell('Piggy Race Totals','Historical AVENGERS participants with workbook-derived pot totals',
+          [{label:'Event'},{label:'Players',num:true},{label:'Total Lines',num:true},{label:'Pot Stars',num:true},{label:'Total Sparks',num:true}],pigRows)}
         ${tableShell('Space Race Totals','All tracked 2026 Space events',
           [{label:'Event'},{label:'Players',num:true},{label:'Total Lightyears',num:true},{label:'Total Stars',num:true},{label:'Total Sparks',num:true}],spRows)}
         ${tableShell('Kraken Totals','Sum of recorded monthly player damage scores in the Kraken dataset',

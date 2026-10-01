@@ -23,7 +23,7 @@
     .back{color:#cdefff;text-decoration:none;font-weight:800}
     .notice{border:1px solid rgba(67,215,255,.3);border-left:4px solid var(--cyan);border-radius:12px;background:#0b192b;padding:12px 14px;margin-bottom:15px;font-size:13px}
     .notice strong{color:white}
-    .controls{display:grid;grid-template-columns:1.25fr .55fr auto auto;gap:10px;align-items:end;background:linear-gradient(180deg,#11203a,#0d1a2d);border:1px solid #213653;border-radius:15px;padding:14px;margin-bottom:12px}
+    .controls{display:grid;grid-template-columns:1.15fr .48fr .48fr auto auto auto;gap:10px;align-items:end;background:linear-gradient(180deg,#11203a,#0d1a2d);border:1px solid #213653;border-radius:15px;padding:14px;margin-bottom:12px}
     label{display:grid;gap:6px;color:#9db1c8;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
     select,input{background:#0d1a2c;border:1px solid #263a57;color:#eaf1fa;border-radius:9px;padding:10px 11px;outline:none}
     .btn{border:1px solid #355275;color:#eef7ff;background:#152843;padding:10px 14px;border-radius:9px;font-weight:800}
@@ -102,7 +102,7 @@
     <div class="top no-print">
       <div>
         <h1>Discord Result Review</h1>
-        <div class="muted">Manual pulls only. Space Race and Big Pig use event-specific visual recognition to reject unrelated images before review.</div>
+        <div class="muted">Manual pulls only. Space Race, Big Pig, and Kraken use event-specific filtering before review. Weekly Bundle combines the current week's Space Race, Piggy Race, and all four Piggy Flashes.</div>
       </div>
       <a class="back" href="/">← Back to Stat Center</a>
     </div>
@@ -115,7 +115,7 @@
 
     <div class="notice no-print">
       <strong>Event-specific filtering is enabled.</strong>
-      Space Race looks for the spaceship/header. Big Pig looks for the Piggy Race pig/header, rejects unrelated images and progress screenshots, prefers the two large stitched leaderboard images when they exist, ignores isolated partial AVENGERS-lobby screenshots, and keeps full outside-lobby results when only one AVENGERS player is present.
+      Space Race looks for the spaceship/header. Big Pig looks for the Piggy Race pig/header, rejects unrelated images and progress screenshots, prefers the two large stitched leaderboard images when they exist, ignores isolated partial AVENGERS-lobby screenshots, and keeps full outside-lobby results when only one AVENGERS player is present. Kraken keeps damage-result/leaderboard screenshots only and rejects battle-result screens, spreadsheets, and Kraken screenshots that still show a time remaining.
     </div>
 
     <div class="controls no-print">
@@ -134,8 +134,12 @@
       <label>Messages to scan
         <input id="maxMessages" type="number" min="1" max="5000" value="2000">
       </label>
+      <label>Days back
+        <input id="daysBack" type="number" min="1" max="90" value="8">
+      </label>
       <button class="btn primary" id="pullRecent">Pull + Filter</button>
       <button class="btn" id="pullNew">Pull New + Filter</button>
+      <button class="btn" id="pullWeekly">Pull Weekly Bundle</button>
     </div>
 
     <div class="toolbar no-print">
@@ -183,8 +187,10 @@
   const labels={
     space:'Space Race',piggy:'Piggy Race',kraken:'Kraken',av2:'AV-2 — All Events',
     piggyFlash1:'Piggy Flash 1',piggyFlash2:'Piggy Flash 2',
-    piggyFlash3:'Piggy Flash 3',piggyFlash4:'Piggy Flash 4'
+    piggyFlash3:'Piggy Flash 3',piggyFlash4:'Piggy Flash 4',
+    weekly:'Weekly Bundle'
   };
+  const weeklyChannelKeys=['space','piggy','piggyFlash1','piggyFlash2','piggyFlash3','piggyFlash4'];
 
   function checkpointKey(){return 'avengersDiscordCheckpoint:'+channel.value;}
   function getCheckpoint(){return localStorage.getItem(checkpointKey())||'';}
@@ -201,7 +207,7 @@
     try{return new Date(v).toLocaleString();}catch{return v||'—';}
   }
   function setBusy(on,msg){
-    $('#pullRecent').disabled=on;$('#pullNew').disabled=on;
+    $('#pullRecent').disabled=on;$('#pullNew').disabled=on;$('#pullWeekly').disabled=on;
     if(msg)status.textContent=msg;
     progress.style.display=on?'block':'none';
     if(!on)progress.firstElementChild.style.width='0%';
@@ -342,6 +348,20 @@
     const cv=document.createElement('canvas');
     cv.width=outW;cv.height=outH;
     cv.getContext('2d').drawImage(img,0,sy,img.naturalWidth,sh,0,0,outW,outH);
+    return cv;
+  }
+
+  async function makeOcrCanvasRect(att,x0=0,y0=0,x1=1,y1=1,width=520){
+    const img=await loadImg(compactUrl(att.proxyUrl||att.url,width));
+    const sx=Math.floor(img.naturalWidth*x0);
+    const sy=Math.floor(img.naturalHeight*y0);
+    const sw=Math.max(1,Math.floor(img.naturalWidth*(x1-x0)));
+    const sh=Math.max(1,Math.floor(img.naturalHeight*(y1-y0)));
+    const outW=Math.min(width,sw);
+    const outH=Math.max(1,Math.round(sh*(outW/sw)));
+    const cv=document.createElement('canvas');
+    cv.width=outW;cv.height=outH;
+    cv.getContext('2d').drawImage(img,sx,sy,sw,sh,0,0,outW,outH);
     return cv;
   }
 
@@ -701,8 +721,123 @@
     };
   }
 
+  async function krakenOcrInspect(worker,att){
+    if(!worker)return {match:false,failed:true,reason:'OCR unavailable',text:'',timeText:''};
+    if((Number(att.width)||0)<500 || (Number(att.height)||0)<700){
+      return {match:false,failed:false,reason:'too small',text:'',timeText:''};
+    }
+    try{
+      const fullCanvas=await makeOcrCanvasRegion(att,0,1,580);
+      const fullResult=await worker.recognize(fullCanvas);
+      const text=String(fullResult?.data?.text||'').replace(/\s+/g,' ').trim();
+      const upper=text.toUpperCase();
+      const compact=upper.replace(/[^A-Z0-9]/g,'');
+
+      // Time remaining lives in the upper-left of the Kraken lobby/result view.
+      const timeCanvas=await makeOcrCanvasRect(att,0,0,.42,.22,340);
+      const timeResult=await worker.recognize(timeCanvas);
+      const timeText=String(timeResult?.data?.text||'').replace(/\s+/g,' ').trim();
+      const timeUpper=timeText.toUpperCase();
+
+      const krakenHeader=
+        compact.includes('KRAKENCLASH') ||
+        (compact.includes('KRAKEN') && (compact.includes('CLASH') || compact.includes('RANK')));
+      const battleResult=
+        compact.includes('YOUSURVIVED') ||
+        compact.includes('DAMAGEANDLOOT') ||
+        compact.includes('YOUWON') ||
+        compact.includes('DEFEAT');
+      const timeShown=
+        /\b\d+\s*(?:D|DAY|DAYS|H|HR|HRS|HOUR|HOURS|MIN|MINS|MINUTE|MINUTES)\b/i.test(timeText) ||
+        /\b(?:ENDS?|TIME)\s*(?:IN|LEFT|REMAINING)\b/i.test(timeText);
+      const numberTokens=(text.match(/\b\d+(?:[.,]\d+)?\s*[KMB]\b/gi)||[]).length;
+      const damageEvidence=
+        upper.includes('DAMAGE') ||
+        upper.includes('SCORE') ||
+        numberTokens>=2;
+
+      let reason='kraken damage result';
+      if(!krakenHeader)reason='no Kraken Clash header';
+      else if(battleResult)reason='battle result screen';
+      else if(timeShown)reason='time remaining shown';
+      else if(!damageEvidence)reason='no damage/score evidence';
+
+      return {
+        match:Boolean(krakenHeader && !battleResult && !timeShown && damageEvidence),
+        failed:false,
+        reason,
+        text,
+        timeText,
+        krakenHeader,
+        battleResult,
+        timeShown,
+        damageEvidence,
+        numberTokens
+      };
+    }catch(e){
+      return {match:false,failed:true,reason:'OCR failed',text:'',timeText:'',detail:String(e?.message||e)};
+    }
+  }
+
+  async function filterKraken(data){
+    const raw=data.candidates||[];
+    const diagnostics=[];
+    const keptByMessage=new Map();
+    const total=Math.max(1,raw.reduce((n,p)=>n+(p.attachments?.length||0),0));
+    let checked=0;
+    let worker=null;
+
+    try{
+      if(window.Tesseract){
+        worker=await Tesseract.createWorker('eng',1,{
+          logger:m=>{
+            if(m.status==='recognizing text' && typeof m.progress==='number'){
+              setProgress(.18+(m.progress*.12),'Reading Kraken result screenshots…');
+            }
+          }
+        });
+      }
+    }catch(e){
+      diagnostics.push({result:'OCR unavailable',detail:String(e?.message||e)});
+    }
+
+    for(const post of raw){
+      for(const att of (post.attachments||[])){
+        checked++;
+        const inspect=await krakenOcrInspect(worker,att);
+        setProgress(.20+((checked/total)*.76),'Filtering Kraken damage results… '+checked+' / '+total+' images');
+        if(inspect.match){
+          let p=keptByMessage.get(post.messageId);
+          if(!p){
+            p={...post,attachments:[],_modeLabel:'KRAKEN DAMAGE'};
+            keptByMessage.set(post.messageId,p);
+          }
+          p.attachments.push(att);
+        }else{
+          diagnostics.push({
+            messageId:post.messageId,
+            file:att.filename,
+            result:'Kraken rejected',
+            reason:inspect.reason,
+            timeText:(inspect.timeText||'').slice(0,120),
+            ocr:(inspect.text||'').slice(0,240)
+          });
+        }
+      }
+    }
+    if(worker)try{await worker.terminate();}catch{}
+
+    const posts=[...keptByMessage.values()];
+    return {
+      posts,
+      rejectedUnrelated:Math.max(0,raw.length-posts.length),
+      progressRejected:diagnostics.filter(x=>x.reason==='time remaining shown').length,
+      diagnostics
+    };
+  }
+
   async function filterOther(data){
-    // Other event-specific visual recognizers will be added separately.
+    // Piggy Flash / mixed channels currently keep large screenshot-like images for manual selection.
     // Keep large screenshot-like images and leave them for manual selection.
     const raw=data.candidates||[];
     const posts=[];
@@ -734,6 +869,128 @@
     }
     if(!r.ok)throw new Error(data.error+(data.detail?' — '+data.detail:''));
     return data;
+  }
+
+  async function filterForChannel(channelKey,data){
+    if(channelKey==='space')return filterSpace(data);
+    if(channelKey==='piggy')return filterPiggy(data);
+    if(channelKey==='kraken')return filterKraken(data);
+    return filterOther(data);
+  }
+
+  async function scanChannelSince(channelKey,sinceTimestamp,targetMessages=5000){
+    let before=null;
+    let scanned=0;
+    let newest=null;
+    let oldest=null;
+    let reachedStartTime=false;
+    const byMessage=new Map();
+    let lastMeta=null;
+
+    while(scanned<targetMessages && !reachedStartTime){
+      const pageSize=Math.min(100,targetMessages-scanned);
+      const page=await fetchDiscordPage({
+        channelKey,
+        maxMessages:pageSize,
+        beforeMessageId:before||undefined,
+        sinceTimestamp
+      });
+      lastMeta=page;
+      if(!newest && page.newestScannedMessageId)newest=page.newestScannedMessageId;
+      if(page.oldestScannedMessageId)oldest=page.oldestScannedMessageId;
+      scanned+=Number(page.scanned)||0;
+
+      for(const post of (page.candidates||[])){
+        const prior=byMessage.get(post.messageId);
+        if(!prior){
+          byMessage.set(post.messageId,post);
+        }else{
+          const seen=new Set((prior.attachments||[]).map(a=>a.id));
+          prior.attachments=[
+            ...(prior.attachments||[]),
+            ...(post.attachments||[]).filter(a=>!seen.has(a.id))
+          ];
+        }
+      }
+
+      reachedStartTime=Boolean(page.reachedStartTime);
+      if(reachedStartTime || !page.hasMore || !page.nextBeforeMessageId || Number(page.scanned)===0)break;
+      before=page.nextBeforeMessageId;
+      await sleep(Math.max(120,Number(page.recommendedDelayMs)||180));
+    }
+
+    return {
+      ...(lastMeta||{}),
+      channelKey,
+      scanned,
+      newestScannedMessageId:newest,
+      oldestScannedMessageId:oldest,
+      candidates:[...byMessage.values()].sort((a,b)=>String(b.messageId).localeCompare(String(a.messageId)))
+    };
+  }
+
+  async function pullWeeklyBundle(){
+    const days=Math.max(1,Math.min(Number($('#daysBack').value)||8,90));
+    const since=new Date(Date.now()-(days*24*60*60*1000)).toISOString();
+
+    setBusy(true,'Pulling the last '+days+' day(s) from weekly result channels…');
+    setButtons(false);
+    cards.innerHTML='<div class="empty">Pulling Space Race, Piggy Race, and all Piggy Flash channels…</div>';
+    summary.hidden=true;
+    $('#diagnostics').hidden=true;
+
+    try{
+      const allCandidates=[];
+      const allPosts=[];
+      const diagnostics=[];
+      let scanned=0,rejectedUnrelated=0,progressRejected=0;
+
+      for(let i=0;i<weeklyChannelKeys.length;i++){
+        const key=weeklyChannelKeys[i];
+        const base=(i/weeklyChannelKeys.length)*.82;
+        setProgress(base,'Pulling '+labels[key]+' • '+(i+1)+' / '+weeklyChannelKeys.length);
+        const data=await scanChannelSince(key,since,5000);
+        scanned+=Number(data.scanned)||0;
+        allCandidates.push(...(data.candidates||[]));
+
+        const filtered=await filterForChannel(key,data);
+        rejectedUnrelated+=Number(filtered.rejectedUnrelated)||0;
+        progressRejected+=Number(filtered.progressRejected)||0;
+        diagnostics.push(...(filtered.diagnostics||[]).map(x=>({channel:key,...x})));
+        allPosts.push(...(filtered.posts||[]).map(p=>({...p,_sourceLabel:labels[key]})));
+      }
+
+      allPosts.sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
+      const data={
+        channelKey:'weekly',
+        scanned,
+        candidates:allCandidates,
+        newestScannedMessageId:null,
+        oldestScannedMessageId:null
+      };
+      const filtered={
+        posts:allPosts,
+        rejectedUnrelated,
+        progressRejected,
+        diagnostics
+      };
+
+      current=data;
+      filteredPosts=allPosts;
+      render(data,filtered);
+      setButtons(Boolean(filteredPosts.length));
+      status.innerHTML=filteredPosts.length
+        ? '<strong>'+filteredPosts.length+'</strong> weekly review post(s) kept across '+weeklyChannelKeys.length+' channels for the last '+days+' day(s).'
+        : 'Weekly pull completed, but no matching final-result posts were found.';
+    }catch(e){
+      current=null;
+      filteredPosts=[];
+      summary.hidden=true;
+      cards.innerHTML='<div class="empty error">'+esc(e.message||e)+'</div>';
+      status.textContent='Weekly pull failed.';
+    }finally{
+      setBusy(false);
+    }
   }
 
   async function pull(useCheckpoint){
@@ -808,11 +1065,7 @@
       current=data;
       setProgress(.25,'Pulled '+data.candidates.length+' image posts from '+scanned.toLocaleString()+' messages. Filtering…');
 
-      const filtered=channel.value==='space'
-        ? await filterSpace(data)
-        : channel.value==='piggy'
-          ? await filterPiggy(data)
-          : await filterOther(data);
+      const filtered=await filterForChannel(channel.value,data);
 
       filteredPosts=filtered.posts;
       render(data,filtered);
@@ -866,6 +1119,7 @@
       const author=p.author?.globalName||p.author?.username||'Unknown';
       const ocrFailed=Boolean(p._ocr?.failed);
       const modeLabel=p._modeLabel||'FINAL CANDIDATE';
+      const sourceLabel=p._sourceLabel||labels[p.channelKey]||'';
       const imgs=(p.attachments||[]).map((a,i)=>`
         <div class="shot">
           <img src="${esc(compactUrl(a.proxyUrl||a.url,560))}" alt="Discord result screenshot ${idx+1}-${i+1}" loading="lazy">
@@ -877,7 +1131,7 @@
         <article class="review-card">
           <div class="card-head">
             <div class="card-head-main">
-              <div class="card-title">Post ${idx+1} • ${esc(author)}</div>
+              <div class="card-title">Post ${idx+1}${sourceLabel?' • '+esc(sourceLabel):''} • ${esc(author)}</div>
               <div class="meta">${esc(niceDate(p.timestamp))} • Message ${esc(p.messageId)}</div>
             </div>
             <span class="tag ${ocrFailed?'check':'final'}">${ocrFailed?'CHECK FINAL':esc(modeLabel)}</span>
@@ -897,6 +1151,7 @@
 
   $('#pullRecent').addEventListener('click',()=>pull(false));
   $('#pullNew').addEventListener('click',()=>pull(true));
+  $('#pullWeekly').addEventListener('click',()=>pullWeeklyBundle());
   $('#selectAll').addEventListener('click',()=>{
     document.querySelectorAll('.include input').forEach(x=>x.checked=true);syncSelection();
   });
@@ -949,6 +1204,7 @@
     $('#printSelected').disabled=true;
     $('#pullRecent').disabled=true;
     $('#pullNew').disabled=true;
+    $('#pullWeekly').disabled=true;
 
     let compressed=0;
     for(let i=0;i<imgs.length;i++){
@@ -972,6 +1228,7 @@
       $('#printSelected').disabled=false;
       $('#pullRecent').disabled=false;
       $('#pullNew').disabled=false;
+      $('#pullWeekly').disabled=false;
       status.textContent=selectedCount()+' final result post(s) selected. Nothing has been imported.';
       window.removeEventListener('afterprint',restore);
     };
@@ -998,7 +1255,7 @@
   });
   channel.addEventListener('change',()=>{
     updateCheckpoint();
-    $('#maxMessages').value=channel.value==='space'?'2000':channel.value==='piggy'?'2500':'1000';
+    $('#maxMessages').value=channel.value==='space'?'2000':channel.value==='piggy'?'2500':channel.value==='kraken'?'5000':'1000';
   });
   updateCheckpoint();
 })();

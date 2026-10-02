@@ -5,6 +5,7 @@
   const K=window.AVENGERS_KRAKEN_DATA||null;
   const S=window.AVENGERS_SPARKS_SNAPSHOT||null;
   const R=window.AVENGERS_MEMBER_TIMEZONES||null;
+  const F=window.AVENGERS_PIGGY_FLASH_DATA||null;
   const aliases={"AV#Rafa#Tun":"AV#Rafa#Tun","AV#Rafa#":"AV#Rafa#Tun","AV-(SP)gaby":"AV-(SP)gaby","AV.Saberkong":"AV.Saberkong","AV+IRON.JAWs":"AV+IRON.JAWs","AV<STAR-LORD>":"AV<STAR-LORD>","AV|<STAR-LORD>|":"AV<STAR-LORD>","AV|<STAR-LORD>\\":"AV<STAR-LORD>","AV\\<STAR-LORD>\\":"AV<STAR-LORD>","AV\\<STAR-LOR...":"AV<STAR-LORD>","AV/<STAR-LORD>\\":"AV<STAR-LORD>","AV/<STAR-LOR...":"AV<STAR-LORD>","AV-67":"AV-67","AV-7-STAR":"AV-7-STAR","AV-8!l...Bil":"AV-8!l...Bil","AV-8!\\...Bil":"AV-8!l...Bil","AV-8!\\....Bil":"AV-8!l...Bil","AV-Abu//npjp":"AV-Abu//npjp","AV-Abu#npjp":"AV-Abu//npjp","AV-Abu//np.jp":"AV-Abu//npjp","AV-Adigarian":"AV-Adigarian","AV-AG":"AV-AG","AV-Ajnabi":"AV-Ajnabi","AV-Anamiko":"AV-Anamiko","AV-Andre-DE":"AV-Andre-DE","AV-Andre<DE>":"AV-Andre-DE","AV-Andre":"AV-Andre-DE","AV-Shells.Ani":"AV-Animosity","AV-CowPoke":"AV-Animosity","AV-Animosity":"AV-Animosity","AV-ANITTAfan":"AV-ANITTAfan","AV-AP":"AV-AP","AV-Arachne":"AV-Arachne","AV-AresS":"AV-AresS","AV-Attila-AZE":"AV-Attila-AZE","AV-Attila":"AV-Attila-AZE","AV-Atilla-AZE":"AV-Attila-AZE","AV-Atilla":"AV-Attila-AZE","AV-BaBaVooS-BRA":"AV-BaBaVooS","AV-BaBaVooS-B...":"AV-BaBaVooS","AV-BEEN":"AV-BEEN","AV-BeerMan":"AV-BeerMan","AV-BlackPearl-Dutch":"AV-BlackPearl","AV-BlackPearl-D...":"AV-BlackPearl","AV-BLISTER-USA":"AV-BLISTER","AV-BLISTER2":"AV-BLISTER","AV-Blister2":"AV-BLISTER","AV-Bubba0816":"AV-Bubba0816","AV-BudzyQ":"AV-BudzyQ","BX1":"AV-BX1","AV-BX1":"AV-BX1","AV-Caklet":"AV-Caklet","AV-CC":"AV-CC","AV-CHEN1972":"AV-CHEN1972","AV-CHUCK":"AV-CHUCK","AV-CLJM":"AV-CLJM","AV-COCO":"AV-COCO","AV-CR7":"AV-CR7","AV-CRISPIN.97-MEX":"AV-CRISPIN.97","AV-CRISPIN.97_MEX":"AV-CRISPIN.97","AV-CRISPIN.97":"AV-CRISPIN.97","AV-CRISPIN.27-MEX":"AV-CRISPIN.97","AV-CRISPIN.27MEX":"AV-CRISPIN.97","AV-CRISPIN.27M...":"AV-CRISPIN.97","AV-CRISPIN.27M":"AV-CRISPIN.97","AV-CRISPIN.27-...":"AV-CRISPIN.97","AV-CRISPIN.27":"AV-CRISPIN.97","AV-DaG":"AV-DaG","AV-Dareyou!":"AV-Dareyou!","AV-Derya":"AV-Derya","AV-Deviantdan":"AV-Deviantdan","AV-Dih":"AV-Dih","AV-DrDetroit-USA":"AV-DrDetroit","AV-DrDetroit-U...":"AV-DrDetroit","AV-DrDetroit":"AV-DrDetroit","AV2-DrDetroit-USA":"AV-DrDetroit","AV2-DrDetroit-U...":"AV-DrDetroit","DuluDaniels":"AV-DuluDaniels","AV-DuluDaniels":"AV-DuluDaniels","EatSleepPlay":"AV-EatSleepPlay","AV-EatSleepPlay":"AV-EatSleepPlay","AV-ELMINKYA":"AV-ELMINKYA","AV-EventHorizon028":"AV-EventHorizon","AV-EventHorizon...":"AV-EventHorizon","AV-EventHorizon":"AV-EventHorizon","EvolvedEclipse":"AV-EvolvedEclipse","AV-EvolvedEclipse":"AV-EvolvedEclipse","AV-Witch-king":"AV-EXCALIBUR","AV-EXCALIBUR":"AV-EXCALIBUR","AV-Crusader":"AV-EXCALIBUR","AV-Fatman.69":"AV-Fatman.69","AV-FenixTisential":"AV-FeniXistential","AV-FeniXistential":"AV-FeniXistential","AV-Finnie":"AV-Finnie","HiddenFrenchie":"AV-FrenchieUSA","AV-FrenchieUSA":"AV-FrenchieUSA","AV-Frenchie(-4)":"AV-FrenchieUSA","AV-Frenchie USA":"AV-FrenchieUSA","AV-Frenchie":"AV-FrenchieUSA","(AV)HiddenFrenchman":"AV-FrenchieUSA","(AV)HiddenFrench":"AV-FrenchieUSA","(AV)HiddenFrenc...":"AV-FrenchieUSA","(AV)HiddenFren":"AV-FrenchieUSA","AV-Garou":"AV-Garou","AV-GNSK-JPN":"AV-GNSK","AV-GNSK":"AV-GNSK","AV.GNSK":"AV-GNSK","AV-BlueWave":"AV-LemonBlue","AV-LemonBlue":"AV-LemonBlue","AV-HarleyBob":"AV-HarleyBob","AV-SaddamMiser":"AV-HarryBallsagna","AV-HarryBallsagna":"AV-HarryBallsagna","AV-HarryBallsa...":"AV-HarryBallsagna","AV-HarveySpecter":"AV-HarveySpecter","AV-HarveySpect...":"AV-HarveySpecter","AV-HN":"AV-HN","AV-hoops-SCT":"AV-Hoops","AV-hoops":"AV-Hoops","AV-I.S.O":"AV-I.S.O","AV-INDIA-VIVEK":"AV-INDIA-VIVEK","AV-INFINITY":"AV-INFINITY","Av-<INFINITY>":"AV-INFINITY","AV-INTEN":"AV-INTEN","AV-InvisibleSpy":"AV-InvincibleSpy","AV-InvinsibleSpy":"AV-InvincibleSpy","AV-InvincibleSpy":"AV-InvincibleSpy","AV-Ironeagle":"AV-Ironeagle","AV-Tin-VNM":"AV-J","AV-TiN.":"AV-J","AV-Tin":"AV-J","AV-TiN":"AV-J","AV-TIN":"AV-J","AV-J":"AV-J","JACK...RK":"AV-JACK","AV-JACK":"AV-JACK","AV-jacko-TWN":"AV-jacko","AV-jacko":"AV-jacko","AV-jacko-mini":"AV-jacko-mini","AV-Scout":"AV-jacko-mini","AV-JAKE":"AV-JAKE","AV-Jay":"AV-Jay","AV-JefhKintz05":"AV-JeffKintz05","AV-JeffKintz05":"AV-JeffKintz05","AV-Jess-PT":"AV-Jess-PT","AV-JimBoy":"AV-J1M","AV-JIM80Y":"AV-J1M","AV-JIM":"AV-J1M","AV-J1m80y":"AV-J1M","AV-J1M80Y":"AV-J1M","AV-J1M":"AV-J1M","JOKER":"AV-JOKER","AV-JOKER":"AV-JOKER","AV-kent":"AV-kent","AV-Kerowyn":"AV-Kerowyn","AV-KitKat":"AV-KitKat","AV-KNAVEN":"AV-KNAVEN","AV-KnightRider":"AV-KnightRider","AV-LEO":"AV-LEO","AV-LeoMessi10":"AV-LeoMessi10","AV-Leon":"AV-Leon","AV-LiamUSA":"AV-LiamUSA","AV-Liam":"AV-LiamUSA","AV-ManChan":"AV-ManChan","AV-March":"AV-March","AV.March":"AV-March","AV-MARCO":"AV-MARCO","AV-Marlon":"AV-Marlon","AV-Mendoria":"AV-Mendoria","AV-MONSTER.":"AV-MONSTER","AV-MONSTER":"AV-MONSTER","Morikila":"AV-Morikila","AV-Morikila":"AV-Morikila","AV-Marikila":"AV-Morikila","AV-Morre":"AV-Morre","AV-MotherboardBeans":"AV-MotherboardBeans","AV-Motherboard...":"AV-MotherboardBeans","AV-Motherboar...":"AV-MotherboardBeans","AV-Mr.Mar.Berry-USA":"AV-Mr.Mar.Berry","AV-Mr.Mar.Berry...":"AV-Mr.Mar.Berry","AV-Mr.Mar.Berry":"AV-Mr.Mar.Berry","AV-Mr.Mar.Berr...":"AV-Mr.Mar.Berry","AV-MTBlue":"AV-MTBlue","M":"AV-M-usa","BigCheese":"AV-M-usa","AV-M-usa":"AV-M-usa","AV-M":"AV-M-usa","AV-neez":"AV-neez","AV-Nicefellow":"AV-Nicefellow","AV-no":"AV-no","AV-Obajoba":"AV-Obajoba","AV-OblivX":"AV-OblivX","AV-PanCake":"AV-PanCake","AV-Perhaps":"AV-Perhaps","PuffyMufflin":"AV-PuffyMufflin","PuffyMufflia":"AV-PuffyMufflin","AV-PuffyMufflin":"AV-PuffyMufflin","AV-Punisher":"AV-Punisher","AV-Push-Ups":"AV-Push-Ups","AV-Raj":"AV-Raj","AV-Ratman":"AV-Ratman","AV-ReMit":"AV-ReMit","Rex":"AV-Rex","AV-Rex":"AV-Rex","AV-RkHendrix-MX":"AV-RkHendrix","AV-RkHendrix-...":"AV-RkHendrix","AV-RkHendrix":"AV-RkHendrix","Phuc.Mccrevice":"AV-Robcorp","AV-Robcorp-AUS":"AV-Robcorp","AV-Robcorp":"AV-Robcorp","AV-Rbcorp":"AV-Robcorp","<H>RobCorps":"AV-Robcorp","AV-Rocket!!!":"AV-Rocket!!!","AV-RODRIGO":"AV-RODRIGO","AV-Rojotonyo":"AV-Rojotonyo","AV-Ronin":"AV-Ronin","AV-SB":"AV-SB","AV-SHAH-G":"AV-SHAH-G","AV-Shekab":"AV-Shekab","SiFra":"AV-SiFra","AV-SiFra":"AV-SiFra","AV-SMILINGBANDIT":"AV-SMILINGBANDIT","AV-SMILINGBAN...":"AV-SMILINGBANDIT","AV-SMILINGBAN":"AV-SMILINGBANDIT","AV-Spectris":"AV-Spectris","AV-SPP":"AV-SPP","AV-Starred":"AV-Starred","AV-STI44ERS":"AV-STI44ERS","AV-SupperMan":"AV-SupperMan","AV-Supreeth":"AV-Supreeth","AV-Suwair":"AV-Suwair","AV-Suwako":"AV-Suwako","AV-SweetiePL":"AV-SweetiePL","AV-take-them.out":"AV-ColdCreeps","AV-take.them.out":"AV-ColdCreeps","AV-ColdCreeps":"AV-ColdCreeps","AV-TheGreatCor":"AV-TheGreatCor","AV-TigerMx":"AV-TigerMx","AV-TikSON$":"AV-TiK$oN$","AV-TiK$oN$":"AV-TiK$oN$","AV-Tornado":"AV-Tornado","AV-TwirpSlayer":"AV-TwirpSlayer","AV-tyranitatay":"AV-tyranitatay","AV-UANGELES":"AV-UANGELES","AV-Vadik-UKR":"AV-Vadik-UA","AV-Vadik-UA":"AV-Vadik-UA","AV-Vadik":"AV-Vadik-UA","AV-VaDoS":"AV-VaDoS","AV-Warrior":"AV-Warrior","AV-WeaponX":"AV-WeaponX","AV-WolfLegend":"AV-WolfLegend","AV-ZIBBY":"AV-ZIBBY","AV-ZIBBY2.0":"AV-ZIBBY","ZolikaLoveKira":"AV-Zolika.x.Kira","AV-ZolikaLoveKira":"AV-Zolika.x.Kira","AV-ZolikaLoveK...":"AV-Zolika.x.Kira","AV-ZongXi":"AV-ZongXi","lam":"Iam","Iam":"Iam","IrmaFerkengerd":"IrmaFerkengerd","Malik":"Malik","Noob":"Noob","SOLOLEVEL":"SOLOLEVEL","tgyes":"tgves","tgves":"tgves","AV-LuckY":"AV-LuckY","AV-Pablin":"AV-Pablin","AV-TheOli":"AV-TheOli","AV-LY10":"AV-LemonBlue","AV-Addicted":"AV-Addicted","AV-Megalodon-":"AV-Megalodon","AV-HECKTO":"AV-HECKTO","AV-Megalodon":"AV-Megalodon","AV-KiraLoveZolika":"AV-KiraLoveZolika","AV-LittleZ":"AV-LittleZ","DedHed":"DedHed","Basecreature":"Basecreature","AngelDoll":"AngelDoll","AV-BigPapi":"AV-BigPapi","Foot Slammed":"Foot   Slammed","AV-KO":"AV-KO","AV-Zolika.x.Kira":"AV-Zolika.x.Kira","AV-Hoops":"AV-Hoops","AV-JIMForWes":"AV-J1M"};
 
   D.aliasMap=Object.assign({},D.aliasMap||{},aliases);
@@ -22,7 +23,14 @@
     'AV-CRISPI':'AV-CRISPIN.97',
     'AV-CRISPIN':'AV-CRISPIN.97',
     'AV-Mr.Mar':'AV-Mr.Mar.Berry',
-    'AV-TiKsON$':'AV-TiK$oN$'
+    'AV-TiKsON$':'AV-TiK$oN$',
+    'AV-Hidden':'AV-FrenchieUSA',
+    'HiddenFrenchman':'AV-FrenchieUSA',
+    'AV-HiddenFrenchman':'AV-FrenchieUSA',
+    'AV-HiddenFrenchie':'AV-FrenchieUSA',
+    'AV-Jeff':'AV-JeffKintz05',
+    'Keyler':'AV-Keyler',
+    'AV-Keyler':'AV-Keyler'
   });
 
   const exactResolve=name=>{
@@ -34,11 +42,11 @@
     return x;
   };
 
-  // Match only full known aliases: casing, spacing, separator and AV-prefix
-  // differences are harmless. Never use fuzzy/substring matching or drop digits
-  // (mini accounts and numbered player names must stay distinct).
+  // Match full known aliases by casing, spacing, separator and AV-prefix.
+  // Truncated screenshots must end in an ellipsis and identify a unique known
+  // player; ordinary short names and numbered/mini accounts stay distinct.
   const identityKey=name=>String(name||'').normalize('NFKC').trim().toLowerCase()
-    .replace(/^(?:\(av2?\)|av2?[\s._\->|/\\]+)\s*/,'')
+    .replace(/^(?:\(av2?\)|av2?[\s._+\->|/\\]+)\s*/,'')
     .replace(/[\s._\-\u200B-\u200D\uFEFF]+/g,'');
   const knownAliases=new Map();
   const register=(alias,target)=>{
@@ -52,8 +60,20 @@
   const resolve=name=>{
     const exact=exactResolve(name);
     if(D.aliasMap[String(name||'').trim()])return exact;
+    if(/(?:\.{2,}|…)\s*$/.test(exact)){
+      const prefix=identityKey(exact.replace(/(?:\.{2,}|…)\s*$/,''));
+      if(prefix.length>=5){
+        const matches=new Set();
+        knownAliases.forEach((values,key)=>{
+          if(key.startsWith(prefix))values.forEach(target=>matches.add(target));
+        });
+        if(matches.size===1)return [...matches][0];
+      }
+      return exact;
+    }
     const targets=knownAliases.get(identityKey(exact));
-    return targets?.size===1?[...targets][0]:exact;
+    if(targets?.size===1)return [...targets][0];
+    return exact;
   };
   // Register actual data spellings so existing consumers of aliasMap also share
   // this resolution, including historical player buttons and profile links.
@@ -62,6 +82,7 @@
     ...(R?.rows||[]).map(r=>r.name),
     ...(K?.players||[]).map(r=>r.name)
   ]);
+  (F?.events||[]).forEach(ev=>(ev.entries||[]).forEach(r=>dataNames.add(r.name)));
   ['piggy','space'].forEach(kind=>{
     Object.keys(D[kind]?.history||{}).forEach(n=>dataNames.add(n));
     Object.values(D[kind]?.events||{}).forEach(rows=>(rows||[]).forEach(r=>{
@@ -74,6 +95,11 @@
     if(canonical!==name)D.aliasMap[name]=canonical;
   });
   D.resolvePlayerName=resolve;
+
+  // Apply the same identity to flash data before any roster/record UI is built.
+  (F?.events||[]).forEach(ev=>(ev.entries||[]).forEach(r=>{
+    if(r.name)r.name=resolve(r.name);
+  }));
 
   const avg=a=>a.length?a.reduce((s,v)=>s+(Number(v)||0),0)/a.length:0;
   const arenaStart=D.meta?.arenaStart||'2026-08-01';
@@ -310,5 +336,54 @@
     r.status=memberBy.get(r.name)?.status||r.status||'Inactive';
   }));
 
+  // User cleanup policy, reviewed Oct 2: remove the explicitly crossed-out
+  // nonmembers, plus inactive people with just one event before Jan 2 (9 months).
+  // Count every event type after aliases merge; protect the current roster.
+  const cutoff='2026-01-02';
+  const participation=new Map();
+  const record=(name,id,date)=>{
+    name=resolve(name);
+    const events=participation.get(name)||new Map();
+    events.set(id,date);
+    participation.set(name,events);
+  };
+  ['piggy','space'].forEach(kind=>{
+    Object.entries(D[kind]?.history||{}).forEach(([name,rows])=>(rows||[]).forEach(r=>{
+      if(['lines','yearsB','stars','sparks'].some(k=>(Number(r[k])||0)>0))
+        record(name,kind+'|'+r.date,r.date);
+    }));
+  });
+  (F?.events||[]).forEach(ev=>(ev.entries||[]).forEach(r=>{
+    record(r.name,ev.id||['flash',ev.date,ev.flash,ev.setId].join('|'),ev.date);
+  }));
+  (K?.players||[]).forEach(p=>(K.months||[]).forEach(month=>{
+    // This site's Kraken archive starts in Feb 2026, after the cleanup cutoff.
+    if((Number(p[month.key])||0)>0)record(p.name,'kraken|'+month.key,month.date||'2026-02-01');
+  }));
+  const excluded=new Set(['AInME','kss','Maxipad54'].map(resolve));
+  D.members.forEach(m=>{
+    const events=participation.get(m.name);
+    if(m.status==='Inactive' && events?.size===1){
+      const date=[...events.values()][0];
+      if(date && date<cutoff)excluded.add(m.name);
+    }
+  });
+  D.excludedPlayers=[...excluded];
+  D.members=D.members.filter(m=>!excluded.has(m.name));
+  ['piggy','space'].forEach(kind=>{
+    const X=D[kind];
+    if(!X)return;
+    Object.keys(X.history||{}).forEach(name=>{if(excluded.has(name))delete X.history[name];});
+    Object.entries(X.events||{}).forEach(([date,rows])=>{
+      X.events[date]=(rows||[]).filter(r=>!excluded.has(r.name));
+    });
+    ['overall','latestPBs','latestNewMembers'].forEach(key=>{
+      X[key]=(X[key]||[]).filter(r=>!excluded.has(r.name));
+    });
+  });
+  if(K)K.players=(K.players||[]).filter(p=>!excluded.has(p.name));
+  (F?.events||[]).forEach(ev=>{ev.entries=(ev.entries||[]).filter(r=>!excluded.has(r.name));});
+  if(S)S.currentAvengers=(S.currentAvengers||[]).filter(r=>!excluded.has(r.name));
+  D.meta.memberCleanupCutoff=cutoff;
   D.meta.normalizationSource='User normalization map reviewed 2026-10-02';
 })();

@@ -555,7 +555,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       yearsB:sum('yearsB'),
       stars,
       sparks,
-      groups:groups.size || (rows.length?1:0),
+      groups:stored?.groups!=null?Number(stored.groups):(groups.size || (rows.length?1:0)),
       potStars:stars,
       potSparks:sparks
     };

@@ -356,6 +356,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   <script src="space-history-reconcile-jul-aug-2026.js"></script>
   <script src="space-history-reconcile-all.js"></script>
   <script src="av2-space-results-2026.js"></script>
+  <script src="space-historical-pot-totals.js"></script>
   <script src="sparks-snapshot-2026-09-29.js"></script>
   <script src="canonical-names-2026-09-29.js"></script>
   <script src="member-timezones-source.js"></script>
@@ -525,29 +526,57 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
 
   function spaceRewardTotals(date){
     // Historical Space totals are event-clan totals:
-    // count every player who competed as AVENGERS in that event, regardless of current status.
-    // AV-2 is tracked separately and never contributes to AVENGERS stars/pot totals.
+    // count everyone who competed as AVENGERS in that event, regardless of current roster status.
+    // Explicit AV-2 rows are tracked separately and never contribute to AVENGERS totals.
     const rows=(D.space?.events?.[date]||[]).filter(r=>{
       if(!r||!r.name||r.name==='Total'||r.name==='#N/A'||!(Number(r.yearsB)||0)) return false;
       const clan=String(r.clan||'').toLowerCase().replace(/[^a-z0-9]/g,'');
       return clan!=='av2';
     });
     const stored=D.space?.historicalRewardTotals?.[date]||null;
+    const verifiedPot=D.space?.historicalPotTotals?.[date]||null;
     const sum=k=>rows.reduce((s,r)=>s+(Number(r[k])||0),0);
     const rowStarsKnown=rows.some(r=>(Number(r.stars)||0)>0);
     const rowSparksKnown=rows.some(r=>(Number(r.sparks)||0)>0);
-
-    // These are the rewards earned by AVENGERS participants, not the entire
-    // lobby pool when a historical lobby also contained players from other clans.
     const stars=stored?.stars!=null?Number(stored.stars):(rowStarsKnown?sum('stars'):null);
     const sparks=stored?.sparks!=null?Number(stored.sparks):(rowSparksKnown?sum('sparks'):null);
 
-    // Lobby count is still useful context, but the displayed POT STARS total is
-    // the AVENGERS-earned reward total across those lobbies.
-    const groups=new Set();
+    const shareFor=r=>{
+      let s=Number(r.share)||0;
+      if(s>=1) s/=100;
+      if(!(s>0)){
+        const byRank={1:.25,2:.20,3:.18,4:.12,5:.10,6:.08,7:.04,8:.02,9:.01};
+        s=byRank[Number(r.rank)]||0;
+      }
+      return s;
+    };
+    const potFrom=(r,key)=>{
+      const share=shareFor(r), reward=Number(r[key])||0;
+      return share>0&&reward>0?reward/share:null;
+    };
+
+    const grouped=new Map();
     rows.forEach(r=>{
-      if(r.group!==undefined&&r.group!==null&&r.group!=='') groups.add(String(r.group));
+      const key=(r.group!==undefined&&r.group!==null&&r.group!=='')?String(r.group):'legacy';
+      if(!grouped.has(key)) grouped.set(key,[]);
+      grouped.get(key).push(r);
     });
+    const lobbyRows=[...grouped.values()];
+    const pots=lobbyRows.map(group=>{
+      const candidates=group.map(r=>({
+        share:shareFor(r),
+        star:potFrom(r,'stars'),
+        spark:potFrom(r,'sparks')
+      })).filter(x=>x.share>0).sort((a,b)=>b.share-a.share);
+      return {
+        star:candidates.find(x=>x.star>0)?.star??null,
+        spark:candidates.find(x=>x.spark>0)?.spark??null
+      };
+    });
+    const starPots=pots.map(x=>x.star).filter(v=>Number(v)>0);
+    const sparkPots=pots.map(x=>x.spark).filter(v=>Number(v)>0);
+    const allStarPots=lobbyRows.length>0&&starPots.length===lobbyRows.length;
+    const allSparkPots=lobbyRows.length>0&&sparkPots.length===lobbyRows.length;
 
     return {
       date,
@@ -555,9 +584,9 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       yearsB:sum('yearsB'),
       stars,
       sparks,
-      groups:stored?.groups!=null?Number(stored.groups):(groups.size || (rows.length?1:0)),
-      potStars:stars,
-      potSparks:sparks
+      groups:verifiedPot?.groups??stored?.groups??(grouped.size||(rows.length?1:0)),
+      potStars:verifiedPot?.potStars??(allStarPots?starPots.reduce((s,v)=>s+v,0):null),
+      potSparks:verifiedPot?.potSparks??(allSparkPots?sparkPots.reduce((s,v)=>s+v,0):null)
     };
   }
 

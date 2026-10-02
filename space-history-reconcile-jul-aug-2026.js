@@ -32,7 +32,7 @@
   setGroup('2026-07-19',1,['AV-Abu//npjp','AV-SweetiePL','AV-SHAH-G','AV-JeffKintz05','AV-JIM','AV-Deviantdan','AV#Rafa#Tun','AV-ColdCreeps','AV-Mr.Mar.Berry']);
   setGroup('2026-07-19',2,['AV-jacko','AV-CHEN1972','AV-UANGELES','AV-INTEN','AV-EXCALIBUR','AV-7-STAR','AV-EventHorizon','AV-Starred','AV-TigerMx']);
   setGroup('2026-07-19',3,['AV-HarryBallsagna','AV-Nicefellow','AV-STI44ERS','AV-8!l...Bil','AV-no','AV-I.S.O','AV-DaG','AV-Morikila','AV-Finnie']);
-  setGroup('2026-07-19',4,['AV-Jess-PT','AV-Animosity','AV-GNSK','AV-KitKat','AV-hoops-SCT','AV-MotherboardBeans','AV-MONSTER','AV-Adigarian','AV-RkHendrix']);
+  setGroup('2026-07-19',4,['AV-Jess-PT','AV-Animosity','AV-GNSK','AV-KitKat','AV-Hoops','AV-MotherboardBeans','AV-MONSTER','AV-Adigarian','AV-RkHendrix']);
   setGroup('2026-07-19',5,['AV-J','AV-ZolikaLoveKira','AV-Supreeth','AV.Saberkong','AV-COCO','AV-ManChan','AV<STAR-LORD>','AV-Suwako','AV-DrDetroit']);
 
   // 7/24/26 — five unique lobbies in the PDF. Four rank-9 rows were accidental
@@ -57,7 +57,7 @@
   // 7/30/26 — five lobbies.
   [
     ['AV-Supreeth','AV-Jess-PT','AV-Animosity','AV-KitKat','AV#Rafa#Tun','AV-ManChan','AV-OblivX','AV-no','AV-SHAH-G'],
-    ['AV-Rex','AV-HarryBallsagna','AV-ZolikaLoveKira','AV-STI44ERS','AV-8!l...Bil','AV-Deviantdan','AV-hoops-SCT','AV-RkHendrix','AV-DrDetroit'],
+    ['AV-Rex','AV-HarryBallsagna','AV-ZolikaLoveKira','AV-STI44ERS','AV-8!l...Bil','AV-Deviantdan','AV-Hoops','AV-RkHendrix','AV-DrDetroit'],
     ['AV-7-STAR','AV-CHEN1972','AV-SweetiePL','AV-J','AV-Abu//npjp','AV-JeffKintz05','AV-MotherboardBeans','AV-JIM','AV-Vadik-UA'],
     ['AV-UANGELES','AV-Starred','AV-EventHorizon','AV-SiFra','AV-jacko','AV-TigerMx','AV-Mr.Mar.Berry','AV-DaG','AV-I.S.O'],
     ['AV-Nicefellow','AV-INTEN','AV-MONSTER','AV-EXCALIBUR','AV-GNSK','AV-Adigarian','AV-Finnie']
@@ -79,13 +79,13 @@
     ['AV-Finnie','AV-SHAH-G','AV-EventHorizon','AV-JOKER','AV-Animosity','AV-neez','AV-STI44ERS','AV-MONSTER'],
     ['AV-INTEN','AV-Rex','AV-Jess-PT','AV-jacko','AV-OblivX','AV-Nicefellow','AV-KitKat','AV-ColdCreeps','AV-Dareyou!'],
     ['AV-HarryBallsagna','AV-Abu//npjp','AV.Saberkong','AV<STAR-LORD>','AV-UANGELES','AV-Deviantdan','AV-EXCALIBUR','AV-SMILINGBANDIT','AV-Caklet'],
-    ['AV-Supreeth','AV-ZolikaLoveKira','AV-INFINITY','AV-Mendoria','AV-SiFra','AV-DaG','AV-hoops-SCT','AV-JIM','AV-Mr.Mar.Berry'],
+    ['AV-Supreeth','AV-ZolikaLoveKira','AV-INFINITY','AV-Mendoria','AV-SiFra','AV-DaG','AV-Hoops','AV-JIM','AV-Mr.Mar.Berry'],
     ['AV-MotherboardBeans','AV-CLJM','AV#Rafa#Tun','AV-RkHendrix']
   ].forEach((names,i)=>setGroup('2026-08-13',i+1,names));
 
   // 8/21/26 — six lobbies.
   [
-    ['AV-CHEN1972','AV-Supreeth','AV-INFINITY','AV-INTEN','AV-Abu//npjp','AV#Rafa#Tun','AV-JIM','AV-hoops-SCT','AV-DaG'],
+    ['AV-CHEN1972','AV-Supreeth','AV-INFINITY','AV-INTEN','AV-Abu//npjp','AV#Rafa#Tun','AV-JIM','AV-Hoops','AV-DaG'],
     ['AV-Rex','AV-SweetiePL','AV-HarryBallsagna','AV-ZolikaLoveKira','AV-8!l...Bil','AV-Mendoria','AV.Saberkong','AV-UANGELES','AV-STI44ERS'],
     ['AV-CLJM','AV-SiFra','AV-TigerMx','AV-Deviantdan','AV-EXCALIBUR','AV-ColdCreeps','AV-Adigarian','AV-neez','AV-Mr.Mar.Berry'],
     ['AV-7-STAR','AV-Finnie','AV-OblivX','AV-JeffKintz05','AV-SHAH-G','AV-I.S.O','AV-KitKat','AV-no','AV-FrenchieUSA'],

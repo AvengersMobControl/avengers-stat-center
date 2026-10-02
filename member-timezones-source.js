@@ -241,7 +241,12 @@ AV-Brisket	Active				`;
     'AV-BlueWave':'AV-GreenZombie',
     'AV-Zolika.x.Kira':'AV-ZolikaLoveKira',
     'AV-Atilla':'AV-Attila-AZE',
-    'AV-InvinsibleSpy':'AV-InvincibleSpy'
+    'AV-InvinsibleSpy':'AV-InvincibleSpy',
+    'AV-Frenchie2':'AV-FrenchieUSA',
+    'AV-Frenchie':'AV-FrenchieUSA',
+    'AV-Derya(OnVACATION)':'AV-Derya',
+    'Av-TigerMx':'AV-TigerMx',
+    'JAMO':'AV-JAMO'
   };
   Object.entries(aliases).forEach(([alias,source])=>{
     if(byName[source]) byName[alias]=byName[source];

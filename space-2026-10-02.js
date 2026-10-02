@@ -53,7 +53,18 @@
     {group:5,rank:6,name:'AV-ColdCreeps',username:'AV-ColdCreeps',yearsB:47.9,stars:511994,sparks:51260,share:.08},
     {group:5,rank:7,name:'AV-UANGELES',username:'AV-UANGELES',yearsB:40.7,stars:255997,sparks:25630,share:.04},
     {group:5,rank:8,name:'AV-EventHorizon',username:'AV-EventHorizon',yearsB:36.4,stars:127999,sparks:12815,share:.02},
-    {group:5,rank:9,name:'AV-no',username:'AV-no',yearsB:30.4,stars:63999,sparks:6407,share:.01}
+    {group:5,rank:9,name:'AV-no',username:'AV-no',yearsB:30.4,stars:63999,sparks:6407,share:.01},
+
+    // Supplemental final group supplied from the in-game result screenshots.
+    {group:6,rank:1,name:'AV-23',username:'AV-23',yearsB:108.0,stars:1188045,sparks:118994,share:.25},
+    {group:6,rank:2,name:'AV-Deviantdan',username:'AV-DeviantDan',yearsB:102.1,stars:950436,sparks:95195,share:.20},
+    {group:6,rank:3,name:'AV<STAR-LORD>',username:'AV/<STAR-LORD>',yearsB:97.0,stars:855392,sparks:85675,share:.18},
+    {group:6,rank:4,name:'AV-SMILINGBANDIT',username:'AV-SmiLiNgBaN...',yearsB:91.3,stars:570262,sparks:57117,share:.12},
+    {group:6,rank:5,name:'AV-Hoops',username:'AV-Hoops',yearsB:74.5,stars:475218,sparks:47597,share:.10},
+    {group:6,rank:6,name:'AV-SB',username:'AV-SB',yearsB:68.6,stars:380174,sparks:38078,share:.08},
+    {group:6,rank:7,name:'AV-DaG',username:'AV-DaG',yearsB:51.8,stars:190087,sparks:19039,share:.04},
+    {group:6,rank:8,name:'AV-neez',username:'AV-Neez',yearsB:48.6,stars:95044,sparks:9519,share:.02},
+    {group:6,rank:9,name:'AV-TheOli',username:'AV-TheOli',yearsB:30.1,stars:47522,sparks:4760,share:.01}
   ];
 
   const existing=new Map((D.members||[]).map(m=>[m.name,m]));
@@ -70,7 +81,7 @@
 
   D.space.events[date]=newRows;
   D.meta.latestSpace=date;
-  D.meta.generated='2026-10-02T09:45:00-05:00';
+  D.meta.generated='2026-10-02T09:58:00-05:00';
 
   // Capture prior PBs before merging this event.
   const priorPBByName=new Map();
@@ -169,6 +180,8 @@
   }).filter(x=>x.players>0);
 
   D.aliasMap=Object.assign({},D.aliasMap||{},{
-    'AV-NoX3noplay':'AV-WolfLegend'
+    'AV-NoX3noplay':'AV-WolfLegend',
+    'AV-DeviantDan':'AV-Deviantdan',
+    'AV-Neez':'AV-neez'
   });
 })();

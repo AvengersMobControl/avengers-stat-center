@@ -214,6 +214,7 @@ tbody tr:last-child td{border-bottom:0}
   <link rel="stylesheet" href="phase2.css" />
   <link rel="stylesheet" href="avengers-theme.css" />
   <link rel="stylesheet" href="kraken.css" />
+  <link rel="stylesheet" href="community-highlights.css" />
 </head>
 <body>
   <div class="app-shell">
@@ -237,6 +238,8 @@ tbody tr:last-child td{border-bottom:0}
         <button class="nav-btn" data-page="ratings"><span>⭐</span> Player Ratings</button>
         <button class="nav-btn" data-page="players"><span>🧑‍🚀</span> Players</button>
         <button class="nav-btn" data-page="records"><span>🏆</span> Records</button>
+        <button class="nav-btn" data-page="achievements"><span>🏅</span> Achievements</button>
+        <button class="nav-btn" data-page="weeklyRecap"><span>📰</span> Weekly Recap</button>
       </nav>
 
       <div class="sidebar-foot">
@@ -332,6 +335,12 @@ tbody tr:last-child td{border-bottom:0}
       <section class="page" id="page-records">
         <div id="recordsContent"></div>
       </section>
+      <section class="page" id="page-achievements">
+        <div id="achievementsContent"></div>
+      </section>
+      <section class="page" id="page-weeklyRecap">
+        <div id="weeklyRecapContent"></div>
+      </section>
     </main>
   </div>
 
@@ -374,6 +383,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   <script src="piggy-flash4-backfill-2026.js"></script>
   <script src="av2-flash-results-2026.js"></script>
   <script src="normalization-map-final-2026-10-02.js"></script>
+  <script src="community-highlights.js"></script>
   <script>
 
 (() => {
@@ -407,7 +417,9 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     eventTotals:['Event Totals','Historical totals for Piggy, Space and Kraken'],
     ratings:['Player Ratings','Combined PB and average performance rating'],
     players:['Players','Individual performance history and profiles'],
-    records:['Records','Current AVENGERS benchmark board']
+    records:['Records','Current AVENGERS benchmark board'],
+    achievements:['Achievements','Earn badges and track your next personal milestone'],
+    weeklyRecap:['Weekly Recap','Clan results, personal bests, improvements and new milestones']
   };
 
   function escapeHtml(v=''){
@@ -1580,6 +1592,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
 
     $('#playerModalContent').innerHTML=`
       <div class="profile-head"><div class="avatar">${initials(name)}</div><div><div class="profile-name">${escapeHtml(name)}</div><div class="profile-status">${statusBadge(m.status)}</div></div></div>
+      ${window.AVENGERS_COMMUNITY?.profileHtml(name)||''}
       <div class="profile-kpis">
         <div class="profile-kpi"><span>Player Rating</span><strong>${fmtNum(m.ratingTotal,2)}</strong></div>
         <div class="profile-kpi"><span>Piggy PB</span><strong>${fmtNum(m.piggyPB)}</strong></div>
@@ -1691,6 +1704,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     if(state.page==='ratings') renderRatings();
     if(state.page==='players') renderPlayers();
     if(state.page==='records') renderRecords();
+    if(state.page==='achievements') window.AVENGERS_COMMUNITY?.renderAchievements(state.status);
+    if(state.page==='weeklyRecap') window.AVENGERS_COMMUNITY?.renderWeekly();
     $('.sidebar').classList.remove('open');
   }
 
@@ -1765,6 +1780,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   $$('[data-export]').forEach(b=>b.addEventListener('click',()=>exportCSV(b.dataset.export)));
 
   addAuxStyles();
+  window.AVENGERS_COMMUNITY?.configure({openProfile:openPlayer});
   fillEventSelects();
   $('#generatedAt').textContent=`Generated ${new Date(D.meta.generated).toLocaleString()}`;
   renderPage();

@@ -56,8 +56,11 @@ module.exports=async function handler(req,res){
   }
   const now=Math.floor(Date.now()/1000);
   const permanent=String(req.query?.mode||'').toLowerCase()==='permanent';
-  const ttl=60*60;
-  const maxUses=3;
+  const requestedHours=Math.floor(Number(req.query?.hours));
+  const requestedUses=Math.floor(Number(req.query?.uses));
+  const hours=Number.isFinite(requestedHours)?Math.max(1,Math.min(requestedHours,168)):1;
+  const ttl=60*60*hours;
+  const maxUses=Number.isFinite(requestedUses)?Math.max(1,Math.min(requestedUses,10)):3;
   const payload={
     typ:'avengers-guest-invite',
     jti:crypto.randomBytes(18).toString('base64url'),
@@ -74,11 +77,12 @@ module.exports=async function handler(req,res){
     hour:'numeric',minute:'2-digit',timeZoneName:'short'
   });
   res.setHeader('Cache-Control','no-store');
-  const heading=permanent?'Permanent guest link':'1-hour guest link';
+  const durationLabel=hours===1?'1-hour':hours+'-hour';
+  const heading=permanent?'Permanent guest link':durationLabel+' guest link';
   const sub=permanent?'Never expires. Unlimited human redemptions; every redemption is still logged to you.':'Expires '+expires+'. The first redemption activates a guest session for the remaining time.';
   const note=permanent
     ?'<strong>Permanent / unlimited:</strong> Discord and other link-preview bots do not count. Human opens are never blocked for age or use count, and each successful redemption is logged to you by Discord DM.'
-    :'<strong>3-use protection:</strong> Discord and other link-preview bots do not count. The first three successful guest opens are allowed; the fourth and later attempts are blocked. You receive a Discord DM for each successful redemption and for any blocked attempt.';
+    :'<strong>'+maxUses+'-use protection:</strong> Discord and other link-preview bots do not count. The first '+maxUses+' successful guest opens are allowed; later attempts are blocked. You receive a Discord DM for each successful redemption and for any blocked attempt.';
   const switchLink=permanent
     ?'<a href="/api/guest/create" style="color:#9fc5ff">Create a standard 1-hour / 3-use link instead</a>'
     :'<a href="/api/guest/create?mode=permanent" style="color:#9fc5ff">Create a permanent / unlimited link instead</a>';

@@ -53,13 +53,30 @@
     const arr=D.space.events[date]||(D.space.events[date]=[]);
     rows.forEach(r=>{
       const row={...r,clan:'AV2',status:'AV2',years:Math.round(r.yearsB*1e9)};
-      const exists=arr.some(x=>x && x.name===row.name && String(x.clan||'').toLowerCase().replace(/[^a-z0-9]/g,'')==='av2' && Number(x.rank)===Number(row.rank));
-      if(!exists) arr.push(row);
+      // If the same historical result already exists from the older workbook import,
+      // reclassify that row to its event-time AV-2 clan instead of duplicating it.
+      const same=arr.find(x=>x && x.name===row.name && Math.abs((Number(x.yearsB)||0)-row.yearsB)<0.0001 && Number(x.rank)===Number(row.rank));
+      if(same){
+        same.clan='AV2';
+        same.status='AV2';
+        if(!(Number(same.stars)>0)) same.stars=row.stars;
+        if(!(Number(same.sparks)>0)) same.sparks=row.sparks;
+        if(!(Number(same.share)>0)) same.share=row.share;
+        if(same.group==null) same.group=row.group;
+      }else{
+        const exists=arr.some(x=>x && x.name===row.name && String(x.clan||'').toLowerCase().replace(/[^a-z0-9]/g,'')==='av2' && Number(x.rank)===Number(row.rank));
+        if(!exists) arr.push(row);
+      }
 
       const hist=D.space.history[row.name]||(D.space.history[row.name]=[]);
-      const sameDate=hist.some(x=>String(x.date||'')===date);
-      if(!sameDate){
-        hist.push({date,code:date.replace(/-/g,'').slice(2),yearsB:row.yearsB,stars:row.stars,sparks:row.sparks,clan:'AV2'});
+      let hx=hist.find(x=>String(x.date||'')===date && Math.abs((Number(x.yearsB)||0)-row.yearsB)<0.0001);
+      if(hx){
+        hx.clan='AV2';
+        hx.group=row.group;
+        if(hx.stars==null) hx.stars=row.stars;
+        if(hx.sparks==null) hx.sparks=row.sparks;
+      }else{
+        hist.push({date,code:date.replace(/-/g,'').slice(2),yearsB:row.yearsB,stars:row.stars,sparks:row.sparks,clan:'AV2',group:row.group});
         hist.sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
       }
     });

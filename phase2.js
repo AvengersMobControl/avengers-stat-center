@@ -374,6 +374,27 @@
       '</tbody></table></div>';
   }
 
+  function canonicalNameFor(name){
+    var x=String(name||''),seen={};
+    while(D.aliasMap && D.aliasMap[x] && !seen[x]){
+      seen[x]=true;
+      x=D.aliasMap[x];
+    }
+    return x;
+  }
+
+  function combinedSparksFor(name){
+    var canonical=canonicalNameFor(name);
+    var m=memberByName[canonical]||memberByName[name]||{};
+    var logged=Number(m.totalSparks)||0;
+    var S=window.AVENGERS_SPARKS_SNAPSHOT||{currentAvengers:[]};
+    var snap=0;
+    (S.currentAvengers||[]).forEach(function(r){
+      if(canonicalNameFor(r.name)===canonical) snap=Math.max(snap,Number(r.allTimeSparks)||0);
+    });
+    return Math.max(logged,snap);
+  }
+
   function profileMetricValue(name,key){
     var m=memberByName[name]||{};
     var s=playerHeaderStats(name);
@@ -388,7 +409,7 @@
     if(key==='krakenL3') return kp?(Number(kp.last3)||0):(Number(m.krakenAvgL3)||0);
     if(key==='rating') return Number(m.ratingTotal)||0;
     if(key==='events') return Number(m.eventsPlayed)||0;
-    if(key==='sparks') return Number(m.totalSparks)||0;
+    if(key==='sparks') return combinedSparksFor(name);
     return null;
   }
 
@@ -454,7 +475,7 @@
           '<div class="p2-profile-kpi"><span>Kraken Avg L3</span><strong>'+num(krakenL3,0)+'</strong>'+profileRankNote(name,'krakenL3')+'</div>'+
           '<div class="p2-profile-kpi"><span>Player Rating</span><strong>'+num(rating,2)+'</strong>'+profileRankNote(name,'rating')+'</div>'+
           '<div class="p2-profile-kpi"><span>Events Logged</span><strong>'+num(m.eventsPlayed||0,0)+'</strong>'+profileRankNote(name,'events')+'</div>'+
-          '<div class="p2-profile-kpi"><span>Total Sparks</span><strong>'+num(m.totalSparks||0,0)+'</strong>'+profileRankNote(name,'sparks')+'</div>'+
+          '<div class="p2-profile-kpi"><span>Total Sparks</span><strong>'+num(combinedSparksFor(name),0)+'</strong>'+profileRankNote(name,'sparks')+'</div>'+
         '</div>'+
         '<div class="p2-profile-grid">'+
           '<div class="p2-mini-card"><h3>Piggy Race History</h3>'+simpleChart('piggy',name,'lines','Lines','#43d7ff')+'</div>'+

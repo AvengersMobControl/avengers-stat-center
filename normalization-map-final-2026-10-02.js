@@ -9,14 +9,71 @@
 
   D.aliasMap=Object.assign({},D.aliasMap||{},aliases);
 
-  const resolve=name=>{
-    let x=String(name||''),seen=new Set();
+  // Reviewed historical spellings that are absent from the supplied alias table.
+  Object.assign(D.aliasMap,{
+    'Adigarian':'AV-Adigarian',
+    'KNAVEN':'AV-KNAVEN',
+    'RkHendrix':'AV-RkHendrix',
+    'VADER':'AV-VADER',
+    'Gunner':'AV-Gunner',
+    'AV-A.G':'AV-AG',
+    'AV-Joker':'AV-JOKER',
+    '(AV)ABA':'AV>ABA',
+    'AV-CRISPI':'AV-CRISPIN.97',
+    'AV-CRISPIN':'AV-CRISPIN.97',
+    'AV-Mr.Mar':'AV-Mr.Mar.Berry',
+    'AV-TiKsON$':'AV-TiK$oN$'
+  });
+
+  const exactResolve=name=>{
+    let x=String(name||'').trim(),seen=new Set();
     while(D.aliasMap[x] && D.aliasMap[x]!==x && !seen.has(x)){
       seen.add(x);
       x=D.aliasMap[x];
     }
     return x;
   };
+
+  // Match only full known aliases: casing, spacing, separator and AV-prefix
+  // differences are harmless. Never use fuzzy/substring matching or drop digits
+  // (mini accounts and numbered player names must stay distinct).
+  const identityKey=name=>String(name||'').normalize('NFKC').trim().toLowerCase()
+    .replace(/^(?:\(av2?\)|av2?[\s._\->|/\\]+)\s*/,'')
+    .replace(/[\s._\-\u200B-\u200D\uFEFF]+/g,'');
+  const knownAliases=new Map();
+  const register=(alias,target)=>{
+    const key=identityKey(alias);
+    if(!key)return;
+    const targets=knownAliases.get(key)||new Set();
+    targets.add(exactResolve(target));
+    knownAliases.set(key,targets);
+  };
+  Object.entries(D.aliasMap).forEach(([alias,target])=>register(alias,target));
+  const resolve=name=>{
+    const exact=exactResolve(name);
+    if(D.aliasMap[String(name||'').trim()])return exact;
+    const targets=knownAliases.get(identityKey(exact));
+    return targets?.size===1?[...targets][0]:exact;
+  };
+  // Register actual data spellings so existing consumers of aliasMap also share
+  // this resolution, including historical player buttons and profile links.
+  const dataNames=new Set([
+    ...(D.members||[]).map(r=>r.name),
+    ...(R?.rows||[]).map(r=>r.name),
+    ...(K?.players||[]).map(r=>r.name)
+  ]);
+  ['piggy','space'].forEach(kind=>{
+    Object.keys(D[kind]?.history||{}).forEach(n=>dataNames.add(n));
+    Object.values(D[kind]?.events||{}).forEach(rows=>(rows||[]).forEach(r=>{
+      if(r.name)dataNames.add(r.name);
+      if(r.username)dataNames.add(r.username);
+    }));
+  });
+  dataNames.forEach(name=>{
+    const canonical=resolve(name);
+    if(canonical!==name)D.aliasMap[name]=canonical;
+  });
+  D.resolvePlayerName=resolve;
 
   const avg=a=>a.length?a.reduce((s,v)=>s+(Number(v)||0),0)/a.length:0;
   const arenaStart=D.meta?.arenaStart||'2026-08-01';

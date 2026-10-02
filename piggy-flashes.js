@@ -25,6 +25,7 @@
   };
 
   const resolveName=name=>{
+    if(D.resolvePlayerName)return D.resolvePlayerName(name);
     let x=String(name||'');
     const seen=new Set();
     while(D.aliasMap?.[x] && !seen.has(x)){seen.add(x);x=D.aliasMap[x];}

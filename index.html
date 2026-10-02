@@ -353,6 +353,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   <script src="space-history-pre-2026-07-19.js"></script>
   <script src="space-2026-09-27.js"></script>
   <script src="space-2026-10-02.js"></script>
+  <script src="space-history-reconcile-jul-aug-2026.js"></script>
+  <script src="space-history-reconcile-all.js"></script>
   <script src="av2-space-results-2026.js"></script>
   <script src="sparks-snapshot-2026-09-29.js"></script>
   <script src="canonical-names-2026-09-29.js"></script>
@@ -522,34 +524,36 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   }
 
   function spaceRewardTotals(date){
-    // Space pot totals follow the clan represented in that event, not a player's current roster status.
-    // Explicit AV-2 rows are excluded; legacy rows without a clan tag are historical AVENGERS rows.
+    // Pot totals are based on the clan shown in that event, never the player's current roster status.
     const rows=(D.space?.events?.[date]||[]).filter(r=>{
       if(!r||!r.name||r.name==='Total'||r.name==='#N/A'||!(Number(r.yearsB)||0)) return false;
       const clan=String(r.clan||'').toLowerCase().replace(/[^a-z0-9]/g,'');
       return clan!=='av2';
     });
+    const stored=D.space?.historicalRewardTotals?.[date]||null;
     const sum=k=>rows.reduce((s,r)=>s+(Number(r[k])||0),0);
-    const starsKnown=rows.some(r=>(Number(r.stars)||0)>0);
-    const sparksKnown=rows.some(r=>(Number(r.sparks)||0)>0);
-    const stars=starsKnown?sum('stars'):null;
-    const sparks=sparksKnown?sum('sparks'):null;
+    const rowStarsKnown=rows.some(r=>(Number(r.stars)||0)>0);
+    const rowSparksKnown=rows.some(r=>(Number(r.sparks)||0)>0);
+    const stars=stored?.stars!=null?Number(stored.stars):(rowStarsKnown?sum('stars'):null);
+    const sparks=stored?.sparks!=null?Number(stored.sparks):(rowSparksKnown?sum('sparks'):null);
 
-    const normShare=v=>{
-      let s=Number(v)||0;
-      // Historical imports used both decimal shares (.25/.01) and whole-percent shares (25/1).
+    const shareFor=r=>{
+      let s=Number(r.share)||0;
       if(s>=1) s/=100;
+      if(!(s>0)){
+        const byRank={1:.25,2:.20,3:.18,4:.12,5:.10,6:.08,7:.04,8:.02,9:.01};
+        s=byRank[Number(r.rank)]||0;
+      }
       return s;
     };
     const potFrom=(r,key)=>{
-      const share=normShare(r.share);
+      const share=shareFor(r);
       const reward=Number(r[key])||0;
       return share>0&&reward>0?reward/share:null;
     };
 
-    // Modern events carry an explicit group/lobby id. Older workbook rows often do not.
-    // For those older rows, recover lobbies from reward/share pot signatures while enforcing
-    // one result per rank per lobby so two similarly sized pots are not merged together.
+    // Group IDs from the PDF are authoritative. For the small number of legacy rows
+    // where a group id is still absent, recover lobbies from reward/share signatures.
     const explicit=rows.some(r=>r.group!==undefined&&r.group!==null&&r.group!=='');
     let lobbyRows=[];
     if(explicit){
@@ -563,9 +567,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     }else{
       const lobbies=[];
       rows.forEach(r=>{
-        const starPot=potFrom(r,'stars');
-        const sparkPot=potFrom(r,'sparks');
-        const signature=starPot||sparkPot;
+        const signature=potFrom(r,'stars')||potFrom(r,'sparks');
         if(!(signature>0)) return;
         const rank=Number(r.rank)||0;
         const candidates=lobbies
@@ -586,29 +588,29 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
 
     const pots=lobbyRows.map(group=>{
       const candidates=group.map(r=>({
-        r,
-        share:normShare(r.share),
+        share:shareFor(r),
         potStars:potFrom(r,'stars'),
         potSparks:potFrom(r,'sparks')
-      })).filter(x=>x.share>0);
-      // Prefer the highest-share row because it has the least rounding error.
-      candidates.sort((a,b)=>b.share-a.share);
-      const star=candidates.find(x=>x.potStars>0)?.potStars??null;
-      const spark=candidates.find(x=>x.potSparks>0)?.potSparks??null;
-      return {star,spark};
+      })).filter(x=>x.share>0).sort((a,b)=>b.share-a.share);
+      return {
+        star:candidates.find(x=>x.potStars>0)?.potStars??null,
+        spark:candidates.find(x=>x.potSparks>0)?.potSparks??null
+      };
     });
-
     const starPots=pots.map(x=>x.star).filter(v=>Number(v)>0);
     const sparkPots=pots.map(x=>x.spark).filter(v=>Number(v)>0);
+    const allStarPots=lobbyRows.length>0&&starPots.length===lobbyRows.length;
+    const allSparkPots=lobbyRows.length>0&&sparkPots.length===lobbyRows.length;
+
     return {
       date,
       participants:rows.length,
       yearsB:sum('yearsB'),
       stars,
       sparks,
-      groups:Math.max(starPots.length,sparkPots.length),
-      potStars:starPots.length?starPots.reduce((s,v)=>s+v,0):null,
-      potSparks:sparkPots.length?sparkPots.reduce((s,v)=>s+v,0):null
+      groups:lobbyRows.length,
+      potStars:allStarPots?starPots.reduce((s,v)=>s+v,0):null,
+      potSparks:allSparkPots?sparkPots.reduce((s,v)=>s+v,0):null
     };
   }
 

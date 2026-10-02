@@ -1233,10 +1233,11 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     };
 
     const materialize=name=>{
-      const stored=baseMap.get(name);
-      const roster=timezoneFor(name);
-      const m=stored||{name,status:roster?.status||'Inactive',piggyPB:0,spacePB:0,krakenPB:0,ratingTotal:0,eventsPlayed:0,totalSparks:0};
-      const snapshot=snapMap.get(name);
+      const canonical=canonicalPlayerName(name);
+      const stored=baseMap.get(canonical)||baseMap.get(name);
+      const roster=timezoneFor(name)||timezoneFor(canonical);
+      const m=stored||{name:canonical||name,status:roster?.status||'Inactive',piggyPB:0,spacePB:0,krakenPB:0,ratingTotal:0,eventsPlayed:0,totalSparks:0};
+      const snapshot=snapMap.get(canonical)||snapMap.get(name);
       const logged=Math.max(0,Number(m.totalSparks)||0);
       const snapshotTotal=snapshot?Math.max(0,Number(snapshot.allTimeSparks)||0):null;
       const unlogged=snapshotTotal==null?0:Math.max(0,snapshotTotal-logged);
@@ -1392,17 +1393,20 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       state.rosterView=b.dataset.roster;
       renderRosters();
     });
-    root.addEventListener('click',e=>{
+    // Replace the roster's delegated sort handler on each render instead of
+    // stacking another listener. Stacked handlers caused one click to toggle
+    // the direction multiple times, making ascending/descending appear broken.
+    root.onclick=e=>{
       const b=e.target.closest('button[data-roster-sort]');
       if(!b)return;
       const key=b.dataset.rosterSort;
-      if(state.rosterSort===key)state.rosterSortDir=state.rosterSortDir==='asc'?'desc':'asc';
+      if(state.rosterSort===key) state.rosterSortDir=state.rosterSortDir==='asc'?'desc':'asc';
       else{
         state.rosterSort=key;
         state.rosterSortDir=['name','status','state','location'].includes(key)?'asc':'desc';
       }
       renderRosters();
-    });
+    };
     bindPlayerButtons(root);
   }
 

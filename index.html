@@ -352,6 +352,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   <script src="space-history-feb-mar-2026.js"></script>
   <script src="space-history-pre-2026-07-19.js"></script>
   <script src="space-2026-09-27.js"></script>
+  <script src="space-2026-10-02.js"></script>
   <script src="sparks-snapshot-2026-09-29.js"></script>
   <script src="canonical-names-2026-09-29.js"></script>
   <script src="member-timezones-source.js"></script>
@@ -783,24 +784,30 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const seen=new Set();
     const pbs=[];
     const first=[];
+    // Oct. 2 Space Race scores ran on a 66.66% scale. PB comparisons for that
+    // event use each player's own prior PB × 0.6666, then convert qualifying
+    // scores back to full-scale equivalents for the New PB column.
+    const pbScale=(kind==='space' && date==='2026-10-02')?0.6666:1;
     eventRows.forEach(r=>{
       const name=r.name;
       if(seen.has(name)) return;
       seen.add(name);
       const status=MEMBERS.get(name)?.status || r.status || '';
       if(!allowedStatus(status)) return;
-      const score=Number(r[valueKey])||0;
+      const rawScore=Number(r[valueKey])||0;
       const hist=(K.history?.[name]||[])
         .filter(x=>(Number(x[valueKey])||0)>0)
         .sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
       const prior=hist.filter(x=>String(x.date||'')<date);
       if(!prior.length){
-        first.push({name,score,status});
+        first.push({name,score:rawScore,status});
         return;
       }
       const previous=Math.max(...prior.map(x=>Number(x[valueKey])||0));
-      if(score>previous){
-        pbs.push({name,score,previous,improvement:previous>0?(score-previous)/previous:null,status});
+      const threshold=previous*pbScale;
+      if(rawScore>threshold){
+        const score=rawScore/pbScale;
+        pbs.push({name,score,previous,improvement:previous>0?(score-previous)/previous:null,status,rawScore});
       }
     });
     return {pbs,first};

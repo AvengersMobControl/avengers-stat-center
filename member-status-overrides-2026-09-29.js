@@ -13,14 +13,29 @@
     m.status=row?.status||'Inactive';
   });
 
-  // Add zero-history profile shells for current Active / AV-2 members who have
-  // joined since the original workbook snapshot. This keeps them searchable and
-  // clickable immediately, while their stats remain zero until an event is logged.
+  // Add zero-history profile shells only for genuinely new current members.
+  // Resolve roster display names through the canonical alias map first so renamed
+  // players (JIM/J1M, Zolika, Hoops, etc.) reuse their existing historical profile.
+  const resolve=name=>{
+    let x=String(name||'');
+    const seen=new Set();
+    while(D.aliasMap?.[x] && !seen.has(x)){
+      seen.add(x);
+      x=D.aliasMap[x];
+    }
+    return x;
+  };
   const known=new Set((D.members||[]).map(m=>m.name));
   (R.rows||[]).forEach(row=>{
-    if(!row || (row.status!=='Active' && row.status!=='AV2') || known.has(row.name)) return;
+    if(!row || (row.status!=='Active' && row.status!=='AV2')) return;
+    const canonical=resolve(row.name);
+    const existing=(D.members||[]).find(m=>m.name===canonical || m.name===row.name);
+    if(existing){
+      existing.status=row.status;
+      return;
+    }
     D.members.push({
-      name:row.name,
+      name:canonical||row.name,
       status:row.status,
       piggyPB:0,spacePB:0,krakenPB:0,
       piggyAvg:0,spaceAvg:0,krakenAvgL3:0,krakenAvg:0,
@@ -28,7 +43,7 @@
       ratingPB:0,ratingAvg:0,ratingTotal:0,
       eventsPlayed:0,totalSparks:0
     });
-    known.add(row.name);
+    known.add(canonical||row.name);
   });
 
   // Keep Kraken player cards aligned with the same current-status source.

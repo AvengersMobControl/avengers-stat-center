@@ -143,7 +143,8 @@ tbody tr:last-child td{border-bottom:0}
 .record-player{display:flex;align-items:center;gap:7px;min-width:0}
 .record-player .linkish{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .record-player .status{flex:0 0 auto;padding:2px 6px;font-size:9px}
-.record-value{font-weight:900;white-space:nowrap}
+.record-value{font-weight:900;white-space:nowrap;text-align:right}
+.record-date{display:block;margin-top:2px;color:#8297b1;font-size:9px;font-weight:650;letter-spacing:.01em;white-space:nowrap}
 .benchmark{margin-top:12px;padding:10px;border-radius:9px;background:#0b192b;color:#9db2ca;font-size:11px}
 .modal{display:none;position:fixed;inset:0;z-index:100}
 .modal.open{display:block}
@@ -1462,15 +1463,56 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
 
   function renderRecords(){
     const rows=[...D.members];
+    const K=window.AVENGERS_KRAKEN_DATA||{months:[],players:[]};
+    const krakenBy=new Map((K.players||[]).map(p=>[canonicalPlayerName(p.name),p]));
+    const monthShort={march:'Mar',april:'Apr',may:'May',june:'Jun',july:'Jul',aug:'Aug',august:'Aug',sept:'Sep',september:'Sep',oct:'Oct',october:'Oct',nov:'Nov',november:'Nov',dec:'Dec',december:'Dec',jan:'Jan',january:'Jan',feb:'Feb',february:'Feb'};
+
+    const shortDate=iso=>{
+      if(!iso)return '—';
+      const m=String(iso).match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if(!m)return escapeHtml(String(iso));
+      return Number(m[2])+'/'+Number(m[3])+'/'+m[1].slice(2);
+    };
+    const recordDate=(r,kind)=>{
+      const name=canonicalPlayerName(r.name);
+      if(kind==='piggy'){
+        const hist=(D.piggy?.history?.[name]||[]).filter(x=>(Number(x.lines)||0)>0);
+        if(!hist.length)return '—';
+        const best=Math.max(...hist.map(x=>Number(x.lines)||0));
+        const hit=hist.filter(x=>(Number(x.lines)||0)===best).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')))[0];
+        return hit?.date?shortDate(hit.date):'—';
+      }
+      if(kind==='space'){
+        const hist=(D.space?.history?.[name]||[]).filter(x=>(Number(x.yearsB)||0)>0);
+        if(!hist.length)return '—';
+        const effective=x=>String(x.date||'')==='2026-10-02'?(Number(x.yearsB)||0)/0.6666:(Number(x.yearsB)||0);
+        const best=Math.max(...hist.map(effective));
+        const hit=hist.filter(x=>Math.abs(effective(x)-best)<0.05).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')))[0];
+        return hit?.date?shortDate(hit.date):'—';
+      }
+      if(kind==='kraken'){
+        const p=krakenBy.get(name);
+        if(!p)return '—';
+        const candidates=(K.months||[]).map((m,i)=>({m,i,v:Number(p[m.key])||0})).filter(x=>x.v>0);
+        if(!candidates.length)return '—';
+        const best=Math.max(...candidates.map(x=>x.v));
+        const hit=candidates.find(x=>Math.abs(x.v-best)<0.0001);
+        const key=String(hit?.m?.key||hit?.m?.label||'').toLowerCase();
+        const label=monthShort[key]||String(hit?.m?.label||hit?.m?.key||'');
+        return label?label+' 2026':'—';
+      }
+      return '—';
+    };
+
     const groups=[
-      {title:'Piggy Records',sub:'Lines',key:'piggyPB',fmt:fmtNum,bench:'1.0 PB benchmark: 35,000 lines'},
-      {title:'Space Records',sub:'Lightyears',key:'spacePB',fmt:fmtB,bench:'1.0 PB benchmark: 350B lightyears'},
-      {title:'Kraken Records',sub:'Score',key:'krakenPB',fmt:v=>fmtNum(v,1),bench:'1.0 PB benchmark: 3,500 score'}
+      {title:'Piggy Records',sub:'Lines',key:'piggyPB',kind:'piggy',fmt:fmtNum,bench:'1.0 PB benchmark: 35,000 lines'},
+      {title:'Space Records',sub:'Lightyears',key:'spacePB',kind:'space',fmt:fmtB,bench:'1.0 PB benchmark: 350B lightyears'},
+      {title:'Kraken Records',sub:'Score',key:'krakenPB',kind:'kraken',fmt:v=>fmtNum(v,1),bench:'1.0 PB benchmark: 3,500 score'}
     ];
     $('#recordsContent').innerHTML=`
       <div class="records-note">
         <strong>Full tracked record lists.</strong>
-        Rankings include Active, AV-2 and Inactive players; each player's current status is shown beside their name.
+        Rankings include Active, AV-2 and Inactive players; each player's current status and record date are shown beside their record.
       </div>
       <div class="records-grid">${groups.map(g=>{
         const ranked=[...rows].filter(r=>Number(r[g.key])>0).sort((a,b)=>(Number(b[g.key])||0)-(Number(a[g.key])||0));
@@ -1481,7 +1523,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
               <button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button>
               ${statusBadge(r.status)}
             </div>
-            <div class="record-value">${g.fmt(r[g.key])}</div>
+            <div class="record-value">${g.fmt(r[g.key])}<span class="record-date">${recordDate(r,g.kind)}</span></div>
           </div>`).join('')}
           <div class="benchmark">${g.bench}</div>
         </div></div>`;

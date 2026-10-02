@@ -524,7 +524,9 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   }
 
   function spaceRewardTotals(date){
-    // Pot totals are based on the clan shown in that event, never the player's current roster status.
+    // Historical Space totals are event-clan totals:
+    // count every player who competed as AVENGERS in that event, regardless of current status.
+    // AV-2 is tracked separately and never contributes to AVENGERS stars/pot totals.
     const rows=(D.space?.events?.[date]||[]).filter(r=>{
       if(!r||!r.name||r.name==='Total'||r.name==='#N/A'||!(Number(r.yearsB)||0)) return false;
       const clan=String(r.clan||'').toLowerCase().replace(/[^a-z0-9]/g,'');
@@ -534,73 +536,18 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const sum=k=>rows.reduce((s,r)=>s+(Number(r[k])||0),0);
     const rowStarsKnown=rows.some(r=>(Number(r.stars)||0)>0);
     const rowSparksKnown=rows.some(r=>(Number(r.sparks)||0)>0);
+
+    // These are the rewards earned by AVENGERS participants, not the entire
+    // lobby pool when a historical lobby also contained players from other clans.
     const stars=stored?.stars!=null?Number(stored.stars):(rowStarsKnown?sum('stars'):null);
     const sparks=stored?.sparks!=null?Number(stored.sparks):(rowSparksKnown?sum('sparks'):null);
 
-    const shareFor=r=>{
-      let s=Number(r.share)||0;
-      if(s>=1) s/=100;
-      if(!(s>0)){
-        const byRank={1:.25,2:.20,3:.18,4:.12,5:.10,6:.08,7:.04,8:.02,9:.01};
-        s=byRank[Number(r.rank)]||0;
-      }
-      return s;
-    };
-    const potFrom=(r,key)=>{
-      const share=shareFor(r);
-      const reward=Number(r[key])||0;
-      return share>0&&reward>0?reward/share:null;
-    };
-
-    // Group IDs from the PDF are authoritative. For the small number of legacy rows
-    // where a group id is still absent, recover lobbies from reward/share signatures.
-    const explicit=rows.some(r=>r.group!==undefined&&r.group!==null&&r.group!=='');
-    let lobbyRows=[];
-    if(explicit){
-      const map=new Map();
-      rows.forEach(r=>{
-        const key=String(r.group??'legacy');
-        if(!map.has(key)) map.set(key,[]);
-        map.get(key).push(r);
-      });
-      lobbyRows=[...map.values()];
-    }else{
-      const lobbies=[];
-      rows.forEach(r=>{
-        const signature=potFrom(r,'stars')||potFrom(r,'sparks');
-        if(!(signature>0)) return;
-        const rank=Number(r.rank)||0;
-        const candidates=lobbies
-          .filter(g=>g.rows.length<9&&!g.ranks.has(rank)&&Math.abs(signature-g.center)/g.center<=0.008)
-          .sort((a,b)=>Math.abs(signature-a.center)-Math.abs(signature-b.center));
-        let g=candidates[0];
-        if(!g){
-          g={center:signature,rows:[],ranks:new Set()};
-          lobbies.push(g);
-        }
-        g.rows.push(r);
-        g.ranks.add(rank);
-        const vals=g.rows.map(x=>potFrom(x,'stars')||potFrom(x,'sparks')).filter(v=>v>0);
-        g.center=vals.reduce((s,v)=>s+v,0)/vals.length;
-      });
-      lobbyRows=lobbies.map(g=>g.rows);
-    }
-
-    const pots=lobbyRows.map(group=>{
-      const candidates=group.map(r=>({
-        share:shareFor(r),
-        potStars:potFrom(r,'stars'),
-        potSparks:potFrom(r,'sparks')
-      })).filter(x=>x.share>0).sort((a,b)=>b.share-a.share);
-      return {
-        star:candidates.find(x=>x.potStars>0)?.potStars??null,
-        spark:candidates.find(x=>x.potSparks>0)?.potSparks??null
-      };
+    // Lobby count is still useful context, but the displayed POT STARS total is
+    // the AVENGERS-earned reward total across those lobbies.
+    const groups=new Set();
+    rows.forEach(r=>{
+      if(r.group!==undefined&&r.group!==null&&r.group!=='') groups.add(String(r.group));
     });
-    const starPots=pots.map(x=>x.star).filter(v=>Number(v)>0);
-    const sparkPots=pots.map(x=>x.spark).filter(v=>Number(v)>0);
-    const allStarPots=lobbyRows.length>0&&starPots.length===lobbyRows.length;
-    const allSparkPots=lobbyRows.length>0&&sparkPots.length===lobbyRows.length;
 
     return {
       date,
@@ -608,9 +555,9 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       yearsB:sum('yearsB'),
       stars,
       sparks,
-      groups:lobbyRows.length,
-      potStars:allStarPots?starPots.reduce((s,v)=>s+v,0):null,
-      potSparks:allSparkPots?sparkPots.reduce((s,v)=>s+v,0):null
+      groups:groups.size || (rows.length?1:0),
+      potStars:stars,
+      potSparks:sparks
     };
   }
 
@@ -1054,7 +1001,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <td class="num">${x.stars==null?'—':fmtNum(x.stars)}</td>
         <td class="num">${x.sparks==null?'—':fmtNum(x.sparks)}</td>
       </tr>`).join('');
-      el.innerHTML=tableShell('Space Race Pot Totals','Known group pots are derived from reward/share values • — means the historical source did not include reward data',
+      el.innerHTML=tableShell('Space Race Pot Totals','AVENGERS event-time reward totals across all Space Race lobbies • current roster status does not affect historical totals • — means reward data is not yet available',
         [{label:'Race'},{label:'Groups',num:true},{label:'Pot Stars',num:true},{label:'Pot Sparks',num:true},{label:'Tracked Stars',num:true},{label:'Tracked Sparks',num:true}],
         body||`<tr><td colspan="6" class="empty">No Space Race totals recorded.</td></tr>`);
     } else if(view==='event'){

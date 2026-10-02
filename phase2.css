@@ -54,7 +54,10 @@
 .p2-mini-card h3{font-size:13px;margin:0 0 8px}
 .p2-history{max-height:330px;overflow:auto}
 .p2-history table{font-size:12px}
-.p2-rank-note{font-size:10px;color:#7187a2;margin-top:5px}
+.p2-rank-note{display:flex;flex-wrap:wrap;gap:5px 10px;font-size:9px;color:#7187a2;margin-top:7px;line-height:1.2}
+.p2-rank-note span{white-space:nowrap}
+.p2-rank-note .p2-rank-active{color:#61dfff;font-weight:800}
+.p2-rank-note .p2-rank-all{color:#a9b9cc;font-weight:700}
 .p2-empty{padding:28px;text-align:center;color:#8297b0}
 .p2-section-title{font-size:17px;font-weight:850;margin:0}
 .p2-section-sub{font-size:11px;color:var(--muted);margin-top:3px}

@@ -374,6 +374,59 @@
       '</tbody></table></div>';
   }
 
+  function profileMetricValue(name,key){
+    var m=memberByName[name]||{};
+    var s=playerHeaderStats(name);
+    var kp=krakenPlayerFor(name);
+    if(key==='piggyPB') return Number(m.piggyPB)||0;
+    if(key==='piggyAvg') return Number(m.piggyAvg)||0;
+    if(key==='piggyL3') return Number(s.piggyL3)||0;
+    if(key==='piggyDelta') return s.piggyDelta;
+    if(key==='spacePB') return Number(m.spacePB)||0;
+    if(key==='spaceAvg') return Number(m.spaceAvg)||0;
+    if(key==='krakenPB') return kp?(Number(kp.pb)||0):(Number(m.krakenPB)||0);
+    if(key==='krakenL3') return kp?(Number(kp.last3)||0):(Number(m.krakenAvgL3)||0);
+    if(key==='rating') return Number(m.ratingTotal)||0;
+    if(key==='events') return Number(m.eventsPlayed)||0;
+    if(key==='sparks') return Number(m.totalSparks)||0;
+    return null;
+  }
+
+  function profileMetricHasValue(key,value){
+    if(value==null || !isFinite(Number(value))) return false;
+    if(key==='piggyDelta') return true;
+    return Number(value)>0;
+  }
+
+  function profileMetricRank(name,key){
+    var value=profileMetricValue(name,key);
+    if(!profileMetricHasValue(key,value)) return null;
+
+    var allValues=allNames.map(function(n){return profileMetricValue(n,key);})
+      .filter(function(v){return profileMetricHasValue(key,v);});
+    var activeNames=allNames.filter(function(n){return statusFor(n)==='Active';});
+    var activeValues=activeNames.map(function(n){return profileMetricValue(n,key);})
+      .filter(function(v){return profileMetricHasValue(key,v);});
+
+    function rankIn(values){
+      return 1+values.filter(function(v){return Number(v)>Number(value);}).length;
+    }
+
+    return {
+      allRank:rankIn(allValues),
+      allCount:allValues.length,
+      activeRank:statusFor(name)==='Active'?rankIn(activeValues):null,
+      activeCount:activeValues.length
+    };
+  }
+
+  function profileRankNote(name,key){
+    var r=profileMetricRank(name,key);
+    if(!r) return '<div class="p2-rank-note"><span>Active —</span><span>All-time —</span></div>';
+    var active=r.activeRank!=null?'Active #'+r.activeRank+'/'+r.activeCount:'Active n/a';
+    return '<div class="p2-rank-note"><span class="p2-rank-active">'+active+'</span><span class="p2-rank-all">All-time #'+r.allRank+'/'+r.allCount+'</span></div>';
+  }
+
   function renderExplorer(name){
     var root=document.getElementById('p2ExplorerProfile');
     if(!root)return;
@@ -391,17 +444,17 @@
       '<div class="p2-profile">'+
         '<div class="p2-profile-head"><div class="p2-avatar">'+esc(name.replace(/^AV[-.#<]*/i,'').slice(0,2).toUpperCase())+'</div><div><div class="p2-profile-name">'+esc(name)+'</div><div class="profile-status"><span class="status '+(String(m.status||'inactive').toLowerCase()==='active'?'active':(String(m.status||'').toLowerCase()==='av2'?'av2':'inactive'))+'">'+esc(m.status||'Historical')+'</span></div></div><div class="p2-profile-actions"><button class="p2-secondary-btn" id="p2ComparePlayer">Compare in Trends</button></div></div>'+
         '<div class="p2-profile-kpis">'+
-          '<div class="p2-profile-kpi"><span>Piggy PB</span><strong>'+num(piggyPB,0)+'</strong></div>'+
-          '<div class="p2-profile-kpi"><span>Piggy Arena Avg</span><strong>'+num(piggyAvg,0)+'</strong></div>'+
-          '<div class="p2-profile-kpi"><span>Piggy Last 3</span><strong>'+num(s.piggyL3,0)+'</strong></div>'+
-          '<div class="p2-profile-kpi"><span>L3 vs Prior 3</span><strong>'+changeText(s.piggyDelta)+'</strong></div>'+
-          '<div class="p2-profile-kpi"><span>Space PB</span><strong>'+num(spacePB,1)+'</strong></div>'+
-          '<div class="p2-profile-kpi"><span>Space Avg</span><strong>'+num(spaceAvg,1)+'</strong></div>'+
-          '<div class="p2-profile-kpi"><span>Kraken PB</span><strong>'+num(krakenPB,0)+'</strong></div>'+
-          '<div class="p2-profile-kpi"><span>Kraken Avg L3</span><strong>'+num(krakenL3,0)+'</strong></div>'+
-          '<div class="p2-profile-kpi"><span>Player Rating</span><strong>'+num(rating,2)+'</strong></div>'+
-          '<div class="p2-profile-kpi"><span>Events Logged</span><strong>'+num(m.eventsPlayed||0,0)+'</strong></div>'+
-          '<div class="p2-profile-kpi"><span>Total Sparks</span><strong>'+num(m.totalSparks||0,0)+'</strong></div>'+
+          '<div class="p2-profile-kpi"><span>Piggy PB</span><strong>'+num(piggyPB,0)+'</strong>'+profileRankNote(name,'piggyPB')+'</div>'+
+          '<div class="p2-profile-kpi"><span>Piggy Arena Avg</span><strong>'+num(piggyAvg,0)+'</strong>'+profileRankNote(name,'piggyAvg')+'</div>'+
+          '<div class="p2-profile-kpi"><span>Piggy Last 3</span><strong>'+num(s.piggyL3,0)+'</strong>'+profileRankNote(name,'piggyL3')+'</div>'+
+          '<div class="p2-profile-kpi"><span>L3 vs Prior 3</span><strong>'+changeText(s.piggyDelta)+'</strong>'+profileRankNote(name,'piggyDelta')+'</div>'+
+          '<div class="p2-profile-kpi"><span>Space PB</span><strong>'+num(spacePB,1)+'</strong>'+profileRankNote(name,'spacePB')+'</div>'+
+          '<div class="p2-profile-kpi"><span>Space Avg</span><strong>'+num(spaceAvg,1)+'</strong>'+profileRankNote(name,'spaceAvg')+'</div>'+
+          '<div class="p2-profile-kpi"><span>Kraken PB</span><strong>'+num(krakenPB,0)+'</strong>'+profileRankNote(name,'krakenPB')+'</div>'+
+          '<div class="p2-profile-kpi"><span>Kraken Avg L3</span><strong>'+num(krakenL3,0)+'</strong>'+profileRankNote(name,'krakenL3')+'</div>'+
+          '<div class="p2-profile-kpi"><span>Player Rating</span><strong>'+num(rating,2)+'</strong>'+profileRankNote(name,'rating')+'</div>'+
+          '<div class="p2-profile-kpi"><span>Events Logged</span><strong>'+num(m.eventsPlayed||0,0)+'</strong>'+profileRankNote(name,'events')+'</div>'+
+          '<div class="p2-profile-kpi"><span>Total Sparks</span><strong>'+num(m.totalSparks||0,0)+'</strong>'+profileRankNote(name,'sparks')+'</div>'+
         '</div>'+
         '<div class="p2-profile-grid">'+
           '<div class="p2-mini-card"><h3>Piggy Race History</h3>'+simpleChart('piggy',name,'lines','Lines','#43d7ff')+'</div>'+

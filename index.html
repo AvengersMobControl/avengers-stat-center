@@ -1127,7 +1127,17 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       <td class="num">${fmtB(r.spaceAvg)}</td>
       <td class="num">${fmtNum(r.krakenAvgL3)}</td>
     </tr>`).join('');
-    $('#ratingsContent').innerHTML = tableShell('Overall Player Rating','Uses the PB + Average rating already calculated in your Members sheet',
+    const ratingExplanation = `
+      <div class="roster-separation-note">
+        <strong>How the Player Rating works:</strong>
+        Each event can contribute up to <strong>1.00 point</strong> to the Personal Best rating and up to <strong>1.00 point</strong> to the Average rating.
+        Scores below the benchmark earn a proportional share of that point; reaching or exceeding the benchmark earns the full 1.00.
+        <br><strong>Personal Best benchmarks:</strong> Piggy Race 35,000 lines • Space Race 350B lightyears • Kraken 3,500.
+        <br><strong>Average benchmarks:</strong> Piggy Race 25,000 lines • Space Race 200B lightyears • Kraken 2,800.
+        Piggy and Space averages use results since August 1, 2026; Kraken uses the last 3 Kraken events.
+        <br><strong>PB Rating</strong> and <strong>Avg Rating</strong> are each worth up to 3.00 points, for a maximum <strong>Total Rating of 6.00</strong>.
+      </div>`;
+    $('#ratingsContent').innerHTML = ratingExplanation + tableShell('Overall Player Rating','Personal Best performance + recent average performance',
       [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Total Rating'},{label:'PB Rating',num:true},{label:'Avg Rating',num:true},{label:'Piggy PB',num:true},{label:'Space PB',num:true},{label:'Kraken PB',num:true},{label:'Piggy Avg',num:true},{label:'Space Avg',num:true},{label:'Kraken L3',num:true}],body);
     bindPlayerButtons($('#ratingsContent'));
   }

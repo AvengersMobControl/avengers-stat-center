@@ -24,7 +24,6 @@ AV-Derya\tAV2\t2\t2\t\tGermany
 AV-Deviantdan\tActive\t-7\t1\t\tUSA-Pacific DST
 AV-EXCALIBUR\tActive\t-4\t1\t\tCanada - Ontario
 AV-Finnie\tActive\t1\t2\t\tEngland
-AV-GreenZombie\tActive\t2\t2\t\tGermany
 AV-HarryBallsagna\tActive\t-5\t1\tNE\tUSA-Central DST
 AV-HN\tActive\t-3\t1\t\tBrazil
 AV-hoops-SCT\tActive\t1\t2\t\tScotland
@@ -169,7 +168,7 @@ Malik\tInactive\t3\t2\t\tSaudi Arabia
 Noob\tInactive\t\t\t\t
 SOLOLEVEL\tInactive\t\t\t\t
 tgves\tInactive\t2\t2\t\tRomania
-AV-LemonBlue\tAV2\t\t\t\t
+AV-LemonBlue\tAV2\t2\t2\t\tGermany
 Jamaica\tAV2\t\t\t\t
 AV-braa\tAV2\t\t\t\t
 AV+HOLLOWBORNs\tAV2\t\t\t\t
@@ -219,7 +218,9 @@ AV-Brisket\tActive\t\t\t\t`;
   const aliases={
     'AV-J1M':'AV-JIM',
     'AV-Hoops':'AV-hoops-SCT',
-    'AV-BlueWave':'AV-GreenZombie',
+    'AV-BlueWave':'AV-LemonBlue',
+    'AV-GreenZombie':'AV-LemonBlue',
+    'AV-LY10':'AV-LemonBlue',
     'AV-Zolika.x.Kira':'AV-ZolikaLoveKira',
     'AV-Atilla':'AV-Attila-AZE',
     'AV-InvinsibleSpy':'AV-InvincibleSpy',

@@ -27,6 +27,14 @@
     });
   });
 
+  // Reward totals confirmed from the remade Space Race PDF. These totals sum
+  // rewards earned by players shown as AVENGERS in the historical screenshots.
+  D.space.historicalRewardTotals=Object.assign({},D.space.historicalRewardTotals||{},{
+    '2026-04-19':{stars:2632790,source:'Remade Discord Space Race PDF; 3 AVENGERS lobbies'},
+    '2026-04-11':{stars:6459706,source:'Remade Discord Space Race PDF; 5 AVENGERS lobbies, duplicate repost excluded'},
+    '2026-04-08':{stars:720880,source:'Remade Discord Space Race PDF; JIM lobby only; 4/8 Rafa repost of 4/3 excluded'}
+  });
+
   D.space.historicalSourceNotes=Object.assign({},D.space.historicalSourceNotes||{},{
     'reconcile-2026-10-02':'Historical Space rows reconciled against the remade Discord final-result review PDF; event-time clan attribution is preserved separately from current roster status.'
   });

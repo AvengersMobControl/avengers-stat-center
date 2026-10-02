@@ -522,7 +522,13 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   }
 
   function spaceRewardTotals(date){
-    const rows=(D.space?.events?.[date]||[]).filter(r=>r&&r.name&&r.name!=='Total'&&r.name!=='#N/A'&&(Number(r.yearsB)||0)>0);
+    // AVENGERS pot/star totals must never include separately logged AV-2 results.
+    // Preserve legacy rows with no explicit clan tag; only exclude rows explicitly marked AV-2.
+    const rows=(D.space?.events?.[date]||[]).filter(r=>{
+      if(!r||!r.name||r.name==='Total'||r.name==='#N/A'||!(Number(r.yearsB)||0)) return false;
+      const clan=String(r.clan||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+      return clan!=='av2';
+    });
     const total=(D.space?.events?.[date]||[]).find(r=>r?.name==='Total');
     const historical=D.space?.historicalRewardTotals?.[date]||null;
     const sum=k=>rows.reduce((s,r)=>s+(Number(r[k])||0),0);

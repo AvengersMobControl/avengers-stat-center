@@ -109,7 +109,16 @@
   }
 
   function allEvents(){
-    return (DATA.events||[]).map(ev=>({...ev,flash:Number(ev.flash)||Number(String(channelLabels[ev.channelId]||'').replace(/\D/g,''))||0}));
+    const mode=clanMode();
+    return (DATA.events||[]).map(ev=>{
+      const useAv2Pot=mode==='AV-2' && ev.av2PotStars!=null;
+      return {
+        ...ev,
+        flash:Number(ev.flash)||Number(String(channelLabels[ev.channelId]||'').replace(/\D/g,''))||0,
+        potStars:useAv2Pot?Number(ev.av2PotStars):ev.potStars,
+        potStarsDisplay:useAv2Pot?(ev.av2PotStarsDisplay||ev.potStarsDisplay):ev.potStarsDisplay
+      };
+    });
   }
 
   function rowsForEvents(events){
@@ -139,6 +148,13 @@
 
   function selectedEvents(){
     let evs=allEvents();
+    const mode=clanMode();
+    if(mode!=='all'){
+      evs=evs.filter(ev=>(ev.entries||[]).some(r=>{
+        const clan=r.clan||ev.clan||ev.rosterScope||'AVENGERS';
+        return clan===mode;
+      }));
+    }
     if(state.day!=='all')evs=evs.filter(e=>String(e.setId||e.date+'-A').startsWith(state.day)||e.date===state.day);
     if(/^pf[1-4]$/.test(state.tab))return evs.filter(e=>e.flash===Number(state.tab.slice(2)));
     return evs;

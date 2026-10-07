@@ -628,6 +628,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const allStarPots=lobbyRows.length>0&&starPots.length===lobbyRows.length;
     const allSparkPots=lobbyRows.length>0&&sparkPots.length===lobbyRows.length;
 
+    const partial=D.space?.historicalIncompleteDates?.[date]||'';
     return {
       date,
       participants:rows.length,
@@ -635,8 +636,9 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       stars,
       sparks,
       groups:verifiedPot?.groups??stored?.groups??(grouped.size||(rows.length?1:0)),
-      potStars:verifiedPot?.potStars??(allStarPots?starPots.reduce((s,v)=>s+v,0):null),
-      potSparks:verifiedPot?.potSparks??(allSparkPots?sparkPots.reduce((s,v)=>s+v,0):null)
+      potStars:partial?null:(verifiedPot?.potStars??(allStarPots?starPots.reduce((s,v)=>s+v,0):null)),
+      potSparks:partial?null:(verifiedPot?.potSparks??(allSparkPots?sparkPots.reduce((s,v)=>s+v,0):null)),
+      partial
     };
   }
 
@@ -1088,15 +1090,15 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
             };
           })
         : Object.keys(D.space.events||{}).sort().reverse().map(spaceRewardTotals);
-      const body=totals.map(x=>`<tr>
-        <td>${fmtDate(x.date)}</td>
+      const body=totals.map(x=>`<tr title="${escapeHtml(x.partial||'')}">
+        <td>${fmtDate(x.date)}${x.partial?' *':''}</td>
         <td class="num">${x.groups||'—'}</td>
         <td class="num event-total-highlight">${x.potStars==null?'—':fmtNum(x.potStars)}</td>
         <td class="num">${x.potSparks==null?'—':fmtNum(x.potSparks)}</td>
-        <td class="num">${x.stars==null?'—':fmtNum(x.stars)}</td>
-        <td class="num">${x.sparks==null?'—':fmtNum(x.sparks)}</td>
+        <td class="num">${x.stars==null?'—':fmtNum(x.stars)}${x.partial?' *':''}</td>
+        <td class="num">${x.sparks==null?'—':fmtNum(x.sparks)}${x.partial?' *':''}</td>
       </tr>`).join('');
-      el.innerHTML=tableShell(av2Mode?'AV-2 Space Race Pot Totals':'Space Race Pot Totals',av2Mode?'AV-2 event-time reward and lobby totals verified from the AV-2 Discord results channel':'AVENGERS event-time reward totals across all Space Race lobbies • current roster status does not affect historical totals • — means reward data is not yet available',
+      el.innerHTML=tableShell(av2Mode?'AV-2 Space Race Pot Totals':'Space Race Pot Totals',av2Mode?'AV-2 event-time reward and lobby totals verified from the AV-2 Discord results channel':'AVENGERS event-time reward totals across all Space Race lobbies • current roster status does not affect historical totals • — means reward data is not yet available • * means the Discord channel is missing at least one final lobby screenshot',
         [{label:'Race'},{label:'Groups',num:true},{label:'Pot Stars',num:true},{label:'Pot Sparks',num:true},{label:'Tracked Stars',num:true},{label:'Tracked Sparks',num:true}],
         body||`<tr><td colspan="6" class="empty">No Space Race totals recorded.</td></tr>`);
     } else if(view==='event'){

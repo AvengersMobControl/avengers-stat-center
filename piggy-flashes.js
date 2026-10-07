@@ -9,7 +9,7 @@
     '1425021793835552868':'PF3',
     '1425021900463013919':'PF4'
   };
-  const state={tab:'all'};
+  const state={tab:'all',day:'all'};
   const fmt=v=>(Number(v)||0).toLocaleString();
   const fmtCompact=v=>{
     const n=Number(v)||0;
@@ -70,6 +70,10 @@
       .flash-metric strong{font-size:22px;line-height:1}
       .flash-metric em{display:block;font-style:normal;font-size:10px;opacity:.55;margin-top:5px}
       .flash-note{font-size:11px;opacity:.68;margin-top:8px}
+      .flash-day-filter{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-4px 0 14px;padding:10px 12px;background:var(--panel,#151b27);border:1px solid var(--border,#2a3345);border-radius:10px}
+      .flash-day-filter label{font-size:11px;font-weight:800;opacity:.72;text-transform:uppercase;letter-spacing:.06em}
+      .flash-day-filter select{min-width:190px;background:rgba(8,15,31,.65);color:inherit;border:1px solid var(--border,#2a3345);border-radius:8px;padding:8px 10px;font-weight:700}
+      .flash-day-filter .flash-day-note{font-size:11px;opacity:.58}
       @media(max-width:1000px){.flash-grid{grid-template-columns:1fr}.flash-metric-strip{grid-template-columns:repeat(2,1fr)}}
       @media(max-width:720px){.flash-tabs{grid-template-columns:repeat(3,1fr)}.flash-pb-row{grid-template-columns:100px 1fr 58px 38px 54px;gap:6px}.flash-pb-flash{min-width:38px}.flash-pb-date{font-size:9px}.flash-chip{min-width:30px;padding:2px 4px}.flash-metric-strip{grid-template-columns:1fr 1fr}}
     `;
@@ -134,9 +138,15 @@
   }
 
   function selectedEvents(){
-    const evs=allEvents();
+    let evs=allEvents();
+    if(state.day!=='all')evs=evs.filter(e=>String(e.setId||e.date+'-A').startsWith(state.day)||e.date===state.day);
     if(/^pf[1-4]$/.test(state.tab))return evs.filter(e=>e.flash===Number(state.tab.slice(2)));
     return evs;
+  }
+
+  function dayFilterHtml(){
+    const days=[...new Set(allEvents().map(e=>String(e.setId||e.date+'-A').slice(0,10)).filter(Boolean))].sort().reverse();
+    return '<div class="flash-day-filter"><label for="flashDaySelect">Flash Set Day</label><select id="flashDaySelect"><option value="all">All days</option>'+days.map(d=>'<option value="'+esc(d)+'" '+(state.day===d?'selected':'')+'>'+esc(shortDate(d))+'</option>').join('')+'</select><span class="flash-day-note">Choose a day to see only that PF1–PF4 Flash Set.</span></div>';
   }
 
   function aggregateByPlayer(rows){
@@ -263,7 +273,8 @@
     const evs=selectedEvents();
     const rows=rowsForEvents(evs);
     const allEvs=allEvents();
-    const allRows=rowsForEvents(allEvs);
+    const dayEvs=state.day==='all'?allEvs:allEvs.filter(e=>String(e.setId||e.date+'-A').startsWith(state.day)||e.date===state.day);
+    const allRows=rowsForEvents(dayEvs);
     const setMap=buildSetMap(allRows);
     const isDaily=state.tab==='daily';
     const agg=isDaily?dailyPlayerPBs(setMap):aggregateByPlayer(rows);
@@ -290,7 +301,7 @@
 
     const dailyTrend=[...setMap.values()].sort((a,b)=>String(a.date).localeCompare(String(b.date))).map(s=>({
       label:s.id,
-      value:[...s.players.values()].reduce((sum,p)=>sum+p.lines,0),
+      value:[...s.players.values()].reduce((sum,p)=>sum+p.stars,0),
       flashes:s.flashes.size
     }));
 
@@ -316,6 +327,7 @@
 
     root.innerHTML=`
       ${tabsHtml()}
+      ${dayFilterHtml()}
       <div class="records-note"><strong>Flash Set:</strong> one PF1→PF4 cycle in roughly 24 hours. Eight-flash calendar weeks are split into two independent Flash Sets.</div>
       <div class="flash-metric-strip">
         <div class="flash-metric"><span>${isDaily?'Flash Sets':'Events'}</span><strong>${fmt(isDaily?setMap.size:uniqueEvents)}</strong><em>${isDaily?completeSets+' complete 4/4 sets':'recorded in this view'}</em></div>
@@ -331,8 +343,8 @@
           <div class="flash-chart-body">${pbChart(pbItems,isDaily)}</div>
         </div>
         <div class="flash-chart-card">
-          <div class="flash-chart-head"><h2>${isDaily?'Flash Set Line Trend':'Pot Stars Trend'}</h2><div class="small-muted">${isDaily?'Combined recorded player lines per Flash Set.':'AVENGERS-dominant lobby pot totals over time.'}</div></div>
-          <div class="flash-chart-body">${trendSvg(trendPoints,isDaily?'lines':'pot stars')}${state.tab==='all'?'<hr style="border:0;border-top:1px solid rgba(255,255,255,.08);margin:12px 0 14px"><strong style="font-size:12px">PF comparison</strong><div style="margin-top:10px">'+flashComparison(allEvs)+'</div>':''}</div>
+          <div class="flash-chart-head"><h2>${isDaily?'Flash Set Star Trend':'Pot Stars Trend'}</h2><div class="small-muted">${isDaily?'Combined recorded player stars per Flash Set.':'AVENGERS-dominant lobby pot totals over time.'}</div></div>
+          <div class="flash-chart-body">${trendSvg(trendPoints,isDaily?'stars':'pot stars')}${state.tab==='all'?'<hr style="border:0;border-top:1px solid rgba(255,255,255,.08);margin:12px 0 14px"><strong style="font-size:12px">PF comparison</strong><div style="margin-top:10px">'+flashComparison(allEvs)+'</div>':''}</div>
         </div>
       </div>
 
@@ -360,6 +372,10 @@
       state.tab=btn.dataset.flashTab;
       render();
     }));
+    root.querySelector('#flashDaySelect')?.addEventListener('change',e=>{
+      state.day=e.target.value||'all';
+      render();
+    });
   }
 
   function showPage(btn){

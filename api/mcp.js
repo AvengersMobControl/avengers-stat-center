@@ -157,9 +157,8 @@ function resizedDiscordUrl(a) {
   try {
     const u = new URL(raw);
     if (u.hostname === 'media.discordapp.net') {
-      u.searchParams.set('width', '700');
+      u.searchParams.set('width', '900');
       u.searchParams.set('format', 'webp');
-      u.searchParams.set('quality', 'lossless');
     }
     return u.toString();
   } catch {

@@ -179,7 +179,7 @@ async function imageBlock(a) {
 
     const buf = Buffer.from(await r.arrayBuffer());
     // Keep the complete MCP response under typical serverless response limits.
-    if (buf.length > 900 * 1024) return null;
+    if (buf.length > 1280 * 1024) return null;
 
     return { type: 'image', data: buf.toString('base64'), mimeType: mime };
   } catch {

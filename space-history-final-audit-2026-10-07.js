@@ -164,4 +164,74 @@
   D.space.historicalSourceNotes=Object.assign({},D.space.historicalSourceNotes||{},{
     'full-channel-audit-2026-10-07':'Space Discord channel audited from its first available post (2025-10-14) through 2026-10-02. Preliminary/progress screenshots were excluded. Final-reward gaps are explicitly listed in historicalIncompleteDates.'
   });
+
+  // Rebuild Space summaries so recovered historical rewards/rows are reflected
+  // in event counts, average rewards, player profiles, ratings, and logged sparks.
+  const PB_SCALE=.6666;
+  const RATING_SPACE_START='2026-08-01';
+  const oldOverall=new Map((D.space.overall||[]).map(r=>[canonical(r.name),r]));
+  const members=new Map((D.members||[]).map(m=>[canonical(m.name),m]));
+  const overall=[],latestPBs=[],latestNew=[];
+  const effectivePB=x=>{
+    const raw=Number(x.yearsB)||0;
+    return String(x.date||'')==='2026-10-02'?raw/PB_SCALE:raw;
+  };
+
+  Object.keys(D.space.history||{}).forEach(rawName=>{
+    const name=canonical(rawName);
+    const hist=(D.space.history[rawName]||[]).filter(x=>(Number(x.yearsB)||0)>0).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
+    if(!hist.length)return;
+    const vals=hist.map(x=>Number(x.yearsB)||0);
+    const stars=hist.map(x=>Number(x.stars)||0);
+    const sparks=hist.map(x=>Number(x.sparks)||0);
+    const before=hist.filter(x=>String(x.date||'')<'2026-10-02');
+    const current=hist.find(x=>String(x.date||'')==='2026-10-02');
+    const oldPB=before.length?Math.max(...before.map(x=>Number(x.yearsB)||0)):0;
+    const pb=Math.max(...hist.map(effectivePB));
+    const member=members.get(name);
+    const totalSparks=sparks.reduce((a,b)=>a+b,0);
+    const prior=oldOverall.get(name);
+    overall.push({
+      name,status:member?.status||prior?.status||'',
+      pb,oldPB,improvement:oldPB>0?(pb-oldPB)/oldPB:0,
+      totalYears:vals.reduce((a,b)=>a+b,0),
+      totalStars:stars.reduce((a,b)=>a+b,0),
+      totalSparks,
+      eventsPlayed:hist.length,
+      avgYears:vals.reduce((a,b)=>a+b,0)/vals.length,
+      avgStars:stars.reduce((a,b)=>a+b,0)/stars.length,
+      avgSparks:sparks.reduce((a,b)=>a+b,0)/sparks.length,
+      pbYears:pb,
+      avgLast3:vals.slice(-3).reduce((a,b)=>a+b,0)/Math.min(vals.length,3),
+      avgRank:0
+    });
+    if(current){
+      if(!before.length)latestNew.push({name,score:Number(current.yearsB)||0});
+      else if((Number(current.yearsB)||0)>oldPB*PB_SCALE){
+        const normalized=(Number(current.yearsB)||0)/PB_SCALE;
+        latestPBs.push({name,score:normalized,previous:oldPB,improvement:oldPB>0?(normalized-oldPB)/oldPB:null,rawScore:Number(current.yearsB)||0});
+      }
+    }
+    if(member){
+      const oldSpaceSparks=Number(prior?.totalSparks)||0;
+      const oldSpaceEvents=Number(prior?.eventsPlayed)||0;
+      member.totalSparks=Math.max(0,(Number(member.totalSparks)||0)+(totalSparks-oldSpaceSparks));
+      member.eventsPlayed=Math.max(0,(Number(member.eventsPlayed)||0)+(hist.length-oldSpaceEvents));
+      member.spacePB=pb;
+      const rh=hist.filter(x=>String(x.date||'')>=RATING_SPACE_START);
+      member.spaceAvg=rh.length?rh.reduce((s,x)=>s+(Number(x.yearsB)||0),0)/rh.length:0;
+    }
+  });
+  overall.sort((a,b)=>b.avgYears-a.avgYears);overall.forEach((r,i)=>r.avgRank=i+1);
+  D.space.overall=overall;
+  D.space.latestPBs=latestPBs.sort((a,b)=>(b.improvement||0)-(a.improvement||0));
+  D.space.latestNewMembers=latestNew.sort((a,b)=>b.score-a.score);
+
+  const capped=(v,b)=>Math.min(1,Math.max(0,(Number(v)||0)/b));
+  (D.members||[]).forEach(m=>{
+    m.ratingPB=capped(m.piggyPB,35000)+capped(m.spacePB,350)+capped(m.krakenPB,3500);
+    m.ratingAvg=capped(m.piggyAvg,25000)+capped(m.spaceAvg,200)+capped(m.krakenAvgL3,2800);
+    m.ratingTotal=m.ratingPB+m.ratingAvg;
+  });
+  D.meta.generated='2026-10-07T18:05:00-05:00';
 })();

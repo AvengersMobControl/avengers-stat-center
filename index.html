@@ -210,7 +210,18 @@ tbody tr:last-child td{border-bottom:0}
   tbody td{color:#111}
 }
 
-  </style>
+  
+/* Language control stays in the top toolbar on desktop and mobile. */
+.site-translate{display:flex;align-items:center;gap:8px;min-width:170px}
+.site-translate-label{font-size:13px;color:var(--muted);white-space:nowrap}
+#siteTranslateWidget .goog-te-gadget{font-family:inherit;font-size:11px;color:var(--muted)}
+#siteTranslateWidget .goog-te-combo{margin:0 0 3px;max-width:190px;min-height:36px;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--text);padding:6px 9px;font-family:inherit}
+#siteTranslateWidget .goog-te-combo option{background:#14233b;color:#f5f8ff}
+#siteTranslateLoading{font-size:12px;color:var(--muted)}
+.top-actions{flex-wrap:wrap}
+@media(max-width:680px){.topbar{flex-wrap:wrap}.top-actions{width:100%;justify-content:flex-start;gap:10px}.site-translate{min-width:0}#siteTranslateWidget .goog-te-combo{max-width:170px}}
+
+</style>
   <link rel="stylesheet" href="phase2.css" />
   <link rel="stylesheet" href="avengers-theme.css" />
   <link rel="stylesheet" href="kraken.css" />
@@ -257,6 +268,7 @@ tbody tr:last-child td{border-bottom:0}
           <p id="pageSubtitle">Clan performance at a glance</p>
         </div>
         <div class="top-actions">
+          <div class="site-translate notranslate" translate="no"><span class="site-translate-label" id="siteTranslateLabel">🌐 Translate</span><div id="siteTranslateWidget"><span id="siteTranslateLoading" role="status">Loading languages…</span></div></div>
           <select id="globalStatusFilter" title="Roster filter">
             <option value="active" selected>AVENGERS</option>
             <option value="av2">AV-2</option>
@@ -1799,5 +1811,52 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   <script src="kraken.js"></script>
   <script src="piggy-flashes.js"></script>
   <script src="table-sort.js"></script>
+<script>
+
+(function(){
+  // Keep clan names and player handles unchanged by automatic translation.
+  const protectNames=root=>{
+    if(!root.querySelectorAll)return;
+    root.querySelectorAll('.linkish, .compact-player, .snapshot-only-name, .avatar').forEach(el=>{
+      el.classList.add('notranslate');el.setAttribute('translate','no');
+    });
+  };
+  protectNames(document);
+  const observer=new MutationObserver(records=>{
+    records.forEach(record=>record.addedNodes.forEach(node=>{
+      if(node.nodeType===1){protectNames(node);if(node.matches?.('.linkish, .compact-player, .snapshot-only-name, .avatar')){node.classList.add('notranslate');node.setAttribute('translate','no');}}
+    }));
+  });
+  observer.observe(document.body,{childList:true,subtree:true});
+  window.avengersTranslateInit=function(){
+    new google.translate.TranslateElement({
+      pageLanguage:'en',
+      includedLanguages:'en,es,fr,de,hu,nl,pt,it,pl,ru,uk,tr,ar,ja,ko,zh-CN,hi,id,ro,sv',
+      autoDisplay:false
+    },'siteTranslateWidget');
+    const attach=()=>{
+      const select=document.querySelector('#siteTranslateWidget select');
+      if(!select)return false;
+      document.getElementById('siteTranslateLoading')?.remove();
+      select.setAttribute('aria-label','Translate website');
+      select.setAttribute('aria-labelledby','siteTranslateLabel');
+      return true;
+    };
+    if(!attach()){
+      const ready=new MutationObserver(()=>{if(attach())ready.disconnect();});
+      ready.observe(document.getElementById('siteTranslateWidget'),{childList:true,subtree:true});
+    }
+  };
+  const script=document.createElement('script');
+  script.src='https://translate.google.com/translate_a/element.js?cb=avengersTranslateInit';
+  script.async=true;
+  script.onerror=()=>{
+    const status=document.getElementById('siteTranslateLoading');
+    if(status)status.textContent='Translation unavailable — reload to retry';
+  };
+  document.head.appendChild(script);
+})();
+
+</script>
 </body>
 </html>

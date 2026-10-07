@@ -46,7 +46,8 @@
   const monthLabel=key=>monthMeta(key).label+' 2026';
   const monthKeys=()=>(K.months||[]).map(m=>m.key);
 
-  function statusBadge(s){
+  function statusBadge(s,name=''){
+    if(String(name).toLowerCase()==='av-lucky') return '<span class="status inactive notranslate" translate="no">inactive-cheater</span>';
     const n=norm(s);
     const label=n==='active'?'Active':n==='av2'?'AV-2':'Inactive';
     return '<span class="status '+n+'">'+label+'</span>';
@@ -157,7 +158,7 @@
       return `<tr>
         <td class="num">${i+1}</td>
         <td>${playerButton(p.name)}</td>
-        <td>${statusBadge(currentStatus(p.name,p.status))}</td>
+        <td>${statusBadge(currentStatus(p.name,p.status),p.name)}</td>
         <td><div class="kr-bar" style="--w:${width}%"><span>${fmt(score,1)}</span></div></td>
         <td class="num">${fmt(through.pb,1)}</td>
         <td class="num">${fmt(through.avg,1)}</td>
@@ -185,7 +186,7 @@
       return `<tr>
         <td class="num">${i+1}</td>
         <td>${playerButton(p.name)}</td>
-        <td>${statusBadge(currentStatus(p.name,p.status))}</td>
+        <td>${statusBadge(currentStatus(p.name,p.status),p.name)}</td>
         <td><div class="kr-bar" style="--w:${Math.max(2,p.calcLast3/max*100)}%"><span>${fmt(p.calcLast3,1)}</span></div></td>
         <td class="num">${fmt(p.calcAvg,1)}</td>
         <td class="num ${delta>=0?'positive':'negative'}">${delta>=0?'+':''}${fmt(delta,1)}</td>
@@ -211,12 +212,12 @@
     const pbs=[...hist.pbs].sort(sorters[pbSort]||sorters.newpb);
     const first=[...hist.first].sort((a,b)=>b.score-a.score);
     const pbRows=pbs.map((x,i)=>`<tr>
-      <td class="num">${i+1}</td><td>${playerButton(x.name)}</td><td>${statusBadge(x.status)}</td>
+      <td class="num">${i+1}</td><td>${playerButton(x.name)}</td><td>${statusBadge(x.status,x.name)}</td>
       <td class="num">${fmt(x.previous,1)}</td><td class="num">${fmt(x.score,1)}</td>
       <td class="num positive">+${pct(x.improvement||0)}</td>
     </tr>`).join('')||'<tr><td colspan="6" class="empty">No returning-player PBs in this Kraken.</td></tr>';
     const firstRows=first.map((x,i)=>`<tr>
-      <td class="num">${i+1}</td><td>${playerButton(x.name)}</td><td>${statusBadge(x.status)}</td><td class="num">${fmt(x.score,1)}</td>
+      <td class="num">${i+1}</td><td>${playerButton(x.name)}</td><td>${statusBadge(x.status,x.name)}</td><td class="num">${fmt(x.score,1)}</td>
     </tr>`).join('')||'<tr><td colspan="4" class="empty">No first-time tracked players in this Kraken.</td></tr>';
 
     return `
@@ -277,7 +278,7 @@
         <div class="card">
           <div class="card-header"><div><div class="card-title">${esc(latestMeta.label)} Top 10</div><div class="card-sub">Current roster filter</div></div></div>
           <div class="card-body kr-top-table-wrap"><table class="kr-top-table"><thead><tr><th class="num">#</th><th>Member</th><th>Status</th><th class="num">PB</th><th class="num">${esc(latestMeta.label)}</th></tr></thead><tbody>
-            ${latestPlayers.slice(0,10).map((p,i)=>`<tr><td class="num">${i+1}</td><td>${playerButton(p.name)}</td><td>${statusBadge(currentStatus(p.name,p.status))}</td><td class="num">${fmt(p.pb,1)}</td><td class="num"><strong>${fmt(p[latestMeta.key],1)}</strong></td></tr>`).join('')}
+            ${latestPlayers.slice(0,10).map((p,i)=>`<tr><td class="num">${i+1}</td><td>${playerButton(p.name)}</td><td>${statusBadge(currentStatus(p.name,p.status),p.name)}</td><td class="num">${fmt(p.pb,1)}</td><td class="num"><strong>${fmt(p[latestMeta.key],1)}</strong></td></tr>`).join('')}
           </tbody></table></div>
         </div>
       </div>

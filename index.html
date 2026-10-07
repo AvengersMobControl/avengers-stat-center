@@ -218,6 +218,12 @@ tbody tr:last-child td{border-bottom:0}
 #siteTranslateLoading{font-size:12px;color:var(--muted)}
 .top-actions{flex-wrap:wrap}
 @media(max-width:680px){.topbar{flex-wrap:wrap}.top-actions{width:100%;justify-content:flex-start;gap:10px}.site-translate{min-width:0}#siteLanguageSelect{max-width:170px}}
+@media(max-width:600px){
+  .topbar .top-actions{display:flex;flex:0 0 100%;width:100%;margin-left:0}
+  .topbar .site-translate{display:flex;width:100%;min-width:0}
+  .topbar #siteLanguageSelect{flex:1;min-width:0;max-width:none;min-height:44px;margin:0;font-size:16px}
+  .topbar .top-actions>#globalStatusFilter,.topbar .top-actions>#printBtn{display:none}
+}
 </style>
   <link rel="stylesheet" href="phase2.css" />
   <link rel="stylesheet" href="avengers-theme.css" />

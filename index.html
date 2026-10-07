@@ -483,7 +483,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const n=statusNorm(s);
     return n==='active'?'Active':n==='av2'?'AV-2':'Inactive';
   }
-  function statusBadge(s){
+  function statusBadge(s,name=''){
+    if(canonicalPlayerName(name).toLowerCase()==='av-lucky') return '<span class="status inactive notranslate" translate="no" title="Clan-confirmed cheating; historical results retained">inactive-cheater</span>';
     const n=statusNorm(s);
     return `<span class="status ${n}">${statusLabel(s)}</span>`;
   }
@@ -903,7 +904,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       const body=rows.map((r,i)=>`<tr>
         <td class="num">${i+1}</td>
         <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></div></td>
-        <td>${statusBadge(r.status)}</td>
+        <td>${statusBadge(r.status,r.name)}</td>
         <td>${barCell(r.avgArenaCalc,max,v=>fmtNum(v))}</td>
         <td class="num">${fmtNum(r.avg2026)}</td>
         <td class="num">${fmtNum(r.pb)}</td>
@@ -933,7 +934,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         return rows.map(r=>`<tr>
           <td class="num">${fmtNum(r.rank)}</td>
           <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></div></td>
-          <td>${statusBadge(currentStatusFor(r.name,r.status))}</td>
+          <td>${statusBadge(currentStatusFor(r.name,r.status),r.name)}</td>
           <td>${barCell(r.lines,max,v=>fmtNum(v))}</td>
           <td class="num">${rewardsKnown||Number(r.stars)?fmtNum(r.stars):'—'}</td>
           <td class="num">${rewardsKnown||Number(r.sparks)?fmtNum(r.sparks):'—'}</td>
@@ -971,7 +972,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         return `<tr>
           <td class="num">${i+1}</td>
           <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></div></td>
-          <td>${statusBadge(r.status)}</td>
+          <td>${statusBadge(r.status,r.name)}</td>
           <td>${barCell(r.avgLast3,max,v=>fmtNum(v))}</td>
           <td class="num">${fmtNum(r.avgArenaCalc)}</td>
           <td class="num">${fmtNum(r.avg2026)}</td>
@@ -1058,7 +1059,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       const body=rows.map((r,i)=>`<tr>
         <td class="num">${i+1}</td>
         <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></div></td>
-        <td>${statusBadge(currentStatusFor(r.name,r.status))}</td>
+        <td>${statusBadge(currentStatusFor(r.name,r.status),r.name)}</td>
         <td>${barCell(r.avgArenaCalc,max,v=>fmtB(v))}</td>
         <td class="num">${fmtB(r.avg2026)}</td>
         <td class="num">${fmtB(r.pb)}</td>
@@ -1087,7 +1088,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       const body=rows.map((r,i)=>`<tr>
         <td class="num">${i+1}</td>
         <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></div></td>
-        <td>${statusBadge(currentStatusFor(r.name,r.status))}</td>
+        <td>${statusBadge(currentStatusFor(r.name,r.status),r.name)}</td>
         <td>${barCell(r.yearsB,max,v=>fmtB(v))}</td>
         <td class="num">${fmtNum(r.stars)}</td>
         <td class="num">${fmtNum(r.sparks)}</td>
@@ -1120,7 +1121,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         return `<tr>
           <td class="num">${i+1}</td>
           <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></div></td>
-          <td>${statusBadge(r.status)}</td>
+          <td>${statusBadge(r.status,r.name)}</td>
           <td>${barCell(r.avgLast3,max,v=>fmtB(v))}</td>
           <td class="num">${fmtB(r.avgArenaCalc)}</td>
           <td class="num">${fmtB(r.avg2026)}</td>
@@ -1200,7 +1201,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const body=rows.map((r,i)=>`<tr>
       <td class="num">${i+1}</td>
       <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></div></td>
-      <td>${statusBadge(r.status)}</td>
+      <td>${statusBadge(r.status,r.name)}</td>
       <td>${barCell(r.ratingTotal,max,v=>fmtNum(v,2))}</td>
       <td class="num">${fmtNum(r.ratingPB,2)}</td>
       <td class="num">${fmtNum(r.ratingAvg,2)}</td>
@@ -1235,7 +1236,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const rows=source.filter(r=>!q||r.name.toLowerCase().includes(q)).sort((a,b)=>b.ratingTotal-a.ratingTotal);
     $('#playersContent').innerHTML = rows.length ? `<div class="player-grid">${rows.map(r=>`
       <button class="player-card" data-player="${escapeHtml(r.name)}">
-        <div class="player-top"><div class="avatar">${initials(r.name)}</div><div style="min-width:0"><div class="player-card-name">${escapeHtml(r.name)}</div><div>${statusBadge(r.status)}</div></div></div>
+        <div class="player-top"><div class="avatar">${initials(r.name)}</div><div style="min-width:0"><div class="player-card-name">${escapeHtml(r.name)}</div><div>${statusBadge(r.status,r.name)}</div></div></div>
         <div class="rating-large">${fmtNum(r.ratingTotal,2)}</div><div class="rating-label">Player Rating</div>
         <div class="player-mini-stats">
           <div class="mini-stat"><strong>${fmtNum(r.piggyPB)}</strong><span>Piggy PB</span></div>
@@ -1384,7 +1385,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const body=rows.map((r,i)=>`<tr>
       <td class="num">${i+1}</td>
       <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div>${playerNameCell(r)}</div></td>
-      <td>${statusBadge(r.status)}</td>
+      <td>${statusBadge(r.status,r.name)}</td>
       <td class="num">${r.utcOffset==null?'<span class="small-muted">—</span>':escapeHtml(String(r.utcOffset))}</td>
       <td>${r.timeZoneGroup?'<span class="tz-pill">'+escapeHtml(r.timeZoneGroup)+'</span>':'<span class="small-muted">—</span>'}</td>
       <td>${r.state?escapeHtml(r.state):'<span class="small-muted">—</span>'}</td>
@@ -1567,7 +1568,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
             <div class="record-badge">${i+1}</div>
             <div class="record-player">
               <button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button>
-              ${statusBadge(r.status)}
+              ${statusBadge(r.status,r.name)}
             </div>
             <div class="record-value">${g.fmt(r[g.key])}<span class="record-date">${recordDate(r,g.kind)}</span></div>
           </div>`).join('')}
@@ -1614,7 +1615,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     </tr>`).join(''):`<tr><td colspan="3" class="empty">No Kraken history logged.</td></tr>`;
 
     $('#playerModalContent').innerHTML=`
-      <div class="profile-head"><div class="avatar">${initials(name)}</div><div><div class="profile-name">${escapeHtml(name)}</div><div class="profile-status">${statusBadge(m.status)}</div></div></div>
+      <div class="profile-head"><div class="avatar">${initials(name)}</div><div><div class="profile-name">${escapeHtml(name)}</div><div class="profile-status">${statusBadge(m.status,name)}</div></div></div>
       ${window.AVENGERS_COMMUNITY?.profileHtml(name)||''}
       <div class="profile-kpis">
         <div class="profile-kpi"><span>Player Rating</span><strong>${fmtNum(m.ratingTotal,2)}</strong></div>

@@ -463,7 +463,7 @@
     var rating=Number(m.ratingTotal)||0;
     root.innerHTML=
       '<div class="p2-profile">'+
-        '<div class="p2-profile-head"><div class="p2-avatar">'+esc(name.replace(/^AV[-.#<]*/i,'').slice(0,2).toUpperCase())+'</div><div><div class="p2-profile-name">'+esc(name)+'</div><div class="profile-status"><span class="status '+(String(m.status||'inactive').toLowerCase()==='active'?'active':(String(m.status||'').toLowerCase()==='av2'?'av2':'inactive'))+'">'+esc(m.status||'Historical')+'</span></div></div><div class="p2-profile-actions"><button class="p2-secondary-btn" id="p2ComparePlayer">Compare in Trends</button></div></div>'+
+        '<div class="p2-profile-head"><div class="p2-avatar">'+esc(name.replace(/^AV[-.#<]*/i,'').slice(0,2).toUpperCase())+'</div><div><div class="p2-profile-name">'+esc(name)+'</div><div class="profile-status"><span class="status '+(String(m.status||'inactive').toLowerCase()==='active'?'active':(String(m.status||'').toLowerCase()==='av2'?'av2':'inactive'))+'">'+esc(String(name).toLowerCase()==='av-lucky'?'inactive-cheater':(m.status||'Historical'))+'</span></div></div><div class="p2-profile-actions"><button class="p2-secondary-btn" id="p2ComparePlayer">Compare in Trends</button></div></div>'+
         '<div class="p2-profile-kpis">'+
           '<div class="p2-profile-kpi"><span>Piggy PB</span><strong>'+num(piggyPB,0)+'</strong>'+profileRankNote(name,'piggyPB')+'</div>'+
           '<div class="p2-profile-kpi"><span>Piggy Arena Avg</span><strong>'+num(piggyAvg,0)+'</strong>'+profileRankNote(name,'piggyAvg')+'</div>'+

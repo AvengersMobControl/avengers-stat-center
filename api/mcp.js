@@ -157,7 +157,7 @@ function resizedDiscordUrl(a) {
   try {
     const u = new URL(raw);
     if (u.hostname === 'media.discordapp.net') {
-      u.searchParams.set('width', '900');
+      u.searchParams.set('width', '700');
       u.searchParams.set('format', 'webp');
       u.searchParams.set('quality', 'lossless');
     }
@@ -179,7 +179,7 @@ async function imageBlock(a) {
 
     const buf = Buffer.from(await r.arrayBuffer());
     // Keep the complete MCP response under typical serverless response limits.
-    if (buf.length > 650 * 1024) return null;
+    if (buf.length > 900 * 1024) return null;
 
     return { type: 'image', data: buf.toString('base64'), mimeType: mime };
   } catch {

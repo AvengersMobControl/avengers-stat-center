@@ -41,6 +41,17 @@
     ]
   };
 
+  D.space.av2PotTotals=Object.assign({},D.space.av2PotTotals||{},{
+    '2026-09-18':3190000,
+    '2026-09-27':1470000,
+    '2026-10-02':1270000
+  });
+  D.space.av2Sources=Object.assign({},D.space.av2Sources||{},{
+    '2026-09-18':{messageId:'1550401459508744283',source:'AV-2 Discord results channel'},
+    '2026-09-27':{messageId:'1553878644097687554',source:'AV-2 Discord results channel'},
+    '2026-10-02':{messageId:'1555597640341790821',source:'AV-2 Discord results channel'}
+  });
+
   const memberMap=new Map((D.members||[]).map(m=>[m.name,m]));
   const ensureMember=name=>{
     if(memberMap.has(name)) return memberMap.get(name);

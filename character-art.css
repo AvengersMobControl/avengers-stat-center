@@ -31,7 +31,7 @@
   right:6px;
   width:min(34vw,365px);
   height:315px;
-  opacity:.76;
+  opacity:.57;
   background-position:top right;
   filter:drop-shadow(0 6px 17px rgba(0,0,0,.60)) drop-shadow(0 0 22px rgba(76,201,255,.22));
   -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 77%,transparent 100%);
@@ -40,19 +40,19 @@
 #page-space::before{
   width:min(62vw,700px);
   height:300px;
-  opacity:.82;
+  opacity:.62;
   background-size:24% auto,24% auto,24% auto,24% auto;
   background-position:0% 0%,34% 0%,68% 0%,100% 0%;
 }
 #page-kraken::before{
   width:min(43vw,480px);
   height:340px;
-  opacity:.80;
+  opacity:.61;
   background-size:48% auto,48% auto;
   background-position:0% 0%,100% 0%;
 }
 @media(max-width:800px){
-  .page::before{width:145px;height:165px;opacity:.64;top:6px;right:0}
+  .page::before{width:145px;height:165px;opacity:.48;top:6px;right:0}
   #page-space::before{width:min(75vw,320px);height:160px;opacity:.70}
   #page-kraken::before{width:200px;height:175px;opacity:.70}
 }

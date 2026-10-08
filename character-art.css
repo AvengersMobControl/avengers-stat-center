@@ -1,0 +1,17 @@
+/* Character artwork layer. Deliberately no changes to layout, table sizes, charts or data. */
+/* Original upload filenames are preserved exactly. */
+.page{position:relative;isolation:isolate}
+.page::before{content:"";position:absolute;inset:0 0 auto auto;width:min(35vw,390px);height:360px;z-index:-1;pointer-events:none;background-size:contain;background-repeat:no-repeat;background-position:top right;opacity:.13;filter:drop-shadow(0 0 30px rgba(96,91,255,.3));}
+#page-overview::before{background-image:url("assets/characters/AV_GNHulk(1).png")}
+#page-rosters::before,#page-players::before{background-image:url("assets/characters/AV_LBCA(1).png")}
+#page-piggy::before{background-image:url("assets/characters/AV_BBDrax(1).png")}
+#page-space::before{background-image:url("assets/characters/AV_RaccoonRocket(1).png"),url("assets/characters/AV_KaboomStar(1).png"),url("assets/characters/AV_ExplodonSpider(1).png");background-size:33% auto,33% auto,33% auto;background-position:0 0,50% 0,100% 0}
+#page-kraken::before{background-image:url("assets/characters/AV_GCIron(1).png"),url("assets/characters/AV_SirionGamora(1).png");background-size:49% auto,49% auto;background-position:0 0,100% 0}
+#page-records::before,#page-achievements::before{background-image:url("assets/characters/AV_NexusThor(1).png")}
+#page-ratings::before,#page-trends::before{background-image:url("assets/characters/AV_MZGroot(1).png")}
+#page-eventTotals::before,#page-weeklyRecap::before{background-image:url("assets/characters/AV_LBCA(1).png")}
+@media(max-width:800px){.page::before{width:160px;height:180px;opacity:.08}}
+/* Gold/blue glow: the first mockup's palette, without modifying dimensions. */
+.brand-title{text-shadow:0 0 14px rgba(255,205,76,.18)}
+.topbar{box-shadow:0 1px 20px rgba(54,106,255,.065)}
+.page .panel,.page .card{border-color:rgba(108,145,255,.23)}

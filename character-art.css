@@ -1,7 +1,7 @@
 /* Character artwork layer. Deliberately no changes to layout, table sizes, charts or data. */
 /* Original upload filenames are preserved exactly. */
 .page{position:relative;isolation:isolate}
-.page::before{content:"";position:absolute;inset:0 0 auto auto;width:min(35vw,390px);height:360px;z-index:-1;pointer-events:none;background-size:contain;background-repeat:no-repeat;background-position:top right;opacity:.13;filter:drop-shadow(0 0 30px rgba(96,91,255,.3));}
+.page::before{content:"";position:absolute;inset:0 0 auto auto;width:min(46vw,560px);height:500px;z-index:-1;pointer-events:none;background-size:contain;background-repeat:no-repeat;background-position:top right;opacity:.34;filter:drop-shadow(0 0 46px rgba(96,91,255,.48)) drop-shadow(0 20px 34px rgba(0,0,0,.28));}
 #page-overview::before{background-image:url("assets/characters/AV_GNHulk.png")}
 #page-rosters::before,#page-players::before{background-image:url("assets/characters/AV_LBCA.png")}
 #page-piggy::before{background-image:url("assets/characters/AV_BBDrax.png")}
@@ -10,10 +10,14 @@
 #page-records::before,#page-achievements::before{background-image:url("assets/characters/AV_NexusThor.png")}
 #page-ratings::before,#page-trends::before{background-image:url("assets/characters/AV_MZGroot.png")}
 #page-eventTotals::before,#page-weeklyRecap::before{background-image:url("assets/characters/AV_LBCA.png")}
-@media(max-width:800px){.page::before{width:160px;height:180px;opacity:.08}}
+@media(max-width:800px){.page::before{width:220px;height:240px;opacity:.20}}
 /* Gold/blue glow: the first mockup's palette, without modifying dimensions. */
 .brand-title{text-shadow:0 0 14px rgba(255,205,76,.18)}
 .topbar{box-shadow:0 1px 20px rgba(54,106,255,.065)}
 .page .panel,.page .card{border-color:rgba(108,145,255,.23)}
 
 /* Space Race displays both original Explodon versions alongside Raccoon and Kaboom. */
+
+/* Emphasize the featured champions without altering the page layout. */
+#page-space::before,#page-kraken::before{width:min(52vw,640px);height:540px;opacity:.40;filter:drop-shadow(0 0 54px rgba(96,91,255,.55)) drop-shadow(0 22px 38px rgba(0,0,0,.30));}
+@media(max-width:800px){#page-space::before,#page-kraken::before{width:220px;height:240px;opacity:.24}}

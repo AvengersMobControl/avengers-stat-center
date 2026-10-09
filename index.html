@@ -386,6 +386,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   <script src="sparks-snapshot-2026-09-29.js"></script>
   <script src="canonical-names-2026-09-29.js"></script>
   <script src="member-timezones-source.js"></script>
+  <script src="kraken-roster-snapshot-2026-10-09.js"></script>
   <script src="member-status-overrides-2026-09-29.js"></script>\n  <script src="space-history-final-audit-2026-10-07.js"></script>
   <script src="piggy-flash1-data.js"></script>
   <script src="piggy-flash1-backfill-2026.js"></script>
@@ -1326,11 +1327,24 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     }else if(target==='av2'){
       label='AV-2';
       rows=rosterRows.filter(r=>statusNorm(r.status)==='av2').map(r=>materialize(r.name));
+    }else if(target==='kraken'){
+      // Independent in-game membership list. Do NOT update primary clan statuses.
+      label='Kraken';
+      const krakenSnapshot=window.AVENGERS_KRAKEN_ROSTER_SNAPSHOT;
+      rows=(krakenSnapshot?.rows||[]).map(entry=>({
+        ...materialize(entry.rosterName||entry.displayName),
+        name:entry.displayName,
+        profileName:entry.rosterName||entry.displayName,
+        krakenRank:entry.rank,
+        krakenRosterSparks:entry.sparks
+      }));
     }else{
       label='All Members';
       rows=[...allNames].map(materialize);
     }
     const rosterSortDefs={
+      krakenRank:{label:'In-game Rank',type:'number',get:r=>r.krakenRank},
+      krakenRosterSparks:{label:'In-game Sparks',type:'number',get:r=>r.krakenRosterSparks},
       name:{label:'Member',type:'text',get:r=>r.name},
       status:{label:'Status',type:'text',get:r=>statusLabel(r.status)},
       utcOffset:{label:'UTC',type:'number',get:r=>r.utcOffset},
@@ -1371,6 +1385,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const loggedTotal=rows.reduce((s,r)=>s+r.loggedSparks,0);
     const unloggedTotal=rows.reduce((s,r)=>s+r.unloggedSparks,0);
     const combinedTotal=rows.reduce((s,r)=>s+r.totalCombinedSparks,0);
+    const inGameSparksTotal=target==='kraken'?rows.reduce((s,r)=>s+(Number(r.krakenRosterSparks)||0),0):0;
 
     const zoneMap=new Map();
     rows.forEach(r=>{
@@ -1399,13 +1414,14 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       : '<div class="small-muted">No TZG information is available for this roster view.</div>';
 
     const playerNameCell=r=>r.hasProfile
-      ? `<button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button>`
+      ? `<button class="linkish" data-player="${escapeHtml(r.profileName||r.name)}">${escapeHtml(r.name)}</button>`
       : `<span class="snapshot-only-name" title="Current roster snapshot; no event history logged yet">${escapeHtml(r.name)}</span>`;
 
     const body=rows.map((r,i)=>`<tr>
-      <td class="num">${i+1}</td>
+      <td class="num">${target==='kraken'?r.krakenRank:i+1}</td>
       <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div>${playerNameCell(r)}</div></td>
-      <td>${statusBadge(r.status,r.name)}</td>
+      <td>${statusBadge(r.status,r.profileName||r.name)}</td>
+      ${target==='kraken'?`<td class="num roster-sparks">${fmtNum(r.krakenRosterSparks,0)}</td>`:''}
       <td class="num">${r.utcOffset==null?'<span class="small-muted">—</span>':escapeHtml(String(r.utcOffset))}</td>
       <td>${r.timeZoneGroup?'<span class="tz-pill">'+escapeHtml(r.timeZoneGroup)+'</span>':'<span class="small-muted">—</span>'}</td>
       <td>${r.state?escapeHtml(r.state):'<span class="small-muted">—</span>'}</td>
@@ -1420,7 +1436,9 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       <td class="num">${fmtNum(r.eventsPlayed)}</td>
     </tr>`).join('');
 
-    const sourceNote=target==='all'
+    const sourceNote=target==='kraken'
+      ? 'Kraken lineup: 50 players from the Oct 9 in-game screenshots. Existing AVENGERS / AV-2 indicators and statuses are unchanged.'
+      : target==='all'
       ? 'Authoritative Sep 29 roster: Active, AV-2, and Inactive members.'
       : target==='active'
         ? 'Current AVENGERS members from the authoritative Sep 29 roster.'
@@ -1431,20 +1449,29 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <div class="segmented" id="rosterTabs">
           <button data-roster="active" class="${target==='active'?'active':''}">AVENGERS</button>
           <button data-roster="av2" class="${target==='av2'?'active':''}">AV-2</button>
+          <button data-roster="kraken" class="${target==='kraken'?'active':''}">Kraken</button>
           <button data-roster="all" class="${target==='all'?'active':''}">All Members</button>
         </div>
         <div class="small-muted">${sourceNote}</div>
       </div>
       <div class="roster-summary-grid">
         <div class="kpi"><div class="kpi-label">${label} Members</div><div class="kpi-value">${fmtNum(rows.length)}</div><div class="kpi-note">shown in this view</div></div>
-        <div class="kpi"><div class="kpi-label">Logged Sparks</div><div class="kpi-value">${fmtNum(loggedTotal,0)}</div><div class="kpi-note">captured in tracked events</div></div>
-        <div class="kpi"><div class="kpi-label">Unlogged Sparks</div><div class="kpi-value">${fmtNum(unloggedTotal,0)}</div><div class="kpi-note">supplemental from all-time screenshot</div></div>
-        <div class="kpi"><div class="kpi-label">Combined Total</div><div class="kpi-value">${fmtNum(combinedTotal,0)}</div><div class="kpi-note">logged + unlogged</div></div>
+        ${target==='kraken'?`
+          <div class="kpi"><div class="kpi-label">In-game Sparks</div><div class="kpi-value">${fmtNum(inGameSparksTotal,0)}</div><div class="kpi-note">sum of Oct 9 screenshot values</div></div>
+          <div class="kpi"><div class="kpi-label">Logged Sparks</div><div class="kpi-value">${fmtNum(loggedTotal,0)}</div><div class="kpi-note">tracked event history</div></div>
+          <div class="kpi"><div class="kpi-label">Tracked + Unlogged</div><div class="kpi-value">${fmtNum(combinedTotal,0)}</div><div class="kpi-note">historical ledger (different source)</div></div>`
+        :`
+          <div class="kpi"><div class="kpi-label">Logged Sparks</div><div class="kpi-value">${fmtNum(loggedTotal,0)}</div><div class="kpi-note">captured in tracked events</div></div>
+          <div class="kpi"><div class="kpi-label">Unlogged Sparks</div><div class="kpi-value">${fmtNum(unloggedTotal,0)}</div><div class="kpi-note">supplemental from all-time screenshot</div></div>
+          <div class="kpi"><div class="kpi-label">Combined Total</div><div class="kpi-value">${fmtNum(combinedTotal,0)}</div><div class="kpi-note">logged + unlogged</div></div>`}
       </div>
       <div class="tz-section">
         <div class="tz-section-head"><strong>Time Zone Groups</strong><span>Three authoritative groups (TZG 1, 2, and 3) from the Sep 29 roster; not calculated from UTC.</span></div>
         ${zoneGroupsHtml}
       </div>
+      ${target==='kraken'?`<div class="records-note"><strong>Kraken membership source:</strong>
+        October 9, 2026 in-game roster screenshots. In-game Sparks are a separate point-in-time value; they are not Kraken damage or a replacement for tracked event Sparks. This view does not change any player's primary AVENGERS or AV-2 assignment.
+      </div>`:''}
       <div class="records-note roster-location-note"><strong>Roster location source:</strong>
         Status, UTC, TZG, State, and Location come from the authoritative roster supplied Sep 29, 2026. TZG is used exactly as supplied (1, 2, or 3), not inferred from UTC. Blank values remain blank rather than being guessed.
       </div>
@@ -1452,14 +1479,23 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         for players visible in the Sep 29 all-time leaderboard, Unlogged is the amount by which the screenshot total exceeds our logged event total. If the database is already higher, Unlogged stays at 0 so history is never subtracted or double-counted.
       </div>
       ${tableShell(`${label} Sparks Ledger`,`${rows.length} members • sorted by ${sortDef.label} ${sortDir==='asc'?'ascending':'descending'}`,
-        [{label:'#',num:true},sortHeader('Member','name'),sortHeader('Status','status'),sortHeader('UTC','utcOffset',true),sortHeader('TZG','timeZoneGroup'),sortHeader('State','state'),sortHeader('Location','location'),sortHeader('Logged Sparks','loggedSparks',true),sortHeader('Unlogged Sparks','unloggedSparks',true),sortHeader('Total Sparks','totalCombinedSparks',true),sortHeader('Rating','ratingTotal',true),sortHeader('Piggy PB','piggyPB',true),sortHeader('Space PB','spacePB',true),sortHeader('Kraken PB','krakenPB',true),sortHeader('Events','eventsPlayed',true)],
-        body||`<tr><td colspan="15" class="empty">No roster members found.</td></tr>`)}
+        [target==='kraken'?sortHeader('Rank','krakenRank',true):{label:'#',num:true},sortHeader('Member','name'),sortHeader('Status','status'),...(target==='kraken'?[sortHeader('In-game Sparks','krakenRosterSparks',true)]:[]),sortHeader('UTC','utcOffset',true),sortHeader('TZG','timeZoneGroup'),sortHeader('State','state'),sortHeader('Location','location'),sortHeader('Logged Sparks','loggedSparks',true),sortHeader('Unlogged Sparks','unloggedSparks',true),sortHeader('Total Sparks','totalCombinedSparks',true),sortHeader('Rating','ratingTotal',true),sortHeader('Piggy PB','piggyPB',true),sortHeader('Space PB','spacePB',true),sortHeader('Kraken PB','krakenPB',true),sortHeader('Events','eventsPlayed',true)],
+        body||`<tr><td colspan="${target==='kraken'?16:15}" class="empty">No roster members found.</td></tr>`)}
     `;
 
     $('#rosterTabs',root)?.addEventListener('click',e=>{
       const b=e.target.closest('button[data-roster]');
       if(!b)return;
-      state.rosterView=b.dataset.roster;
+      const next=b.dataset.roster;
+      if(state.rosterView!=='kraken' && next==='kraken'){
+        state.rosterPreviousSort={key:state.rosterSort,dir:state.rosterSortDir};
+        state.rosterSort='krakenRank';
+        state.rosterSortDir='asc';
+      }else if(state.rosterView==='kraken' && next!=='kraken'){
+        state.rosterSort=state.rosterPreviousSort?.key||'totalCombinedSparks';
+        state.rosterSortDir=state.rosterPreviousSort?.dir||'desc';
+      }
+      state.rosterView=next;
       renderRosters();
     });
     // Replace the roster's delegated sort handler on each render instead of

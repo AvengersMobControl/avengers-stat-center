@@ -433,7 +433,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
 
   const PAGE_META = {
     overview:['Overview','Clan performance at a glance'],
-    rosters:['Rosters','Current AVENGERS and AV-2 membership with tracked sparks'],
+    rosters:['Rosters','AVENGERS, AV-2, and independent Kraken event roster'],
     piggy:['Piggy Race','Overall, event, pot totals, recent-form and personal-best views'],
     space:['Space Race','Lightyears, event results, pot totals and recent-form views'],
     kraken:['Kraken','Monthly damage, personal bests and current-roster performance'],
@@ -1268,8 +1268,272 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     bindPlayerButtons($('#playersContent'));
   }
 
+  // Independent, date-stamped in-game Kraken roster snapshot from 10 screenshot panels.
+  // This membership list is intentionally NOT written to D.members, the AVENGERS
+  // roster, the AV-2 roster, statuses, or the player status indicators.
+  const KRAKEN_ROSTER_OCT_09 = Object.freeze({
+    date: '2026-10-09',
+    members: Object.freeze([
+  [
+    "AV-INTEN",
+    35102589
+  ],
+  [
+    "AV-J1M",
+    28151849
+  ],
+  [
+    "AV-HarryBallsagna",
+    26095664
+  ],
+  [
+    "AV-CHEN1972",
+    21188364
+  ],
+  [
+    "AV-UANGELES",
+    20912213
+  ],
+  [
+    "AV-Supreeth",
+    17337695
+  ],
+  [
+    "AV#Rafa#Tun",
+    16586191
+  ],
+  [
+    "AV.Saberkong",
+    14816032
+  ],
+  [
+    "AV-Zolika.x.TheBoss",
+    14044949
+  ],
+  [
+    "AV-Abu",
+    13566267
+  ],
+  [
+    "AV-I.S.O",
+    13124436
+  ],
+  [
+    "AV-Hoops",
+    12697771
+  ],
+  [
+    "AV-SmiLiNgBaNDiT",
+    12559025
+  ],
+  [
+    "AV-Finnie",
+    12546446
+  ],
+  [
+    "AV-Mr.Mar.Berry-USA",
+    12063048
+  ],
+  [
+    "AV-8!\\...Bil",
+    11204259
+  ],
+  [
+    "AV/<STAR-LORD>\\",
+    11103854
+  ],
+  [
+    "AV-Animosity",
+    10243543
+  ],
+  [
+    "AV-MONSTER.",
+    9679401
+  ],
+  [
+    "AV-Nicefellow",
+    8620546
+  ],
+  [
+    "AV-DeviantDan",
+    8432004
+  ],
+  [
+    "AV-RkHendrix-MX",
+    7714609
+  ],
+  [
+    "AV-no",
+    7371733
+  ],
+  [
+    "AV-DaG",
+    6598637
+  ],
+  [
+    "AV-ColdCreeps",
+    5792389
+  ],
+  [
+    "AV-MotherboardBeans",
+    5786420
+  ],
+  [
+    "AV-7-STAR",
+    4411604
+  ],
+  [
+    "AV-WolfLegend",
+    2627467
+  ],
+  [
+    "AV-FrankAbagnale",
+    1828217
+  ],
+  [
+    "AV-Bubba0816",
+    1591937
+  ],
+  [
+    "AV-SB",
+    1568990
+  ],
+  [
+    "AV-Mendoria",
+    1361429
+  ],
+  [
+    "AV-HN",
+    1255231
+  ],
+  [
+    "AV-JAMO",
+    1173184
+  ],
+  [
+    "AV-BigPapi",
+    909548
+  ],
+  [
+    "AV-Vadik-UA",
+    731866
+  ],
+  [
+    "AV-Megalodon-",
+    705444
+  ],
+  [
+    "AV-J",
+    603681
+  ],
+  [
+    "AV-TheOli",
+    377235
+  ],
+  [
+    "AV-23",
+    349192
+  ],
+  [
+    "AV-Neez",
+    256050
+  ],
+  [
+    "AV-Obajoba",
+    174919
+  ],
+  [
+    "AV-EventHorizon",
+    172702
+  ],
+  [
+    "AV-DrDetroit-USA",
+    81114
+  ],
+  [
+    "AV-KitKat",
+    78048
+  ],
+  [
+    "AV-Adigarian",
+    57358
+  ],
+  [
+    "AV-OblivX",
+    10656
+  ],
+  [
+    "AV-Frenchie(-4)",
+    10639
+  ],
+  [
+    "AV-Caklet",
+    2758
+  ],
+  [
+    "AV-Starred",
+    0
+  ]
+])
+  });
+
+  function renderKrakenRoster(root){
+    const membersByName=new Map((D.members||[]).map(m=>[String(m.name).toLowerCase(),m]));
+    const snapshotRows=KRAKEN_ROSTER_OCT_09.members.map(([name,sparks],i)=>{
+      const canonical=canonicalPlayerName(name);
+      const matched=membersByName.get(canonical.toLowerCase())||membersByName.get(name.toLowerCase())||null;
+      return {rank:i+1,name,sparks,matched};
+    });
+    const total=snapshotRows.reduce((sum,r)=>sum+r.sparks,0);
+    const rows=snapshotRows.map(r=>`<tr>
+      <td class="num">${r.rank}</td>
+      <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div>${r.matched
+        ? `<button class="linkish" data-player="${escapeHtml(r.matched.name)}">${escapeHtml(r.name)}</button>`
+        : `<span class="snapshot-only-name">${escapeHtml(r.name)}</span>`}</div></td>
+      <td class="num roster-sparks">${fmtNum(r.sparks)}</td>
+      <td class="num">${r.matched?fmtNum(r.matched.krakenPB,1):'<span class="small-muted">—</span>'}</td>
+    </tr>`).join('');
+
+    root.innerHTML=`
+      <div class="section-toolbar roster-toolbar">
+        <div class="segmented" id="rosterTabs">
+          <button data-roster="active">AVENGERS</button>
+          <button data-roster="av2">AV-2</button>
+          <button data-roster="kraken" class="active">🐙 Kraken</button>
+          <button data-roster="all">All Members</button>
+        </div>
+        <div class="small-muted">In-game Kraken roster • screenshot taken October 9, 2026</div>
+      </div>
+      <div class="roster-summary-grid">
+        <div class="kpi"><div class="kpi-label">Kraken Members</div><div class="kpi-value">${snapshotRows.length}/50</div><div class="kpi-note">all positions captured</div></div>
+        <div class="kpi"><div class="kpi-label">Screenshot Sparks</div><div class="kpi-value">${fmtCompact(total)}</div><div class="kpi-note">${fmtNum(total)} across 50 players</div></div>
+        <div class="kpi"><div class="kpi-label">Snapshot Date</div><div class="kpi-value">Oct 9</div><div class="kpi-note">2026 • in-game leaderboard</div></div>
+        <div class="kpi"><div class="kpi-label">AV / AV-2 Changes</div><div class="kpi-value">None</div><div class="kpi-note">membership indicators unchanged</div></div>
+      </div>
+      <div class="records-note">
+        <strong>Separate event roster:</strong> These 50 players are listed exactly as shown in the October 9 Kraken-week screenshots, in in-game Sparks rank order.
+        The Kraken list is independent of the AVENGERS and AV-2 roster tabs; adding someone here does not reassign their clan, change their status, or change historic event attribution.
+        Kraken PB values, where available, come from already tracked records and are not the screenshot Sparks values.
+      </div>
+      ${tableShell('🐙 Kraken Roster','50 players • in-game order • Oct 9, 2026',
+        [{label:'Game Rank',num:true},{label:'Member'},{label:'In-Game Sparks',num:true},{label:'Tracked Kraken PB',num:true}],
+        rows)}
+    `;
+    $('#rosterTabs',root)?.addEventListener('click',e=>{
+      const button=e.target.closest('button[data-roster]');
+      if(!button)return;
+      state.rosterView=button.dataset.roster;
+      renderRosters();
+    });
+    bindPlayerButtons(root);
+  }
+
   function renderRosters(){
     const root=$('#rostersContent');
+    if(state.rosterView==='kraken'){
+      renderKrakenRoster(root);
+      return;
+    }
     const snap=window.AVENGERS_SPARKS_SNAPSHOT||{currentAvengers:[]};
     const snapRows=snap.currentAvengers||[];
     const tzSource=window.AVENGERS_MEMBER_TIMEZONES||{rows:[],byName:{},formatUtc:v=>String(v??'')};
@@ -1449,6 +1713,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <div class="segmented" id="rosterTabs">
           <button data-roster="active" class="${target==='active'?'active':''}">AVENGERS</button>
           <button data-roster="av2" class="${target==='av2'?'active':''}">AV-2</button>
+          <button data-roster="kraken" class="${target==='kraken'?'active':''}">🐙 Kraken</button>
           <button data-roster="kraken" class="${target==='kraken'?'active':''}">Kraken</button>
           <button data-roster="all" class="${target==='all'?'active':''}">All Members</button>
         </div>
@@ -1824,6 +2089,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       .mini-rank-score{font-weight:900}
       .roster-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
       .roster-toolbar{margin-bottom:14px}
+      #rosterTabs{flex-wrap:wrap}
       .roster-sparks{font-weight:900;color:#dff7ff}
       .roster-unlogged{font-weight:850;color:#ffd779}
       .snapshot-only-name{font-weight:750;color:#dce6f2}

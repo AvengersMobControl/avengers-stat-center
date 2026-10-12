@@ -152,7 +152,7 @@
       const score=Number(p[key])||0;
       const prior=priorKeys.map(k=>Number(p[k])||0).filter(v=>v>0);
       if(!prior.length){
-        first.push({name:p.name,score,status:currentStatus(p.name,p.status)});
+        first.push({name:p.name,score,status:currentStatus(p.name,p.status),clan:p.eventClan});
         return;
       }
       const previous=Math.max(...prior);
@@ -160,7 +160,7 @@
         pbs.push({
           name:p.name,score,previous,
           improvement:previous>0?(score-previous)/previous:null,
-          status:currentStatus(p.name,p.status)
+          status:currentStatus(p.name,p.status),clan:p.eventClan
         });
       }
     });
@@ -248,12 +248,12 @@
     const pbs=[...hist.pbs].sort(sorters[pbSort]||sorters.newpb);
     const first=[...hist.first].sort((a,b)=>b.score-a.score);
     const pbRows=pbs.map((x,i)=>`<tr>
-      <td class="num">${i+1}</td><td>${playerButton(x.name)}</td><td>${statusBadge(x.status,x.name)}</td>
+      <td class="num">${i+1}</td><td>${playerButton(x.name)}</td><td>${eventClanBadge(x.clan)}</td>
       <td class="num">${fmt(x.previous,1)}</td><td class="num">${fmt(x.score,1)}</td>
       <td class="num positive">+${pct(x.improvement||0)}</td>
     </tr>`).join('')||'<tr><td colspan="6" class="empty">No returning-player PBs in this Kraken.</td></tr>';
     const firstRows=first.map((x,i)=>`<tr>
-      <td class="num">${i+1}</td><td>${playerButton(x.name)}</td><td>${statusBadge(x.status,x.name)}</td><td class="num">${fmt(x.score,1)}</td>
+      <td class="num">${i+1}</td><td>${playerButton(x.name)}</td><td>${eventClanBadge(x.clan)}</td><td class="num">${fmt(x.score,1)}</td>
     </tr>`).join('')||'<tr><td colspan="4" class="empty">No first-time tracked players in this Kraken.</td></tr>';
 
     return `
@@ -279,10 +279,10 @@
       </div>
       <div class="callout-grid tabular-grid">
         <div class="table-card"><div class="table-titlebar"><div><h2>Kraken Personal Bests</h2><div class="small-muted">${esc(monthLabel(pbEventKey))} • ${pbs.length} returning-player PB${pbs.length===1?'':'s'}</div></div></div>
-          <div class="table-wrap"><table><thead><tr><th class="num">#</th><th>Member</th><th>Status</th><th class="num">Previous PB</th><th class="num">New PB</th><th class="num">% Increase</th></tr></thead><tbody>${pbRows}</tbody></table></div>
+          <div class="table-wrap"><table><thead><tr><th class="num">#</th><th>Member</th><th>Event Clan</th><th class="num">Previous PB</th><th class="num">New PB</th><th class="num">% Increase</th></tr></thead><tbody>${pbRows}</tbody></table></div>
         </div>
         <div class="table-card"><div class="table-titlebar"><div><h2>First Tracked Kraken</h2><div class="small-muted">${first.length} player${first.length===1?'':'s'} with no earlier Kraken result</div></div></div>
-          <div class="table-wrap"><table><thead><tr><th class="num">#</th><th>Member</th><th>Status</th><th class="num">Damage</th></tr></thead><tbody>${firstRows}</tbody></table></div>
+          <div class="table-wrap"><table><thead><tr><th class="num">#</th><th>Member</th><th>Event Clan</th><th class="num">Damage</th></tr></thead><tbody>${firstRows}</tbody></table></div>
         </div>
       </div>`;
   }
@@ -308,11 +308,11 @@
 
       <div class="kr-grid-two">
         <div class="card kr-trend-card">
-          <div class="card-header"><div><div class="card-title">Clan Kraken Trend</div><div class="card-sub">Average damage per participant • current roster filter</div></div><span class="event-chip kr-chip">MILLION DAMAGE</span></div>
+          <div class="card-header"><div><div class="card-title">Clan Kraken Trend</div><div class="card-sub">Average damage per participant • event clan filter</div></div><span class="event-chip kr-chip">MILLION DAMAGE</span></div>
           <div class="card-body">${chart(t)}</div>
         </div>
         <div class="card">
-          <div class="card-header"><div><div class="card-title">${esc(latestMeta.label)} Top 10</div><div class="card-sub">Current roster filter</div></div></div>
+          <div class="card-header"><div><div class="card-title">${esc(latestMeta.label)} Top 10</div><div class="card-sub">Event-time roster filter</div></div></div>
           <div class="card-body kr-top-table-wrap"><table class="kr-top-table"><thead><tr><th class="num">#</th><th>Member</th><th>Status</th><th class="num">PB</th><th class="num">${esc(latestMeta.label)}</th></tr></thead><tbody>
             ${latestPlayers.slice(0,10).map((p,i)=>`<tr><td class="num">${i+1}</td><td>${playerButton(p.name)}</td><td>${statusBadge(currentStatus(p.name,p.status),p.name)}</td><td class="num">${fmt(p.pb,1)}</td><td class="num"><strong>${fmt(p[latestMeta.key],1)}</strong></td></tr>`).join('')}
           </tbody></table></div>
@@ -358,7 +358,7 @@
           <div class="kr-kpi"><span>Total Damage</span><strong>${fmt(s.total,1)}</strong><small>sum of recorded scores</small></div>
           <div class="kr-kpi"><span>Leader</span><strong>${s.leader?fmt(s.leader[eventKey],1):'—'}</strong><small>${s.leader?esc(s.leader.name):''}</small></div>
           <button type="button" id="krakenEventPBButton" class="kr-kpi kr-kpi-action" aria-expanded="${pbExpanded?'true':'false'}" aria-controls="krakenEventPBDetails"><span>PBs ↗</span><strong>${s.pbCount}</strong><small>Click to view improvements</small></button>
-          <div class="kr-kpi"><span>Total Sparks</span><strong>${fmt(s.sparks,0)}</strong><small>calculated event rewards</small></div>
+          <div class="kr-kpi"><span>Total Sparks</span><strong>${fmt(s.sparks,0)}</strong><small>${eventKey.startsWith('feb')?'estimate from normalized damage':'calculated event rewards'}</small></div>
         </div>
         ${pbExpanded?eventPBDetails(eventKey):''}
         ${eventTable(eventKey,true)}`;

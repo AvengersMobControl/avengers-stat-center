@@ -4,7 +4,6 @@
   if(!D) return;
 
   const date='2026-10-02';
-  const PB_SCALE=0.6666;
   const RATING_SPACE_START='2026-08-01';
 
   // Final Space Race results from the Oct. 2 Discord result review.
@@ -73,7 +72,10 @@
     D.members.push(m); existing.set(m.name,m);
   }
 
+  // Permanently record the 2026-10-02 event at 150% of originally displayed lightyears.
+  // This is the actual historical value used everywhere, not a PB-only comparison rule.
   newRows.forEach(r=>{
+    r.yearsB=Number((r.yearsB*1.5).toFixed(4));
     r.clan='AVENGERS';
     r.status='Active';
     r.years=Math.round(r.yearsB*1e9);
@@ -82,13 +84,6 @@
   D.space.events[date]=newRows;
   D.meta.latestSpace=date;
   D.meta.generated='2026-10-02T09:58:00-05:00';
-
-  // Capture prior PBs before merging this event.
-  const priorPBByName=new Map();
-  newRows.forEach(r=>{
-    const hist=(D.space.history[r.name]||[]).filter(x=>(Number(x.yearsB)||0)>0 && String(x.date||'')<date);
-    priorPBByName.set(r.name,hist.length?Math.max(...hist.map(x=>Number(x.yearsB)||0)):0);
-  });
 
   // Merge raw race scores into history.
   newRows.forEach(r=>{
@@ -102,10 +97,7 @@
     if(m) m.totalSparks=(Number(m.totalSparks)||0)+(Number(r.sparks)||0);
   });
 
-  const effectivePB=(x)=>{
-    const raw=Number(x.yearsB)||0;
-    return String(x.date||'')===date ? raw/PB_SCALE : raw;
-  };
+  const effectivePB=x=>Number(x.yearsB)||0;
 
   const overall=[];
   const latestPBs=[];
@@ -140,8 +132,8 @@
     if(current){
       if(!before.length){
         latestNewMembers.push({name,score:Number(current.yearsB)||0});
-      }else if((Number(current.yearsB)||0) > oldPB*PB_SCALE){
-        const normalized=(Number(current.yearsB)||0)/PB_SCALE;
+      }else if((Number(current.yearsB)||0) > oldPB){
+        const normalized=Number(current.yearsB)||0;
         latestPBs.push({name,score:normalized,previous:oldPB,improvement:oldPB>0?(normalized-oldPB)/oldPB:null,rawScore:Number(current.yearsB)||0});
       }
     }

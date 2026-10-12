@@ -3,7 +3,6 @@
   const D=window.AVENGERS_DATA;
   if(!D?.space) return;
 
-  const PB_SCALE=0.6666;
   const RATING_SPACE_START='2026-08-01';
 
   // AV-2 Space Race results backfilled from the AV-2 Discord review PDF.
@@ -61,6 +60,8 @@
   ['AV-braa','Keyler','Basecreature','Foot Slammed'].forEach(ensureMember);
 
   Object.entries(events).forEach(([date,rows])=>{
+    // Oct 2 lightyears are stored at 1.5x the original screenshot scores.
+    if(date==='2026-10-02') rows.forEach(r=>{r.yearsB=Number((r.yearsB*1.5).toFixed(4));});
     const arr=D.space.events[date]||(D.space.events[date]=[]);
     rows.forEach(r=>{
       const row={...r,clan:'AV2',status:'AV2',years:Math.round(r.yearsB*1e9)};
@@ -100,10 +101,7 @@
   });
 
   // Rebuild player Space summaries from history without altering any existing event row.
-  const effectivePB=x=>{
-    const raw=Number(x.yearsB)||0;
-    return String(x.date||'')==='2026-10-02'?raw/PB_SCALE:raw;
-  };
+  const effectivePB=x=>Number(x.yearsB)||0;
   const overall=[], latestPBs=[], latestNew=[];
   Object.keys(D.space.history||{}).forEach(name=>{
     const hist=(D.space.history[name]||[]).filter(x=>(Number(x.yearsB)||0)>0).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
@@ -130,8 +128,8 @@
     });
     if(current){
       if(!before.length) latestNew.push({name,score:Number(current.yearsB)||0});
-      else if((Number(current.yearsB)||0)>oldPB*PB_SCALE){
-        const normalized=(Number(current.yearsB)||0)/PB_SCALE;
+      else if((Number(current.yearsB)||0)>oldPB){
+        const normalized=Number(current.yearsB)||0;
         latestPBs.push({name,score:normalized,previous:oldPB,improvement:oldPB>0?(normalized-oldPB)/oldPB:null,rawScore:Number(current.yearsB)||0});
       }
     }

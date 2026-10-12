@@ -43,3 +43,13 @@
 @media(max-width:900px){
   .kr-history-controls{justify-content:flex-start;width:100%}
 }
+
+/* Six event KPIs in two rows, with an actionable PB details card. */
+.kr-event-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+.kr-kpi-action{width:100%;display:block;text-align:left;color:inherit;font:inherit;cursor:pointer;transition:border-color .16s,box-shadow .16s}
+.kr-kpi-action:hover{border-color:rgba(255,174,97,.70);box-shadow:0 0 0 1px rgba(255,174,97,.20),inset 0 0 24px rgba(255,136,67,.07)}
+.kr-kpi-action:focus-visible{outline:3px solid #ffca83;outline-offset:3px}
+.kr-kpi-action[aria-expanded="true"]{border-color:rgba(255,174,97,.85)}
+.kr-pb-details{margin-bottom:16px}
+.kr-pb-details .table-wrap{max-height:480px;overflow:auto}
+@media(max-width:800px){.kr-event-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}

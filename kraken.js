@@ -9,6 +9,7 @@
   let eventKey=(K.months||[]).at(-1)?.key||'sept';
   let pbEventKey=eventKey;
   let pbSort='newpb';
+  let pbExpanded=false;
   let rosterFilter=document.getElementById('globalStatusFilter')?.value||'active';
 
   const fmt=(v,d=0)=>(Number(v)||0).toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d});
@@ -46,6 +47,13 @@
   const monthLabel=key=>monthMeta(key).label+' 2026';
   const monthKeys=()=>(K.months||[]).map(m=>m.key);
 
+  // Historical cohorts are event-time memberships, never current roster status.
+  const septemberAV2=new Set(['av-mendoria','av-neez','av-excalibur']);
+  const eventClanFor=(key,name)=>key==='sept'&&septemberAV2.has(String(name||'').trim().toLowerCase())?'AV-2':'AVENGERS';
+  const eventSparksFor=(p,key)=>key==='oct' ? Number(p.octSparks)||0 :
+    (Number(p[key])||0)*(eventClanFor(key,p.name)==='AV-2'?500:750);
+  const eventClanBadge=clan=>'<span class="status '+(clan==='AV-2'?'av2':'active')+'">'+esc(clan)+'</span>';
+
   function statusBadge(s,name=''){
     if(String(name).toLowerCase()==='av-lucky') return '<span class="status inactive notranslate" translate="no">inactive-cheater</span>';
     const n=norm(s);
@@ -68,23 +76,22 @@
   }
 
   function eventPlayers(key, filtered=true){
-    // October results use event clan, not current clan membership.
+    const selected=clan=>!filtered||rosterFilter==='all'||
+      (rosterFilter==='active'&&clan==='AVENGERS')||
+      (rosterFilter==='av2'&&clan==='AV-2');
     if(key==='oct' && Array.isArray(K.octEventRows)){
       const byName=new Map((K.players||[]).map(p=>[p.name,p]));
-      const selected=r=>!filtered||rosterFilter==='all'||
-        (rosterFilter==='active'&&r.clan==='AVENGERS')||
-        (rosterFilter==='av2'&&r.clan==='AV-2');
-      return K.octEventRows.filter(r=>r.damage>0&&selected(r))
-        .map(r=>({...byName.get(r.name),name:r.name,oct:r.damage,
-                  octClan:r.clan,octSparks:r.sparks,octRank:r.rank}))
-        .sort((a,b)=>b.oct-a.oct);
+      return K.octEventRows.filter(r=>r.damage>0&&selected(r.clan))
+        .map(r=>{
+          const canonical=String(D.aliasMap?.[r.name]||r.name);
+          const base=byName.get(canonical)||byName.get(r.name)||{};
+          return {...base,name:r.name,oct:r.damage,eventClan:r.clan,octSparks:r.sparks,octRank:r.rank};
+        }).sort((a,b)=>b.oct-a.oct);
     }
-    const src=filtered?players():K.players;
-    return src.filter(p=>(Number(p[key])||0)>0)
-      .slice()
+    return (K.players||[]).filter(p=>Number(p[key])>0&&selected(eventClanFor(key,p.name)))
+      .map(p=>({...p,eventClan:eventClanFor(key,p.name)}))
       .sort((a,b)=>(Number(b[key])||0)-(Number(a[key])||0));
   }
-
   function eventSummary(key,filtered=false){
     const list=eventPlayers(key,filtered);
     const vals=list.map(p=>Number(p[key])||0);
@@ -98,6 +105,7 @@
       list,
       players:list.length,
       total:vals.reduce((s,v)=>s+v,0),
+      sparks:list.reduce((s,p)=>s+eventSparksFor(p,key),0),
       avg:avg(vals),
       leader:list[0]||null,
       pbCount
@@ -159,6 +167,22 @@
     return {pbs,first};
   }
 
+  function eventPBDetails(key){
+    const improvements=historicalPBs(key).pbs.sort((a,b)=>(b.improvement||0)-(a.improvement||0));
+    const body=improvements.map((x,i)=>{
+      const delta=x.score-x.previous;
+      return '<tr><td class="num">'+(i+1)+'</td><td>'+playerButton(x.name)+'</td>'+
+        '<td class="num">'+fmt(x.previous,1)+'</td><td class="num">'+fmt(x.score,1)+'</td>'+
+        '<td class="num positive">+'+fmt(delta,1)+'</td>'+
+        '<td class="num positive"><strong>+'+pct(x.improvement||0)+'</strong></td></tr>';
+    }).join('')||'<tr><td colspan="6" class="empty">No returning-player PBs in this Kraken.</td></tr>';
+    return '<section class="table-card kr-pb-details" id="krakenEventPBDetails" aria-label="Personal best improvements">'+
+      '<div class="table-titlebar"><div><h2>Personal Best Improvements — '+esc(monthLabel(key))+'</h2>'+
+      '<div class="small-muted">'+improvements.length+' returning-player PBs • ranked by percentage increase • click a player to open their profile</div></div></div>'+
+      '<div class="table-wrap"><table><thead><tr><th class="num">#</th><th>Member</th>'+
+      '<th class="num">Old PB</th><th class="num">New PB</th><th class="num">Increase (M)</th>'+
+      '<th class="num">Increase (%)</th></tr></thead><tbody>'+body+'</tbody></table></div></section>';
+  }
   function eventTable(key,filtered=false){
     const list=eventPlayers(key,filtered);
     const max=Math.max(...list.map(p=>Number(p[key])||0),1);
@@ -169,19 +193,19 @@
       return `<tr>
         <td class="num">${i+1}</td>
         <td>${playerButton(p.name)}</td>
-        <td>${key==='oct'?'<span class="status '+(p.octClan==='AV-2'?'av2':'active')+'">'+esc(p.octClan)+'</span>':statusBadge(currentStatus(p.name,p.status),p.name)}</td>
+        <td>${eventClanBadge(p.eventClan)}</td>
         <td><div class="kr-bar" style="--w:${width}%"><span>${fmt(score,1)}</span></div></td>
         <td class="num">${fmt(through.pb,1)}</td>
         <td class="num">${fmt(through.avg,1)}</td>
         <td class="num">${through.events}</td>
         <td class="num">${key==='sept'&&p.septLoadout?esc(p.septLoadout):'—'}</td>
-        ${key==='oct'?'<td class="num">'+fmt(p.octSparks,0)+'</td>':''}
+        <td class="num">${fmt(eventSparksFor(p,key),0)}</td>
       </tr>`;
     }).join('');
     return `<div class="table-card">
-      <div class="table-titlebar"><div><h2>Kraken — ${esc(monthLabel(key))}</h2><div class="small-muted">${list.length} ${filtered?'participants in selected roster':'historical participants'} • current status shown separately</div></div></div>
+      <div class="table-titlebar"><div><h2>Kraken — ${esc(monthLabel(key))}</h2><div class="small-muted">${list.length} ${filtered?'participants in selected event clan':'historical participants'} • event clan is preserved independently of current roster</div></div></div>
       <div class="table-wrap"><table><thead><tr>
-        <th class="num">#</th><th>Member</th><th>${key==='oct'?'Event Clan':'Current Status'}</th><th>Damage</th><th class="num">PB Through Event</th><th class="num">Avg Through Event</th><th class="num">Events</th><th class="num">Loadout</th>${key==='oct'?'<th class="num">Sparks</th>':''}
+        <th class="num">#</th><th>Member</th><th>Event Clan</th><th>Damage</th><th class="num">PB Through Event</th><th class="num">Avg Through Event</th><th class="num">Events</th><th class="num">Loadout</th><th class="num">Sparks</th>
       </tr></thead><tbody>${rows||'<tr><td colspan="8" class="empty">No Kraken data for this selection.</td></tr>'}</tbody></table></div>
     </div>`;
   }
@@ -333,8 +357,10 @@
           <div class="kr-kpi"><span>Average Damage</span><strong>${fmt(s.avg,1)}</strong><small>per participant</small></div>
           <div class="kr-kpi"><span>Total Damage</span><strong>${fmt(s.total,1)}</strong><small>sum of recorded scores</small></div>
           <div class="kr-kpi"><span>Leader</span><strong>${s.leader?fmt(s.leader[eventKey],1):'—'}</strong><small>${s.leader?esc(s.leader.name):''}</small></div>
-          <div class="kr-kpi"><span>PBs</span><strong>${s.pbCount}</strong><small>returning-player PBs</small></div>
+          <button type="button" id="krakenEventPBButton" class="kr-kpi kr-kpi-action" aria-expanded="${pbExpanded?'true':'false'}" aria-controls="krakenEventPBDetails"><span>PBs ↗</span><strong>${s.pbCount}</strong><small>Click to view improvements</small></button>
+          <div class="kr-kpi"><span>Total Sparks</span><strong>${fmt(s.sparks,0)}</strong><small>calculated event rewards</small></div>
         </div>
+        ${pbExpanded?eventPBDetails(eventKey):''}
         ${eventTable(eventKey,true)}`;
     } else if(view==='last3') body=last3Table();
     else body=pbView();
@@ -363,8 +389,9 @@
       ${body}`;
 
     root.querySelectorAll('[data-kview]').forEach(b=>b.onclick=()=>{view=b.dataset.kview;window.renderKraken();});
-    root.querySelector('#krakenRosterFilter')?.addEventListener('change',e=>{rosterFilter=e.target.value;window.renderKraken();renderKrakenOverview();});
-    root.querySelector('#krakenEventSelect')?.addEventListener('change',e=>{eventKey=e.target.value;window.renderKraken();});
+    root.querySelector('#krakenRosterFilter')?.addEventListener('change',e=>{rosterFilter=e.target.value;pbExpanded=false;window.renderKraken();renderKrakenOverview();});
+    root.querySelector('#krakenEventPBButton')?.addEventListener('click',()=>{pbExpanded=!pbExpanded;window.renderKraken();});
+    root.querySelector('#krakenEventSelect')?.addEventListener('change',e=>{eventKey=e.target.value;pbExpanded=false;window.renderKraken();});
     root.querySelector('#krakenPBEventSelect')?.addEventListener('change',e=>{pbEventKey=e.target.value;window.renderKraken();});
     root.querySelector('#krakenPBSortSelect')?.addEventListener('change',e=>{pbSort=e.target.value;window.renderKraken();});
     bindPlayers(root);

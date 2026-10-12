@@ -182,7 +182,7 @@
       <div class="table-titlebar"><div><h2>Kraken — ${esc(monthLabel(key))}</h2><div class="small-muted">${list.length} ${filtered?'participants in selected roster':'historical participants'} • current status shown separately</div></div></div>
       <div class="table-wrap"><table><thead><tr>
         <th class="num">#</th><th>Member</th><th>${key==='oct'?'Event Clan':'Current Status'}</th><th>Damage</th><th class="num">PB Through Event</th><th class="num">Avg Through Event</th><th class="num">Events</th><th class="num">Loadout</th>${key==='oct'?'<th class="num">Sparks</th>':''}
-      </tr></thead><tbody>${rows||'<tr><td colspan="${key==='oct'?9:8}" class="empty">No Kraken data for this selection.</td></tr>'}</tbody></table></div>
+      </tr></thead><tbody>${rows||'<tr><td colspan="8" class="empty">No Kraken data for this selection.</td></tr>'}</tbody></table></div>
     </div>`;
   }
 

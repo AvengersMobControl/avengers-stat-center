@@ -408,6 +408,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
 (function(){const D=window.AVENGERS_DATA;const date='2026-10-04';D.piggy.latestPBs=[];D.piggy.latestNewMembers=[];(D.piggy.events[date]||[]).forEach(r=>{const before=(D.piggy.history[r.name]||[]).filter(h=>h.date<date&&h.lines>0);const previous=Math.max(0,...before.map(h=>h.lines));if(!before.length)D.piggy.latestNewMembers.push({name:r.name,score:r.lines});else if(r.lines>previous)D.piggy.latestPBs.push({name:r.name,score:r.lines,previous,improvement:(r.lines-previous)/previous});});D.piggy.latestPBs.sort((a,b)=>b.improvement-a.improvement);})();
 </script>
   <script src="piggy-2026-10-11.js"></script>
+  <script src="space-2026-10-09.js"></script>
   <script src="community-highlights.js"></script>
   <script>
 

@@ -8,3 +8,56 @@ const map=new Map((K.players||[]).map(p=>[p.name,p]));const ensure=(n,s)=>{let p
 R.forEach(r=>{const p=ensure(r[0],r[1]);p.status=r[1]||p.status;['march','april','may','june','aug','sept'].forEach((k,i)=>p[k]=+r[i+2]||0)});B.forEach(r=>{const p=ensure(r[0],r[1]);p.feb02=+r[2]||0;p.feb23=+r[3]||0});
 (K.players||[]).forEach(p=>{K.months.forEach(m=>{if(p[m.key]==null)p[m.key]=0});const vals=K.months.map(m=>+p[m.key]||0).filter(v=>v>0);p.pb=vals.length?Math.max(...vals):0;const pm=K.months.find(m=>(+p[m.key]||0)===p.pb);p.pbMonth=pm?pm.label:'';p.avg=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0;const l3=vals.slice(-3);p.last3=l3.length?l3.reduce((a,b)=>a+b,0)/l3.length:0;p.pbCheck=(+p.sept||0)>0&&(+p.sept||0)===p.pb});
 })();
+
+/* Oct 11 2026 reviewed Kraken import: nonzero damage only. Damage units: millions.
+   Sparks: 750 per million for AVENGERS; 500 per million for AV-2.
+   User approved teichiki for AV-2 regardless of the alternate clan label. */
+;(function(){
+  'use strict';
+  const K=window.AVENGERS_KRAKEN_DATA;
+  if(!K||(K.months||[]).some(m=>m.key==='oct'))return;
+  const results={"AVENGERS":[{"rank":1,"name":"AV-Deviantdan","damage":4469.2},{"rank":2,"name":"AV-Megalodon","damage":4461.8},{"rank":3,"name":"AV-Nicefellow","damage":4416.3},{"rank":4,"name":"AV-OblivX","damage":4337.1},{"rank":5,"name":"AV-J","damage":4269.4},{"rank":6,"name":"AV-HarryBallsagna","damage":4241.4},{"rank":7,"name":"AV-INTEN","damage":4143.1},{"rank":8,"name":"AV-Supreeth","damage":4028.4},{"rank":9,"name":"AV-UANGELES","damage":3709.1},{"rank":10,"name":"AV-Addicted","damage":3572.5},{"rank":11,"name":"AV-7-STAR","damage":3205.1},{"rank":12,"name":"AV-Finnie","damage":3169.3},{"rank":13,"name":"AV-MotherboardBeans","damage":2959.2},{"rank":14,"name":"AV.Saberkong","damage":2938},{"rank":15,"name":"AV-Bubba0816","damage":2927.8},{"rank":16,"name":"AV-Hoops","damage":2874.5},{"rank":17,"name":"AV-Animosity","damage":2838.1},{"rank":18,"name":"AV-Abu//npjp","damage":2732.3},{"rank":19,"name":"AV-J1M","damage":2714.1},{"rank":20,"name":"AV-BigPapi","damage":2671.8},{"rank":21,"name":"AV-Adigarian","damage":2654.4},{"rank":22,"name":"AV-SMILINGBANDIT","damage":2577.4},{"rank":23,"name":"AV-FrenchieUSA","damage":2558.3},{"rank":24,"name":"AV-SB","damage":2545.7},{"rank":25,"name":"AV-8!l...Bil","damage":2507.6},{"rank":26,"name":"AV-WolfLegend","damage":2503.8},{"rank":27,"name":"AV-23","damage":2435.6},{"rank":28,"name":"AV-HN","damage":2245.2},{"rank":29,"name":"AV-JAMO","damage":2243.6},{"rank":30,"name":"AV-Obajoba","damage":2224.5},{"rank":31,"name":"AV-Vadik-UA","damage":2182.6},{"rank":32,"name":"AV-RkHendrix","damage":2164.2},{"rank":33,"name":"AV<STAR-LORD>","damage":2127.3},{"rank":34,"name":"AV-DrDetroit","damage":2112.8},{"rank":35,"name":"AV-I.S.O","damage":2067.3},{"rank":36,"name":"AV-CHEN1972","damage":2019.2},{"rank":37,"name":"AV-TheOli","damage":2012.5},{"rank":38,"name":"AV-no","damage":1982.3},{"rank":39,"name":"AV-Zolika.x.TheBoss","damage":1949.9},{"rank":40,"name":"AV-Mendoria","damage":1943.4},{"rank":41,"name":"AV-Caklet","damage":1919},{"rank":42,"name":"AV-KitKat","damage":1899.7},{"rank":43,"name":"AV-EventHorizon","damage":1890.8},{"rank":44,"name":"AV-Starred","damage":1885.1},{"rank":45,"name":"AV#Rafa#Tun","damage":1862.3},{"rank":46,"name":"AV-MONSTER","damage":1716.7},{"rank":47,"name":"AV-ColdCreeps","damage":1686.1},{"rank":48,"name":"AV-neez","damage":1533},{"rank":49,"name":"AV-Mr.Mar.Berry","damage":1442.8},{"rank":50,"name":"AV-DaG","damage":1294.8}],"AV-2":[{"rank":1,"name":"AV-CHUCK","damage":2259.3},{"rank":2,"name":"AV-Jess-PT","damage":2156.2},{"rank":3,"name":"AV-CRISPIN.97","damage":1942.9},{"rank":4,"name":"AV-TigerMx","damage":1651.6},{"rank":5,"name":"AV-JeffKintz05","damage":1495.7},{"rank":6,"name":"AV-2Lin","damage":1281.1},{"rank":7,"name":"AV-EXCALIBUR","damage":1276},{"rank":8,"name":"AV-KiraLoveZolika","damage":829.8},{"rank":9,"name":"AV-Pablin","damage":823.6},{"rank":10,"name":"AV-SiFra","damage":722.9},{"rank":11,"name":"teichiki","damage":715.9},{"rank":12,"name":"AV-Brisket","damage":591.6},{"rank":13,"name":"MayyaZ","damage":126.6},{"rank":14,"name":"自分","damage":105.8},{"rank":15,"name":"Ibrahim","damage":91.8},{"rank":16,"name":"VRMORI","damage":77.4},{"rank":17,"name":"AV-KO","damage":75.5},{"rank":18,"name":"TheHemperor","damage":41.6},{"rank":19,"name":"Punchy","damage":40.2},{"rank":20,"name":"AV-FrenchieUSA","damage":36.2},{"rank":21,"name":"DedHed","damage":21.4},{"rank":22,"name":"Pipes is","damage":15.4},{"rank":23,"name":"Blade","damage":9.2},{"rank":24,"name":"AV-fueravini","damage":4.7},{"rank":25,"name":"uLTRaSLaN","damage":1.7},{"rank":26,"name":"kayesie","damage":1.4},{"rank":27,"name":"AV-braa","damage":0.0598}]};
+  K.months.push({key:'oct',label:'October'});
+  const playerMap=new Map((K.players||[]).map(p=>[p.name,p]));
+  const historicalNames={'AV-J1M':'AV-JIM','AV-Hoops':'AV-hoops-SCT'};
+  const rows=[];
+  for(const [clan,list] of Object.entries(results)){
+    const factor=clan==='AVENGERS'?750:500;
+    for(const r of list){
+      const damage=Number(r.damage);
+      if(!(damage>0))continue;
+      const sparks=damage*factor;
+      rows.push({eventDate:'2026-10-11',clan,rank:r.rank,name:r.name,
+        damage,sparks,sparksRate:clan==='AVENGERS'?0.00075:0.0005});
+      const knownName=historicalNames[r.name]||r.name;
+      let p=playerMap.get(knownName);
+      if(!p){
+        p={name:knownName,status:clan==='AVENGERS'?'Active':'AV2',totalSparks:0,septLoadout:''};
+        K.players.push(p);playerMap.set(knownName,p);
+      }
+      p.oct=Math.max(Number(p.oct)||0,damage);
+      p.totalSparks=(Number(p.totalSparks)||0)+sparks;
+    }
+  }
+  K.octEventRows=rows;
+  K.octEventTotals={};
+  for(const clan of ['AVENGERS','AV-2']){
+    const list=rows.filter(r=>r.clan===clan);
+    K.octEventTotals[clan]={
+      date:'2026-10-11',players:list.length,
+      damage:list.reduce((s,r)=>s+r.damage,0),
+      sparks:list.reduce((s,r)=>s+r.sparks,0)
+    };
+  }
+  K.players.forEach(p=>{
+    const scores=K.months.map(m=>({month:m,value:Number(p[m.key])||0})).filter(x=>x.value>0);
+    if(!scores.length){p.pb=0;p.pbMonth='';p.avg=0;p.last3=0;return;}
+    const best=scores.reduce((a,b)=>b.value>a.value?b:a);
+    const vals=scores.map(s=>s.value);
+    const last=vals.slice(-3);
+    p.pb=best.value;p.pbMonth=best.month.label;
+    p.avg=vals.reduce((s,v)=>s+v,0)/vals.length;
+    p.last3=last.reduce((s,v)=>s+v,0)/last.length;
+    p.pbCheck=(Number(p.oct)||0)>0 && p.oct===p.pb;
+  });
+})();

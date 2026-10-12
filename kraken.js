@@ -68,6 +68,17 @@
   }
 
   function eventPlayers(key, filtered=true){
+    // October results use event clan, not current clan membership.
+    if(key==='oct' && Array.isArray(K.octEventRows)){
+      const byName=new Map((K.players||[]).map(p=>[p.name,p]));
+      const selected=r=>!filtered||rosterFilter==='all'||
+        (rosterFilter==='active'&&r.clan==='AVENGERS')||
+        (rosterFilter==='av2'&&r.clan==='AV-2');
+      return K.octEventRows.filter(r=>r.damage>0&&selected(r))
+        .map(r=>({...byName.get(r.name),name:r.name,oct:r.damage,
+                  octClan:r.clan,octSparks:r.sparks,octRank:r.rank}))
+        .sort((a,b)=>b.oct-a.oct);
+    }
     const src=filtered?players():K.players;
     return src.filter(p=>(Number(p[key])||0)>0)
       .slice()
@@ -158,19 +169,20 @@
       return `<tr>
         <td class="num">${i+1}</td>
         <td>${playerButton(p.name)}</td>
-        <td>${statusBadge(currentStatus(p.name,p.status),p.name)}</td>
+        <td>${key==='oct'?'<span class="status '+(p.octClan==='AV-2'?'av2':'active')+'">'+esc(p.octClan)+'</span>':statusBadge(currentStatus(p.name,p.status),p.name)}</td>
         <td><div class="kr-bar" style="--w:${width}%"><span>${fmt(score,1)}</span></div></td>
         <td class="num">${fmt(through.pb,1)}</td>
         <td class="num">${fmt(through.avg,1)}</td>
         <td class="num">${through.events}</td>
         <td class="num">${key==='sept'&&p.septLoadout?esc(p.septLoadout):'—'}</td>
+        ${key==='oct'?'<td class="num">'+fmt(p.octSparks,0)+'</td>':''}
       </tr>`;
     }).join('');
     return `<div class="table-card">
       <div class="table-titlebar"><div><h2>Kraken — ${esc(monthLabel(key))}</h2><div class="small-muted">${list.length} ${filtered?'participants in selected roster':'historical participants'} • current status shown separately</div></div></div>
       <div class="table-wrap"><table><thead><tr>
-        <th class="num">#</th><th>Member</th><th>Current Status</th><th>Damage</th><th class="num">PB Through Event</th><th class="num">Avg Through Event</th><th class="num">Events</th><th class="num">Loadout</th>
-      </tr></thead><tbody>${rows||'<tr><td colspan="8" class="empty">No Kraken data for this selection.</td></tr>'}</tbody></table></div>
+        <th class="num">#</th><th>Member</th><th>${key==='oct'?'Event Clan':'Current Status'}</th><th>Damage</th><th class="num">PB Through Event</th><th class="num">Avg Through Event</th><th class="num">Events</th><th class="num">Loadout</th>${key==='oct'?'<th class="num">Sparks</th>':''}
+      </tr></thead><tbody>${rows||'<tr><td colspan="${key==='oct'?9:8}" class="empty">No Kraken data for this selection.</td></tr>'}</tbody></table></div>
     </div>`;
   }
 

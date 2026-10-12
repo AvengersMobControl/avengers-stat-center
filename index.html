@@ -868,10 +868,6 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const seen=new Set();
     const pbs=[];
     const first=[];
-    // Oct. 2 Space Race scores ran on a 66.66% scale. PB comparisons for that
-    // event use each player's own prior PB × 0.6666, then convert qualifying
-    // scores back to full-scale equivalents for the New PB column.
-    const pbScale=(kind==='space' && date==='2026-10-02')?0.6666:1;
     eventRows.forEach(r=>{
       const name=r.name;
       if(seen.has(name)) return;
@@ -888,9 +884,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         return;
       }
       const previous=Math.max(...prior.map(x=>Number(x[valueKey])||0));
-      const threshold=previous*pbScale;
-      if(rawScore>threshold){
-        const score=rawScore/pbScale;
+      if(rawScore>previous){
+        const score=rawScore;
         pbs.push({name,score,previous,improvement:previous>0?(score-previous)/previous:null,status,rawScore});
       }
     });

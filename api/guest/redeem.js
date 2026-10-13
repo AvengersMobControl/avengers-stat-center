@@ -27,6 +27,17 @@ function clientFingerprint(req,secret){
   const ua=String(req.headers['user-agent']||'unknown').replace(/[\r\n]+/g,' ').slice(0,180);
   return {ipHash,ua};
 }
+function safeDiscordText(s){
+  return String(s||'').replace(/[\r\n]+/g,' ').replace(/[*_~`>|]/g,'').replace(/@/g,'@\u200b').trim().slice(0,60);
+}
+function inviteExpiry(invite){
+  if(invite.permanent===true)return 'Never';
+  return new Date(Number(invite.exp)*1000).toLocaleString('en-US',{
+    timeZone:'America/Chicago',
+    month:'short',day:'numeric',
+    hour:'numeric',minute:'2-digit',timeZoneName:'short'
+  });
+}
 async function discordApi(path,botToken,options={}){
   return fetch('https://discord.com/api/v10'+path,{
     ...options,
@@ -79,6 +90,8 @@ module.exports=async function handler(req,res){
 
   const marker='AV_GUEST_INVITE:'+invite.jti;
   const useMarker='AV_GUEST_USE:'+invite.jti;
+  const passId=String(invite.jti||'').slice(0,8).toUpperCase();
+  const passLabel=safeDiscordText(invite.label)||'Unlabeled pass';
   const fp=clientFingerprint(req,secret);
   const ua=String(req.headers['user-agent']||'');
   const isPreviewBot=/(Discordbot|Slackbot|Twitterbot|facebookexternalhit|LinkedInBot|WhatsApp|TelegramBot|Googlebot|bingbot)/i.test(ua);
@@ -98,11 +111,12 @@ module.exports=async function handler(req,res){
       // Permanent links never block on redemption count, but every human redemption
       // is still recorded before access is granted.
       await sendDm(dm.id,botToken,
-        '♾️ **Your permanent AVENGERS guest link was redeemed**\n'+
-        'Access was granted. This permanent link has no expiration or use limit.\n'+
+        '♾️ **AVENGERS guest pass opened**\n'+
+        '**Pass:** '+passLabel+' · `'+passId+'`\n'+
+        '**Access:** Permanent / unlimited\n'+
         'Client fingerprint: `'+fp.ipHash+'`\n'+
         'Browser: '+fp.ua+'\n'+
-        useMarker+'\n'+marker
+        '||'+useMarker+' '+marker+'||'
       );
     }else{
       const messages=await recentMessages(dm.id,botToken);
@@ -111,10 +125,12 @@ module.exports=async function handler(req,res){
 
       if(successfulUses>=maxUses){
         await sendDm(dm.id,botToken,
-          '🚫 **Blocked extra use of your AVENGERS guest link**\n'+
-          'This invite has already reached its '+maxUses+' allowed redemptions, so access was denied.\n'+
+          '🚫 **AVENGERS guest pass blocked**\n'+
+          '**Pass:** '+passLabel+' · `'+passId+'`\n'+
+          '**Reason:** Already used '+maxUses+'/'+maxUses+' times\n'+
           'Client fingerprint: `'+fp.ipHash+'`\n'+
-          'Browser: '+fp.ua+'\n'+marker
+          'Browser: '+fp.ua+'\n'+
+          '||'+marker+'||'
         );
         res.setHeader('Cache-Control','no-store');
         res.status(410).send('This temporary guest link has reached its allowed number of uses.');
@@ -125,11 +141,12 @@ module.exports=async function handler(req,res){
       // Record a successful use before issuing the session. Discord DM history acts
       // as the durable redemption ledger across serverless instances.
       await sendDm(dm.id,botToken,
-        '✅ **Your AVENGERS guest link was redeemed ('+useNumber+'/'+maxUses+')**\n'+
-        'The guest can browse until the invite expiry.\n'+
+        '✅ **AVENGERS guest pass opened**\n'+
+        '**Pass:** '+passLabel+' · `'+passId+'`\n'+
+        '**Use:** '+useNumber+'/'+maxUses+' · **Expires:** '+inviteExpiry(invite)+'\n'+
         'Client fingerprint: `'+fp.ipHash+'`\n'+
         'Browser: '+fp.ua+'\n'+
-        useMarker+'\n'+marker
+        '||'+useMarker+' '+marker+'||'
       );
     }
 

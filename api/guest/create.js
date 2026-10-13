@@ -61,12 +61,15 @@ module.exports=async function handler(req,res){
   const hours=Number.isFinite(requestedHours)?Math.max(1,Math.min(requestedHours,168)):1;
   const ttl=60*60*hours;
   const maxUses=Number.isFinite(requestedUses)?Math.max(1,Math.min(requestedUses,10)):3;
+  const rawLabel=String(req.query?.label||req.query?.for||'').trim();
+  const label=rawLabel.replace(/[\r\n<>]/g,' ').replace(/\s+/g,' ').slice(0,60);
   const payload={
     typ:'avengers-guest-invite',
     jti:crypto.randomBytes(18).toString('base64url'),
     creator:String(session.sub),
     creatorName:String(session.username||'AVENGERS member'),
     iat:now,
+    ...(label?{label}:{}),
     ...(permanent?{permanent:true}:{exp:now+ttl,maxUses})
   };
   const token=sign(payload,secret);
@@ -79,10 +82,12 @@ module.exports=async function handler(req,res){
   res.setHeader('Cache-Control','no-store');
   const durationLabel=hours===1?'1-hour':hours+'-hour';
   const heading=permanent?'Permanent guest link':durationLabel+' guest link';
-  const sub=permanent?'Never expires. Unlimited human redemptions; every redemption is still logged to you.':'Expires '+expires+'. The first redemption activates a guest session for the remaining time.';
+  const shortId=String(payload.jti).slice(0,8).toUpperCase();
+  const passName=label||'Unlabeled pass';
+  const sub=(label?'Pass: '+passName+' · ':'')+'ID '+shortId+' · '+(permanent?'Never expires. Unlimited human redemptions; every redemption is still logged to you.':'Expires '+expires+'. The first redemption activates a guest session for the remaining time.');
   const note=permanent
     ?'<strong>Permanent / unlimited:</strong> Discord and other link-preview bots do not count. Human opens are never blocked for age or use count, and each successful redemption is logged to you by Discord DM.'
-    :'<strong>'+maxUses+'-use protection:</strong> Discord and other link-preview bots do not count. The first '+maxUses+' successful guest opens are allowed; later attempts are blocked. You receive a Discord DM for each successful redemption and for any blocked attempt.';
+    :'<strong>'+maxUses+'-use protection:</strong> Discord and other link-preview bots do not count. The first '+maxUses+' successful guest opens are allowed; later attempts are blocked. You receive a Discord DM for each successful redemption and for any blocked attempt. Add <code>&label=Name</code> when creating separate passes so alerts identify the intended recipient.';
   const switchLink=permanent
     ?'<a href="/api/guest/create" style="color:#9fc5ff">Create a standard 1-hour / 3-use link instead</a>'
     :'<a href="/api/guest/create?mode=permanent" style="color:#9fc5ff">Create a permanent / unlimited link instead</a>';

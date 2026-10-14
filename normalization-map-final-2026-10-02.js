@@ -10,6 +10,7 @@
 
   // Same long-term member identities, including historical Zolistar usernames.
   Object.assign(aliases,{
+    'AV-Zolika.x.TheBoss':'AV-Zolika.x.Kira',
     'AV-Zolika.x.The...':'AV-Zolika.x.Kira',
     'AV-Zolika.x.The':'AV-Zolika.x.Kira',
     'AV-Zolistar':'AV-7-STAR',
@@ -186,6 +187,12 @@
         p.pb=0;p.pbMonth='';p.avg=0;p.last3=0;
       }
     });
+  }
+
+  // Normalize individual Kraken event rows as well as monthly player records.
+  // Event-clan affiliation stays unchanged; only display identity is canonicalized.
+  if(K && Array.isArray(K.octEventRows)){
+    K.octEventRows.forEach(r=>{if(r?.name)r.name=resolve(r.name);});
   }
 
   // Normalize the all-time Sparks snapshot and keep the highest known snapshot value.

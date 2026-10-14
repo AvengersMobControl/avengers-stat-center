@@ -10,6 +10,7 @@
     ['AV-JIM','AV-J1M'],
     ['AV-GreenZombie','AV-LemonBlue'],
     ['AV-ZolikaLoveKira','AV-Zolika.x.Kira'],
+    ['AV-Zolika.x.TheBoss','AV-Zolika.x.Kira'],
     ['AV-hoops-SCT','AV-Hoops']
   ]);
   const target=name=>renameMap.get(name)||name;
@@ -104,6 +105,7 @@
     'AV-GreenZombie':'AV-LemonBlue',
     'AV-BlueWave':'AV-LemonBlue',
     'AV-ZolikaLoveKira':'AV-Zolika.x.Kira',
+    'AV-Zolika.x.TheBoss':'AV-Zolika.x.Kira',
     'AV-hoops-SCT':'AV-Hoops',
     'AV-Frenchie2':'AV-FrenchieUSA',
     'AV-Derya(OnVACATION)':'AV-Derya',

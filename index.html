@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#08111f" />
   <title>AVENGERS Stat Center</title>
+  <link rel="stylesheet" href="clan-league-rewards.css" />
   <style>
 
 :root{
@@ -410,6 +411,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   <script src="piggy-2026-10-11.js"></script>
   <script src="space-2026-10-09.js"></script>
   <script src="community-highlights.js"></script>
+  <script src="clan-league-rewards.js"></script>
   <script>
 
 (() => {
@@ -1816,6 +1818,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <strong>Historical event totals.</strong>
         Piggy participant counts and line totals follow the historical AVENGERS race roster in the workbook, while Pot Stars use the workbook's reward/share values for the full race pot.
       </div>
+      <div id="clanLeagueRewards"></div>
       <div class="event-totals-grid">
         ${tableShell('Piggy Race Totals','Historical AVENGERS participants with workbook-derived pot totals',
           [{label:'Event'},{label:'Players',num:true},{label:'Total Lines',num:true},{label:'Pot Stars',num:true},{label:'Total Sparks',num:true}],pigRows)}
@@ -1824,6 +1827,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         ${tableShell('Kraken Totals','Sum of recorded monthly player damage scores in the Kraken dataset',
           [{label:'Event'},{label:'Players',num:true},{label:'Total Damage',num:true},{label:'Avg / Player',num:true}],krRows)}
       </div>`;
+    window.AVENGERS_CLAN_LEAGUE_REWARDS?.render(root.querySelector('#clanLeagueRewards'));
   }
 
   function renderRecords(){

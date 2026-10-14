@@ -50,9 +50,9 @@
   octKrakenResults.forEach(r=>sum(r,'octKrakenSparks'));
 
   // June Kraken damages were imported for some members after their all-time
-  // Kraken reward totals had already been calculated. For six June-first
+  // Kraken reward totals had already been calculated. For June-first
   // participants, the stored historical rewards match August + September
-  // EXACTLY, which demonstrates that June was never included. Don't re-add
+  // EXACTLY (including zero for June-only members), demonstrating June was omitted. Don't re-add
   // June for players whose existing totals already contain other historical
   // rewards or cannot be reconciled safely.
   const juneAvengers=new Set();

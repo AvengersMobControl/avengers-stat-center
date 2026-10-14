@@ -57,8 +57,8 @@
   },
   {
     "rank": 9,
-    "displayName": "AV-Zolika.x.TheBoss",
-    "rosterName": "AV-ZolikaLoveKira",
+    "displayName": "AV-Zolika.x.Kira",
+    "rosterName": "AV-Zolika.x.Kira",
     "sparks": 14044949
   },
   {

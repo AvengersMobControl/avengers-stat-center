@@ -1,0 +1,27 @@
+.league-rewards-panel{background:#0d1c30;border:1px solid #263f62;border-radius:16px;padding:18px;margin:18px 0 22px;box-shadow:0 10px 30px #02081730}
+.league-rewards-heading,.league-rewards-toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.league-rewards-heading h2{font-size:21px;margin:0 0 5px;color:#f3f7ff}
+.league-rewards-heading p{margin:0;color:#a6bbd4;font-size:13px}
+.league-rewards-actions,.league-rewards-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.league-rewards-actions label,.league-rewards-controls label{display:flex;align-items:center;gap:7px;font-size:12px;color:#a6bbd4}
+.league-rewards-actions select,.league-rewards-controls select,.league-rewards-controls input{background:#0a1426;border:1px solid #385278;border-radius:8px;color:#e6f2ff;padding:9px 10px;max-width:100%}
+.league-period-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}
+.league-period{cursor:pointer;text-align:left;border-radius:10px;border:1px solid #284465;background:#11243c;color:#b7cbe6;padding:11px 12px;display:flex;flex-direction:column;gap:5px;font:inherit}
+.league-period span{font-size:12px}.league-period strong{font-size:16px;color:#ebf4ff}.league-period small{font-size:11px;color:#9db1ce}
+.league-period:hover{border-color:#59c5f2}.league-period.active{border-color:#29d3f6;background:#142e4c;box-shadow:inset 3px 0 #29d3f6}
+.league-rewards-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.league-rewards-kpis>div{background:#101f36;border:1px solid #253b5c;border-radius:10px;padding:12px;min-width:0;display:flex;flex-direction:column;gap:6px}
+.league-rewards-kpis small{font-size:11px;color:#a5bcd6}.league-rewards-kpis strong{font-size:19px;color:#e7f7ff;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.league-rewards-toolbar{padding:8px 0 12px}.league-rewards-toolbar>div:first-child{display:flex;flex-direction:column;gap:4px}.league-rewards-toolbar strong{font-size:14px;color:#ebf5ff}.league-rewards-toolbar span{font-size:12px;color:#93afcf}
+.league-rewards-scroll{overflow:auto;border:1px solid #294160;border-radius:10px;max-height:580px}
+.league-rewards-table{width:100%;border-collapse:collapse;font-size:12px}
+.league-rewards-table th,.league-rewards-table td{padding:10px 11px;border-bottom:1px solid #233752;white-space:nowrap}
+.league-rewards-table th{position:sticky;top:0;background:#17304d;color:#d1e4fb;text-align:left;z-index:1}
+.league-rewards-table .num{text-align:right;font-variant-numeric:tabular-nums}
+.league-rewards-table tbody tr:nth-child(even){background:#13243a}.league-rewards-table tbody tr:hover{background:#203753}
+.league-rewards-table .league-player{font-weight:750;color:#e7f6ff}.league-rewards-table .league-strong{font-weight:850;color:#80e5fb}
+.league-rewards-table abbr{color:#ffcf76;text-decoration:none;cursor:help}
+.league-empty{text-align:center;color:#a6bbd4;padding:24px!important}
+.league-rewards-footnote{font-size:11px;line-height:1.55;color:#9eb4d1;margin-top:11px}
+@media(max-width:800px){.league-period-list{grid-template-columns:repeat(2,minmax(0,1fr))}.league-rewards-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.league-rewards-panel{padding:12px}.league-rewards-controls input{max-width:180px}}
+@media(max-width:490px){.league-period-list{grid-template-columns:1fr 1fr;gap:6px}.league-period{padding:8px}.league-period strong{font-size:13px}.league-rewards-kpis strong{font-size:15px}}

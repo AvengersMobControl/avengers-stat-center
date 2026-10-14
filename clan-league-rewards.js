@@ -1,5 +1,5 @@
 /* Clan League Rewards: six complete five-week leagues ending with Kraken.
- * Direct rewards come from final Piggy / Space event rows.
+ * Direct rewards come from Flash, Piggy and Space final event rows.
  * October Kraken has recorded event Sparks; older Kraken Sparks are estimates
  * from historical damage and inferred event-time clan, explicitly marked.
  */
@@ -8,6 +8,7 @@
   const D=window.AVENGERS_DATA;
   if(!D)return;
   const K=window.AVENGERS_KRAKEN_DATA||{};
+  const F=window.AVENGERS_PIGGY_FLASH_DATA||{events:[]};
   const LEAGUES=[
     {end:'2026-10-11',kraken:'oct'},
     {end:'2026-09-06',kraken:'sept'},
@@ -55,12 +56,12 @@
     const id=clan+'|'+name;
     let rec=p.members.get(id);
     if(!rec){
-      rec={name,clan,piggySparks:0,spaceSparks:0,krakenSparks:0,piggyStars:0,spaceStars:0,
+      rec={name,clan,flashSparks:0,piggySparks:0,spaceSparks:0,krakenSparks:0,flashStars:0,piggyStars:0,spaceStars:0,
         sparkKnown:0,starKnown:0,missing:0,estimatedKraken:0,events:0};
       p.members.set(id,rec);
     }
     const stars=field(r,'stars'),sparks=field(r,'sparks');
-    if(kind==='piggy'||kind==='space'){
+    if(kind==='piggy'||kind==='space'||kind==='flash'){
       rec[kind+'Sparks']+=sparks||0;
       rec[kind+'Stars']+=stars||0;
       if(sparks!==null)rec.sparkKnown++;
@@ -103,6 +104,33 @@
         unique.forEach(r=>add(p,kind,date,r,r.clan,false));
       }
     }
+    // Flash rewards belong to each five-week league just like Piggy/Space.
+    // Use the specific Flash event ID so multiple Flash sets aren't collapsed.
+    const flashEvents=new Map();
+    (F.events||[]).forEach(ev=>{
+      if(!ev||!ev.date)return;
+      const key=String(ev.id||[ev.setId||ev.date,ev.flash,ev.channelId||''].join('|'));
+      const prev=flashEvents.get(key);
+      if(!prev||(ev.entries||[]).length>(prev.entries||[]).length)flashEvents.set(key,ev);
+    });
+    flashEvents.forEach(ev=>{
+      const date=String(ev.date).slice(0,10),p=which(date);
+      if(!p)return;
+      const unique=new Map();
+      (ev.entries||[]).forEach(r=>{
+        if(!r||!r.name||r.name==='Total'||r.name==='#N/A')return;
+        const name=canonical(r.name);
+        const clan=eventClan({...r,clan:r.clan||ev.clan||ev.rosterScope||'AVENGERS'},'flash');
+        const key=clan+'|'+name;
+        const prev=unique.get(key);
+        // Screenshots sometimes have overlapping results; count each member
+        // only once per Flash event, preferring the fuller reward record.
+        const weight=x=>[x.stars,x.sparks].filter(v=>v!=null&&Number.isFinite(Number(v))).length*1e12+
+          (Number(x.sparks)||0)*1e4+(Number(x.stars)||0);
+        if(!prev||weight(r)>weight(prev))unique.set(key,{...r,name,clan});
+      });
+      unique.forEach(r=>add(p,'flash',date,r,r.clan,false));
+    });
     // The October Kraken import stores explicit, event-clan Sparks.
     (K.octEventRows||[]).forEach(r=>{
       const p=which(String(r.eventDate||''));
@@ -122,12 +150,10 @@
         add(p,'kraken',p.end,{name,sparks:sparkValue},proof.clan,true);
       }
     }
-    // The league period includes flashes, but those events award no Sparks and
-    // live in a separate Flash dataset, so they are intentionally not added.
     periods.forEach(p=>{
       p.rows=[...p.members.values()].map(r=>({...r,
-        sparks:r.piggySparks+r.spaceSparks+r.krakenSparks,
-        stars:r.piggyStars+r.spaceStars}));
+        sparks:r.flashSparks+r.piggySparks+r.spaceSparks+r.krakenSparks,
+        stars:r.flashStars+r.piggyStars+r.spaceStars}));
     });
     return periods;
   }
@@ -136,10 +162,10 @@
   }
   function totals(rows){
     return rows.reduce((a,r)=>{
-      a.sparks+=r.sparks;a.stars+=r.stars;a.krakenEstimate+=r.estimatedKraken;
+      a.sparks+=r.sparks;a.stars+=r.stars;a.flashSparks+=r.flashSparks;a.krakenEstimate+=r.estimatedKraken;
       a.missing+=r.missing;
       return a;
-    },{sparks:0,stars:0,krakenEstimate:0,missing:0});
+    },{sparks:0,stars:0,flashSparks:0,krakenEstimate:0,missing:0});
   }
   function tableRows(p){
     const q=search.trim().toLowerCase();
@@ -149,9 +175,9 @@
       .filter(r=>!q||r.name.toLowerCase().includes(q));
   }
   function downloadCsv(rows,p){
-    const cols=['Name','Clan','League start','Kraken end','Piggy Sparks','Space Sparks','Kraken Sparks','Kraken Sparks estimated','Total Sparks','Piggy Stars','Space Stars','Total Stars','Events','Missing reward records'];
+    const cols=['Name','Clan','League start','Kraken end','Flash Sparks','Piggy Sparks','Space Sparks','Kraken Sparks','Kraken Sparks estimated','Total Sparks','Flash Stars','Piggy Stars','Space Stars','Total Stars','Events','Missing reward records'];
     const quote=x=>{const s=String(x==null?'':x);return /[",\r\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
-    const body=rows.map(r=>[r.name,r.clan,p.start,p.end,r.piggySparks,r.spaceSparks,r.krakenSparks,r.estimatedKraken,r.sparks,r.piggyStars,r.spaceStars,r.stars,r.events,r.missing].map(quote).join(','));
+    const body=rows.map(r=>[r.name,r.clan,p.start,p.end,r.flashSparks,r.piggySparks,r.spaceSparks,r.krakenSparks,r.estimatedKraken,r.sparks,r.flashStars,r.piggyStars,r.spaceStars,r.stars,r.events,r.missing].map(quote).join(','));
     const blob=new Blob([[cols.map(quote).join(','),...body].join('\r\n')],{type:'text/csv;charset=utf-8;'});
     const url=URL.createObjectURL(blob),a=document.createElement('a');
     a.href=url;a.download='avengers-clan-league-rewards-'+p.end+'-'+clanFilter.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.csv';
@@ -178,7 +204,7 @@
       '<div class="league-rewards-kpis">'+
         '<div><small>Total Sparks</small><strong>'+num(summary.sparks)+'</strong></div>'+
         '<div><small>Total Stars</small><strong>'+num(summary.stars)+'</strong></div>'+
-        '<div><small>Member–clan records</small><strong>'+num(all.length)+'</strong></div>'+
+        '<div><small>Flash Sparks</small><strong>'+num(summary.flashSparks)+'</strong></div>'+
         '<div><small>Kraken Sparks estimated</small><strong>'+num(summary.krakenEstimate)+'</strong></div>'+
       '</div>'+
       '<div class="league-rewards-toolbar"><div><strong>'+escape(dateLabel(p.start))+' – '+escape(dateLabel(p.end))+'</strong>'+
@@ -186,13 +212,13 @@
       '<div class="league-rewards-controls"><input data-league-search type="search" autocomplete="off" placeholder="Find a member…" value="'+escape(search)+'" />'+
       '<label>Rank by <select data-league-sort><option value="sparks">Sparks</option><option value="stars">Stars</option></select></label></div></div>'+
       '<div class="league-rewards-scroll"><table class="league-rewards-table"><thead><tr>'+
-      '<th>#</th><th>Member</th><th>Clan</th><th class="num">Piggy Sparks</th><th class="num">Space Sparks</th>'+
+      '<th>#</th><th>Member</th><th>Clan</th><th class="num">Flash Sparks</th><th class="num">Piggy Sparks</th><th class="num">Space Sparks</th>'+
       '<th class="num">Kraken Sparks</th><th class="num">Total Sparks</th><th class="num">Total Stars</th>'+
       '</tr></thead><tbody data-league-body></tbody></table></div>'+
-      '<div class="league-rewards-footnote">Stars are member rewards (not total race pots). Piggy and Space Sparks/Stars come from recorded final results. '+
+      '<div class="league-rewards-footnote">Stars are member rewards (not total race pots). Flash, Piggy and Space Sparks/Stars come from recorded final results. '+
       'Older Kraken Sparks marked * are estimates (damage × 750 for AVENGERS or × 500 for AV-2); clan is inferred from that league’s most recent recorded Piggy/Space event. '+
       'Members without evidence of their historical Kraken clan are not assigned estimated Kraken Sparks. '+
-      'October Kraken Sparks are from the recorded event import. Piggy Flashes award no Sparks. '+
+      'October Kraken Sparks are from the recorded event import. Historical Flash rewards can be incomplete where screenshots are missing. '+
       (summary.missing?'<strong>'+num(summary.missing)+' event records have incomplete reward fields.</strong>':'')+
       '</div></section>';
     const select=host.querySelector('[data-league-clan]');
@@ -206,10 +232,10 @@
     if(!body)return;
     body.innerHTML=rows.length?rows.map((r,i)=>
       '<tr><td>'+r.leagueRank+'</td><td class="league-player">'+escape(r.name)+'</td><td>'+escape(r.clan)+'</td>'+
-      '<td class="num">'+num(r.piggySparks)+'</td><td class="num">'+num(r.spaceSparks)+'</td>'+
+      '<td class="num">'+num(r.flashSparks)+'</td><td class="num">'+num(r.piggySparks)+'</td><td class="num">'+num(r.spaceSparks)+'</td>'+
       '<td class="num">'+num(r.krakenSparks)+(r.estimatedKraken?' <abbr title="Estimated from damage and inferred historical clan">*</abbr>':'')+'</td>'+
       '<td class="num league-strong">'+num(r.sparks)+'</td><td class="num league-strong">'+num(r.stars)+'</td></tr>').join(''):
-      '<tr><td colspan="8" class="league-empty">No matching recorded members in this league.</td></tr>';
+      '<tr><td colspan="9" class="league-empty">No matching recorded members in this league.</td></tr>';
   }
   function setup(el){
     host=el;if(!host)return;

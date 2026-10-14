@@ -143,8 +143,10 @@
   }
   function tableRows(p){
     const q=search.trim().toLowerCase();
-    return chosenRows(p).filter(r=>!q||r.name.toLowerCase().includes(q))
-      .sort((a,b)=>b[sortBy]-a[sortBy]||b.sparks-a.sparks||a.name.localeCompare(b.name));
+    return chosenRows(p)
+      .sort((a,b)=>b[sortBy]-a[sortBy]||b.sparks-a.sparks||a.name.localeCompare(b.name))
+      .map((r,i)=>({...r,leagueRank:i+1}))
+      .filter(r=>!q||r.name.toLowerCase().includes(q));
   }
   function downloadCsv(rows,p){
     const cols=['Name','Clan','League start','Kraken end','Piggy Sparks','Space Sparks','Kraken Sparks','Kraken Sparks estimated','Total Sparks','Piggy Stars','Space Stars','Total Stars','Events','Missing reward records'];
@@ -203,7 +205,7 @@
     const rows=tableRows(p),body=host.querySelector('[data-league-body]');
     if(!body)return;
     body.innerHTML=rows.length?rows.map((r,i)=>
-      '<tr><td>'+(i+1)+'</td><td class="league-player">'+escape(r.name)+'</td><td>'+escape(r.clan)+'</td>'+
+      '<tr><td>'+r.leagueRank+'</td><td class="league-player">'+escape(r.name)+'</td><td>'+escape(r.clan)+'</td>'+
       '<td class="num">'+num(r.piggySparks)+'</td><td class="num">'+num(r.spaceSparks)+'</td>'+
       '<td class="num">'+num(r.krakenSparks)+(r.estimatedKraken?' <abbr title="Estimated from damage and inferred historical clan">*</abbr>':'')+'</td>'+
       '<td class="num league-strong">'+num(r.sparks)+'</td><td class="num league-strong">'+num(r.stars)+'</td></tr>').join(''):

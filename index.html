@@ -1782,10 +1782,10 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const sourceNote=target==='kraken'
       ? 'Kraken lineup: 50 players from the Oct 9 in-game screenshots. Existing AVENGERS / AV-2 indicators and statuses are unchanged.'
       : target==='all'
-      ? 'Current clan membership updated Oct 15, 2026; earlier tracked members retained as Inactive.'
+      ? 'Current membership from Oct 15 screenshots plus leader-confirmed AV-2 additions (DrDetroit and Starred); others retained as Inactive.'
       : target==='active'
         ? '48 current AVENGERS members and lifetime Stars from the Oct 15 in-game screenshots.'
-        : '50 current AV-2 members and lifetime Sparks and Stars from the Oct 15 in-game screenshots.';
+        : '52 AV-2 roster entries: 50 from Oct 15 screenshot totals, plus DrDetroit and Starred added by clan-leader instruction (no new all-time screenshot totals for those two).';
 
     root.innerHTML=`
       <div class="section-toolbar roster-toolbar">
@@ -1819,7 +1819,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       <div class="records-note roster-location-note"><strong>Roster location source:</strong>
         Membership reflects the Oct 15, 2026 in-game AVENGERS and AV-2 screenshots. Known UTC, TZG, State, and Country metadata are retained from the earlier supplied roster; TZG is never derived from UTC. Blank values remain blank.
       </div>
-      <div class="records-note"><strong>Star totals:</strong> Total Stars comes from the Oct 15 in-game all-time screenshots for both current clan rosters. Logged Stars include recorded Piggy, Space and Flash rewards (Kraken Stars are not recorded); Unlogged Stars is the nonnegative difference from the screenshots. For former members without a snapshot, Total Stars is a known minimum (≥). Event counts represent recorded Piggy, Space, Flash and Kraken participation.
+      <div class="records-note"><strong>Star totals:</strong> For screenshot members, Total Stars comes from Oct 15 in-game all-time totals. DrDetroit and Starred were added to AV-2 separately by the clan leader; their new all-time Sparks and Stars are not available, so any displayed total is only a tracked minimum (≥). Logged Stars include recorded Piggy, Space and Flash rewards (Kraken Stars are not recorded); Unlogged Stars is the nonnegative difference from screenshot totals. Event counts represent recorded Piggy, Space, Flash and Kraken participation.
       </div>
       <div class="records-note"><strong>Sparks reconciliation:</strong>
         Logged Sparks includes Piggy, Space, Flash, and Kraken results. Missing June 2026 Kraken rewards for verified AVENGERS event participants are reconstructed from recorded damage at 750 Sparks per million and included once. Hover over Logged Sparks to see Flash, October Kraken, and June Kraken additions. Unlogged is the positive remainder against the Sep 29 all-time screenshot; it cannot be negative.

@@ -9,7 +9,7 @@
   const R=window.AVENGERS_MEMBER_TIMEZONES;
   const S=window.AVENGERS_SPARKS_SNAPSHOT;
   if(!D||!R||!S)return;
-  const entries=[["AV-CHUCK",1240995,"AV-Chuck"],["Av-TigerMx",1177393,"AV-TigerMx"],["AV-Jess-PT",1078111],["AV-CRISPIN.27",971440,"AV-CRISPIN.97"],["AV-2Lin",863222],["AV-EXCALIBUR",698404],["AV-SiFra",693692],["AV2-Kira",503784,"AV-KiraLoveZolika"],["AV2-Brisket",384615,"AV-Brisket"],["AV-Fahad",214296],["AV2-KO",103599,"AV-KO"],["AV-HECKTO",91992],["AV2-MayyaZ",83398],["AV-braa",68536],["Basecreature",64830],["Ibrahim",58724],["Punchy",42978],["AV-LittleZ",30152],["AV-Frenchie2",21123,"AV-FrenchieUSA"],["DedHed",20471],["Keyler",20136],["uLTRaSLaN",19645],["kayesie",18057],["AV-fueravini",16987],["AV-JOKER",5728],["GANESH",5487],["Blade",4598],["AV-CLJM",2124],["GirlsOnly",43],["yooossss",0],["Shelby",0],["Piton",0],["Jamaica",0],["AV-ItsNospace",0],["AV-Squishy",0],["AV-2Pipesis",0],["AV-AC3",0],["AV-2(TAMIM)",0],["AV-JefhKintz05",0,"AV-JeffKintz05"],["AV-Frenchie(-4)",0,"AV-FrenchieUSA"],["AV-Caklet",0],["AV-OblivX",0],["Pro",0],["AV-EventHorizon",0],["AV-Hoops",0],["AV-Derya(OnVACATION)",0,"AV-Derya"],["AV-KitKat",0],["Creatureboost",0],["AV-J",0],["AV-MONSTER.",0,"AV-MONSTER"]];
+  const entries=[["AV-CHUCK",1240995,"AV-Chuck"],["Av-TigerMx",1177393,"AV-TigerMx"],["AV-Jess-PT",1078111],["AV-CRISPIN.27",971440,"AV-CRISPIN.97"],["AV-2Lin",863222],["AV-EXCALIBUR",698404],["AV-SiFra",693692],["AV2-Kira",503784,"AV-KiraLoveZolika"],["AV2-Brisket",384615,"AV-Brisket"],["AV-Fahad",214296],["AV2-KO",103599,"AV-KO"],["AV-HECKTO",91992],["AV2-MayyaZ",83398],["AV-braa",68536],["Basecreature",64830],["Ibrahim",58724],["Punchy",42978],["AV-LittleZ",30152],["AV-Frenchie2",21123],["DedHed",20471],["Keyler",20136],["uLTRaSLaN",19645],["kayesie",18057],["AV-fueravini",16987],["AV-JOKER",5728],["GANESH",5487],["Blade",4598],["AV-CLJM",2124],["GirlsOnly",43],["yooossss",0],["Shelby",0],["Piton",0],["Jamaica",0],["AV-ItsNospace",0],["AV-Squishy",0],["AV-2Pipesis",0],["AV-AC3",0],["AV-2(TAMIM)",0],["AV-JefhKintz05",0,"AV-JeffKintz05"],["AV-Frenchie(-4)",0,"AV-FrenchieUSA"],["AV-Caklet",0],["AV-OblivX",0],["Pro",0],["AV-EventHorizon",0],["AV-Hoops",0],["AV-Derya(OnVACATION)",0,"AV-Derya"],["AV-KitKat",0],["Creatureboost",0],["AV-J",0],["AV-MONSTER.",0,"AV-MONSTER"]];
   const oldRows=Array.isArray(R.rows)?R.rows:[];
   const oldByName=R.byName||{};
   const used=new Set();
@@ -55,6 +55,11 @@
   R.source='AVENGERS membership 2026-10-01; AV-2 screenshot 2026-10-15';
   R.precedence='AV-2 membership and all-time Sparks from Oct 15 screenshots; other existing metadata retained; TZG never inferred from UTC.';
   D.aliasMap=Object.assign({},D.aliasMap||{},aliasAdd);
+  // Two different AV-2 accounts coexist in the supplied screenshots.
+  // Previously both Frenchie names were aliases for a single profile.
+  // Keep Frenchie2 distinct, while Frenchie(-4) retains the legacy record.
+  delete D.aliasMap['AV-Frenchie2'];
+
   // Update only current status; do not rewrite event records or rewards.
   (D.members||[]).forEach(m=>{
     const current=byName[m.name];

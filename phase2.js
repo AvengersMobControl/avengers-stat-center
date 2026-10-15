@@ -470,7 +470,7 @@
           '<div class="p2-profile-kpi"><span>Piggy Last 3</span><strong>'+num(s.piggyL3,0)+'</strong>'+profileRankNote(name,'piggyL3')+'</div>'+
           '<div class="p2-profile-kpi"><span>L3 vs Prior 3</span><strong>'+changeText(s.piggyDelta)+'</strong>'+profileRankNote(name,'piggyDelta')+'</div>'+
           '<div class="p2-profile-kpi"><span>Space PB</span><strong>'+num(spacePB,1)+'</strong>'+profileRankNote(name,'spacePB')+'</div>'+
-          '<div class="p2-profile-kpi"><span>Space Avg</span><strong>'+num(spaceAvg,1)+'</strong>'+profileRankNote(name,'spaceAvg')+'</div>'+
+          '<div class="p2-profile-kpi"><span>Space Arena Avg</span><strong>'+num(spaceAvg,1)+'</strong>'+profileRankNote(name,'spaceAvg')+'</div>'+
           '<div class="p2-profile-kpi"><span>Kraken PB</span><strong>'+num(krakenPB,0)+'</strong>'+profileRankNote(name,'krakenPB')+'</div>'+
           '<div class="p2-profile-kpi"><span>Kraken Avg L3</span><strong>'+num(krakenL3,0)+'</strong>'+profileRankNote(name,'krakenL3')+'</div>'+
           '<div class="p2-profile-kpi"><span>Player Rating</span><strong>'+num(rating,2)+'</strong>'+profileRankNote(name,'rating')+'</div>'+

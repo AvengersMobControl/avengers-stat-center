@@ -1535,7 +1535,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   const groups=[
     {id:'location',name:'Location',keys:['utcOffset','timeZoneGroup','state','country'],summary:'country'},
     {id:'sparks',name:'Sparks',keys:['piggySparks','spaceSparks','flashSparks','krakenSparks','loggedSparks','unloggedSparks','totalCombinedSparks'],summary:'totalCombinedSparks'},
-    {id:'stars',name:'Stars',keys:['piggyStars','spaceStars','flashStars','krakenStars','loggedStars','unloggedStars','knownStars'],summary:'knownStars'},
+    {id:'stars',name:'Stars',keys:['piggyStars','spaceStars','flashStars','loggedStars','unloggedStars','knownStars'],summary:'knownStars'},
     {id:'rating',name:'Rating',keys:['ratingTotal','piggyPB','spacePB','krakenPB'],summary:'ratingTotal'},
     {id:'events',name:'Events',keys:['piggyEvents','spaceEvents','flashEvents','krakenEvents','totalEvents'],summary:'totalEvents'}
   ];
@@ -1543,12 +1543,12 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     utcOffset:'UTC',timeZoneGroup:'TZG',state:'State',country:'Country',
     piggySparks:'Piggy',spaceSparks:'Space',flashSparks:'Flash',krakenSparks:'Kraken',
     loggedSparks:'Logged Sparks',unloggedSparks:'Unlogged Sparks',totalCombinedSparks:'Total Sparks',
-    piggyStars:'Piggy',spaceStars:'Space',flashStars:'Flash',krakenStars:'Kraken',
+    piggyStars:'Piggy',spaceStars:'Space',flashStars:'Flash',
     loggedStars:'Logged Stars',unloggedStars:'Unlogged Stars',knownStars:'Total Stars*',
     ratingTotal:'Rating',piggyPB:'Piggy PB',spacePB:'Space PB',krakenPB:'Kraken PB',
     piggyEvents:'Piggy',spaceEvents:'Space',flashEvents:'Flash',krakenEvents:'Kraken',totalEvents:'Total Events'
   };
-  const numeric=new Set(['utcOffset','piggySparks','spaceSparks','flashSparks','krakenSparks','loggedSparks','unloggedSparks','totalCombinedSparks','piggyStars','spaceStars','flashStars','krakenStars','loggedStars','unloggedStars','knownStars','ratingTotal','piggyPB','spacePB','krakenPB','piggyEvents','spaceEvents','flashEvents','krakenEvents','totalEvents']);
+  const numeric=new Set(['utcOffset','piggySparks','spaceSparks','flashSparks','krakenSparks','loggedSparks','unloggedSparks','totalCombinedSparks','piggyStars','spaceStars','flashStars','loggedStars','unloggedStars','knownStars','ratingTotal','piggyPB','spacePB','krakenPB','piggyEvents','spaceEvents','flashEvents','krakenEvents','totalEvents']);
   const colGroups=groups.map(group=>({...group,visible:expanded[group.id]?group.keys:[group.summary]}));
   const groupHeader=colGroups.map(g=>`<th scope="colgroup" colspan="${g.visible.length}" class="roster-group-heading roster-group-${g.id}"><button type="button" class="roster-group-toggle" data-roster-group="${g.id}" aria-expanded="${!!expanded[g.id]}" title="${expanded[g.id]?'Collapse':'Expand'} ${g.name} columns"><span aria-hidden="true">${expanded[g.id]?'▾':'▸'}</span> ${g.name}<span class="roster-group-count">${g.visible.length}/${g.keys.length}</span></button></th>`).join('');
   const subHeader=colGroups.map(g=>g.visible.map(key=>`<th scope="col" class="${numeric.has(key)?'num':''} roster-subhead roster-head-${g.id}">${sortHeader(labels[key],key,numeric.has(key)).label}</th>`).join('')).join('');
@@ -1562,7 +1562,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       case 'ratingTotal':return r.hasProfile?`<button type="button" class="roster-rating-link" data-roster-rating="${escapeHtml(r.profileName||r.name)}" title="View ${escapeHtml(r.name)} in Player Ratings">${fmtNum(r.ratingTotal,2)} <span aria-hidden="true">↗</span></button>`:fmtNum(r.ratingTotal,2);
       case 'spacePB':return fmtB(r.spacePB);
       case 'krakenPB':return fmtNum(r.krakenPB,1);
-      case 'krakenStars':case 'unloggedStars':return missing;
+      case 'unloggedStars':return missing;
       case 'knownStars':return `<span title="Known logged Stars only; awaiting all-time roster screenshots">${Number(r.knownStars)>0?'≥'+fmtNum(r.knownStars):'—'}</span>`;
       default:return fmtNum(r[key]||0,0);
     }
@@ -1680,7 +1680,6 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       piggyStars:{label:'Piggy Stars',type:'number',get:r=>r.piggyStars},
       spaceStars:{label:'Space Stars',type:'number',get:r=>r.spaceStars},
       flashStars:{label:'Flash Stars',type:'number',get:r=>r.flashStars},
-      krakenStars:{label:'Kraken Stars',type:'number',get:r=>r.krakenStars},
       loggedStars:{label:'Logged Stars',type:'number',get:r=>r.loggedStars},
       unloggedStars:{label:'Unlogged Stars',type:'number',get:r=>r.unloggedStars},
       knownStars:{label:'Total Stars (Known)',type:'number',get:r=>r.knownStars},
@@ -2172,6 +2171,10 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       .roster-unlogged{font-weight:850;color:#ffd779}
       .roster-grouped-table{width:100%;border-collapse:separate;border-spacing:0}
       .roster-grouped-table th,.roster-grouped-table td{white-space:nowrap}
+      /* Keep both tiers of the grouped header together while vertical scrolling.
+         Sticky individual TH elements previously overlapped the second header row. */
+      #page-rosters .roster-grouped-table thead{position:sticky;top:0;z-index:8;background:#11213a}
+      #page-rosters .roster-grouped-table thead th{position:static;top:auto}
       .roster-group-head th{background:#152c48;color:#d8efff;border-bottom:1px solid #34516d}
       .roster-group-head .roster-group-heading{padding:0;border-left:1px solid #34516d}
       .roster-group-toggle{border:0;background:transparent;color:#bde6ff;display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 10px;width:100%;font-weight:850;letter-spacing:.02em;cursor:pointer}

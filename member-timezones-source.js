@@ -224,7 +224,6 @@ AV-Brisket\tActive\t\t\t\t`;
     'AV-Zolika.x.Kira':'AV-ZolikaLoveKira',
     'AV-Atilla':'AV-Attila-AZE',
     'AV-InvinsibleSpy':'AV-InvincibleSpy',
-    'AV-Frenchie2':'AV-FrenchieUSA',
     'AV-Frenchie':'AV-FrenchieUSA',
     'AV-Derya(OnVACATION)':'AV-Derya',
     'Av-TigerMx':'AV-TigerMx',

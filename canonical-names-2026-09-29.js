@@ -107,7 +107,6 @@
     'AV-ZolikaLoveKira':'AV-Zolika.x.Kira',
     'AV-Zolika.x.TheBoss':'AV-Zolika.x.Kira',
     'AV-hoops-SCT':'AV-Hoops',
-    'AV-Frenchie2':'AV-FrenchieUSA',
     'AV-Derya(OnVACATION)':'AV-Derya',
     'Av-TigerMx':'AV-TigerMx',
     'JAMO':'AV-JAMO'

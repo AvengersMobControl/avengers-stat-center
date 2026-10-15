@@ -46,8 +46,11 @@
     else if(byName[old?.sourceName])byName[key]=byName[old.sourceName];
   });
   const aliasAdd={};
-  entries.forEach(([display,sparks,profile])=>{
+  entries.forEach(([display,sparks,profile],i)=>{
     const linked=profile||display;
+    // A legacy alias might have occupied this exact name: latest explicit
+    // screenshot entries must take precedence over legacy alias links.
+    byName[display]=build(newAv2[i]);
     byName[linked]=byName[display];
     if(linked!==display)aliasAdd[display]=linked;
   });

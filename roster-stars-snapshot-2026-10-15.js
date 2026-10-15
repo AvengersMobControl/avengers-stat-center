@@ -1,7 +1,7 @@
 /* October 15, 2026 in-game membership + lifetime Stars snapshots.
-   AVENGERS: all 48 members; AV-2: all 50 members (from earlier screenshots).
+   AVENGERS: 48 screenshot members; AV-2: 50 screenshot members + 2 leader-confirmed.
    Never add all-time screenshot totals to event payout ledgers.
-   This is the authoritative current membership source for both clans;
+   This is the current roster source plus explicit manual membership corrections;
    historical event records and event-time clan associations are untouched. */
 (function(){
   'use strict';
@@ -52,17 +52,25 @@
     const prev=priorRows.get(id);
     if(!prev || (prev.utc==null && row.utc!=null))priorRows.set(id,row);
   });
+  // Explicit clan-leader membership correction (Oct 15): these two players
+  // belong in AV-2, while AV-Bubba0816 stays Inactive. They are not in the
+  // original 50-player AV-2 screenshot; do not invent Sparks or Stars totals.
+  const manualAv2=['AV-DrDetroit','AV-Starred'];
+  S.av2ManualMembers=manualAv2.slice();
   const rosterEntries=[
     ...avengers.map(([name,allTimeStars,profileName])=>({
       name,profileName:canonical(profileName||name),status:'Active'
     })),
     ...S.currentAv2.map(x=>({
       name:x.name,profileName:canonical(x.profileName||x.name),status:'AV2'
-    }))
+    })),
+    ...manualAv2.map(name=>({name,profileName:canonical(name),status:'AV2'}))
   ];
   const currentIds=new Set(rosterEntries.map(x=>x.profileName));
-  if(currentIds.size!==98)
+  if(currentIds.size!==100)
     throw new Error('Current clan roster identities overlap');
+  if(currentIds.has(canonical('AV-Bubba0816')))
+    throw new Error('Bubba should remain Inactive');
   const currentRows=rosterEntries.map(row=>{
     const p=priorRows.get(row.profileName)||priorRows.get(canonical(row.name));
     return {
@@ -101,8 +109,8 @@
   delete D.aliasMap['AV-Frenchie2'];
   byName['AV-Frenchie2']=fromRow(currentRows.find(r=>r.name==='AV-Frenchie2'));
   R.byName=byName;
-  R.source='AVENGERS and AV-2 in-game current rosters, Oct 15 2026';
-  R.precedence='48 AVENGERS and 50 AV-2 members; existing UTC/TZG/country preserved where known.';
+  R.source='AVENGERS and AV-2 screenshot rosters (Oct 15) + leader AV-2 corrections for DrDetroit and Starred';
+  R.precedence='48 AVENGERS; 50 screenshot AV-2 + DrDetroit and Starred added by clan leader. Existing UTC/TZG/country preserved where known.';
 
   // Only current member status changes. Event history, clan attribution,
   // personal records, event totals, and rating math remain unchanged.

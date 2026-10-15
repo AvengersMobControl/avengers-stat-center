@@ -415,6 +415,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   <script src="clan-league-rewards.js"></script>
   <script src="roster-sparks-event-ledger.js"></script>
   <script src="roster-event-breakdown.js"></script>
+  <script src="av2-roster-snapshot-2026-10-15.js"></script>
   <script>
 
 (() => {
@@ -1562,8 +1563,10 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       case 'ratingTotal':return r.hasProfile?`<button type="button" class="roster-rating-link" data-roster-rating="${escapeHtml(r.profileName||r.name)}" title="View ${escapeHtml(r.name)} in Player Ratings">${fmtNum(r.ratingTotal,2)} <span aria-hidden="true">↗</span></button>`:fmtNum(r.ratingTotal,2);
       case 'spacePB':return fmtB(r.spacePB);
       case 'krakenPB':return fmtNum(r.krakenPB,1);
-      case 'unloggedStars':return missing;
-      case 'knownStars':return `<span title="Known logged Stars only; awaiting all-time roster screenshots">${Number(r.knownStars)>0?'≥'+fmtNum(r.knownStars):'—'}</span>`;
+      case 'unloggedStars':return r.unloggedStars==null?missing:fmtNum(r.unloggedStars);
+      case 'knownStars':return r.allTimeStars==null
+        ?`<span title="Known logged Stars only; awaiting all-time roster screenshots">${Number(r.knownStars)>0?'≥'+fmtNum(r.knownStars):'—'}</span>`
+        :`<span title="All-time Stars screenshot, reconciled with known tracked Stars">${fmtNum(r.knownStars)}</span>`;
       default:return fmtNum(r[key]||0,0);
     }
   };
@@ -1586,7 +1589,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       return;
     }
     const snap=window.AVENGERS_SPARKS_SNAPSHOT||{currentAvengers:[]};
-    const snapRows=snap.currentAvengers||[];
+    const snapRows=[...(snap.currentAvengers||[]),...(snap.currentAv2||[])];
     const tzSource=window.AVENGERS_MEMBER_TIMEZONES||{rows:[],byName:{},formatUtc:v=>String(v??'')};
     const tzByName=tzSource.byName||{};
     const rosterRows=Array.isArray(tzSource.rows)?tzSource.rows:[];
@@ -1604,8 +1607,12 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const snapMap=new Map();
     snapRows.forEach(x=>{
       snapMap.set(x.name,x);
+      // The later AV-2 snapshot supersedes September's AVENGERS snapshot
+      // for members who subsequently moved clans or changed names.
+      const canonical=canonicalPlayerName(x.profileName||x.name);
+      if(canonical) snapMap.set(canonical,x);
       const canon=tzByName[x.name]?.canonicalName;
-      if(canon && !snapMap.has(canon)) snapMap.set(canon,x);
+      if(canon) snapMap.set(canon,x);
     });
 
     // The user-supplied roster is the authoritative population for this page.
@@ -1628,6 +1635,9 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       const logged=Math.max(0,Number(m.totalSparks)||0)+extraSparks.flashSparks+extraSparks.octKrakenSparks+(extraSparks.juneKrakenSparks||0);
       const snapshotTotal=snapshot?Math.max(0,Number(snapshot.allTimeSparks)||0):null;
       const unlogged=snapshotTotal==null?0:Math.max(0,snapshotTotal-logged);
+      const starScreenshotTotal=snapshot?.allTimeStars==null?null:Math.max(0,Number(snapshot.allTimeStars)||0);
+      const starLogged=Math.max(0,Number(eventBreakdown.loggedStars)||0);
+      const starUnlogged=starScreenshotTotal==null?null:Math.max(0,starScreenshotTotal-starLogged);
       const displayStatus=roster?.status||m.status||'Inactive';
       const tz=roster;
       return {...m,name,status:displayStatus,hasProfile:!!stored,
@@ -1637,7 +1647,9 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         state:tz?.state||'',location:tz?.location||'',utcOffset:tz?.utc==null?null:Number(tz.utc),
         utcLabel:tz?.utcLabel||'',timeZoneGroup:tz?.timeZoneGroup||'',
         country:String(tz?.location||'').replace(/^USA[- ].*$/i,'USA').replace(/^Canada\s*-.*/i,'Canada').trim(),
-        ...eventBreakdown};
+        ...eventBreakdown,
+        allTimeStars:starScreenshotTotal,unloggedStars:starUnlogged,
+        knownStars:starScreenshotTotal==null?starLogged:Math.max(starScreenshotTotal,starLogged)};
     };
 
     const target=state.rosterView||'active';
@@ -1760,7 +1772,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       ? 'Authoritative Sep 29 roster: Active, AV-2, and Inactive members.'
       : target==='active'
         ? 'Current AVENGERS members from the authoritative Sep 29 roster.'
-        : 'Current AV-2 members from the authoritative Sep 29 roster.';
+        : 'Current AV-2 members and lifetime Sparks from the Oct 15 in-game screenshots.';
 
     root.innerHTML=`
       <div class="section-toolbar roster-toolbar">

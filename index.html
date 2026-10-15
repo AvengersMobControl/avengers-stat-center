@@ -1245,7 +1245,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <br><strong>PB Rating</strong> and <strong>Avg Rating</strong> are each worth up to 3.00 points, for a maximum <strong>Total Rating of 6.00</strong>.
       </div>`;
     $('#ratingsContent').innerHTML = ratingExplanation + tableShell('Overall Player Rating','Personal Best performance + recent average performance',
-      [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Total Rating'},{label:'PB Rating',num:true},{label:'Avg Rating',num:true},{label:'Piggy PB',num:true},{label:'Space PB',num:true},{label:'Kraken PB',num:true},{label:'Piggy Avg',num:true},{label:'Space Avg',num:true},{label:'Kraken L3',num:true}],body);
+      [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Total Rating'},{label:'PB Rating',num:true},{label:'Avg Rating',num:true},{label:'Piggy PB',num:true},{label:'Space PB',num:true},{label:'Kraken PB',num:true},{label:'Piggy Avg',num:true},{label:'Space Arena Avg',num:true},{label:'Kraken L3',num:true}],body);
     bindPlayerButtons($('#ratingsContent'));
   }
 
@@ -1949,7 +1949,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <div class="profile-kpi"><span>Piggy PB</span><strong>${fmtNum(m.piggyPB)}</strong></div>
         <div class="profile-kpi"><span>Piggy Avg</span><strong>${fmtNum(m.piggyAvg)}</strong></div>
         <div class="profile-kpi"><span>Space PB</span><strong>${fmtB(m.spacePB)}</strong></div>
-        <div class="profile-kpi"><span>Space Avg</span><strong>${fmtB(m.spaceAvg)}</strong></div>
+        <div class="profile-kpi"><span>Space Arena Avg</span><strong>${fmtB(m.spaceAvg)}</strong></div>
         <div class="profile-kpi"><span>Kraken PB</span><strong>${krakenPB>0?fmtNum(krakenPB,1):'—'}</strong></div>
         <div class="profile-kpi"><span>Kraken Avg</span><strong>${krakenAvg>0?fmtNum(krakenAvg,1):'—'}</strong></div>
         <div class="profile-kpi"><span>Kraken Last 3</span><strong>${krakenLast3>0?fmtNum(krakenLast3,1):'—'}</strong></div>
@@ -1970,7 +1970,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         </div></div>
         <div class="card"><div class="card-header"><div class="card-title">Space Snapshot</div></div><div class="card-body">
           <div class="rank-row"><div class="rank-num">PB</div><div class="rank-name">Personal Best</div><div class="rank-score">${fmtB(m.spacePB)}</div></div>
-          <div class="rank-row"><div class="rank-num">AVG</div><div class="rank-name">Average</div><div class="rank-score">${fmtB(m.spaceAvg)}</div></div>
+          <div class="rank-row"><div class="rank-num">AVG</div><div class="rank-name">Arena Average</div><div class="rank-score">${fmtB(m.spaceAvg)}</div></div>
           <div class="rank-row"><div class="rank-num">NOW</div><div class="rank-name">Latest Logged</div><div class="rank-score">${spLast?fmtB(spLast.yearsB):'—'}</div></div>
         </div></div>
         <div class="card"><div class="card-header"><div class="card-title">Kraken Snapshot</div></div><div class="card-body">

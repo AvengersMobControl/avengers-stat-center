@@ -28,6 +28,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Test roster parsing and identity rules
+        run: node --test scripts/sync-discord-utc.test.cjs
       - name: Read UTC submissions
         env:
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}

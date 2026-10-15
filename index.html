@@ -416,6 +416,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   <script src="roster-sparks-event-ledger.js"></script>
   <script src="roster-event-breakdown.js"></script>
   <script src="av2-roster-snapshot-2026-10-15.js"></script>
+  <script src="roster-stars-snapshot-2026-10-15.js"></script>
   <script>
 
 (() => {
@@ -1545,7 +1546,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     piggySparks:'Piggy',spaceSparks:'Space',flashSparks:'Flash',krakenSparks:'Kraken',
     loggedSparks:'Logged Sparks',unloggedSparks:'Unlogged Sparks',totalCombinedSparks:'Total Sparks',
     piggyStars:'Piggy',spaceStars:'Space',flashStars:'Flash',
-    loggedStars:'Logged Stars',unloggedStars:'Unlogged Stars',knownStars:'Total Stars*',
+    loggedStars:'Logged Stars',unloggedStars:'Unlogged Stars',knownStars:'Total Stars',
     ratingTotal:'Rating',piggyPB:'Piggy PB',spacePB:'Space PB',krakenPB:'Kraken PB',
     piggyEvents:'Piggy',spaceEvents:'Space',flashEvents:'Flash',krakenEvents:'Kraken',totalEvents:'Total Events'
   };
@@ -1614,6 +1615,16 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       const canon=tzByName[x.name]?.canonicalName;
       if(canon) snapMap.set(canon,x);
     });
+    // Star screenshots (Oct 15) are more recent than the older Sparks
+    // snapshot (Sep 29). Keep them independent: don't accidentally replace
+    // an older Sparks amount with a Stars total or vice versa.
+    const starMap=new Map();
+    [...(snap.currentAvengersStars||[]),...(snap.currentAv2||[])].forEach(x=>{
+      if(x.allTimeStars==null)return;
+      const canonical=canonicalPlayerName(x.profileName||x.name);
+      starMap.set(x.name,x);
+      if(canonical)starMap.set(canonical,x);
+    });
 
     // The user-supplied roster is the authoritative population for this page.
     const allNames=new Set(rosterRows.map(r=>r.name));
@@ -1635,7 +1646,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       const logged=Math.max(0,Number(m.totalSparks)||0)+extraSparks.flashSparks+extraSparks.octKrakenSparks+(extraSparks.juneKrakenSparks||0);
       const snapshotTotal=snapshot?Math.max(0,Number(snapshot.allTimeSparks)||0):null;
       const unlogged=snapshotTotal==null?0:Math.max(0,snapshotTotal-logged);
-      const starScreenshotTotal=snapshot?.allTimeStars==null?null:Math.max(0,Number(snapshot.allTimeStars)||0);
+      const starSnapshot=starMap.get(canonical)||starMap.get(name);
+      const starScreenshotTotal=starSnapshot?.allTimeStars==null?null:Math.max(0,Number(starSnapshot.allTimeStars)||0);
       const starLogged=Math.max(0,Number(eventBreakdown.loggedStars)||0);
       const starUnlogged=starScreenshotTotal==null?null:Math.max(0,starScreenshotTotal-starLogged);
       const displayStatus=roster?.status||m.status||'Inactive';
@@ -1649,7 +1661,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         country:String(tz?.location||'').replace(/^USA[- ].*$/i,'USA').replace(/^Canada\s*-.*/i,'Canada').trim(),
         ...eventBreakdown,
         allTimeStars:starScreenshotTotal,unloggedStars:starUnlogged,
-        knownStars:starScreenshotTotal==null?starLogged:Math.max(starScreenshotTotal,starLogged)};
+        knownStars:starScreenshotTotal==null?starLogged:starScreenshotTotal,
+        starReconciliationDelta:starScreenshotTotal==null?null:starScreenshotTotal-starLogged};
     };
 
     const target=state.rosterView||'active';
@@ -1769,10 +1782,10 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const sourceNote=target==='kraken'
       ? 'Kraken lineup: 50 players from the Oct 9 in-game screenshots. Existing AVENGERS / AV-2 indicators and statuses are unchanged.'
       : target==='all'
-      ? 'Authoritative Sep 29 roster: Active, AV-2, and Inactive members.'
+      ? 'Current clan membership updated Oct 15, 2026; earlier tracked members retained as Inactive.'
       : target==='active'
-        ? 'Current AVENGERS members from the authoritative Sep 29 roster.'
-        : 'Current AV-2 members and lifetime Sparks from the Oct 15 in-game screenshots.';
+        ? '48 current AVENGERS members and lifetime Stars from the Oct 15 in-game screenshots.'
+        : '50 current AV-2 members and lifetime Sparks and Stars from the Oct 15 in-game screenshots.';
 
     root.innerHTML=`
       <div class="section-toolbar roster-toolbar">
@@ -1797,16 +1810,16 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
           <div class="kpi"><div class="kpi-label">Combined Total</div><div class="kpi-value">${fmtNum(combinedTotal,0)}</div><div class="kpi-note">logged + unlogged</div></div>`}
       </div>
       <div class="tz-section">
-        <div class="tz-section-head"><strong>Time Zone Groups</strong><span>Three authoritative groups (TZG 1, 2, and 3) from the Sep 29 roster; not calculated from UTC.</span></div>
+        <div class="tz-section-head"><strong>Time Zone Groups</strong><span>Groups (TZG 1, 2, and 3) retained from supplied player metadata, never calculated from UTC.</span></div>
         ${zoneGroupsHtml}
       </div>
       ${target==='kraken'?`<div class="records-note"><strong>Kraken membership source:</strong>
         October 9, 2026 in-game roster screenshots. In-game Sparks are a separate point-in-time value; they are not Kraken damage or a replacement for tracked event Sparks. This view does not change any player's primary AVENGERS or AV-2 assignment.
       </div>`:''}
       <div class="records-note roster-location-note"><strong>Roster location source:</strong>
-        Status, UTC, TZG, State, and Country come from the authoritative roster supplied Sep 29, 2026. TZG is used exactly as supplied (1, 2, or 3), not inferred from UTC. Blank values remain blank rather than being guessed.
+        Membership reflects the Oct 15, 2026 in-game AVENGERS and AV-2 screenshots. Known UTC, TZG, State, and Country metadata are retained from the earlier supplied roster; TZG is never derived from UTC. Blank values remain blank.
       </div>
-      <div class="records-note"><strong>Star totals:</strong> Logged Stars include recorded Piggy, Space and Flash rewards. Kraken star rewards are not recorded. Unlogged Stars will remain unavailable until the in-game roster screenshots are entered, so Total Stars* is a known minimum (≥), not a final all-time total. Event counts represent unique recorded Piggy, Space and Flash entries plus Kraken battles by event month.
+      <div class="records-note"><strong>Star totals:</strong> Total Stars comes from the Oct 15 in-game all-time screenshots for both current clan rosters. Logged Stars include recorded Piggy, Space and Flash rewards (Kraken Stars are not recorded); Unlogged Stars is the nonnegative difference from the screenshots. For former members without a snapshot, Total Stars is a known minimum (≥). Event counts represent recorded Piggy, Space, Flash and Kraken participation.
       </div>
       <div class="records-note"><strong>Sparks reconciliation:</strong>
         Logged Sparks includes Piggy, Space, Flash, and Kraken results. Missing June 2026 Kraken rewards for verified AVENGERS event participants are reconstructed from recorded damage at 750 Sparks per million and included once. Hover over Logged Sparks to see Flash, October Kraken, and June Kraken additions. Unlogged is the positive remainder against the Sep 29 all-time screenshot; it cannot be negative.

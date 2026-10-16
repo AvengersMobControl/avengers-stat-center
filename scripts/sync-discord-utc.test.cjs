@@ -1,7 +1,7 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const {parseUtc, countryOf, nameOf, clanOf, reconcile, knownRoster} = require('./sync-discord-utc.cjs');
+const {parseUtc, countryOf, nameOf, clanOf, reconcile, knownRoster, encryptState, decryptState, publicProjection} = require('./sync-discord-utc.cjs');
 
 test('handles signed, fractional and quarter-hour UTC offsets', () => {
   assert.equal(parseUtc('UTC -5'), -5);
@@ -55,4 +55,36 @@ test('two different Discord users never overwrite the same overlay member', () =
   reconcile(state,sample('2'),new Map(),'');
   assert.equal(state.members.length,1);
   assert.equal(state.pending[0].reason,'name_already_linked_to_another_discord_account');
+});
+
+test('state encryption hides Discord identifiers and survives a round trip', () => {
+  const secret = 'a-long-test-secret-that-is-not-for-production-1234567890';
+  const state = {
+    lastMessageId: '987654321098765432',
+    members: [{discordUserId:'123456789012345678', name:'AV-NewPlayer',
+      status:'AV2', utc:5.5, country:'India', messageId:'987654321098765431'}],
+    pending: [{discordUserId:'555555555555555555',proposedName:'Unknown',utc:-5,
+      country:'USA',reason:'missing_clan',messageId:'987654321098765430'}]
+  };
+  const encrypted = encryptState(state, secret);
+  const raw = JSON.stringify(encrypted);
+  assert.equal(raw.includes('123456789012345678'), false);
+  assert.equal(raw.includes('987654321098765432'), false);
+  assert.equal(raw.includes('AV-NewPlayer'), false);
+  assert.deepEqual(decryptState(encrypted,secret), state);
+  assert.throws(() => decryptState(encrypted, secret+'wrong'), /auth|authenticate/i);
+  assert.throws(() => encryptState(state, 'short'), /at least 32 characters/);
+});
+test('browser projection includes approved public fields only', () => {
+  const state = {lastMessageId:'987654321098765432',
+    members:[{discordUserId:'123456789012345678',name:'AV-NewPlayer',status:'AV2',
+      utc:5.5,country:'India',messageId:'987654321098765431'}],
+    pending:[{discordUserId:'555555555555555555',reason:'missing_clan'}]};
+  const projection=publicProjection(state);
+  assert.deepEqual(projection, {members:[{name:'AV-NewPlayer',status:'AV2',
+    utc:5.5,country:'India'}]});
+  const published=JSON.stringify(projection);
+  assert.equal(published.includes('discordUserId'),false);
+  assert.equal(published.includes('messageId'),false);
+  assert.equal(published.includes('pending'),false);
 });

@@ -281,6 +281,19 @@ function save(state) {
     ';\n');
 }
 
+function initializeCheckpoint(state, messages, backfill) {
+  if (state.lastMessageId) return false;
+  // A new empty channel must not lose its first future submission. Zero means
+  // 'begin from the very first message', rather than 'skip the first message'.
+  // When history already exists and backfill is off, checkpoint the latest
+  // message so old chatter is not bulk-imported.
+  if (messages.length && backfill === 'true') return false;
+  state.lastMessageId = messages.length
+    ? messages[messages.length - 1].id
+    : '0';
+  return true;
+}
+
 async function main() {
   const token = process.env.DISCORD_BOT_TOKEN;
   const channelId = process.env.DISCORD_UTC_CHANNEL_ID;
@@ -291,15 +304,13 @@ async function main() {
   const policy = onboardingPolicy();
   const state = load();
   const messages = await fetchMessages(token, channelId, state.lastMessageId);
-  if (!messages.length) return;
-  const nextId = messages.reduce((id, m) => maxId(id, m.id), state.lastMessageId);
-  if (!state.lastMessageId && process.env.DISCORD_UTC_BACKFILL !== 'true') {
-    // On first configuration, begin with future posts instead of bulk-importing old recruitment chatter.
-    state.lastMessageId = nextId;
+  if (initializeCheckpoint(state, messages, process.env.DISCORD_UTC_BACKFILL)) {
     save(state);
-    console.log('Initialized checkpoint; future UTC posts will be processed.');
+    console.log('Initialized UTC checkpoint; future posts will be processed.');
     return;
   }
+  if (!messages.length) return;
+  const nextId = messages.reduce((id, m) => maxId(id, m.id), state.lastMessageId);
   const known = knownRoster();
   for (const message of messages) {
     if (!state.lastMessageId || BigInt(message.id) > BigInt(state.lastMessageId)) {
@@ -312,4 +323,5 @@ async function main() {
 }
 if (require.main === module) main().catch(err => {console.error(err); process.exitCode = 1;});
 module.exports = {parseUtc, countryOf, nameOf, clanOf, reconcile, knownRoster,
-  encryptState, decryptState, publicProjection, fetchMessages, onboardingPolicy};
+  encryptState, decryptState, publicProjection, fetchMessages, onboardingPolicy,
+  initializeCheckpoint};

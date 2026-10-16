@@ -65,7 +65,7 @@
       dest.historical+=estimated;
       dest.october+=Math.max(0,oct);
       if(league.kraken==='june')dest.juneBackfill+=estimated;
-      dest.events.add(league.kraken+'|'+row.clan);
+      dest.events.add(league.kraken);
     }
   }
   // The retained archive also includes Feb 2, Feb 23 and March Kraken
@@ -117,7 +117,7 @@
     const rate=nearest.clan==='AVENGERS'?750:500;
     const dest=get(row.name).kraken;
     dest.historical+=row.damage*rate;
-    dest.events.add(row.month+'|'+nearest.clan);
+    dest.events.add(row.month);
   }
   // Counts represent observed Kraken activity even if a particular older
   // event lacks sufficient historical clan evidence for a Spark payout.
@@ -133,7 +133,7 @@
     forMember(raw,legacyTotal=0){
       const data=get(raw),historicBase=Math.max(0,Number(legacyTotal)||0);
       const piggy=data.piggy.sparks,space=data.space.sparks,flash=data.flash.sparks;
-      const kraken=data.kraken.historical+data.kraken.october+data.kraken.juneBackfill;
+      // June is already included in historical per-event payouts; expose its\n      // provenance separately, never add it to the lifetime category again.\n      const kraken=data.kraken.historical+data.kraken.october;
       const logged=piggy+space+flash+kraken;
       const knownStars=data.piggy.stars+data.space.stars+data.flash.stars;
       const directRewardFloor=piggy+space;

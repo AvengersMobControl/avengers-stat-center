@@ -386,13 +386,10 @@
   function combinedSparksFor(name){
     var canonical=canonicalNameFor(name);
     var m=memberByName[canonical]||memberByName[name]||{};
-    var logged=Number(m.totalSparks)||0;
-    var S=window.AVENGERS_SPARKS_SNAPSHOT||{currentAvengers:[]};
-    var snap=0;
-    (S.currentAvengers||[]).forEach(function(r){
-      if(canonicalNameFor(r.name)===canonical) snap=Math.max(snap,Number(r.allTimeSparks)||0);
-    });
-    return Math.max(logged,snap);
+    // Profile Sparks must use the same independently sourced four-event
+    // ledger as the roster. Historic snapshots are not earned event payouts.
+    return Number(window.AVENGERS_ROSTER_EVENT_BREAKDOWN
+      ?.forMember(canonical,Number(m.totalSparks)||0)?.eventLoggedSparks)||0;
   }
 
   function profileMetricValue(name,key){

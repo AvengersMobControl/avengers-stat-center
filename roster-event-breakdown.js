@@ -27,7 +27,14 @@
   window.AVENGERS_ROSTER_EVENT_BREAKDOWN={
     forMember(raw,baseTotal=0){
       const data=get(raw),extra=ledger.forMember?.(raw)||{flashSparks:0,octKrakenSparks:0,juneKrakenSparks:0};
-      const base=Math.max(0,Number(baseTotal)||0);
+      const historicBase=Math.max(0,Number(baseTotal)||0);
+      // Existing member.totalSparks is an older historical base. Recorded
+      // deduplicated Piggy + Space rewards establish a minimum independently.
+      // Use the larger amount, never add them: adding would double-count old
+      // rewards that are already present in the stored base.
+      const directRewardFloor=data.piggy.sparks+data.space.sparks;
+      const base=Math.max(historicBase,directRewardFloor);
+      const baseSupplementSparks=base-historicBase;
       const piggy=Math.min(base,data.piggy.sparks);
       // Keep the original logged Sparks authoritative when historic event reward rows
       // differ slightly due to rounding; the Kraken remainder is historical base.
@@ -38,12 +45,15 @@
       return {
         piggySparks:piggy,spaceSparks:space,flashSparks:flash,krakenSparks:kraken,
         eventLoggedSparks:base+flash+(Number(extra.octKrakenSparks)||0)+(Number(extra.juneKrakenSparks)||0),
+        historicBaseSparks:historicBase,eventBackedBaseFloor:base,baseSupplementSparks,
+        directRewardFloor,
         piggyStars:data.piggy.stars,spaceStars:data.space.stars,flashStars:data.flash.stars,krakenStars:null,
         loggedStars:knownStars,unloggedStars:null,knownStars,
         piggyEvents:data.piggy.events.size,spaceEvents:data.space.events.size,
         flashEvents:data.flash.events.size,krakenEvents:data.kraken.events.size,
         totalEvents:data.piggy.events.size+data.space.events.size+data.flash.events.size+data.kraken.events.size,
-        sparksReconciliationDelta:data.piggy.sparks-piggy+data.space.sparks-space
+        sparksReconciliationDelta:data.piggy.sparks-piggy+data.space.sparks-space,
+        storedBaseDifference:directRewardFloor-historicBase
       };
     }
   };

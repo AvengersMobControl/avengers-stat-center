@@ -74,7 +74,11 @@ for(const x of starRows){
   for(const key of [x.name,x.profileName,canonical(x.profileName||x.name)].filter(Boolean))
     stars.set(key,x);
 }
-const sparkRows=[...(S.currentAvengers||[]),...(S.currentAv2||[])];
+const sparkRows=[
+  ...(S.currentAvengers||[]).map(x=>({...x,beforeDate:'2026-09-30',snapshotLabel:'2026-09-29'})),
+  ...(S.currentAv2||[]).map(x=>({...x,beforeDate:'2026-10-16',snapshotLabel:'2026-10-15'})),
+  ...(S.preSpaceOct16||[]),...(S.historicalSparkFloors||[])
+];
 const sparks=new Map();
 for(const x of sparkRows){
   for(const key of [x.name,x.profileName,canonical(x.profileName||x.name)].filter(Boolean))
@@ -106,17 +110,21 @@ const records=current.map(r=>{
   const star=stars.get(name)||stars.get(r.name);
   const sparkScreenshot=spark?.allTimeSparks==null?null:Number(spark.allTimeSparks);
   const starScreenshot=star?.allTimeStars==null?null:Number(star.allTimeStars);
+  const sparkAsOf=sparkScreenshot===null?null:B.loggedBefore(name,spark.beforeDate);
+  const sparkDelta=sparkScreenshot===null?null:sparkScreenshot-sparkAsOf;
+  const unloggedSparks=Math.max(0,sparkDelta||0);
   assert(Number.isFinite(loggedSparks)&&loggedSparks>=0, 'Invalid logged Sparks: '+r.name);
   assert(Number.isFinite(starLogged)&&starLogged>=0, 'Invalid logged Stars: '+r.name);
   if(sparkScreenshot!==null)assert(Number.isFinite(sparkScreenshot)&&sparkScreenshot>=0,'Invalid screenshot Sparks: '+r.name);
   if(starScreenshot!==null)assert(Number.isFinite(starScreenshot)&&starScreenshot>=0,'Invalid screenshot Stars: '+r.name);
   return {
     name:r.name,canonicalName:name,clan:r.status==='Active'?'AVENGERS':'AV-2',
-    sparkSnapshotDate:r.status==='AV2'&&S.currentAv2.some(x=>x.name===r.name)?S.av2Date:S.date,
+    sparkSnapshotDate:spark?.snapshotLabel||null,
     starSnapshotDate:star? '2026-10-15':null,
     sparkSnapshot:sparkScreenshot,starSnapshot:starScreenshot,
-    loggedSparks,loggedStars:starLogged,baseSupplementSparks,
-    sparkDelta:sparkScreenshot===null?null:sparkScreenshot-loggedSparks,
+    loggedSparks,loggedStars:starLogged,baseSupplementSparks,loggedAtSnapshot:sparkAsOf,
+    unloggedSparks,totalCombinedSparks:loggedSparks+unloggedSparks,
+    sparkDelta,
     starDelta:starScreenshot===null?null:starScreenshot-starLogged,
     piggySparks:event.piggySparks,spaceSparks:event.spaceSparks,
     flashSparks:event.flashSparks,krakenSparks:event.krakenSparks,
@@ -125,6 +133,13 @@ const records=current.map(r=>{
     eventRowDelta:Number(event.storedBaseDifference)||0
   };
 });
+const hoops=records.find(x=>x.name==='AV-Hoops');
+if(hoops){
+  assert.equal(hoops.sparkSnapshot,12416538,'Hoops lifetime Sparks must survive AV-2 transfer');
+  assert.equal(hoops.totalCombinedSparks,hoops.loggedSparks+hoops.unloggedSparks);
+}
+const currentInten=records.find(x=>x.name==='AV-INTEN');
+if(currentInten)assert.equal(currentInten.sparkSnapshot,38323359,'New pre-Space benchmark did not load');
 const missingStar=records.filter(x=>x.starSnapshot===null);
 const missingSpark=records.filter(x=>x.sparkSnapshot===null);
 const overStar=records.filter(x=>x.starDelta!==null&&x.starDelta<0).sort((a,b)=>a.starDelta-b.starDelta);

@@ -1,7 +1,7 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const {parseUtc, countryOf, nameOf, clanOf, reconcile, knownRoster, encryptState, decryptState, publicProjection} = require('./sync-discord-utc.cjs');
+const {parseUtc, countryOf, nameOf, clanOf, reconcile, knownRoster, encryptState, decryptState, publicProjection, fetchMessages} = require('./sync-discord-utc.cjs');
 
 test('handles signed, fractional and quarter-hour UTC offsets', () => {
   assert.equal(parseUtc('UTC -5'), -5);
@@ -100,4 +100,29 @@ test('October 15 roster overrides stale October 1 clan statuses', () => {
   assert.notEqual(known.get('av-frenchie2'), known.get('av-frenchie(-4)'));
   assert.equal(known.get('av-zolika.x.theboss')?.name, 'AV-Zolika.x.Kira');
   assert.equal(known.get('take.them.out')?.name, 'AV-ColdCreeps');
+});
+
+test('Discord polling collects more than 100 newer messages without losing older results', async () => {
+  const base = 1100000000000000000n;
+  const messages = Array.from({length: 230}, (_, i) => ({
+    id:String(base+BigInt(i+1)),content:'UTC+2, Germany',author:{id:String(i+1)}
+  }));
+  const checkpoint=messages[19].id;
+  const oldFetch=global.fetch;
+  let pageCount=0;
+  try {
+    global.fetch=async url => {
+      pageCount++;
+      const u=new URL(url);
+      const before=u.searchParams.get('before');
+      const next=messages.filter(m => !before || BigInt(m.id)<BigInt(before))
+        .sort((a,b) => BigInt(a.id)>BigInt(b.id)?-1:1).slice(0,100);
+      return {ok:true,json:async()=>next};
+    };
+    const result=await fetchMessages('token','100000000000000000',checkpoint);
+    assert.equal(pageCount,3);
+    assert.equal(result.length,210);
+    assert.equal(result[0].id,messages[20].id);
+    assert.equal(result.at(-1).id,messages.at(-1).id);
+  } finally {global.fetch=oldFetch;}
 });

@@ -18,101 +18,176 @@ test('reads country only when supplied rather than guessing it from UTC', () => 
   assert.equal(countryOf('UTC+2 | Germany'), 'Germany');
   assert.equal(countryOf('UTC +5:30\nCountry: India'), 'India');
 });
-const ROLE = '120000000000000001';
-const rolePolicy = {trustedRoleIds:[ROLE],verifiedLinks:{}};
-const msg = (id,content,name,role=ROLE) => ({
-  id:String(1000+Number(id)),timestamp:'2026-10-15T12:00:00Z',
-  content,author:{id:String(id),username:'discord_' + id},
-  member:{nick:name,roles:role?[role]:[]}
+const COUNCIL_ROLE='120000000000000001';
+const noRoles={councilRoleIds:[],verifiedLinks:{}};
+const council={councilRoleIds:[COUNCIL_ROLE],verifiedLinks:{}};
+const msg=(id, content, name, opts={})=>({
+  id: String(1000+Number(id)),
+  timestamp:'2026-10-15T12:00:00Z',
+  content,author:{id:String(id),username:'discord_'+id},
+  member:{nick:name,roles:opts.roles||[]},
+  mentions:opts.mentions||[]
 });
+const tagged=(id,name)=>({id:String(id),member:{nick:name},
+  username:'discord_'+id,bot:false});
 
-test('verified Discord account updates known player without changing clan or game name', () => {
-  const known=knownRoster();
-  assert.equal(known.get('av-zolika.x.kira')?.name,'AV-Zolika.x.Kira');
-  const state={members:[],pending:[]};
-  const policy={trustedRoleIds:[ROLE],verifiedLinks:{'15':'AV-Zolika.x.Kira'}};
-  reconcile(state,msg(15,'UTC+2, Netherlands','AV-Zolika.x.Kira'),known,'',policy);
+test('any member first UTC and country post updates existing known roster identity without role',()=>{
+  const state={members:[],pending:[]},known=knownRoster();
+  reconcile(state,msg(15,'UTC+2, Netherlands','AV-Zolika.x.Kira'),known,'',noRoles);
   assert.equal(state.members.length,1);
   assert.equal(state.members[0].name,'AV-Zolika.x.Kira');
   assert.equal(state.members[0].status,'Active');
+  assert.equal(state.members[0].utc,2);
   assert.equal(state.members[0].country,'Netherlands');
-  // Subsequent nickname change does not rebind the verified account.
-  reconcile(state,msg(15,'UTC+3, Netherlands','NotTheSameNickname'),known,'',policy);
-  assert.equal(state.members[0].name,'AV-Zolika.x.Kira');
-  assert.equal(state.members[0].utc,3);
-});
-
-test('new member with authorized Discord role and explicit name joins the correct clan', () => {
-  const state={members:[],pending:[]};
-  reconcile(state,msg(12,'Name: AV-NewPlayer\nUTC+5:30, India','AV-NewPlayer'),new Map(),'AV-2',rolePolicy);
-  assert.deepEqual([state.members[0].name,state.members[0].status,state.members[0].utc,state.members[0].country],
-    ['AV-NewPlayer','AV2',5.5,'India']);
-  reconcile(state,msg(12,'UTC+5:45, Nepal','AV-NewPlayer'),new Map(),'AV-2',rolePolicy);
+  assert.equal(state.members[0].source,'self');
+  reconcile(state,msg(15,'UTC+6, India','AV-Zolika.x.Kira'),known,'',noRoles);
   assert.equal(state.members.length,1);
-  assert.equal(state.members[0].utc,5.75);
-  assert.equal(state.members[0].country,'Nepal');
+  assert.equal(state.members[0].utc,2,'later member messages must not overwrite first post');
 });
 
-test('new player without clan cannot be silently assigned', () => {
+test('any new member can self-report with explicit game name and clan',()=>{
   const state={members:[],pending:[]};
-  reconcile(state,msg(99,'Name: PotentialPlayer\nUTC-4','PotentialPlayer'),new Map(),'',rolePolicy);
-  assert.equal(state.members.length,0);
-  assert.equal(state.pending[0].reason,'missing_clan');
+  reconcile(state,msg(16,'Name: AV-Newbie\nClan: AV-2\nUTC+5:30, India','AV-Newbie'),
+    new Map(),'',noRoles);
+  assert.deepEqual([state.members[0].name,state.members[0].status,
+    state.members[0].utc,state.members[0].country],['AV-Newbie','AV2',5.5,'India']);
 });
-
-test('one role-approved game name cannot be bound to two separate Discord users', () => {
+test('new member without a clan or game name is pending rather than guessed',()=>{
   const state={members:[],pending:[]};
-  for (const id of [1,2]) reconcile(state,msg(id,'Name: AV-Same\nUTC-5, USA\nClan: AVENGERS','AV-Same'),new Map(),'',rolePolicy);
-  assert.equal(state.members.length,1);
-  assert.equal(state.pending[0].reason,'name_already_linked_to_another_discord_account');
-});
-
-test('a claimed existing game nickname requires an admin-verified identity link', () => {
-  const known=knownRoster(),state={members:[],pending:[]};
-  reconcile(state,msg(345,'Name: AV-HarryBallsagna\nUTC-5, USA','AV-HarryBallsagna'),known,'',rolePolicy);
-  assert.equal(state.members.length,0);
-  assert.equal(state.pending[0].reason,'existing_identity_requires_verification');
-  assert.equal(known.get('av-harryballsagna')?.status,'Active');
-});
-
-test('a Discord member lacking the trusted role cannot alter the roster', () => {
-  const state={members:[],pending:[]};
-  reconcile(state,msg(99,'Name: AV-NewPlayer\nUTC+2, Germany\nClan: AV-2','AV-NewPlayer',null),new Map(),'',rolePolicy);
-  assert.equal(state.members.length,0);
-  assert.equal(state.pending[0].reason,'untrusted_role');
-});
-
-test('a fresh user must explicitly provide game name before automatic admission', () => {
-  const state={members:[],pending:[]};
-  reconcile(state,msg(99,'UTC+2, Germany\nClan: AV-2','UnverifiedNickname'),new Map(),'',rolePolicy);
+  reconcile(state,msg(19,'UTC+2, Germany','SomeDiscordUser'),new Map(),'',noRoles);
   assert.equal(state.members.length,0);
   assert.equal(state.pending[0].reason,'explicit_game_name_required');
+  reconcile(state,msg(19,'Name: AV-Newbie\nUTC+2, Germany','AV-Newbie'),new Map(),'',noRoles);
+  assert.equal(state.pending[0].reason,'missing_or_inactive_clan');
 });
-
-test('invalid verified mapping remains pending rather than silently creating an account', () => {
+test('direct self report requires country when it was not previously logged',()=>{
   const state={members:[],pending:[]};
-  reconcile(state,msg(12,'UTC+2, Germany','RandomNickname'),knownRoster(),'',
-    {trustedRoleIds:[ROLE],verifiedLinks:{'12':'AV-DOES-NOT-EXIST'}});
+  reconcile(state,msg(19,'Name: AV-Newbie\nClan: AV-2\nUTC+2','AV-Newbie'),
+    new Map(),'',noRoles);
   assert.equal(state.members.length,0);
-  assert.equal(state.pending[0].reason,'verified_link_not_in_roster');
+  assert.equal(state.pending[0].reason,'country_missing');
+});
+test('new Discord author cannot impersonate another known player using only Name field',()=>{
+  const state={members:[],pending:[]};
+  reconcile(state,msg(19,'Name: AV-HarryBallsagna\nUTC-5, USA','FakeName'),
+    knownRoster(),'',noRoles);
+  assert.equal(state.members.length,0);
+  assert.equal(state.pending[0].reason,'existing_identity_requires_nickname_match');
 });
 
-test('missing onboarding security configuration fails closed', () => {
-  const prevRole=process.env.DISCORD_UTC_TRUSTED_ROLE_IDS;
-  const prevLinks=process.env.DISCORD_UTC_VERIFIED_LINKS;
-  try {
-    delete process.env.DISCORD_UTC_TRUSTED_ROLE_IDS;
-    assert.throws(()=>onboardingPolicy(),/TRUSTED_ROLE_IDS/);
-    process.env.DISCORD_UTC_TRUSTED_ROLE_IDS=ROLE;
-    process.env.DISCORD_UTC_VERIFIED_LINKS='{"15":"AV-Zolika.x.Kira"}';
+test('nickname versus explicit name conflict is held for review',()=>{
+  const state={members:[],pending:[]};
+  reconcile(state,msg(19,'Name: AV-HarryBallsagna\nUTC-5, USA','AV-INTEN'),
+    knownRoster(),'',noRoles);
+  assert.equal(state.members.length,0);
+  assert.equal(state.pending[0].reason,'nickname_identity_conflict');
+});
+test('first self post from verified existing member works when nickname has changed',()=>{
+  const state={members:[],pending:[]};
+  reconcile(state,msg(19,'UTC-5, USA','RenamedNickname'),knownRoster(),'',
+    {councilRoleIds:[],verifiedLinks:{'19':'AV-HarryBallsagna'}});
+  assert.equal(state.members[0].name,'AV-HarryBallsagna');
+  assert.equal(state.members[0].utc,-5);
+});
+
+test('Council tag fills only previously missing UTC and location',()=>{
+  const state={members:[],pending:[]};
+  const target=tagged(33,'AV-DrDetroit');
+  const post=msg(4,'<@33> UTC-6, USA','CouncilMember',
+    {roles:[COUNCIL_ROLE],mentions:[target]});
+  const known=knownRoster();
+  assert.equal(known.get('av-drdetroit').utc,null);
+  reconcile(state,post,known,'',council);
+  assert.equal(state.members.length,1);
+  assert.equal(state.members[0].discordUserId,'33');
+  assert.equal(state.members[0].name,'AV-DrDetroit');
+  assert.equal(state.members[0].status,'AV2');
+  assert.equal(state.members[0].country,'USA');
+  assert.equal(state.members[0].source,'council');
+  assert.equal(state.members[0].utc,-6);
+  // Second Council message cannot overwrite the filled fields.
+  reconcile(state,msg(4,'<@33> UTC+4, UAE','CouncilMember',
+    {roles:[COUNCIL_ROLE],mentions:[target]}),known,'',council);
+  assert.equal(state.members[0].utc,-6);
+  assert.equal(state.members[0].country,'USA');
+});
+
+test('Council may fill missing country but never overwrite already logged UTC',()=>{
+  const known=new Map([['av-test',{name:'AV-Test',status:'Active',utc:-4,country:''}]]);
+  const state={members:[],pending:[]};
+  reconcile(state,msg(4,'<@44> UTC+7, Canada','CouncilMember',{
+    roles:[COUNCIL_ROLE],mentions:[tagged(44,'AV-Test')]
+  }),known,'',council);
+  assert.equal(state.members[0].utc,-4);
+  assert.equal(state.members[0].country,'Canada');
+});
+
+test('Council cannot overwrite any fully logged location',()=>{
+  const known=new Map([['av-test',{name:'AV-Test',status:'Active',utc:-4,country:'USA'}]]);
+  const state={members:[],pending:[]};
+  reconcile(state,msg(4,'<@44> UTC+7, Thailand','CouncilMember',{
+    roles:[COUNCIL_ROLE],mentions:[tagged(44,'AV-Test')]
+  }),known,'',council);
+  assert.equal(state.members.length,0);
+});
+
+test('Council tag needs actual configured Council role and exactly one target',()=>{
+  const known=knownRoster();
+  for(const [policy,options,reason] of [
+    [council,{mentions:[tagged(33,'AV-DrDetroit')]},'council_role_required'],
+    [noRoles,{mentions:[tagged(33,'AV-DrDetroit')],roles:[COUNCIL_ROLE]},'council_role_not_configured'],
+    [council,{mentions:[tagged(33,'AV-DrDetroit'),tagged(34,'AV-Starred')],
+      roles:[COUNCIL_ROLE]},'requires_exactly_one_tagged_member']
+  ]){
+    const state={members:[],pending:[]};
+    reconcile(state,msg(4,'UTC-6, USA','CouncilMember',options),known,'',policy);
+    assert.equal(state.members.length,0);
+    assert.equal(state.pending[0].reason,reason);
+  }
+});
+test('Council tag cannot create arbitrary person or update inactive player',()=>{
+  const state={members:[],pending:[]},known=knownRoster();
+  reconcile(state,msg(4,'UTC+2, France','CouncilMember',
+    {roles:[COUNCIL_ROLE],mentions:[tagged(33,'Nonmember')]}),known,'',council);
+  assert.equal(state.members.length,0);
+  assert.equal(state.pending[0].reason,'tagged_member_not_in_active_roster');
+  reconcile(state,msg(4,'UTC+2, France','CouncilMember',
+    {roles:[COUNCIL_ROLE],mentions:[tagged(35,'AV-Bubba0816')]}),known,'',council);
+  assert.equal(state.members.length,0);
+});
+test('Council tag ownership conflict never redirects an existing Discord account',()=>{
+  const state={members:[{discordUserId:'33',name:'AV-Starred',status:'AV2',utc:2,country:'France'}],pending:[]};
+  reconcile(state,msg(4,'UTC-6, USA','CouncilMember',{
+    roles:[COUNCIL_ROLE],mentions:[tagged(33,'AV-DrDetroit')]
+  }),knownRoster(),'',council);
+  assert.equal(state.members[0].name,'AV-Starred');
+  assert.equal(state.pending[0].reason,'tagged_identity_conflict');
+});
+
+test('member can supply own first report after Council proxy record',()=>{
+  const state={members:[{discordUserId:'33',name:'AV-DrDetroit',status:'AV2',
+    utc:-6,country:'USA',source:'council'}],pending:[]};
+  reconcile(state,msg(33,'UTC-5, USA','AV-DrDetroit'),knownRoster(),'',noRoles);
+  assert.equal(state.members.length,1);
+  assert.equal(state.members[0].source,'self');
+  assert.equal(state.members[0].utc,-5);
+});
+test('onboarding policy accepts direct self reports with no Council role configured',()=>{
+  const oldRole=process.env.DISCORD_UTC_COUNCIL_ROLE_IDS,oldLinks=process.env.DISCORD_UTC_VERIFIED_LINKS;
+  try{
+    delete process.env.DISCORD_UTC_COUNCIL_ROLE_IDS;
+    delete process.env.DISCORD_UTC_VERIFIED_LINKS;
+    assert.deepEqual(onboardingPolicy(),noRoles);
+    process.env.DISCORD_UTC_COUNCIL_ROLE_IDS=COUNCIL_ROLE;
+    process.env.DISCORD_UTC_VERIFIED_LINKS='{"19":"AV-INTEN"}';
     const policy=onboardingPolicy();
-    assert.deepEqual(policy.trustedRoleIds,[ROLE]);
-    assert.equal(policy.verifiedLinks['15'],'AV-Zolika.x.Kira');
-  } finally {
-    if(prevRole===undefined)delete process.env.DISCORD_UTC_TRUSTED_ROLE_IDS;
-    else process.env.DISCORD_UTC_TRUSTED_ROLE_IDS=prevRole;
-    if(prevLinks===undefined)delete process.env.DISCORD_UTC_VERIFIED_LINKS;
-    else process.env.DISCORD_UTC_VERIFIED_LINKS=prevLinks;
+    assert.deepEqual(policy.councilRoleIds,[COUNCIL_ROLE]);
+    assert.equal(policy.verifiedLinks['19'],'AV-INTEN');
+  }finally{
+    if(oldRole==null)delete process.env.DISCORD_UTC_COUNCIL_ROLE_IDS;
+    else process.env.DISCORD_UTC_COUNCIL_ROLE_IDS=oldRole;
+    if(oldLinks==null)delete process.env.DISCORD_UTC_VERIFIED_LINKS;
+    else process.env.DISCORD_UTC_VERIFIED_LINKS=oldLinks;
   }
 });
 

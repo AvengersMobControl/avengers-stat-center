@@ -8,6 +8,8 @@ test('profile Spark metric is backed by four-category roster ledger',()=>{
  assert.match(src,/function combinedSparksFor\(name\)/);
  assert.match(src,/AVENGERS_ROSTER_EVENT_BREAKDOWN/);
  assert.match(src,/eventLoggedSparks/);
+ assert.match(src,/screenshotGap/);
+ assert.match(src,/Math\.max\(0,Number\(source\.eventLoggedSparks\)/);
  assert.doesNotMatch(src,/return Math\.max\(logged,snap\)/);
 });
 test('achievements Spark tiers use recorded ledger rather than legacy total',()=>{

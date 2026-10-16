@@ -109,8 +109,10 @@ class ApprovedSourceModelTests(unittest.TestCase):
             renderer.resolve_summary(fixture(), "piggy", "OTHER")
         with self.assertRaisesRegex(ValueError, "not an accepted"):
             renderer.resolve_summary(fixture(), "piggy", "AVENGERS", "piggy|2026-10-18")
+        only_avengers = fixture()
+        only_avengers["projection"]["events"][2]["rows"] = [row("AV-A","AVENGERS",11000,100,1000)]
         with self.assertRaisesRegex(ValueError, "no AV-2 results"):
-            renderer.resolve_summary(fixture(), "flash", "AV-2", "flash|2026-10-18|2")
+            renderer.resolve_summary(only_avengers, "flash", "AV-2", "flash|2026-10-13|2")
 
     def test_partial_event_and_missing_rows_are_explicit_not_zero_wins(self):
         data = fixture()

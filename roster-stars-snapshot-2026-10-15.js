@@ -66,9 +66,24 @@
     })),
     ...manualAv2.map(name=>({name,profileName:canonical(name),status:'AV2'}))
   ];
-  const currentIds=new Set(rosterEntries.map(x=>x.profileName));
-  if(currentIds.size!==100)
+  // Add approved new Discord UTC roster entries after the fixed screenshot
+  // baseline. Existing screenshot and council-provided status always wins.
+  const fixedIds=new Set(rosterEntries.map(x=>x.profileName));
+  if(fixedIds.size!==100)
     throw new Error('Current clan roster identities overlap');
+  const discordMembers=window.AVENGERS_DISCORD_UTC_ROSTER?.members||[];
+  for(const member of discordMembers){
+    const name=String(member.name||'').trim();
+    const status=member.status;
+    if(!name||!['Active','AV2'].includes(status))continue;
+    const profileName=canonical(name);
+    if(fixedIds.has(profileName))continue;
+    rosterEntries.push({name,profileName,status});
+    fixedIds.add(profileName);
+  }
+  const currentIds=new Set(rosterEntries.map(x=>x.profileName));
+  if(currentIds.size!==rosterEntries.length)
+    throw new Error('Dynamic Discord roster identities overlap');
   if(currentIds.has(canonical('AV-Bubba0816')))
     throw new Error('Bubba should remain Inactive');
   const currentRows=rosterEntries.map(row=>{

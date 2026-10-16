@@ -144,6 +144,39 @@ test('Council cannot overwrite any fully logged location',()=>{
   assert.equal(state.members.length,0);
 });
 
+test('Council may log country only for a member whose UTC remains unknown',()=>{
+  const known=new Map([['av-test',{name:'AV-Test',status:'Active',utc:null,country:''}]]);
+  const state={members:[],pending:[]};
+  reconcile(state,msg(4,'<@44> Location: Germany','CouncilMember',{
+    roles:[COUNCIL_ROLE],mentions:[tagged(44,'AV-Test')]
+  }),known,'',council);
+  assert.equal(state.members.length,1);
+  assert.equal(state.members[0].utc,null);
+  assert.equal(state.members[0].country,'Germany');
+  reconcile(state,msg(4,'<@44> Country: France','CouncilMember',{
+    roles:[COUNCIL_ROLE],mentions:[tagged(44,'AV-Test')]
+  }),known,'',council);
+  assert.equal(state.members[0].country,'Germany','Council must not overwrite supplied country');
+});
+test('browser overlay preserves UTC when only country was supplied',()=>{
+  const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+  const code=fs.readFileSync(path.resolve(__dirname,'../member-timezones-source.js'),'utf8');
+  const make=members=>{
+    const sandbox={window:{AVENGERS_DISCORD_UTC_ROSTER:{members}}};
+    vm.runInNewContext(code,sandbox,{timeout:20000});
+    return sandbox.window.AVENGERS_MEMBER_TIMEZONES;
+  };
+  const original=make([]);
+  const before=original.byName['AV-DrDetroit'];
+  const projected=make([{name:'AV-DrDetroit',status:'AV2',utc:null,country:'Germany'}]);
+  const updated=projected.byName['AV-DrDetroit'];
+  assert.equal(updated.utc,before?.utc??null,'missing UTC must not turn into zero');
+  assert.equal(updated.location,'Germany');
+  const blank=make([{name:'AV-PendingCountry',status:'AV2',utc:null,country:'Kenya'}]);
+  assert.equal(blank.byName['AV-PendingCountry'].utc,null);
+  assert.equal(blank.byName['AV-PendingCountry'].location,'Kenya');
+});
+
 test('Council tag needs actual configured Council role and exactly one target',()=>{
   const known=knownRoster();
   for(const [policy,options,reason] of [

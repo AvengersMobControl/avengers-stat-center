@@ -26,7 +26,7 @@ Country: India
 @AV-DrDetroit UTC-6, USA
 ```
 
-The last example is accepted **only if posted by a Council-role member** and the tagged account's roster entry still lacks the corresponding data. A member's own first qualifying submission takes precedence over a prior Council proxy entry, but repeat self-posts do not silently rewrite a completed self report.
+The last example is accepted **only if posted by a Council-role member** and the tagged account's roster entry still lacks the corresponding data. Council can also send `@Player Location: Germany` without a UTC; this fills only the missing country/location and leaves any unknown UTC **blank**, never zero. A member's own first qualifying submission takes precedence over a prior Council proxy entry, but repeat self-posts do not silently rewrite a completed self report.
 
 UTC is not sufficient evidence to infer country; `UTC+2, Germany`, `Country: Germany` and `Location: Germany` are accepted. TZG (the clan's time-zone group) is **never calculated from UTC**. Existing State, TZG, clan membership, and historical rewards remain unchanged.
 

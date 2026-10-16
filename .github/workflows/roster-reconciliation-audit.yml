@@ -5,6 +5,10 @@ on:
       - 'index.html'
       - '*-snapshot*.js'
       - 'roster-*.js'
+      - 'phase2.js'
+      - 'community-highlights.js'
+      - 'kraken.js'
+      - 'scripts/sparks-ui-source.test.cjs'
       - 'clan-league-rewards.js'
       - 'scripts/council-minimums-core.cjs'
       - 'scripts/council-minimums-core.test.cjs'
@@ -28,6 +32,8 @@ jobs:
           node-version: '22'
       - name: Test independent per-event Spark category calculation
         run: node --test scripts/roster-event-breakdown.test.cjs
+      - name: Check consistency of player, Kraken and achievements Spark displays
+        run: node --test scripts/sparks-ui-source.test.cjs
       - name: Check roster identities and reconcile rewards
         run: node scripts/audit-roster-reconciliation.cjs
       - name: Diagnose Spark ledger inflation across all current members

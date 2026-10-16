@@ -295,7 +295,19 @@
     const prev=prevMeta?eventSummary(prevMeta.key,true):null;
     const delta=prev&&prev.avg?((latest.avg-prev.avg)/prev.avg):0;
     const ps=players();
-    const sparks=ps.reduce((s,p)=>s+(Number(p.totalSparks)||0),0);
+    // Kraken source historical aggregate can be inflated. Sum the Kraken
+    // category rebuilt from dated event damage, once per canonical account.
+    const seenKraken=new Set();
+    const sparks=ps.reduce((sum,p)=>{
+      let name=p.name;const visited=new Set();
+      while(D.aliasMap?.[name]&&!visited.has(name)){
+        visited.add(name);name=D.aliasMap[name];
+      }
+      if(seenKraken.has(name))return sum;
+      seenKraken.add(name);
+      return sum+(Number(window.AVENGERS_ROSTER_EVENT_BREAKDOWN
+        ?.forMember(name)?.krakenSparks)||0);
+    },0);
     const latestPlayers=latest.list;
     return `
       <div class="kr-kpis">

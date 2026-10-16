@@ -96,7 +96,10 @@
     const categories=definitions.map(def=>{
       const rows=streams.get(name+'|'+def.id)||[];
       const mainStreams=['piggy','space','kraken'].flatMap(kind=>streams.get(name+'|'+kind)||[]);
-      let value=def.id==='sparks'?Math.max(0,Number(m.totalSparks)||0):def.id==='streak'?Math.max(0,...mainStreams.map(r=>r.pbStreak)):Math.max(Number(m[def.id+'PB'])||0,...rows.map(r=>r.score),0);
+      let value=def.id==='sparks'?
+        Math.max(0,Number(window.AVENGERS_ROSTER_EVENT_BREAKDOWN
+          ?.forMember(name,Number(m.totalSparks)||0)?.eventLoggedSparks)||0):
+        def.id==='streak'?Math.max(0,...mainStreams.map(r=>r.pbStreak)):Math.max(Number(m[def.id+'PB'])||0,...rows.map(r=>r.score),0);
       const badges=def.tiers.map(target=>{
         const crossing=def.id==='streak'?mainStreams.filter(r=>r.pbStreak>=target).sort((a,b)=>a.date.localeCompare(b.date))[0]:rows.find(r=>r.score>=target);
         return {id:def.id+'-'+target,category:def.id,title:def.title,icon:def.icon,target,label:def.format(target)+(def.id==='space'?' lightyears':def.id==='sparks'?' logged sparks':def.id==='streak'?' consecutive PBs':def.id==='piggy'?' lines':' score'),earned:value>=target,date:crossing?.date||null,dateLabel:crossing?.dateLabel||null,coarse:!!crossing?.coarse,sourceKind:crossing?.kind||def.id,clan:crossing?.clan||null};

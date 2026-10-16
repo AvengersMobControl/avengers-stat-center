@@ -86,9 +86,17 @@ const records=current.map(r=>{
   const base=Math.max(0,Number(m?.totalSparks)||0);
   const extra=L.forMember(name);
   const event=B.forMember(name,base);
-  const adjustedBase=Math.max(base,Number(event.eventBackedBaseFloor)||0);
-  const baseSupplementSparks=adjustedBase-base;
-  const loggedSparks=adjustedBase+(Number(extra.flashSparks)||0)+(Number(extra.octKrakenSparks)||0)+(Number(extra.juneKrakenSparks)||0);
+  const baseSupplementSparks=0;
+  const loggedSparks=Number(event.eventLoggedSparks)||0;
+  const independentSum=(Number(event.piggySparks)||0)+(Number(event.spaceSparks)||0)+
+    (Number(event.flashSparks)||0)+(Number(event.krakenSparks)||0);
+  assert(Math.abs(loggedSparks-independentSum)<0.01,'Four-category Sparks mismatch: '+r.name);
+  assert(Math.abs((Number(event.flashSparks)||0)-(Number(extra.flashSparks)||0))<0.01,
+    'Flash event source mismatch: '+r.name);
+  assert(Math.abs((Number(event.krakenOctoberSparks)||0)-(Number(extra.octKrakenSparks)||0))<0.01,
+    'October Kraken counted more than once: '+r.name);
+  assert(Math.abs((Number(event.krakenJuneReconstructedSparks)||0)-(Number(extra.juneKrakenSparks)||0))<0.01,
+    'June Kraken counted more than once: '+r.name);
   const starLogged=Number(event.loggedStars)||0;
   const spark=sparks.get(name)||sparks.get(r.name);
   const star=stars.get(name)||stars.get(r.name);
@@ -120,8 +128,11 @@ const overSpark=records.filter(x=>x.sparkDelta!==null&&x.sparkDelta<0).sort((a,b
 const mismatches=records.filter(x=>Math.abs(x.sparksCategoryMismatch)>0.01);
 const eventDeltas=records.filter(x=>x.eventRowDelta>0.01);
 const corrected=records.filter(x=>x.baseSupplementSparks>0.01);
-assert.equal(corrected.length,eventDeltas.length,'Recorded event base supplements must match positive historical differences');
+assert.equal(corrected.length,0,'Legacy Sparks totals cannot supplement event-backed Spark totals');
 assert.equal(mismatches.length,0,'Reconciled event categories must sum to logged Sparks');
+assert(records.every(r=>Math.abs(r.loggedSparks-
+  (r.piggySparks+r.spaceSparks+r.flashSparks+r.krakenSparks))<0.01),
+  'Every roster member must reconcile four independently sourced categories');
 const report={
   generatedFrom:'repository data sources',snapshotDate:'2026-10-15',
   loadedScriptCount:loaded.length,roster:{avengers:currentAv.length,av2:currentAv2.length},
@@ -152,7 +163,7 @@ const lines=[
 '- Negative snapshot-minus-logged Sparks: '+overSpark.length+'; Stars: '+overStar.length+'.',
 '- Breakdown vs ledger mismatches: '+mismatches.length+'.',
 '- Historical per-event reward vs stored base differences: '+eventDeltas.length+'.',
-'- Conservative event-backed Spark base corrections: '+corrected.length+' members; '+report.eventBackedSupplementTotal+' Sparks of supported base floor above old stored totals.',
+'- Legacy Spark base supplements, required zero: '+corrected.length+' members; '+report.eventBackedSupplementTotal+' Sparks of supported base floor above old stored totals.',
 '',
 '**Caution:** A negative Spark difference is not automatically a data error: AVENGERS all-time Spark screenshots are from September 29 and logged results include later events; AV-2 screenshots can have clan-specific zeros for transferred members. Flag for review rather than clamp and claim reconciled.',
 '',

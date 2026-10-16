@@ -22,6 +22,13 @@
       .sort((a,b)=>b[key]-a[key]||String(a.date||'').localeCompare(String(b.date||'')));
     return valid.length?{value:valid[0][key],date:valid[0].date||null}:null;
   }
+  // Oct 2 actual Space distance is two-thirds of its approved 1.5x
+  // normalized score. Presentation only: do not change stored results, PBs,
+  // rankings, achievements or any other projection consumer.
+  function spaceRecordDisplay(normalizedPB,eventDate){
+    const adjusted=eventDate==='2026-10-02'&&known(normalizedPB)&&normalizedPB>0;
+    return {value:adjusted?normalizedPB*(2/3):normalizedPB,adjusted};
+  }
   function potTotals(rows){
     const groups=new Map();
     for(const r of rows){const k=String(r.group??r.metadata?.group??'legacy');if(!groups.has(k))groups.set(k,[]);groups.get(k).push(r);}
@@ -36,7 +43,7 @@
     return {groups:groups.size,potStars:sum('stars'),potSparks:sum('sparks'),
       coveredStarGroups:pots.filter(p=>p.stars!==null).length,coveredSparkGroups:pots.filter(p=>p.sparks!==null).length};
   }
-  const api={efficiency,reconcile,summarize,record,potTotals};
+  const api={efficiency,reconcile,summarize,record,spaceRecordDisplay,potTotals};
   if(typeof module==='object'&&module.exports)module.exports=api;
   else root.AVENGERS_REWARD_METRICS=api;
 })(typeof window==='object'?window:globalThis);

@@ -31,3 +31,12 @@ test('Stat Center loads event breakdown before rendered player and Kraken views'
  const k=html.indexOf('src="kraken.js"');
  assert(breakdown>=0&&p2>breakdown&&k>breakdown);
 });
+
+test('roster Sparks totals show unadorned event totals, not stale snapshot warning triangles',()=>{
+ const src=read('index.html');
+ assert.match(src,/case 'totalCombinedSparks':return fmtNum\(r\.totalCombinedSparks\);/);
+ assert.doesNotMatch(src,/Snapshot discrepancy/);
+ assert.doesNotMatch(src,/snapshot comparison flags/);
+ assert.doesNotMatch(src,/roster-reconciliation-warning.*⚠/);
+ assert.match(src,/September 29 screenshots predate later events/);
+});

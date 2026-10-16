@@ -139,37 +139,85 @@ function knownRoster() {
     map.set(key('take.them.out'), map.get(key('AV-ColdCreeps')));
   return map;
 }
-function reconcile(state, message, known, defaultClan) {
+// The channel is for submissions, not proof that a Discord nickname owns an
+// existing in-game identity. Trusted onboarding roles can automatically add
+// genuinely new names. Existing identities require an explicitly verified link.
+function onboardingPolicy() {
+  const trustedRoleIds = String(process.env.DISCORD_UTC_TRUSTED_ROLE_IDS || '')
+    .split(',').map(x => x.trim()).filter(Boolean);
+  if (!trustedRoleIds.length || trustedRoleIds.some(x => !/^\d{15,22}$/.test(x)))
+    throw new Error('Set DISCORD_UTC_TRUSTED_ROLE_IDS to at least one valid Discord role ID');
+  let verifiedLinks;
+  try { verifiedLinks = JSON.parse(process.env.DISCORD_UTC_VERIFIED_LINKS || '{}'); }
+  catch { throw new Error('DISCORD_UTC_VERIFIED_LINKS must be a valid private JSON object'); }
+  if (!verifiedLinks || Array.isArray(verifiedLinks) || typeof verifiedLinks !== 'object')
+    throw new Error('DISCORD_UTC_VERIFIED_LINKS must be a JSON object');
+  return {trustedRoleIds,verifiedLinks};
+}
+function submitPending(state, message, proposedName, utc, country, reason) {
+  const discordUserId = String(message.author.id);
+  state.pending = state.pending.filter(p => p.discordUserId !== discordUserId);
+  state.pending.push({discordUserId, proposedName, utc, country,
+    reason, messageId:String(message.id)});
+}
+function reconcile(state, message, known, defaultClan, policy = {}) {
   if (!message?.author?.id || message.author.bot) return;
   const utc = parseUtc(message.content);
   if (utc === null) return;
   const discordUserId = String(message.author.id);
   const old = state.members.find(m => m.discordUserId === discordUserId);
   const proposed = nameOf(message);
-  const roster = known.get(key(proposed));
-  const name = old?.name || roster?.name || proposed;
   const country = countryOf(message.content) || old?.country || '';
-  // Do not alter a known player's AVENGERS/AV-2/inactive status.
-  const status = roster?.status || old?.status || clanOf(message.content, defaultClan);
+  const trustedIds = policy.trustedRoleIds || [];
+  const roles = Array.isArray(message.member?.roles) ? message.member.roles.map(String) : [];
+  if (!trustedIds.length || !roles.some(role => trustedIds.includes(role))) {
+    submitPending(state,message,proposed,utc,country,
+      !trustedIds.length ? 'trusted_role_not_configured' : 'untrusted_role');
+    return;
+  }
+  // An admin-confirmed ID→game-name mapping is stored only in a GitHub secret.
+  const linkedName = policy.verifiedLinks?.[discordUserId];
+  const linkedRoster = linkedName ? known.get(key(linkedName)) : null;
+  if (linkedName && !linkedRoster) {
+    submitPending(state,message,proposed,utc,country,'verified_link_not_in_roster');
+    return;
+  }
+  const claimedRoster = known.get(key(proposed));
+  // A new Discord account cannot claim an existing game identity merely by
+  // choosing its nickname or typing Name: ... in a message.
+  if (!old && claimedRoster && (!linkedRoster || key(claimedRoster.name) !== key(linkedRoster.name))) {
+    submitPending(state,message,proposed,utc,country,'existing_identity_requires_verification');
+    return;
+  }
+  if (old && linkedRoster && key(old.name) !== key(linkedRoster.name)) {
+    submitPending(state,message,proposed,utc,country,'linked_identity_mismatch');
+    return;
+  }
+  if (!old && !linkedRoster && !claimedRoster &&
+    !/\b(?:game\s*name|member|player|name)\s*[:=]\s*[^\n|,;]{1,70}/i.test(String(message.content||''))) {
+    submitPending(state,message,proposed,utc,country,'explicit_game_name_required');
+    return;
+  }
+  const name = old?.name || linkedRoster?.name || proposed;
+  const status = old?.status || linkedRoster?.status || clanOf(message.content, defaultClan);
   if (!name || !['Active', 'AV2', 'Inactive'].includes(status)) {
-    state.pending = state.pending.filter(p => p.discordUserId !== discordUserId);
-    state.pending.push({discordUserId, proposedName: proposed, utc, country,
-      reason: !name ? 'missing_game_name' : 'missing_clan', messageId: String(message.id)});
+    submitPending(state,message,proposed,utc,country,
+      !name ? 'missing_game_name' : 'missing_clan');
     return;
   }
   const conflict = state.members.find(m => key(m.name) === key(name) && m.discordUserId !== discordUserId);
   if (conflict) {
-    state.pending = state.pending.filter(p => p.discordUserId !== discordUserId);
-    state.pending.push({discordUserId, proposedName: proposed, utc, country,
-      reason: 'name_already_linked_to_another_discord_account', messageId: String(message.id)});
+    submitPending(state,message,proposed,utc,country,
+      'name_already_linked_to_another_discord_account');
     return;
   }
   const next = {discordUserId, name, status, utc, country,
-    messageId: String(message.id), updatedAt: message.timestamp || new Date().toISOString()};
-  if (old) Object.assign(old, next);
+    messageId:String(message.id), updatedAt:message.timestamp || new Date().toISOString()};
+  if (old) Object.assign(old,next);
   else state.members.push(next);
   state.pending = state.pending.filter(p => p.discordUserId !== discordUserId);
 }
+
 function maxId(a, b) {
   if (!a) return String(b);
   return BigInt(b) > BigInt(a) ? String(b) : String(a);
@@ -233,6 +281,7 @@ async function main() {
   if (!token || !channelId || !/^\d{15,22}$/.test(channelId))
     throw new Error('UTC sync not configured: set DISCORD_BOT_TOKEN and DISCORD_UTC_CHANNEL_ID');
   stateKey(process.env.DISCORD_UTC_STATE_KEY); // Fail closed before fetching.
+  const policy = onboardingPolicy();
   const state = load();
   const messages = await fetchMessages(token, channelId, state.lastMessageId);
   if (!messages.length) return;
@@ -247,7 +296,7 @@ async function main() {
   const known = knownRoster();
   for (const message of messages) {
     if (!state.lastMessageId || BigInt(message.id) > BigInt(state.lastMessageId)) {
-      reconcile(state, message, known, defaultClan);
+      reconcile(state, message, known, defaultClan, policy);
     }
   }
   state.lastMessageId = nextId;
@@ -256,4 +305,4 @@ async function main() {
 }
 if (require.main === module) main().catch(err => {console.error(err); process.exitCode = 1;});
 module.exports = {parseUtc, countryOf, nameOf, clanOf, reconcile, knownRoster,
-  encryptState, decryptState, publicProjection, fetchMessages};
+  encryptState, decryptState, publicProjection, fetchMessages, onboardingPolicy};

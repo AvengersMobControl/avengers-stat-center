@@ -80,24 +80,63 @@ function clanOf(text, fallback) {
 }
 function key(name) { return String(name || '').trim().toLocaleLowerCase('en'); }
 function knownRoster() {
+  // Historical timezones provide known identities and country metadata, but
+  // their Oct 1 clan status is stale. The Oct 15 snapshot controls membership.
   const source = fs.readFileSync(sourcePath, 'utf8');
-  const match = source.match(/const tsv=\`([\s\S]*?)\`;/);
+  const match = source.match(/const tsv=`([\s\S]*?)`;/);
   if (!match) throw new Error('Cannot locate member-timezones-source.js TSV');
   const lines = match[1].replace(/\\t/g, '\t').replace(/\\n/g, '\n').split(/\r?\n/);
-  const map = new Map();
+  const historical = new Map();
   for (const line of lines.slice(1)) {
-    const [name, status, , , , location] = line.split('\t');
-    if (name && status) map.set(key(name), {name, status, country: location || ''});
+    const [name, , , , , location] = line.split('\t');
+    if (name) historical.set(key(name), {name, status:'Inactive', country: location || ''});
   }
-  // Aliases from the authoritative source: retain known canonical game identities.
+
+  const rosterPath = path.join(root, 'roster-stars-snapshot-2026-10-15.js');
+  const rosterSource = fs.readFileSync(rosterPath, 'utf8');
+  function parsedArray(name) {
+    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const found = rosterSource.match(new RegExp('const ' + escaped + '=(\\[[^\\n]+\\]);'));
+    if (!found) throw new Error('Cannot find ' + name + ' in current roster source');
+    return JSON.parse(found[1]);
+  }
+  const avengers = parsedArray('avengers');
+  const av2 = parsedArray('av2Stars');
+  if (avengers.length !== 48 || av2.length !== 50)
+    throw new Error('Incomplete October 15 current roster baseline');
+  const current = new Map();
+  function addCurrent(name, status, profileName) {
+    const old = historical.get(key(profileName || name)) || historical.get(key(name));
+    const row = {name, status, country: old?.country || ''};
+    for (const identifier of [name, profileName].filter(Boolean)) {
+      const k = key(identifier);
+      if (current.has(k) && current.get(k).name !== name)
+        throw new Error('Current roster identity collision: ' + identifier);
+      current.set(k, row);
+    }
+  }
+  for (const [name, , profileName] of avengers) addCurrent(name, 'Active', profileName);
+  for (const [name] of av2) addCurrent(name, 'AV2');
+  // Explicit October 15 council correction beyond the 50 AV-2 screenshots.
+  addCurrent('AV-DrDetroit', 'AV2');
+  addCurrent('AV-Starred', 'AV2');
+
+  const map = new Map(historical);
+  for (const [k, value] of current) map.set(k, value);
+  // Legacy aliases should never override a name confirmed in the new snapshot.
   const aliasBlock = source.match(/const aliases=\{([\s\S]*?)\};/);
   if (aliasBlock) {
     const rx = /'([^']+)'\s*:\s*'([^']+)'/g;
     for (const pair of aliasBlock[1].matchAll(rx)) {
       const target = map.get(key(pair[2]));
-      if (target) map.set(key(pair[1]), target);
+      if (target && !current.has(key(pair[1]))) map.set(key(pair[1]), target);
     }
   }
+  // Historical aliases verified in council corrections.
+  if (map.has(key('AV-Zolika.x.Kira')))
+    map.set(key('AV-Zolika.x.TheBoss'), map.get(key('AV-Zolika.x.Kira')));
+  if (map.has(key('AV-ColdCreeps')))
+    map.set(key('take.them.out'), map.get(key('AV-ColdCreeps')));
   return map;
 }
 function reconcile(state, message, known, defaultClan) {

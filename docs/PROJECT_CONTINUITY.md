@@ -60,6 +60,11 @@ Total Sparks   = Logged Sparks + Screenshot Gap
 6. [#10 Kraken route optimization](https://github.com/AvengersMobControl/avengers-stat-center/issues/10), [#11 video study](https://github.com/AvengersMobControl/avengers-stat-center/issues/11), [#12 player profiles/recruiting/guest passes](https://github.com/AvengersMobControl/avengers-stat-center/issues/12), after foundations.
 7. **PAUSED** [#3 Discord UTC/country](https://github.com/AvengersMobControl/avengers-stat-center/issues/3). **CLOSED** [#5 missing Oct 13 PF1 main lobby](https://github.com/AvengersMobControl/avengers-stat-center/issues/5).
 
+## Active #42 implementation checkpoint (October 16)
+- Branch `feat/sitewide-event-projection` adds a **staging-only** revisioned ledger/projection core; not loaded by production pages. 14 new fixtures and 38 combined tests pass; current 100-member accounting audit remains green.
+- [Migration dependency map, schema and blockers](EVENT_PROJECTION.md) is the exact continuation entry point. Read-only `scripts/audit-event-projection-migration.cjs` found 24 Space stored PB disagreements, six July 30 event/history conflicts, a Chuck alias cycle and missing explicit historical clan fields on 1,767 Piggy rows. Do not silently select a source or use current roster clan.
+- Next: resolve identity/source evidence, migrate ledger, wire all consumers and outputs, stage/version assets and verify deployed browser behavior. #42 remains release-blocking; no unattended #4, no UTC activation.
+
 ## Critical recently merged work
 - [PR #32](https://github.com/AvengersMobControl/avengers-stat-center/pull/32): Council six-period conservative observed-result audit (does not assume missing attendance equals a violation).
 - [PRs #33/#35](https://github.com/AvengersMobControl/avengers-stat-center/pulls): diagnose Spark inflation, fix Animosity reference and exclude Zolika only as a complete-history benchmark.

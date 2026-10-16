@@ -62,5 +62,15 @@
       "not final"
     ],
     "note": "Progress detection must consider text visible inside screenshots as well as Discord message text. Do not import until a human-approved pull/review."
+  },
+  "scheduledReview": {
+    "enabled": true,
+    "runner": "ChatGPT scheduled review",
+    "timezone": "America/Chicago",
+    "localTime": "08:00",
+    "timing": "flexible morning window",
+    "cadence": "daily",
+    "autoImport": false,
+    "parsedResultApprovalRequired": true
   }
 }

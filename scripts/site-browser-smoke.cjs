@@ -25,7 +25,7 @@ async function main(){
     if(!process.env.AVENGERS_SMOKE_URL)assert.equal(version,built.manifest.version);
     for(const status of ['active','av2']){
       await page.selectOption('#globalStatusFilter',status);
-      for(const name of ['overview','rosters','piggy','space','kraken','eventTotals','ratings','players','records','achievements','weeklyRecap']){
+      for(const name of ['overview','rosters','piggy','piggyFlashes','space','kraken','trends','eventTotals','ratings','players','records','achievements','weeklyRecap']){
         await page.click('.nav-btn[data-page="'+name+'"]');
         assert(await page.locator('#page-'+name).isVisible(),name+' is visible');
         assert((await page.locator('#page-'+name).innerText()).trim().length>20,name+' is populated');
@@ -79,7 +79,7 @@ async function main(){
           assert(await row.count(),'changed member has a rendered roster row');
           const expectedSparks=Math.round(fixture.release.breakdowns[name].eventLoggedSparks).toLocaleString('en-US');
           assert((await row.innerText()).includes(expectedSparks),'rendered roster includes rebuilt logged total');
-          for(const section of ['players','ratings','records','eventTotals','achievements','weeklyRecap']){
+          for(const section of ['players','ratings','records','eventTotals','achievements','weeklyRecap','piggyFlashes','trends']){
             await page.click('.nav-btn[data-page="'+section+'"]');assert((await page.locator('#page-'+section).innerText()).trim().length>20);
           }
           assert.deepEqual(errors,[],'fixture has no browser errors');
@@ -88,7 +88,7 @@ async function main(){
       }
       build({destination:dir}); // keep final staged artifact free of synthetic results
     }
-    console.log(JSON.stringify({version,pages:22,fixtureCases,profile:checks,recapPNG:true,mobile:true,browserErrors:errors,requestFailures:requests}));
+    console.log(JSON.stringify({version,pages:26,fixtureCases,profile:checks,recapPNG:true,mobile:true,browserErrors:errors,requestFailures:requests}));
   }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}
 }
 main().catch(e=>{console.error(e.stack);process.exitCode=1;});

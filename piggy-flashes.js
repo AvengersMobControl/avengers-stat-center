@@ -10,7 +10,7 @@
     '1425021900463013919':'PF4'
   };
   const state={tab:'all',day:'all'};
-  const fmt=v=>(Number(v)||0).toLocaleString();
+  const fmt=v=>v==null?'—':(Number(v)||0).toLocaleString();
   const fmtCompact=v=>{
     const n=Number(v)||0;
     if(Math.abs(n)>=1000000)return (n/1000000).toFixed(n>=10000000?1:2).replace(/\.0+$/,'').replace(/(\.\d*[1-9])0+$/,'$1')+'M';

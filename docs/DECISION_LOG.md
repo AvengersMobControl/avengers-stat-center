@@ -2,6 +2,12 @@
 
 **This is a living, append-only handoff log.** It is maintained by ChatGPT and other contributors through GitHub pull requests after meaningful decisions or milestones. It is **not automatically created from ChatGPT messages**, so every contributor must update it. Source code/CI/merged PRs remain authoritative for what shipped; [PROJECT_CONTINUITY.md](PROJECT_CONTINUITY.md) gives the current rules and [ROADMAP.md](../ROADMAP.md) the actionable priorities.
 
+## 2026-10-16 UTC — recurring result review configured
+- **Scheduled:** separate ChatGPT task “Review AVENGERS results”, daily around 8 AM America/Chicago, flexible morning window. Required GitHub reads and read-only Discord Result connector samples succeeded for both AVENGERS and AV-2 before task creation. This does not enable the paused UTC schedule or a server-side auto-import.
+- **Review boundary:** retrieve new final screenshots, assemble all lobbies, reject progress, normalize units/aliases/event-time clan, deduplicate against the published ledger and present exact proposed changes. The Discord Results connector requires explicit approval of parsed results before import. Never post Discord messages from this task. Quiet when no new results need review; persist only privacy-safe dates/counts/hashes in #4.
+- **CLI:** unapproved candidates can now be dry-run validated without changing their approval flag or accepted files. `--apply` still requires explicit reviewed approval and rejects revision conflicts. Two targeted tests prove both behaviors.
+- **Status:** schedule creation confirmed enabled; first scheduled execution and a complete reviewed real-result import are not yet proven. #4 stays open. PR #45 merged the connected site build as `071e67ddbd1093c4f79ac98bd16f5b42620092ca`; deployed browser/version evidence is maintained on #42.
+
 ## 2026-10-16 UTC — connect one projected release to the website
 - **Implementation on `feat/connect-event-projection`:** deterministic legacy migration + approved revision overlays → one complete projection → all existing page interfaces, score histories, member PB/average/rating/event fields, Kraken month summaries, roster category ledgers, six league tables, achievements/recaps/PNG source and Council/export output. Content-addressed scripts/styles and one versioned artifact; Pages publication runs projection/browser gates first. Vercel uses the same build. Reviewed import CLI provides a dry-run affected-member diff, idempotent apply and revision conflicts.
 - **Source evidence:** July 30 screenshot posts 74–78 in Space review PDF `(2)` pp.19–20 confirm event-table scores; conflicting workbook summaries copied older July19/24 values. Retain final-source values. Remove obsolete second October 2 scaling and stored PB maxima. Normalize Chuck to current roster spelling; keep Frenchie accounts distinct.
@@ -60,3 +66,5 @@
 
 ## How to append the next entry
 Add a new dated section at the top stating: **user decision**, **what was implemented**, **linked PR/issues/CI/deployment SHA**, **verification scope**, **outstanding blockers**, and **next recommended action**. Update [PROJECT_CONTINUITY.md](PROJECT_CONTINUITY.md) and [ROADMAP.md](../ROADMAP.md) when the standing policy or priority changed. Never overwrite older decisions without marking which are superseded.
+
+- Follow-up verification now covers all 13 navigation pages for both clans (26 views), including Flash and Trends, plus correction/revocation fixtures. Missing Flash result cells display a dash instead of zero. Main Pages deployment 38866482366 succeeded; public DOM release version matched 36ac833c2974c65129fbe24634e8556a261cbf471f6866951e22a5e882b4d5ad.

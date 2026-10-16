@@ -1,5 +1,7 @@
 {
-  "lastMessageId": null,
-  "members": [],
-  "pending": []
+  "version": 1,
+  "algorithm": "aes-256-gcm",
+  "iv": "OSriMEgMC2O6ocvW",
+  "tag": "6w1UpJmdqsP5wPC2qC9vxQ==",
+  "ciphertext": "eSFfK8owX8uk6IW1zaZmOzaQOBWbAO27xOg0VC8Db77FGGjpZVA+rn0gaVriSmnNb88fSVvKyPhM5RCTPUIi0Mg="
 }

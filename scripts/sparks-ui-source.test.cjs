@@ -41,7 +41,7 @@ test('roster Sparks totals show unadorned event totals, not stale snapshot warni
  assert.match(src,/Total Sparks = Logged Sparks \+ Screenshot Gap/);
  assert.match(src,/totalCombinedSparks:logged\+unlogged/);
  assert.match(src,/case 'totalCombinedSparks':return fmtNum\(r\.totalCombinedSparks\);/);
- assert.match(src,/eventBreakdown\\.screenshotGap/);
+ assert(src.includes('eventBreakdown.screenshotGap'));
  assert.match(src,/loggedBefore/);
 });
 
@@ -59,9 +59,9 @@ test('positive screenshot gap adds to logged total but older snapshots never sub
 
 test('pre-Space screenshots and Hoops pre-transfer amount preserve source provenance',()=>{
  const s=read('sparks-pre-space-2026-10-16.js');
- assert.match(s,/S\\.preSpaceOct16/);
+ assert(s.includes('S.preSpaceOct16'));
  assert.match(s,/AV-Hoops/);
  assert.match(s,/12416538/);
  assert.match(s,/2026-09-30/);
- assert.match(read('index.html'),/sparks-pre-space-2026-10-16\\.js/);
+ assert(read('index.html').includes('sparks-pre-space-2026-10-16.js'));
 });

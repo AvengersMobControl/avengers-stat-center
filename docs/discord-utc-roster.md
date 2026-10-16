@@ -4,16 +4,16 @@ This is a separate, opt-in workflow. **Event-result screenshot channels remain r
 
 ## Before enabling
 
-1. In the AVENGERS Discord server, copy the desired text channel's numeric ID (Discord Developer Mode → right-click channel → Copy Channel ID).
+1. **UTC channel selected by the clan leader:** [Discord channel 1422151197317529600](https://discord.com/channels/@me/1422151197317529600). The numeric channel ID is fixed in the scheduled workflow. Confirm the bot is in the same server and can read this channel.
 2. Ensure the existing AVENGERS bot can **View Channel** and **Read Message History** in that channel. Enable **Message Content Intent** for the bot application if required, so it can actually read UTC text.
 3. GitHub repository **Settings → Secrets and variables → Actions**:
    - Set **secret** `DISCORD_BOT_TOKEN` to the existing bot token (never commit or share the token in chat).
    - Set **secret** `DISCORD_UTC_STATE_KEY` to an independently generated random string of at least 32 characters. It encrypts private sync state before committing to the public repository. Preserve this key securely: losing it prevents decrypting the existing checkpoint/identity links.
-   - Set **variable** `DISCORD_UTC_CHANNEL_ID` to the channel's numeric ID.
+   - The channel ID **1422151197317529600** is now pinned in `.github/workflows/discord-utc-roster.yml` and does not require a GitHub variable. Change it only after the clan leader approves a different channel.
    - Set **variable** `DISCORD_UTC_TRUSTED_ROLE_IDS` to the comma-separated numeric IDs of roles authorized to onboard new clan members through this channel. Posts by members lacking those roles enter private review and cannot update the public roster.
    - Optional **secret** `DISCORD_UTC_VERIFIED_LINKS` is a JSON object mapping **verified** Discord user IDs to existing in-game names (for example, `{"123456789012345678":"AV-INTEN"}`). This must be maintained by a council member after confirming the identity; never publish actual IDs in a repository file.
    - Optionally set **variable** `DISCORD_UTC_DEFAULT_CLAN` to `AVENGERS` or `AV-2` **only if** the channel is dedicated to that clan. For a mixed-clan channel, leave this blank and have new members state their clan.
-4. After merging this feature, GitHub Actions → **Sync Discord UTC roster** → Run workflow. The **first** run normally creates a checkpoint, not an import of old posts. To scan recent history instead, select **backfill** when running manually.
+4. After merging this feature and configuring secrets/roles, use GitHub Actions → **Sync Discord UTC roster** → Run workflow. The first run checkpoints existing channel history; if the channel is empty, the first future post is processed. To scan existing history intentionally, select **backfill**. Never bulk-import unknown nicknames without council identity verification.
 
 ## Member posts
 

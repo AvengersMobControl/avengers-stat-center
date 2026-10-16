@@ -36,6 +36,8 @@ jobs:
           DISCORD_UTC_STATE_KEY: ${{ secrets.DISCORD_UTC_STATE_KEY }}
           DISCORD_UTC_CHANNEL_ID: ${{ vars.DISCORD_UTC_CHANNEL_ID }}
           DISCORD_UTC_DEFAULT_CLAN: ${{ vars.DISCORD_UTC_DEFAULT_CLAN }}
+          DISCORD_UTC_TRUSTED_ROLE_IDS: ${{ vars.DISCORD_UTC_TRUSTED_ROLE_IDS }}
+          DISCORD_UTC_VERIFIED_LINKS: ${{ secrets.DISCORD_UTC_VERIFIED_LINKS }}
           DISCORD_UTC_BACKFILL: ${{ inputs.backfill }}
         run: node scripts/sync-discord-utc.cjs
       - name: Commit roster changes

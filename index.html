@@ -720,7 +720,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const av2=D.members.filter(m=>statusNorm(m.status)==='av2').length;
     const topRating=maxOf(cm,'ratingTotal');
     const latestPig=piggyRowsForSelectedEventRoster(D.meta.latestPiggy);
-    const latestSpace=(D.space.events[D.meta.latestSpace]||[]).filter(r=>r.name!=='Total'&&r.name!=='#N/A'&&allowedCurrentRow(r));
+    const latestSpace=(D.space.events[D.meta.latestSpace]||[]).filter(r=>r.name!=='Total'&&r.name!=='#N/A'&&allowedEventMetricRow(r));
     const topPig=[...latestPig].sort((a,b)=>b.lines-a.lines);
     const topSp=[...latestSpace].sort((a,b)=>b.yearsB-a.yearsB);
     const pigRecord=maxOf(cm,'piggyPB');
@@ -895,7 +895,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       if(seen.has(name)) return;
       seen.add(name);
       const status=MEMBERS.get(name)?.status || r.status || '';
-      if(!allowedStatus(status)) return;
+      if(!allowedEventMetricRow(r)) return;
       const rawScore=Number(r[valueKey])||0;
       const hist=(K.history?.[name]||[])
         .filter(x=>(Number(x[valueKey])||0)>0)
@@ -1115,7 +1115,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         [{label:'Race'},{label:'Groups',num:true},{label:'Pot Stars',num:true},{label:'Pot Sparks',num:true},{label:'Tracked Stars',num:true},{label:'Tracked Sparks',num:true},{label:'Sparks/Effort (per B)',num:true},{label:'Coverage'}],
         body||`<tr><td colspan="8" class="empty">No Space Race totals recorded.</td></tr>`);
     } else if(view==='event'){
-      const rows=(D.space.events[state.spaceEvent]||[]).filter(r=>r.name!=='Total'&&r.name!=='#N/A'&&allowedCurrentRow(r)).sort((a,b)=>b.yearsB-a.yearsB);
+      const rows=(D.space.events[state.spaceEvent]||[]).filter(r=>r.name!=='Total'&&r.name!=='#N/A'&&allowedEventMetricRow(r)).sort((a,b)=>b.yearsB-a.yearsB);
       const max=Math.max(...rows.map(r=>Number(r.yearsB)||0),1);
       const body=rows.map((r,i)=>`<tr>
         <td class="num">${i+1}</td>

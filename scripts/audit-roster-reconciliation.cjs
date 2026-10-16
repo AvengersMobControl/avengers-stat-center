@@ -33,7 +33,7 @@ for (const [index, match] of tags.entries()) {
     // Inline event rows before the snapshot remain eligible.
   }
   if (source) {
-    if (['community-highlights.js', 'clan-league-rewards.js'].includes(source)) continue;
+    if (source === 'community-highlights.js') continue;
     vm.runInContext(fs.readFileSync(path.join(root, source), 'utf8'), sandbox, {filename:source,timeout:20000});
     loaded.push(source);
   } else if (index === 0 || index < 42) {
@@ -176,6 +176,67 @@ const lines=[
 '**Do not** treat historical event base discrepancies as proof of identity problems without source screenshots.'
 ];
 fs.writeFileSync(path.join(dir,'roster-reconciliation-audit.md'),lines.join('\n')+'\n');
+
+const leagueApi=w.AVENGERS_CLAN_LEAGUE_REWARDS;
+assert(leagueApi && typeof leagueApi.build==='function','Clan League builder is missing');
+const leaguePeriods=leagueApi.build();
+assert.equal(leaguePeriods.length,6,'Expected six completed five-week Clan Leagues');
+const day=iso=>Date.parse(iso+'T00:00:00Z')/86400000;
+const ledgerFields=['piggySparks','spaceSparks','flashSparks','krakenSparks','piggyStars','spaceStars','flashStars'];
+const leagueSummaries=leaguePeriods.map((p,index)=>{
+  assert.equal(day(p.end)-day(p.start),34,'A league must cover exactly 35 inclusive dates: '+p.end);
+  if(index>0)assert.equal(day(leaguePeriods[index-1].start),day(p.end)+1,'League boundary gap/overlap: '+p.end);
+  const seen=new Set(),clans={};
+  for(const r of p.rows){
+    const id=r.clan+'|'+r.name;
+    assert(!seen.has(id),'Duplicate member+clan in league: '+p.end+' '+id);
+    seen.add(id);
+    assert(['AVENGERS','AV-2'].includes(r.clan),'Unexpected clan: '+id);
+    for(const field of [...ledgerFields,'sparks','stars','estimatedKraken','missing','events']){
+      assert(Number.isFinite(Number(r[field])) && Number(r[field])>=0,'Invalid '+field+' for '+id);
+    }
+    const calculatedSparks=r.piggySparks+r.spaceSparks+r.flashSparks+r.krakenSparks;
+    const calculatedStars=r.piggyStars+r.spaceStars+r.flashStars;
+    assert(Math.abs(r.sparks-calculatedSparks)<0.01,'Spark categories do not sum for '+id);
+    assert(Math.abs(r.stars-calculatedStars)<0.01,'Star categories do not sum for '+id);
+    assert(r.estimatedKraken<=r.krakenSparks+0.01,'Estimated Kraken exceeds total for '+id);
+    const c=clans[r.clan]||{players:0,sparks:0,stars:0,flashSparks:0,piggySparks:0,
+      spaceSparks:0,krakenSparks:0,estimatedKrakenSparks:0,incompleteRewardRecords:0};
+    c.players++;c.sparks+=r.sparks;c.stars+=r.stars;
+    c.flashSparks+=r.flashSparks;c.piggySparks+=r.piggySparks;
+    c.spaceSparks+=r.spaceSparks;c.krakenSparks+=r.krakenSparks;
+    c.estimatedKrakenSparks+=r.estimatedKraken;c.incompleteRewardRecords+=r.missing;
+    clans[r.clan]=c;
+  }
+  return {start:p.start,end:p.end,rosterRecords:p.rows.length,
+    uniqueEventMemberEntries:p.eventMembers.size,
+    clans};
+});
+const leagueReport={
+  source:'current Stat Center event ledgers; **not** proof all screenshots exist',
+  scope:'six completed five-week Clan Leagues; includes estimated older Kraken amounts',
+  warnings:['Missing and partly estimated rewards must not be described as verified clan-wide lifetime totals.',
+    'Event-time clan is authoritative when recorded; historical Kraken reconstruction may use inferred last-known league clan.'],
+  periods:leagueSummaries
+};
+fs.writeFileSync(path.join(dir,'clan-league-audit.json'),JSON.stringify(leagueReport,null,2)+'\n');
+const clanLines=[
+  '# Six Clan League accounting audit','',
+  'Source: Stat Center event ledgers, replayed in published load order. **Not a complete external leaderboard.**',
+  '',
+  'Earlier Kraken awards may be estimated from damage and historical clan inference. Missing reward records are reported but not invented.',
+  '',
+  '| Period | Clan | Players | Sparks recorded/estimated | Stars recorded | Kraken Sparks estimated | Incomplete reward records |',
+  '|---|---|---:|---:|---:|---:|---:|',
+  ...leagueSummaries.flatMap(p=>Object.entries(p.clans).map(([clan,c])=>
+    '| '+p.start+' to '+p.end+' | '+clan+' | '+c.players+' | '+c.sparks+' | '+c.stars+' | '+c.estimatedKrakenSparks+' | '+c.incompleteRewardRecords+' |')),
+  '',
+  'The 171M clan Sparks comparison must be reconciled against the actual league award report before claiming equivalence.',
+  'Original event records and inferred allocations were not modified.'
+];
+fs.writeFileSync(path.join(dir,'clan-league-audit.md'),clanLines.join('\n')+'\n');
+console.log('CLAN_LEAGUE_AUDIT '+JSON.stringify(leagueSummaries));
+
 console.log('ROSTER_AUDIT_SUMMARY '+JSON.stringify({
   roster:report.roster,negativeSparks:overSpark.length,negativeStars:overStar.length,
   missingSparks:missingSpark.length,missingStars:missingStar.length,

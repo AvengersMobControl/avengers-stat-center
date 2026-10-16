@@ -69,6 +69,12 @@ console.log('SUM logged-minus-four over roster: '+rows.reduce((s,r)=>s+r.diffSho
 console.log('SUM legacy base minus piggy,space,preOctKraken: '+rows.reduce((s,r)=>s+r.storedBaseDiffVsSources,0));
 console.log('TOP OVERAGES: '+JSON.stringify(signs.slice(0,18).map(x=>({name:x.display,shown:x.shownLogged,four:x.fourCategorySum,excess:x.diffShownVsFour,base:x.storedBase,baseDiff:x.storedBaseDiffVsSources}))));
 console.log('JUNE reconstruction rows: '+(L.sources.juneKrakenReconstructed||[]).length);
+const six=w.AVENGERS_CLAN_LEAGUE_REWARDS?.build()||[];
+for(const name of ['AV.Saberkong','AV-Abu//npjp','AV-Animosity','AV-Finnie','AV-8!l...Bil']){
+  const byLeague=six.map(p=>({end:p.end,entries:p.rows.filter(x=>canon(x.name)===canon(name)).map(x=>({clan:x.clan,krakenSparks:x.krakenSparks,estimated:x.estimatedKraken}))})).filter(p=>p.entries.length);
+  console.log('MONTHLY_KRAKEN_SOURCE '+JSON.stringify({name,byLeague}));
+}
+
 const report={notes:[
   'All 100 current roster members are audited. Zolika is excluded ONLY as an external validation benchmark because some membership predates the available source history.',
   'Four-category sum includes K.players.totalSparks, which already includes October when published; Kraken rewards estimated from historical damage and may use non-event time clans.',

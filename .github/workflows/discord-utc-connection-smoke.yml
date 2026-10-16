@@ -1,0 +1,46 @@
+name: Verify Discord UTC connection (read only)
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/verify-discord-utc-connection.cjs'
+      - '.github/workflows/discord-utc-connection-smoke.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/verify-discord-utc-connection.cjs'
+      - '.github/workflows/discord-utc-connection-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify smoke test script syntax without exposing secrets
+        run: node --check scripts/verify-discord-utc-connection.cjs
+
+  access:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify bot token, encryption key, channel access and message history (read only)
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_UTC_STATE_KEY: ${{ secrets.DISCORD_UTC_STATE_KEY }}
+          DISCORD_UTC_CHANNEL_ID: '1422151197317529600'
+          DISCORD_UTC_COUNCIL_ROLE_IDS: '1427090799052587038'
+        run: node scripts/verify-discord-utc-connection.cjs

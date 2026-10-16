@@ -1,0 +1,56 @@
+name: Sync Discord UTC roster
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+    inputs:
+      backfill:
+        description: 'Import recent historical UTC messages (normally off)'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: discord-utc-roster-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    # Don't poll a real Discord channel until the production rollout is enabled.
+    # An authorized maintainer can run a manual smoke test beforehand.
+    if: ${{ github.event_name == 'workflow_dispatch' || vars.DISCORD_UTC_SYNC_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test roster parsing and identity rules
+        run: node --test scripts/sync-discord-utc.test.cjs
+      - name: Read UTC submissions
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_UTC_STATE_KEY: ${{ secrets.DISCORD_UTC_STATE_KEY }}
+          # Public, council-supplied UTC roster channel; not a secret.
+          DISCORD_UTC_CHANNEL_ID: '1422151197317529600'
+          DISCORD_UTC_DEFAULT_CLAN: ${{ vars.DISCORD_UTC_DEFAULT_CLAN }}
+          # Clan-leader-confirmed Council role; membership checked on every proxy post.
+          DISCORD_UTC_COUNCIL_ROLE_IDS: '1427090799052587038'
+          DISCORD_UTC_VERIFIED_LINKS: ${{ secrets.DISCORD_UTC_VERIFIED_LINKS }}
+          DISCORD_UTC_BACKFILL: ${{ inputs.backfill }}
+        run: node scripts/sync-discord-utc.cjs
+      - name: Commit roster changes
+        run: |
+          if ! git diff --quiet -- discord-utc-roster.json discord-utc-roster.js; then
+            git config user.name "avengers-roster-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add discord-utc-roster.json discord-utc-roster.js
+            git commit -m "Update Discord UTC roster data"
+            git push
+          fi

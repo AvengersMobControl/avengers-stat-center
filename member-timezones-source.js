@@ -229,6 +229,44 @@ AV-Brisket\tActive\t\t\t\t`;
     'Av-TigerMx':'AV-TigerMx',
     'JAMO':'AV-JAMO'
   };
+  // Merge verified Discord channel submissions without replacing historical roster records.
+  // An unmatched Discord nickname is treated as a new entry; the sync script
+  // keeps missing clan assignments in a pending queue until identified.
+  const discordMembers=window.AVENGERS_DISCORD_UTC_ROSTER?.members||[];
+  discordMembers.forEach(entry=>{
+    const suppliedName=String(entry.name||'').trim();
+    if(!suppliedName||!['Active','AV2','Inactive'].includes(entry.status))return;
+    const alias=Object.keys(aliases).find(a=>a.toLowerCase()===suppliedName.toLowerCase());
+    const memberName=alias?aliases[alias]:suppliedName;
+    // Number(null) === 0 in JavaScript. Do not turn a country-only Council
+    // submission into a false UTC±0 for the member.
+    const hasUtc=entry.utc!==null && entry.utc!==undefined && entry.utc!=='' &&
+      Number.isFinite(Number(entry.utc)) && Number(entry.utc)>= -12 && Number(entry.utc)<=14;
+    const utc=hasUtc?Number(entry.utc):null;
+    const country=String(entry.country||'').trim();
+    if(!hasUtc && !country)return;
+    const existing=rows.find(row=>row.name.toLowerCase()===memberName.toLowerCase());
+    if(existing){
+      if(hasUtc)existing.utc=utc;
+      if(country)existing.location=country;
+      const current=byName[existing.name];
+      if(current){
+        if(hasUtc){
+          current.utc=utc;
+          current.utcLabel=formatUtc(utc);
+        }
+        if(country)current.location=country;
+      }
+    }else{
+      const newRow={name:memberName,status:entry.status,utc,tzg:null,state:'',location:country};
+      rows.push(newRow);
+      byName[memberName]={
+        sourceName:memberName,canonicalName:memberName,status:newRow.status,
+        utc,utcLabel:formatUtc(utc),timeZoneGroup:'',state:'',location:country
+      };
+    }
+  });
+
   Object.entries(aliases).forEach(([alias,source])=>{
     if(byName[source]) byName[alias]=byName[source];
   });

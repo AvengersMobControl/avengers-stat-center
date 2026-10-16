@@ -95,8 +95,12 @@ const records=current.map(r=>{
     'Flash event source mismatch: '+r.name);
   assert(Math.abs((Number(event.krakenOctoberSparks)||0)-(Number(extra.octKrakenSparks)||0))<0.01,
     'October Kraken counted more than once: '+r.name);
-  assert(Math.abs((Number(event.krakenJuneReconstructedSparks)||0)-(Number(extra.juneKrakenSparks)||0))<0.01,
-    'June Kraken counted more than once: '+r.name);
+  // The old supplemental June field covered only proven omissions from a
+  // flawed Kraken subtotal. The event-derived Kraken ledger includes June as
+  // part of its normal monthly history regardless of that old flag.
+  assert((Number(event.krakenJuneReconstructedSparks)||0) <=
+    (Number(event.krakenHistoricalSparks)||0)+0.01,
+    'June Kraken should be included inside historical category, never additive: '+r.name);
   const starLogged=Number(event.loggedStars)||0;
   const spark=sparks.get(name)||sparks.get(r.name);
   const star=stars.get(name)||stars.get(r.name);

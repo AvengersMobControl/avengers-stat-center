@@ -2,7 +2,7 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const {audit}=require('./audit-result-pagination.cjs');
 const id=n=>String(1560000000000000000n+BigInt(n));
-const time=(day,i)=>day+'T'+String(23-i).padStart(2,'0')+':00:00.000Z';
+const time=day=>day+'T23:00:00.000Z';
 const m=(n,day,images)=>({messageId:id(n),timestamp:time(day,n%10),
   attachments:Array.from({length:images},(_,i)=>({id:id(n*20+i+100)}))});
 const page=(before,candidates,maxImages=8,maxMessages=100,scannedMessages=100)=>({

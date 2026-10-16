@@ -20,6 +20,10 @@
     'AV-7-ZoliStar':'AV-7-STAR'
   });
 
+  // October 15 roster supplies the current Chuck display spelling. Both
+  // spellings refer to the same existing account; never leave a two-node cycle.
+  aliases['AV-CHUCK']='AV-Chuck';
+  aliases['AV-Chuck']='AV-Chuck';
   D.aliasMap=Object.assign({},D.aliasMap||{},aliases);
 
   // Reviewed historical spellings that are absent from the supplied alias table.
@@ -305,7 +309,8 @@
       const rows=(hist||[]).filter(x=>(Number(x.yearsB)||0)>0).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
       if(!rows.length)return;
       const raw=rows.map(x=>Number(x.yearsB)||0);
-      const effective=rows.map(x=>String(x.date||'')==='2026-10-02'?(Number(x.yearsB)||0)/0.6666:(Number(x.yearsB)||0));
+      // The event source already stores October 2 at the approved 1.5x score.
+      const effective=raw;
       const m=memberBy.get(name);
       const pb=Math.max(...effective);
       overall.push({
@@ -334,7 +339,7 @@
     const p=pigOverall.get(m.name),s=spaceOverall.get(m.name),k=krakenBy.get(m.name);
     if(p){m.piggyPB=Math.max(Number(m.piggyPB)||0,Number(p.pb)||0);m.piggyAvg=Number(p.avgArena)||0;}
     if(s){
-      m.spacePB=Math.max(Number(m.spacePB)||0,Number(s.pb)||0);
+      m.spacePB=Number(s.pb)||0;
       const recent=(D.space.history[m.name]||[]).filter(x=>String(x.date||'')>=arenaStart&&(Number(x.yearsB)||0)>0);
       m.spaceAvg=avg(recent.map(x=>Number(x.yearsB)||0));
     }

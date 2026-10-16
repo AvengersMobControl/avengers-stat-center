@@ -21,7 +21,7 @@
   const kindLabel=kind=>({piggy:'Piggy Race',space:'Space Race',kraken:'Kraken'}[kind]||kind.replace(/^pf/,'Piggy Flash '));
   const icon=kind=>kind==='piggy'?'🐷':kind==='space'?'🚀':kind==='kraken'?'🐙':kind==='sparks'?'✨':kind==='streak'?'🔥':'⚡';
   const primary=(kind,r)=>kind==='piggy'?Number(r.lines)||0:kind==='space'?Number(r.yearsB)||0:Number(r.lines)||0;
-  const pbScore=(kind,r)=>kind==='space'&&r.date==='2026-10-02'?r.value/0.6666:r.value;
+  const pbScore=(kind,r)=>r.value; // Scores are actual stored values; never rescale a PB.
   const excluded=new Set(D.excludedPlayers||[]);
   const rowMap=new Map();
   function addRow(row){
@@ -48,6 +48,16 @@
     addRow({name:resolve(r.name),date:ev.date,kind:'pf'+Number(ev.flash),clan,value:Number(r.lines)||0,
       stars:Number(r.stars)||0,sparks:Number(r.sparks)||0,eventId:'flash|'+ev.id,group:ev.setId,partial:ev.complete===false});
   }));
+  // Published release records supersede independent legacy streams. Every
+  // recap, achievement and record sees the same corrected/revoked events.
+  if(window.AVENGERS_EVENT_PROJECTION){
+    rowMap.clear();
+    for(const ev of window.AVENGERS_EVENT_PROJECTION.events.filter(e=>e.status!=='revoked'))for(const r of ev.rows){
+      const kind=ev.kind==='flash'?'pf'+(ev.metadata?.flash||''):ev.kind;
+      addRow({name:r.player||'Unassigned account',date:ev.date,kind,clan:r.clan||'Unknown',value:r.score||0,stars:r.stars||0,sparks:r.sparks||0,
+        eventId:ev.id,group:r.metadata?.group,partial:ev.status==='partial'});
+    }
+  }
   const records=[...rowMap.values()].sort((a,b)=>a.date.localeCompare(b.date)||a.eventId.localeCompare(b.eventId));
   const streams=new Map();
   function pushStream(name,kind,item){
@@ -66,7 +76,7 @@
     if(value>0&&validDate(r.date))pushStream(resolve(name),kind,{name:resolve(name),kind,date:r.date,value,score:pbScore(kind,{date:r.date,value}),clan:clanName(r.clan),eventId:kind+'|'+r.date});
   })));
   const krakenDates={feb02:'2026-02-02',feb23:'2026-02-23',march:'2026-03-01',april:'2026-04-01',may:'2026-05-01',june:'2026-06-01',aug:'2026-08-01',sept:'2026-09-01'};
-  (K.players||[]).forEach(p=>(K.months||[]).forEach(month=>{
+  if(!window.AVENGERS_EVENT_PROJECTION)(K.players||[]).forEach(p=>(K.months||[]).forEach(month=>{
     const score=Number(p[month.key])||0;
     if(score>0)pushStream(resolve(p.name),'kraken',{name:resolve(p.name),kind:'kraken',score,value:score,date:month.date||krakenDates[month.key]||'',dateLabel:month.label+' 2026',coarse:!month.date,eventId:'kraken|'+month.key});
   }));
@@ -184,20 +194,20 @@
     if(recap.pbs.length)lines.push('','🚀 PERSONAL BESTS',...recap.pbs.slice(0,5).map(r=>r.name+' · '+kindLabel(r.kind)+' · '+scoreLabel(r.kind,r.score)+' (+'+num(r.improvement*100,1)+'%)'));
     if(recap.improvements.length)lines.push('','📈 IMPROVING',...recap.improvements.slice(0,5).map(r=>r.name+' · '+kindLabel(r.kind)+' · +'+num(r.averageIncrease*100,1)+'% vs prior 3 events'));
     if(recap.milestones.length)lines.push('','🏅 MILESTONES',...recap.milestones.slice(0,5).map(b=>b.name+' · '+b.icon+' '+b.label));
-    lines.push('',(ongoing(recap.start)?'Week in progress. ':'')+'Based on logged Piggy, Space, and Flash results.'+(recap.partial?' '+recap.partial+' partial leaderboards; totals can grow as results are added.':''));
+    lines.push('',(ongoing(recap.start)?'Week in progress. ':'')+'Based on logged Piggy, Space, Flash and dated Kraken results.'+(recap.partial?' '+recap.partial+' partial leaderboards; totals can grow as results are added.':''));
     return lines.join('\n');
   }
   function downloadRecap(recap){
     const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
     if(!ctx)throw Error('Image export is unavailable in this browser.');
-    const blocks=[{title:'🏆 CLAN RECORDS',items:recap.clanRecords.slice(0,3).map(r=>r.name+'  ·  '+kindLabel(r.kind)+'  ·  '+scoreLabel(r.kind,r.score))},{title:'🚀 PERSONAL BESTS',items:recap.pbs.slice(0,5).map(r=>r.name+'  ·  '+kindLabel(r.kind)+'  ·  '+scoreLabel(r.kind,r.score)+'  (+'+num(r.improvement*100,1)+'%)')},{title:'📈 BIGGEST IMPROVEMENTS',items:recap.improvements.slice(0,3).map(r=>r.name+'  ·  '+kindLabel(r.kind)+'  ·  +'+num(r.averageIncrease*100,1)+'% vs prior 3')},{title:'🏅 MILESTONES EARNED',items:recap.milestones.slice(0,5).map(b=>b.name+'  ·  '+b.label)}].filter(b=>b.items.length);
+    const blocks=[{title:'🏆 CLAN RECORDS',items:recap.clanRecords.slice(0,3).map(r=>r.name+'  ·  '+kindLabel(r.kind)+'  ·  '+scoreLabel(r.kind,r.score))},{title:'🚀 PERSONAL BESTS',items:recap.pbs.slice(0,5).map(r=>r.name+'  ·  '+kindLabel(r.kind)+'  ·  '+scoreLabel(r.kind,r.previousPB)+' → '+scoreLabel(r.kind,r.score)+'  (+'+num(r.improvement*100,1)+'%)')},{title:'📈 BIGGEST IMPROVEMENTS',items:recap.improvements.slice(0,3).map(r=>r.name+'  ·  '+kindLabel(r.kind)+'  ·  +'+num(r.averageIncrease*100,1)+'% vs prior 3')},{title:'🏅 MILESTONES EARNED',items:recap.milestones.slice(0,5).map(b=>b.name+'  ·  '+b.label)}].filter(b=>b.items.length);
     const height=440+blocks.reduce((s,b)=>s+90+b.items.length*46,0);
     canvas.width=1200;canvas.height=height;ctx.fillStyle='#081322';ctx.fillRect(0,0,1200,height);ctx.fillStyle='#c92b43';ctx.fillRect(0,0,1200,12);
     ctx.fillStyle='#f4f7ff';ctx.font='bold 44px system-ui, sans-serif';ctx.fillText(recap.clan+' WEEKLY RECAP',60,86);ctx.fillStyle='#9cb2cf';ctx.font='24px system-ui, sans-serif';ctx.fillText(rangeLabel(recap.start)+(ongoing(recap.start)?' · Week in progress':''),60,130);
     const metrics=[[recap.events.length,'LOGGED EVENTS'],[recap.contributors.length,'CONTRIBUTORS'],[compact(recap.totals.stars),'LOGGED STARS'],[compact(recap.totals.sparks),'LOGGED SPARKS']];
     metrics.forEach(([value,label],i)=>{const x=60+i*275;ctx.fillStyle='#13263e';ctx.fillRect(x,166,250,115);ctx.fillStyle='#f4f7ff';ctx.font='bold 38px system-ui, sans-serif';ctx.fillText(String(value),x+18,217);ctx.fillStyle='#9cb2cf';ctx.font='15px system-ui, sans-serif';ctx.fillText(label,x+18,251);});
-    let y=330;blocks.forEach(block=>{ctx.fillStyle='#f5c860';ctx.font='bold 26px system-ui, sans-serif';ctx.fillText(block.title,60,y);y+=46;block.items.forEach(line=>{ctx.fillStyle='#e5edf9';ctx.font='23px system-ui, sans-serif';let text=line;while(ctx.measureText(text).width>1080&&text.length)text=text.slice(0,-1);if(text!==line)text=text.slice(0,-1)+'…';ctx.fillText(text,60,y);y+=46;});y+=44;});
-    ctx.fillStyle='#9cb2cf';ctx.font='18px system-ui, sans-serif';ctx.fillText('Based on logged Piggy, Space, and Flash results.',60,height-64);ctx.fillText(recap.partial?recap.partial+' partial leaderboards • Results update as more data is logged.':'AVENGERS Stat Center • Personal bests exclude first-time results.',60,height-34);
+    let y=330;blocks.forEach(block=>{ctx.fillStyle='#f5c860';ctx.font='bold 26px system-ui, sans-serif';ctx.fillText(block.title.replace(/^[^A-Z]+/,''),60,y);y+=46;block.items.forEach(line=>{ctx.fillStyle='#e5edf9';ctx.font='23px system-ui, sans-serif';let text=line;while(ctx.measureText(text).width>1080&&text.length)text=text.slice(0,-1);if(text!==line)text=text.slice(0,-1)+'…';ctx.fillText(text,60,y);y+=46;});y+=44;});
+    ctx.fillStyle='#9cb2cf';ctx.font='18px system-ui, sans-serif';ctx.fillText('Based on logged Piggy, Space, Flash and dated Kraken results.',60,height-64);ctx.fillText(recap.partial?recap.partial+' partial leaderboards • Results update as more data is logged.':'AVENGERS Stat Center • Personal bests exclude first recorded results.',60,height-34);
     canvas.toBlob(blob=>{if(!blob)return;const a=document.createElement('a'),url=URL.createObjectURL(blob);a.href=url;a.download=recap.clan.toLowerCase().replace(/[^a-z0-9]/g,'')+'-weekly-recap-'+recap.start+'.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);},'image/png');
   }
   function renderWeekly(){
@@ -205,10 +215,10 @@
     const root=document.getElementById('weeklyRecapContent');if(!root)return;
     const recap=weeklyRecap(recapState.week,recapState.clan);
     const metric=(value,label)=>'<div class="community-kpi"><strong>'+esc(value)+'</strong><span>'+label+'</span></div>';
-    root.innerHTML='<div class="community-toolbar"><label>Week <select id="recapWeek">'+weeks.map(w=>'<option value="'+w+'" '+(w===recapState.week?'selected':'')+'>'+rangeLabel(w)+'</option>').join('')+'</select></label><label>Clan <select id="recapClan"><option '+(recapState.clan==='AVENGERS'?'selected':'')+'>AVENGERS</option><option '+(recapState.clan==='AV-2'?'selected':'')+'>AV-2</option></select></label><div class="community-actions"><button class="ghost-btn" id="downloadWeeklyRecap" '+(!recap.rows.length?'disabled':'')+'>Download recap image</button><button class="ghost-btn" id="copyWeeklyRecap" '+(!recap.rows.length?'disabled':'')+'>Copy for Discord</button></div></div><div id="recapExportStatus" role="status" class="community-muted"></div><section class="recap-card"><div class="recap-head"><div><span class="community-eyebrow">'+esc(recap.clan)+'</span><h2>Weekly recap</h2><p>'+rangeLabel(recap.start)+'</p></div><span class="recap-period">'+(ongoing(recap.start)?'Week in progress':'Logged results')+'</span></div><div class="community-kpis">'+metric(recap.events.length,'Events logged')+metric(recap.contributors.length,'Contributors')+metric(compact(recap.totals.stars),'Logged stars')+metric(compact(recap.totals.sparks),'Logged sparks')+'</div><div class="recap-spotlights">'+metric(recap.pbs.length,'Personal bests')+metric(recap.milestones.length,'Milestones earned')+metric(recap.clanRecords.length,'Clan record breakers')+'</div><p class="community-footnote">'+(recap.partial?recap.partial+' imported leaderboards are partial. ':'')+'These are logged rewards, not full clan pots. Clan assignments follow the saved event results. Monthly Kraken scores appear in achievements; they are not assigned to a week without dated results.</p></section>';
+    root.innerHTML='<div class="community-toolbar"><label>Week <select id="recapWeek">'+weeks.map(w=>'<option value="'+w+'" '+(w===recapState.week?'selected':'')+'>'+rangeLabel(w)+'</option>').join('')+'</select></label><label>Clan <select id="recapClan"><option '+(recapState.clan==='AVENGERS'?'selected':'')+'>AVENGERS</option><option '+(recapState.clan==='AV-2'?'selected':'')+'>AV-2</option></select></label><div class="community-actions"><button class="ghost-btn" id="downloadWeeklyRecap" '+(!recap.rows.length?'disabled':'')+'>Download recap image</button><button class="ghost-btn" id="copyWeeklyRecap" '+(!recap.rows.length?'disabled':'')+'>Copy for Discord</button></div></div><div id="recapExportStatus" role="status" class="community-muted"></div><section class="recap-card"><div class="recap-head"><div><span class="community-eyebrow">'+esc(recap.clan)+'</span><h2>Weekly recap</h2><p>'+rangeLabel(recap.start)+'</p></div><span class="recap-period">'+(ongoing(recap.start)?'Week in progress':'Logged results')+'</span></div><div class="community-kpis">'+metric(recap.events.length,'Events logged')+metric(recap.contributors.length,'Contributors')+metric(compact(recap.totals.stars),'Logged stars')+metric(compact(recap.totals.sparks),'Logged sparks')+'</div><div class="recap-spotlights">'+metric(recap.pbs.length,'Personal bests')+metric(recap.milestones.length,'Milestones earned')+metric(recap.clanRecords.length,'Clan record breakers')+'</div><p class="community-footnote">'+(recap.partial?recap.partial+' imported leaderboards are partial. ':'')+'These are logged rewards, not full clan pots. Clan assignments follow the saved event results. Kraken results use their saved event dates.</p></section>';
     if(!recap.rows.length)root.innerHTML+='<div class="empty">No '+esc(recap.clan)+' results logged for this week. Choose another week or clan.</div>';
     if(recap.clanRecords.length)root.innerHTML+='<div class="community-heading"><h2>🏆 Clan records broken</h2></div><div class="recap-records">'+recap.clanRecords.map(r=>'<article class="recap-record"><span>'+icon(r.kind)+' '+kindLabel(r.kind)+'</span><strong>'+scoreLabel(r.kind,r.score)+'</strong>'+playerButton(r.name)+'<small class="community-muted">Previous clan high: '+scoreLabel(r.kind,r.previousPB)+'</small></article>').join('')+'</div>';
-    root.innerHTML+=table('🚀 Personal bests',['Member','Event','New PB','Previous PB','Increase','Date'],recap.pbs.map(r=>'<tr><td>'+playerButton(r.name)+'</td><td>'+icon(r.kind)+' '+kindLabel(r.kind)+'</td><td class="num">'+scoreLabel(r.kind,r.score)+'</td><td class="num">'+scoreLabel(r.kind,r.previousPB)+'</td><td class="num community-positive">+'+num(r.improvement*100,1)+'%</td><td>'+dateLabel(r.date)+'</td></tr>'),'No new personal bests in the logged results. First-ever results establish a baseline.');
+    root.innerHTML+=table('🚀 Personal bests',['Member','Event','New PB','Previous PB','Increase','Date'],recap.pbs.map(r=>'<tr><td>'+playerButton(r.name)+'</td><td>'+icon(r.kind)+' '+kindLabel(r.kind)+'</td><td class="num">'+scoreLabel(r.kind,r.score)+'</td><td class="num">'+scoreLabel(r.kind,r.previousPB)+'</td><td class="num community-positive">+'+num(r.improvement*100,1)+'%</td><td>'+dateLabel(r.date)+'</td></tr>'),'No new personal bests in the logged results. First recorded results establish a baseline.');
     root.innerHTML+=table('📈 Beating your recent average',['Member','Event','Result','Prior 3 average','Improvement'],recap.improvements.map(r=>'<tr><td>'+playerButton(r.name)+'</td><td>'+icon(r.kind)+' '+kindLabel(r.kind)+'</td><td class="num">'+scoreLabel(r.kind,r.score)+'</td><td class="num">'+scoreLabel(r.kind,r.priorAverage)+'</td><td class="num community-positive">+'+num(r.averageIncrease*100,1)+'%</td></tr>'),'No improvements with three earlier results to compare.');
     root.innerHTML+=table('🏅 Milestones earned',['Member','Achievement','Milestone','Date'],recap.milestones.map(b=>'<tr><td>'+playerButton(b.name)+'</td><td>'+b.icon+' '+esc(b.title)+'</td><td>'+esc(b.label)+'</td><td>'+dateLabel(b.date)+'</td></tr>'),'No newly crossed milestones with a dated result this week.');
     root.innerHTML+=table('✨ Weekly contributions',['Member','Events','Logged stars','Logged sparks'],recap.contributors.map(p=>'<tr><td>'+playerButton(p.name)+'</td><td class="num">'+p.events.size+'</td><td class="num">'+num(p.stars)+'</td><td class="num">'+num(p.sparks)+'</td></tr>'),'No contributions logged.');

@@ -4,32 +4,11 @@
 // Read-only; never fetches Discord or changes any event/history/roster file.
 const fs=require('node:fs');
 const path=require('node:path');
-const vm=require('node:vm');
 const assert=require('node:assert/strict');
-const {build}=require('./council-minimums-core.cjs');
+const {create}=require('./create-site-release.cjs');
 const root=path.resolve(__dirname,'..');
-const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
-const tags=[...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)];
-const sandbox={window:{},console};
-vm.createContext(sandbox);
-for(const [index,match] of tags.entries()){
-  const source=(match[1].match(/\bsrc="([^"]+)"/)||[])[1];
-  if(source==='roster-stars-snapshot-2026-10-15.js')break;
-  if(source){
-    if(source==='community-highlights.js')continue;
-    vm.runInContext(fs.readFileSync(path.join(root,source),'utf8'),sandbox,
-      {filename:source,timeout:20000});
-  }else if(index===0||index<42){
-    vm.runInContext(match[2],sandbox,{filename:'index:inline:'+index,timeout:20000});
-  }
-}
-const D=sandbox.window.AVENGERS_DATA;
-const league=sandbox.window.AVENGERS_CLAN_LEAGUE_REWARDS;
-assert(D?.piggy?.events&&D?.space?.events&&league?.build,
-  'Expected Piggy/Space event ledgers and six-league builder');
-const periods=league.build().map(p=>({start:p.start,end:p.end}));
-const report=build({piggyEvents:D.piggy.events,spaceEvents:D.space.events,
-  periods,aliasMap:D.aliasMap||{}});
+const release=create();
+const report=release.projection.council.slice().reverse();
 assert.equal(report.length,6);
 const today=report[0];
 assert.equal(today.end,'2026-10-11');
@@ -44,7 +23,7 @@ for(const p of report){
   assert(p.members.every(m=>m.eligibleStart==='unverified'),
     'Membership join evidence is not sufficiently complete to infer missed races');
 }
-const out={source:'AVENGERS Stat Center Piggy/Space event results',
+const out={version:release.projection.version,source:'AVENGERS Stat Center Piggy/Space event results',
   generatedFrom:'repository event ledgers; not guaranteed complete',
   policy:'Applies beginning 2026-09-11; no retroactive minimum penalties',
   scope:'observed positive-score race entries only, not attendance assertions',

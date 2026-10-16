@@ -461,6 +461,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     return String(v).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
   }
   function fmtNum(v, decimals=0){
+    if(v===null)return '—';
     const n=Number(v)||0;
     return n.toLocaleString(undefined,{minimumFractionDigits:decimals,maximumFractionDigits:decimals});
   }
@@ -472,6 +473,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     return fmtNum(n);
   }
   function fmtB(v){
+    if(v===null)return '—';
     const n=Number(v)||0;
     return n.toLocaleString(undefined,{maximumFractionDigits:1})+'B';
   }
@@ -2033,7 +2035,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const km=(K.months||[]).map(month=>({
       key:month.key,
       label:month.label,
-      date:'2026-'+(krakenMonthNumber[String(month.key||'').toLowerCase()]||krakenMonthNumber[String(month.label||'').toLowerCase()]||'01')+'-01',
+      date:month.date||'2026-'+(krakenMonthNumber[String(month.key||'').toLowerCase()]||krakenMonthNumber[String(month.label||'').toLowerCase()]||'01')+'-01',
       value:kp?Number(kp[month.key])||0:0
     })).filter(x=>x.value>0);
     const krakenLast=km.at(-1)||null;
@@ -2260,7 +2262,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   addAuxStyles();
   window.AVENGERS_COMMUNITY?.configure({openProfile:openPlayer});
   fillEventSelects();
-  $('#generatedAt').textContent=`Generated ${new Date(D.meta.generated).toLocaleString()}`;
+  $('#generatedAt').textContent=D.meta.latestResult?`Results through ${fmtDate(D.meta.latestResult)}`:`Generated ${new Date(D.meta.generated).toLocaleString()}`;
   renderPage();
 })();
 

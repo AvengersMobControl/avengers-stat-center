@@ -31,14 +31,20 @@ function normalize(event,aliases={}){
   requireThat(Array.isArray(event.rows),'Missing event rows');
   const rows=new Map();
   for(const raw of event.rows){
-    const r={player:canonical(raw.player,aliases),clan:raw.clan,score:amount(raw.score,'score'),sparks:amount(raw.sparks,'sparks'),stars:amount(raw.stars,'stars')};
-    requireThat(['AVENGERS','AV-2'].includes(r.clan),'Explicit event-time clan required');
+    const unassigned=raw.player===null&&typeof raw.sourceIdentity==='string'&&raw.sourceIdentity.trim();
+    const r={player:unassigned?null:canonical(raw.player,aliases),...(unassigned?{sourceIdentity:raw.sourceIdentity}:{}),clan:raw.clan,score:amount(raw.score,'score'),sparks:amount(raw.sparks,'sparks'),stars:amount(raw.stars,'stars')};
+    requireThat(['AVENGERS','AV-2'].includes(r.clan)||(r.clan===null&&raw.clanAttribution==='unknown'),'Explicit event-time clan or marked unknown required');
+    if(r.clan===null)r.clanAttribution='unknown';
+    if(raw.estimatedSparks===true)r.estimatedSparks=true;
+    if(raw.metadata)r.metadata=clone(raw.metadata);
     requireThat(event.kind!=='kraken'||r.stars===null,'Kraken has no Stars');
-    requireThat(!rows.has(r.player)||stable(rows.get(r.player))===stable(r),'Conflicting duplicate player result: '+r.player);
-    rows.set(r.player,r);
+    const key=r.player||'unassigned:'+r.sourceIdentity;
+    const identity=x=>({player:x.player,clan:x.clan,score:x.score,sparks:x.sparks,stars:x.stars});
+    requireThat(!rows.has(key)||stable(identity(rows.get(key)))===stable(identity(r)),'Conflicting duplicate player result: '+r.player);
+    rows.set(key,r);
   }
   return {id:event.id,kind:event.kind,date:event.date,status:event.status,unit:event.unit,
-    sources:[...new Set(event.sources)].sort(),rows:[...rows.values()].sort((a,b)=>a.player.localeCompare(b.player))};
+    ...(event.metadata?{metadata:clone(event.metadata)}:{}),sources:[...new Set(event.sources)].sort(),rows:[...rows.values()].sort((a,b)=>String(a.player||a.sourceIdentity).localeCompare(String(b.player||b.sourceIdentity)))};
 }
 function empty(){return {schemaVersion:1,events:[],changes:[]};}
 function validate(ledger,aliases={}){
@@ -87,13 +93,13 @@ function project(ledger,{aliases={},members=[],snapshots={},arenaStart='2026-08-
   // Flash events legitimately have separate daily IDs, and are not coalesced.
   const seen=new Set();const rows=[];
   for(const e of events.filter(e=>e.status!=='revoked'))for(const r of e.rows){
-    const key=[e.kind,e.date,r.player].join('|');
+    const key=[e.kind,e.date,r.player||r.sourceIdentity].join('|');
     requireThat(e.kind==='flash'||!seen.has(key),'Overlapping event identity: '+key);seen.add(key);
     rows.push({...r,eventId:e.id,kind:e.kind,date:e.date,partial:e.status==='partial'});
   }
   const memberMap=new Map();
   for(const m of members){const name=canonical(m.name,aliases);requireThat(!memberMap.has(name),'Duplicate current member');memberMap.set(name,{name,status:m.status});}
-  for(const r of rows)if(!memberMap.has(r.player))memberMap.set(r.player,{name:r.player,status:'Inactive'});
+  for(const r of rows)if(r.player&&!memberMap.has(r.player))memberMap.set(r.player,{name:r.player,status:'Inactive'});
   const cap=(v,b)=>Math.min(1,(v??0)/b);
   const people=[...memberMap.values()].sort((a,b)=>a.name.localeCompare(b.name)).map(m=>{
     const history=rows.filter(r=>r.player===m.name),kinds=Object.fromEntries(KINDS.map(k=>[k,summary(history.filter(r=>r.kind===k),arenaStart)]));
@@ -117,11 +123,11 @@ function project(ledger,{aliases={},members=[],snapshots={},arenaStart='2026-08-
     });
   }
   const councilEvents={piggyEvents:{},spaceEvents:{}};
-  for(const r of rows.filter(r=>['piggy','space'].includes(r.kind))){
+  for(const r of rows.filter(r=>r.player&&r.clan&&['piggy','space'].includes(r.kind))){
     const dest=councilEvents[r.kind+'Events'];(dest[r.date]??=[]).push({name:r.player,clan:r.clan,[r.kind==='piggy'?'lines':'yearsB']:r.score});
   }
   const output={schemaVersion:1,events,people,clans,leagues,rankings,council:council.build({...councilEvents,periods}),
-    coverage:{partialEvents:events.filter(e=>e.status==='partial').map(e=>e.id),unknownRewards:rows.filter(r=>r.sparks===null||(r.kind!=='kraken'&&r.stars===null)).length}};
+    coverage:{unassignedRows:rows.filter(r=>!r.player),unknownClanRows:rows.filter(r=>!r.clan).length,unknownClanRewards:rewards(rows.filter(r=>!r.clan)),partialEvents:events.filter(e=>e.status==='partial').map(e=>e.id),unknownRewards:rows.filter(r=>r.sparks===null||(r.kind!=='kraken'&&r.stars===null)).length}};
   // Version includes identity, membership, screenshot references and policy, not just events.
   output.version=hash({ledger,aliases,members:[...members].sort((a,b)=>a.name.localeCompare(b.name)),snapshots,arenaStart,projection:output});
   return output;

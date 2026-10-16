@@ -333,3 +333,9 @@ test('the Council role configured in GitHub Actions matches the leader-confirmed
   assert.match(workflow,/DISCORD_UTC_COUNCIL_ROLE_IDS:\s*'1427090799052587038'/);
   assert.equal(COUNCIL_ROLE,'1427090799052587038');
 });
+
+test('scheduled Discord polling is disabled until explicit rollout variable is enabled',()=>{
+  const fs=require('node:fs'),path=require('node:path');
+  const workflow=fs.readFileSync(path.resolve(__dirname,'../.github/workflows/discord-utc-roster.yml'),'utf8');
+  assert.ok(workflow.includes("if: ${{ github.event_name == 'workflow_dispatch' || vars.DISCORD_UTC_SYNC_ENABLED == 'true' }}"));
+});

@@ -32,6 +32,29 @@ test('record date belongs to the actual PB, with corrected Oct 2 values never ad
  assert.deepEqual(record(D.space.history['AV-JAMO'],'yearsB'),{value:439.3,date:'2026-10-09'});
  assert.deepEqual(record([{date:'2026-10-02',score:100},{date:'2026-08-30',score:100}]),{value:100,date:'2026-08-30'});
 });
+test('Oct 2 Space Records display actual distance only for a standing Oct 2 PB',()=>{
+ const {spaceRecordDisplay}=require('../event-reward-metrics.js');
+ const D=require('./create-site-release.cjs').create().globals.AVENGERS_DATA;
+ const cases=D.members.flatMap(member=>{
+   const hit=record(D.space.history[member.name]||[],'yearsB');
+   return hit?.date==='2026-10-02'?[{member,date:hit.date}]:[];
+ });
+ assert(cases.length>0,'Oct 2 is still the highest-PB date for at least one member');
+ for(const {member,date}of cases){
+   const before=member.spacePB;
+   const display=spaceRecordDisplay(before,date);
+   assert.equal(display.adjusted,true,member.name+' current Oct 2 PB marked');
+   assert(Math.abs(display.value-before*2/3)<.000001,member.name+' actual distance');
+   assert.equal(member.spacePB,before,member.name+' canonical normalized PB untouched');
+ }
+ assert.equal(spaceRecordDisplay(334.8,'2026-10-02').adjusted,true);
+ assert(Math.abs(spaceRecordDisplay(334.8,'2026-10-02').value-223.2)<.000001);
+ assert.deepEqual(spaceRecordDisplay(478.7,'2026-10-02').adjusted,true);
+ const prior=record(D.space.history['AV-HarryBallsagna'],'yearsB');
+ assert.equal(prior.date,'2026-08-30');
+ assert.deepEqual(spaceRecordDisplay(prior.value,prior.date),{value:549.9,adjusted:false});
+ assert.deepEqual(spaceRecordDisplay(500,'2026-10-09'),{value:500,adjusted:false});
+});
 test('partial player coverage does not erase calculable lobby pots; missing lobby rewards still do',()=>{
  const R=require('./create-site-release.cjs').create();const events=R.projection.events;
  const recent=events.find(e=>e.id==='space|2026-10-16');assert.equal(recent.status,'partial');

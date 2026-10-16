@@ -86,3 +86,21 @@ When a separately authorized workflow actually retrieves the **original image by
 The command requires an operator's **explicit original-byte attestation**, compares image signature against the claimed content type, and outputs SHA-256 of the exact file contents, byte length and content type. It does not download a URL, authenticate Discord provenance or prove the attestation independently. Verify the source against the authorized attachment ID before using the digest in a candidate; do **not** replace the digest with SHA-256 of a message ID, signed URL, WebP preview or imagined JPEG. Source files and signed URLs stay outside the repository. The existing `assemble-result-review.cjs` still requires a proper image-byte digest and `approved:false` on all staged candidates.
 
 **Release boundary unchanged:** no unattended fetch, score import, Discord posting or approval; current already-approved scores remain authoritative. The first genuinely *new* parsed event must be explicitly reviewed and authorized, then rebuilt and verified everywhere on the public site before task #4 can be closed.
+
+## Reviewer-only original Discord CDN download (next #4 source-evidence step)
+
+The current viewing connector returns signed attachment URLs and screenshots converted for display; its WebP previews must **not** be hashed as if they were original JPEGs. A new opt-in **one-attachment-at-a-time**, reviewer-operated CLI can instead request the original bytes using the signed **HTTPS cdn.discordapp.com/attachments/** URL from the authorized Results connector metadata:
+
+1. Retrieve the signed URL, channel ID, attachment ID and image content type from the approved **read-only** Discord Results connector. Keep the signed URL in a private environment or protected input file. Do **not** paste it into GitHub, docs, CI logs, screenshots, shell history or the public web site.
+2. From a workstation/runtime with direct network access to Discord CDN, supply the URL on stdin, and pass the exact IDs/type as CLI options:
+
+       node scripts/fetch-original-discord-image.cjs --channel-id=CHANNEL_ID --attachment-id=ATTACHMENT_ID --content-type=image/jpeg < PRIVATE_URL_FILE
+
+3. The client permits only direct HTTPS `cdn.discordapp.com` with matching attachment path/IDs and no transformations, refuses automatic redirects, checks HTTP status, content-type, encoding, content-length and original image-file signature, and reads a maximum of 25 MiB. It prints the **SHA-256 of the fetched raw source bytes** plus size/type and `approved:false`/`verifiedFinal:false`. It does not write images, persist signed URLs, commit results, or turn on automation. A successful fetch proves the obtained bytes match that authorized CDN response; it does **not** determine whether the screenshot shows final results or whether parsed rows are correct.
+4. Only use that actual-source `imageSha256` in the **manually verified** image entry for `scripts/assemble-result-review.cjs`. The prior visually reviewed result rows, event-time clan, identity, source date and explicit result approval remain required; all updates remain `approved:false` until separately approved by the clan leader.
+
+If the execution environment cannot access the signed CDN URL or the signature has expired, this step **fails closed**. Do not substitute a screenshot preview/Discord ID hash or bypass approval. The current ChatGPT tool environment cannot independently demonstrate that direct CDN download; tests use synthetic byte streams, **not retrieved Discord originals**.
+
+## Public GitHub Pages release evidence
+
+The staged site now includes the exact source Git commit in `release-manifest.json.sourceCommit` and the page's `data-release-commit` attribute. The Pages workflow **after publication** re-requests the real public manifest, both versioned projection/ledger exports and runs Chromium against the public page. It requires the **exact deployed SHA**, the same projection/export versions and immutable asset paths, a clean browser and both Oct 16 clan rows (44 AVENGERS, 22 AV-2). It retries for eventual Pages propagation, then **fails the workflow** rather than claiming that a pre-publish browser test proves live production. See `scripts/verify-live-pages.cjs`; a passing main Pages workflow is the required public Pages evidence, separate from Vercel READY status.

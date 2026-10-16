@@ -21,6 +21,10 @@ function browserSource(release){
 }
 function build({destination=path.join(root,'dist'),updates}={}){
   const release=create(updates===undefined?{}:{updates}),P=release.projection;
+  // Match a deployed Pages/Vercel build to its exact commit, not just the
+  // data projection version (which can remain stable across code-only changes).
+  const commitCandidate=process.env.GITHUB_SHA||process.env.VERCEL_GIT_COMMIT_SHA||null;
+  const sourceCommit=commitCandidate&&/^[a-f0-9]{40}$/i.test(commitCandidate)?commitCandidate.toLowerCase():null;
   fs.mkdirSync(destination,{recursive:true});
   // A failed build never replaces the previously deployed Pages artifact.
   for(const entry of fs.readdirSync(root,{withFileTypes:true})){
@@ -35,7 +39,7 @@ function build({destination=path.join(root,'dist'),updates}={}){
   const first=html.indexOf('<script>'),boundary=html.indexOf('<script src="roster-stars-snapshot-2026-10-15.js"></script>')+'<script src="roster-stars-snapshot-2026-10-15.js"></script>'.length;
   if(first<0||boundary<first)throw Error('Missing source data boundary');
   html=html.slice(0,first)+`<script src="${bundle}"></script>\n<script src="community-highlights.js"></script>\n<script src="clan-league-rewards.js"></script>\n`+html.slice(boundary);
-  html=html.replace('<main class="main">','<main class="main"><div style="padding:8px 28px;color:#91a5bf;font-size:12px" data-release-version="'+P.version+'">'+P.coverage.unassignedRows.length+' result awaiting account identification; its known rewards remain in clan totals. Historical coverage details are included in exports.</div>');
+  html=html.replace('<main class="main">','<main class="main"><div style="padding:8px 28px;color:#91a5bf;font-size:12px" data-release-version="'+P.version+'" data-release-commit="'+(sourceCommit||'unknown')+'">'+P.coverage.unassignedRows.length+' result awaiting account identification; its known rewards remain in clan totals. Historical coverage details are included in exports.</div>');
   const exportsDir=path.join(destination,'exports');fs.mkdirSync(exportsDir,{recursive:true});
   const exportFiles={};
   const metrics=require('../event-reward-metrics.js');
@@ -51,7 +55,7 @@ function build({destination=path.join(root,'dist'),updates}={}){
     const code=fs.readFileSync(path.join(destination,file));const ext=path.extname(file),name=file.slice(0,-ext.length)+'.'+digest(code).slice(0,16)+ext;
     if(file===bundle){assets[file]=file;continue;}fs.writeFileSync(path.join(destination,name),code);assets[file]=name;html=html.replaceAll('"'+file+'"','"'+name+'"');
   }
-  const manifest={version:P.version,assets,exports:exportFiles,coverage:P.coverage,unattendedIngestionEnabled:false};
+  const manifest={version:P.version,sourceCommit,assets,exports:exportFiles,coverage:P.coverage,unattendedIngestionEnabled:false};
   fs.writeFileSync(path.join(destination,'index.html'),html);
   fs.writeFileSync(path.join(destination,'release-manifest.json'),JSON.stringify(manifest));
   return {release,manifest,destination};

@@ -5,6 +5,8 @@ on:
       - 'scripts/event-projection*.cjs'
       - 'scripts/stage-event-update*.cjs'
       - 'scripts/assemble-result-review*.cjs'
+      - 'scripts/audit-result-pagination*.cjs'
+      - 'scripts/hash-original-image*.cjs'
       - 'scripts/*site*.cjs'
       - 'scripts/migrate-event-ledger.cjs'
       - 'data/approved-event-updates.json'
@@ -20,6 +22,8 @@ on:
       - 'scripts/event-projection*.cjs'
       - 'scripts/stage-event-update*.cjs'
       - 'scripts/assemble-result-review*.cjs'
+      - 'scripts/audit-result-pagination*.cjs'
+      - 'scripts/hash-original-image*.cjs'
       - 'scripts/*site*.cjs'
       - 'scripts/migrate-event-ledger.cjs'
       - 'data/approved-event-updates.json'
@@ -39,7 +43,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test scripts/reward-metrics.test.cjs scripts/event-projection-core.test.cjs scripts/council-minimums-core.test.cjs scripts/roster-event-breakdown.test.cjs scripts/sparks-ui-source.test.cjs scripts/site-release.test.cjs scripts/stage-event-update.test.cjs scripts/assemble-result-review.test.cjs
+      - run: node --test scripts/reward-metrics.test.cjs scripts/event-projection-core.test.cjs scripts/council-minimums-core.test.cjs scripts/roster-event-breakdown.test.cjs scripts/sparks-ui-source.test.cjs scripts/site-release.test.cjs scripts/stage-event-update.test.cjs scripts/assemble-result-review.test.cjs scripts/audit-result-pagination.test.cjs scripts/hash-original-image.test.cjs
       - name: Inventory legacy migration blockers (read only)
         run: node scripts/audit-event-projection-migration.cjs
       - name: Preserve current 100-member accounting invariants

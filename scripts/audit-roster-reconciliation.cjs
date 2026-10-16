@@ -176,4 +176,5 @@ console.log('ROSTER_AUDIT_SUMMARY '+JSON.stringify({
 }));
 console.log('ROSTER_AUDIT_NEGATIVE_STARS '+JSON.stringify(report.negativeStars.slice(0,20)));
 console.log('ROSTER_AUDIT_NEGATIVE_SPARKS '+JSON.stringify(report.negativeSparks.slice(0,20)));
+console.log('ROSTER_AUDIT_EVENT_BASE_DIFFERENCES '+JSON.stringify(report.historicEventDifferenceNames));
 console.log('ROSTER_AUDIT_MISSING '+JSON.stringify({spark:report.missingSparkNames,star:report.missingStarNames}));

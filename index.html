@@ -607,43 +607,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const stars=stored?.stars!=null?Number(stored.stars):(rowStarsKnown?sum('stars'):null);
     const sparks=stored?.sparks!=null?Number(stored.sparks):(rowSparksKnown?sum('sparks'):null);
 
-    const shareFor=r=>{
-      let s=Number(r.share)||0;
-      if(s>=1) s/=100;
-      if(!(s>0)){
-        const byRank={1:.25,2:.20,3:.18,4:.12,5:.10,6:.08,7:.04,8:.02,9:.01};
-        s=byRank[Number(r.rank)]||0;
-      }
-      return s;
-    };
-    const potFrom=(r,key)=>{
-      const share=shareFor(r), reward=Number(r[key])||0;
-      return share>0&&reward>0?reward/share:null;
-    };
-
-    const grouped=new Map();
-    rows.forEach(r=>{
-      const key=(r.group!==undefined&&r.group!==null&&r.group!=='')?String(r.group):'legacy';
-      if(!grouped.has(key)) grouped.set(key,[]);
-      grouped.get(key).push(r);
-    });
-    const lobbyRows=[...grouped.values()];
-    const pots=lobbyRows.map(group=>{
-      const candidates=group.map(r=>({
-        share:shareFor(r),
-        star:potFrom(r,'stars'),
-        spark:potFrom(r,'sparks')
-      })).filter(x=>x.share>0).sort((a,b)=>b.share-a.share);
-      return {
-        star:candidates.find(x=>x.star>0)?.star??null,
-        spark:candidates.find(x=>x.spark>0)?.spark??null
-      };
-    });
-    const starPots=pots.map(x=>x.star).filter(v=>Number(v)>0);
-    const sparkPots=pots.map(x=>x.spark).filter(v=>Number(v)>0);
-    const allStarPots=lobbyRows.length>0&&starPots.length===lobbyRows.length;
-    const allSparkPots=lobbyRows.length>0&&sparkPots.length===lobbyRows.length;
-
+    const pots=window.AVENGERS_REWARD_METRICS.potTotals(rows);
     const partial=D.space?.historicalIncompleteDates?.[date]||'';
     return {
       date,
@@ -651,9 +615,11 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       yearsB:sum('yearsB'),
       stars,
       sparks,
-      groups:verifiedPot?.groups??stored?.groups??(grouped.size||(rows.length?1:0)),
-      potStars:partial?null:(verifiedPot?.potStars??(allStarPots?starPots.reduce((s,v)=>s+v,0):null)),
-      potSparks:partial?null:(verifiedPot?.potSparks??(allSparkPots?sparkPots.reduce((s,v)=>s+v,0):null)),
+      groups:verifiedPot?.groups??stored?.groups??pots.groups,
+      potStars:verifiedPot?.potStars??pots.potStars,
+      potStarsEstimated:verifiedPot?.potStars==null&&pots.potStars!==null,
+      potSparks:verifiedPot?.potSparks??pots.potSparks,
+      potSparksEstimated:verifiedPot?.potSparks==null&&pots.potSparks!==null,
       partial
     };
   }
@@ -1104,14 +1070,14 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       const body=totals.map(x=>`<tr title="${escapeHtml(x.partial||'')}">
         <td>${fmtDate(x.date)}${x.partial?' *':''}</td>
         <td class="num">${x.groups||'—'}</td>
-        <td class="num event-total-highlight">${x.potStars==null?'—':fmtNum(x.potStars)}</td>
-        <td class="num">${x.potSparks==null?'—':fmtNum(x.potSparks)}</td>
+        <td class="num event-total-highlight">${x.potStars==null?'—':(x.potStarsEstimated?'≈':'')+fmtNum(x.potStars)}</td>
+        <td class="num">${x.potSparks==null?'—':(x.potSparksEstimated?'≈':'')+fmtNum(x.potSparks)}</td>
         <td class="num">${x.stars==null?'—':fmtNum(x.stars)}${x.partial?' *':''}</td>
         <td class="num">${x.sparks==null?'—':fmtNum(x.sparks)}${x.partial?' *':''}</td>
         <td class="num">${effortCell(window.AVENGERS_REWARD_METRICS.summarize((D.space.events[x.date]||[]).filter(r=>r.clan===(av2Mode?'AV-2':'AVENGERS')),'yearsB'))}</td>
-        <td>${escapeHtml(x.partial||'Recorded final results')}</td>
+        <td>${escapeHtml(x.partial||'Recorded final results')}${x.potStarsEstimated||x.potSparksEstimated?' Pot estimated from known reward/share in each represented lobby; rounded shares/rewards may affect precision.':''}</td>
       </tr>`).join('');
-      el.innerHTML=tableShell(av2Mode?'AV-2 Space Race Pot Totals':'Space Race Pot Totals',av2Mode?'AV-2 event-time reward and lobby totals verified from the AV-2 Discord results channel':'AVENGERS event-time reward totals across all Space Race lobbies • current roster status does not affect historical totals • — means reward data is not yet available • * means the Discord channel is missing at least one final lobby screenshot',
+      el.innerHTML=tableShell(av2Mode?'AV-2 Space Race Pot Totals':'Space Race Pot Totals',av2Mode?'AV-2 event-time reward and lobby totals verified from the AV-2 Discord results channel':'AVENGERS event-time reward totals across all Space Race lobbies • current roster status does not affect historical totals • ≈ means a pot calculated from reward/share values • — means at least one represented lobby has no known pot • * means player-result coverage is partial',
         [{label:'Race'},{label:'Groups',num:true},{label:'Pot Stars',num:true},{label:'Pot Sparks',num:true},{label:'Tracked Stars',num:true},{label:'Tracked Sparks',num:true},{label:'Sparks/Effort (per B)',num:true},{label:'Coverage'}],
         body||`<tr><td colspan="8" class="empty">No Space Race totals recorded.</td></tr>`);
     } else if(view==='event'){
@@ -1968,19 +1934,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     };
     const recordDate=(r,kind)=>{
       const name=canonicalPlayerName(r.name);
-      if(kind==='piggy'){
-        const hist=(D.piggy?.history?.[name]||[]).filter(x=>(Number(x.lines)||0)>0);
-        if(!hist.length)return '—';
-        const best=Math.max(...hist.map(x=>Number(x.lines)||0));
-        const hit=hist.filter(x=>(Number(x.lines)||0)===best).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')))[0];
-        return hit?.date?shortDate(hit.date):'—';
-      }
-      if(kind==='space'){
-        const hist=(D.space?.history?.[name]||[]).filter(x=>(Number(x.yearsB)||0)>0);
-        if(!hist.length)return '—';
-        const effective=x=>String(x.date||'')==='2026-10-02'?(Number(x.yearsB)||0)/0.6666:(Number(x.yearsB)||0);
-        const best=Math.max(...hist.map(effective));
-        const hit=hist.filter(x=>Math.abs(effective(x)-best)<0.05).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')))[0];
+      if(kind==='piggy'||kind==='space'){
+        const hit=window.AVENGERS_REWARD_METRICS.record(D[kind]?.history?.[name]||[],kind==='piggy'?'lines':'yearsB');
         return hit?.date?shortDate(hit.date):'—';
       }
       if(kind==='kraken'){
@@ -2136,11 +2091,11 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       }
     }else{
       if(state.spaceView==='pot'){
-        headers=['Race','Groups','Pot Stars','Pot Sparks','Tracked Stars','Tracked Sparks'];
-        rows=Object.keys(D.space.events||{}).sort().reverse().map(date=>spaceRewardTotals(date))
-          .map(x=>[x.date,x.groups||'',x.potStars??'',x.potSparks??'',x.stars??'',x.sparks??'']);
+        headers=['Race','Groups','Pot Stars','Pot Sparks','Tracked Stars','Tracked Sparks','Pot Stars Estimated','Pot Sparks Estimated','Coverage'];
+        rows=Object.keys(D.space.events||{}).sort().reverse().map(date=>spaceRewardTotals(date,state.status==='av2'?'AV-2':'AVENGERS'))
+          .filter(x=>x.participants>0).map(x=>[x.date,x.groups||'',x.potStars??'',x.potSparks??'',x.stars??'',x.sparks??'',x.potStarsEstimated,x.potSparksEstimated,x.partial]);
       }else if(state.spaceView==='event'){
-        rows=(D.space.events[state.spaceEvent]||[]).filter(r=>allowedStatus(r.status));
+        rows=(D.space.events[state.spaceEvent]||[]).filter(allowedEventMetricRow);
         headers=['Rank','Username','Lightyears','Stars','Sparks','Share','Group','Sparks/Effort (per B)'];
         rows=rows.map((r,i)=>[i+1,r.name,Math.round((Number(r.yearsB)||0)*1e9),r.stars,r.sparks,r.share,r.group??'',window.AVENGERS_REWARD_METRICS.efficiency(r.sparks,r.yearsB)]);
       }else{

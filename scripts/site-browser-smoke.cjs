@@ -33,6 +33,9 @@ async function main(){
         assert.deepEqual(errors,[],name+' has no browser errors');
       }
     }
+    await page.click('.nav-btn[data-page="records"]');
+    const record=page.locator('#page-records .record-card').filter({hasText:'Space Records'}).locator('.record-row').filter({hasText:'AV-HarryBallsagna'});
+    assert((await record.innerText()).includes('8/30/26'),'Space record date comes from PB event');
     await page.click('.nav-btn[data-page="rosters"]');
     await page.click('[data-roster-group="effort"]');
     assert((await page.locator('#rostersContent').innerText()).includes('Sparks/Effort'));
@@ -40,6 +43,8 @@ async function main(){
     await page.click('#spaceTabs [data-view="pot"]');
     assert((await page.locator('#spaceContent').innerText()).includes('Oct 16, 2026'));
     await page.selectOption('#globalStatusFilter','active');
+    const currentPot=page.locator('#spaceContent tbody tr').filter({hasText:'Oct 16, 2026'});
+    assert((await currentPot.innerText()).includes('≈'),'partial race retains estimated pot values');
     assert((await page.locator('#spaceContent').innerText()).includes('Lobby 6'));
     assert((await page.locator('#spaceContent').innerText()).includes('5,703,046'));
     await page.selectOption('#globalStatusFilter','av2');

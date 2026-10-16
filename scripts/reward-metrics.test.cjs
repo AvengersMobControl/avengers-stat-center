@@ -24,3 +24,21 @@ test('Sept 18 preserves distances, represents lobby 6 rewards as unknown and kee
  assert.equal(e.rows.filter(r=>r.clan==='AV-2').reduce((s,r)=>s+(r.sparks||0),0),297435);
  assert.match(r.globals.AVENGERS_DATA.space.historicalIncompleteDates['2026-09-18'],/Lobby 6/);
 });
+
+const {record,potTotals}=require('../event-reward-metrics.js');
+test('record date belongs to the actual PB, with corrected Oct 2 values never adjusted again',()=>{
+ const D=require('./create-site-release.cjs').create().globals.AVENGERS_DATA;
+ assert.deepEqual(record(D.space.history['AV-HarryBallsagna'],'yearsB'),{value:549.9,date:'2026-08-30'});
+ assert.deepEqual(record(D.space.history['AV-JAMO'],'yearsB'),{value:439.3,date:'2026-10-09'});
+ assert.deepEqual(record([{date:'2026-10-02',score:100},{date:'2026-08-30',score:100}]),{value:100,date:'2026-08-30'});
+});
+test('partial player coverage does not erase calculable lobby pots; missing lobby rewards still do',()=>{
+ const R=require('./create-site-release.cjs').create();const events=R.projection.events;
+ const recent=events.find(e=>e.id==='space|2026-10-16');assert.equal(recent.status,'partial');
+ for(const clan of ['AVENGERS','AV-2']){
+   const pots=potTotals(recent.rows.filter(r=>r.clan===clan));
+   assert(pots.potStars>0&&pots.potSparks>0);assert.equal(pots.coveredStarGroups,pots.groups);assert.equal(pots.coveredSparkGroups,pots.groups);
+ }
+ const missing=potTotals(events.find(e=>e.id==='space|2026-09-18').rows.filter(r=>r.clan==='AVENGERS'));
+ assert.equal(missing.groups,6);assert.equal(missing.coveredStarGroups,5);assert.equal(missing.potStars,null);assert.equal(missing.potSparks,null);
+});

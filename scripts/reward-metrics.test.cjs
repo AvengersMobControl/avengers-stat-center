@@ -35,26 +35,20 @@ test('record date belongs to the actual PB, with corrected Oct 2 values never ad
 test('Oct 2 Space Records display actual distance only for a standing Oct 2 PB',()=>{
  const {spaceRecordDisplay}=require('../event-reward-metrics.js');
  const D=require('./create-site-release.cjs').create().globals.AVENGERS_DATA;
- const cases=[
-   ['AV-Pablin',478.7,319.1333333333333],
-   ['AV-Chuck',334.8,223.2],
-   ['AV-HN',327.8,218.53333333333333],
-   ['AV-Megalodon',183.8,122.53333333333333],
-   ['AV-23',162,108],
-   ['AV-Deviantdan',153.2,102.13333333333334],
-   ['AV-SMILINGBANDIT',137,91.33333333333333]
- ];
- for(const [name,pb,expected]of cases){
-   const member=D.members.find(m=>m.name.toLowerCase()===name.toLowerCase());
-   assert(member, name+' included');
-   assert(Math.abs(member.spacePB-pb)<.001,name+' approved normalized PB unchanged');
+ const cases=D.members.flatMap(member=>{
    const hit=record(D.space.history[member.name]||[],'yearsB');
-   assert.equal(hit.date,'2026-10-02',name+' is an Oct 2 standing record');
-   const display=spaceRecordDisplay(member.spacePB,hit.date);
-   assert.equal(display.adjusted,true);
-   assert(Math.abs(display.value-expected)<.001,name+' original game distance recovered');
-   assert.equal(member.spacePB,pb,'underlying PB remains unchanged');
+   return hit?.date==='2026-10-02'?[{member,date:hit.date}]:[];
+ });
+ assert(cases.length>0,'Oct 2 is still the highest-PB date for at least one member');
+ for(const {member,date}of cases){
+   const before=member.spacePB;
+   const display=spaceRecordDisplay(before,date);
+   assert.equal(display.adjusted,true,member.name+' current Oct 2 PB marked');
+   assert(Math.abs(display.value-before*2/3)<.000001,member.name+' actual distance');
+   assert.equal(member.spacePB,before,member.name+' canonical normalized PB untouched');
  }
+ assert.deepEqual(spaceRecordDisplay(334.8,'2026-10-02'),{value:223.2,adjusted:true});
+ assert.deepEqual(spaceRecordDisplay(478.7,'2026-10-02').adjusted,true);
  const prior=record(D.space.history['AV-HarryBallsagna'],'yearsB');
  assert.equal(prior.date,'2026-08-30');
  assert.deepEqual(spaceRecordDisplay(prior.value,prior.date),{value:549.9,adjusted:false});

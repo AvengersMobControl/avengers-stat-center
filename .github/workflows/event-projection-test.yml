@@ -10,7 +10,11 @@ on:
       - 'scripts/fetch-original-discord-image*.cjs'
       - 'scripts/verify-live-pages*.cjs'
       - 'scripts/build-site.cjs'
+      - 'scripts/render-event-summary.py'
+      - 'scripts/test_render_event_summary.py'
+      - 'scripts/export-event-summary*.cjs'
       - 'scripts/*site*.cjs'
+      - 'scripts/export-event-summary*.cjs'
       - 'scripts/migrate-event-ledger.cjs'
       - 'data/approved-event-updates.json'
       - 'index.html'
@@ -46,7 +50,25 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test scripts/reward-metrics.test.cjs scripts/event-projection-core.test.cjs scripts/council-minimums-core.test.cjs scripts/roster-event-breakdown.test.cjs scripts/sparks-ui-source.test.cjs scripts/site-release.test.cjs scripts/stage-event-update.test.cjs scripts/assemble-result-review.test.cjs scripts/audit-result-pagination.test.cjs scripts/hash-original-image.test.cjs scripts/fetch-original-discord-image.test.cjs scripts/verify-live-pages.test.cjs
+      - run: node --test scripts/reward-metrics.test.cjs scripts/event-projection-core.test.cjs scripts/council-minimums-core.test.cjs scripts/roster-event-breakdown.test.cjs scripts/sparks-ui-source.test.cjs scripts/site-release.test.cjs scripts/stage-event-update.test.cjs scripts/assemble-result-review.test.cjs scripts/audit-result-pagination.test.cjs scripts/hash-original-image.test.cjs scripts/fetch-original-discord-image.test.cjs scripts/verify-live-pages.test.cjs scripts/export-event-summary.test.cjs
+      - name: Verify six canonical event PNG previews
+        run: |
+          python3 -m pip install --disable-pip-version-check Pillow==11.3.0
+          python3 -m unittest discover -s scripts -p test_render_event_summary.py -v
+          node scripts/export-event-summary.cjs approved-summary-release.json
+          for kind in piggy flash kraken; do
+            for clan in AVENGERS AV-2; do
+              python3 scripts/render-event-summary.py reports/approved-summary-release.json "reports/event-summary-preview-${kind}-${clan}.png" --kind "$kind" --clan "$clan"
+            done
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: event-summary-png-previews
+          path: |
+            reports/event-summary-preview-*.png
+            reports/event-summary-preview-*.json
+          if-no-files-found: ignore
       - name: Inventory legacy migration blockers (read only)
         run: node scripts/audit-event-projection-migration.cjs
       - name: Preserve current 100-member accounting invariants

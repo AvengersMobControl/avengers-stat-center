@@ -111,4 +111,11 @@ test('real Hoops Sept 29 AVENGERS Sparks survive transfer to AV-2 on published r
  assert(hoop.totalSparks>=12416538+post-0.001);
  assert.equal(BASE.breakdowns[hoop.name].screenshotGap,hoop.screenshotGap);
  assert.equal(BASE.breakdowns[hoop.name].eventLoggedSparks,hoop.earned.sparks);
+ const trackedAfterSep29=post;
+ const oldOtherClan=hoop.history.filter(r=>r.date<'2026-09-30'&&r.clan==='AV-2').reduce((t,r)=>t+(r.sparks||0),0);
+ console.log('HOOPS_SPARKS_PROJECTION '+JSON.stringify({
+   snapshotSep29:12416538,trackedAfterSep29,trackedBeforeSep29OtherClan:oldOtherClan,
+   loggedSparks:hoop.earned.sparks,unloggedSparks:hoop.screenshotGap,totalSparks:hoop.totalSparks,
+   evidence:hoop.snapshotBreakdown
+ }));
 });

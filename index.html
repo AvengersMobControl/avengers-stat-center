@@ -1564,6 +1564,9 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       case 'ratingTotal':return r.hasProfile?`<button type="button" class="roster-rating-link" data-roster-rating="${escapeHtml(r.profileName||r.name)}" title="View ${escapeHtml(r.name)} in Player Ratings">${fmtNum(r.ratingTotal,2)} <span aria-hidden="true">↗</span></button>`:fmtNum(r.ratingTotal,2);
       case 'spacePB':return fmtB(r.spacePB);
       case 'krakenPB':return fmtNum(r.krakenPB,1);
+      case 'loggedSparks':return (Number(r.baseSupplementSparks)||0)>0
+        ?`<span title="Includes ${fmtNum(r.baseSupplementSparks)} Sparks from deduplicated Piggy/Space event records above the stored older baseline; the amounts are not added twice.">${fmtNum(r.loggedSparks)} <span aria-label="Event-backed base correction">†</span></span>`
+        :fmtNum(r.loggedSparks);
       case 'unloggedStars':return r.unloggedStars==null?missing:fmtNum(r.unloggedStars);
       case 'totalCombinedSparks':return r.sparkReconciliationDelta!=null&&r.sparkReconciliationDelta<0
         ?`<span title="Needs review: tracked Sparks exceed the ${escapeHtml(r.sparkSnapshotDate||'undated')} snapshot by ${fmtNum(-r.sparkReconciliationDelta)}. Snapshot dates and transferred members may explain this. This is NOT a confirmed duplicate.">${fmtNum(r.totalCombinedSparks)} <span aria-label="Snapshot discrepancy" class="roster-reconciliation-warning">⚠</span></span>`
@@ -1646,7 +1649,9 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       const snapshot=snapMap.get(canonical)||snapMap.get(name);
       const eventBreakdown=window.AVENGERS_ROSTER_EVENT_BREAKDOWN?.forMember(canonical,Number(m.totalSparks)||0)||{};
       const extraSparks=window.AVENGERS_ROSTER_SPARKS_LEDGER?.forMember(canonical)||{flashSparks:0,octKrakenSparks:0};
-      const logged=Math.max(0,Number(m.totalSparks)||0)+extraSparks.flashSparks+extraSparks.octKrakenSparks+(extraSparks.juneKrakenSparks||0);
+      const historicBase=Math.max(0,Number(m.totalSparks)||0);
+      const eventBackedBase=Math.max(historicBase,Number(eventBreakdown.eventBackedBaseFloor)||0);
+      const logged=eventBackedBase+extraSparks.flashSparks+extraSparks.octKrakenSparks+(extraSparks.juneKrakenSparks||0);
       const snapshotTotal=snapshot?Math.max(0,Number(snapshot.allTimeSparks)||0):null;
       const sparkReconciliationDelta=snapshotTotal==null?null:snapshotTotal-logged;
       const unlogged=sparkReconciliationDelta==null?0:Math.max(0,sparkReconciliationDelta);
@@ -1756,6 +1761,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const unloggedTotal=rows.reduce((s,r)=>s+r.unloggedSparks,0);
     const combinedTotal=rows.reduce((s,r)=>s+r.totalCombinedSparks,0);
     const sparkComparisonWarnings=rows.filter(r=>r.sparkReconciliationDelta!=null&&r.sparkReconciliationDelta<0).length;
+    const eventBaseFloorCount=rows.filter(r=>(Number(r.baseSupplementSparks)||0)>0).length;
     const missingSparkSnapshots=rows.filter(r=>r.snapshotTotal==null).length;
     const inGameSparksTotal=target==='kraken'?rows.reduce((s,r)=>s+(Number(r.krakenRosterSparks)||0),0):0;
 
@@ -1833,7 +1839,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       </div>
       <div class="records-note"><strong>Sparks reconciliation:</strong>
         Logged Sparks includes Piggy, Space, Flash, and Kraken results. Some June 2026 Kraken rewards are reconstructed from damage instead of directly verified payouts. Snapshots are dated September 29 for AVENGERS and October 15 for AV-2; transfer-related in-game values may not be comparable with lifetime rewards. Unlogged is floored at zero, but a negative raw difference is <strong>not</strong> considered reconciled.
-        <strong>${sparkComparisonWarnings} snapshot comparison flags</strong> and <strong>${missingSparkSnapshots} missing Spark snapshots</strong> in this view. A ⚠ beside Total Sparks identifies a tracked total larger than the available screenshot; hover for details. Review discrepancies against the original event records before correcting any totals.
+        <strong>${sparkComparisonWarnings} snapshot comparison flags</strong>, <strong>${missingSparkSnapshots} missing Spark snapshots</strong>, and <strong>${eventBaseFloorCount} event-backed baseline corrections</strong> in this view. A ⚠ beside Total Sparks identifies a tracked total larger than the available screenshot; a † beside Logged Sparks means deduplicated Piggy/Space rewards exceeded the older stored baseline, so the larger base was used without summing twice. Review flagged screenshot differences before correcting any historical records.
       </div>
       ${rosterGroupedTable(label,rows,sortDef,sortDir,sortHeader,playerNameCell,state.rosterGroups,target)}
     `;

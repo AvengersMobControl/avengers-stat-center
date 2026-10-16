@@ -86,7 +86,9 @@ const records=current.map(r=>{
   const base=Math.max(0,Number(m?.totalSparks)||0);
   const extra=L.forMember(name);
   const event=B.forMember(name,base);
-  const loggedSparks=base+(Number(extra.flashSparks)||0)+(Number(extra.octKrakenSparks)||0)+(Number(extra.juneKrakenSparks)||0);
+  const adjustedBase=Math.max(base,Number(event.eventBackedBaseFloor)||0);
+  const baseSupplementSparks=adjustedBase-base;
+  const loggedSparks=adjustedBase+(Number(extra.flashSparks)||0)+(Number(extra.octKrakenSparks)||0)+(Number(extra.juneKrakenSparks)||0);
   const starLogged=Number(event.loggedStars)||0;
   const spark=sparks.get(name)||sparks.get(r.name);
   const star=stars.get(name)||stars.get(r.name);
@@ -101,14 +103,14 @@ const records=current.map(r=>{
     sparkSnapshotDate:r.status==='AV2'&&S.currentAv2.some(x=>x.name===r.name)?S.av2Date:S.date,
     starSnapshotDate:star? '2026-10-15':null,
     sparkSnapshot:sparkScreenshot,starSnapshot:starScreenshot,
-    loggedSparks,loggedStars:starLogged,
+    loggedSparks,loggedStars:starLogged,baseSupplementSparks,
     sparkDelta:sparkScreenshot===null?null:sparkScreenshot-loggedSparks,
     starDelta:starScreenshot===null?null:starScreenshot-starLogged,
     piggySparks:event.piggySparks,spaceSparks:event.spaceSparks,
     flashSparks:event.flashSparks,krakenSparks:event.krakenSparks,
     piggyStars:event.piggyStars,spaceStars:event.spaceStars,flashStars:event.flashStars,
     sparksCategoryMismatch:Number(event.eventLoggedSparks||0)-loggedSparks,
-    eventRowDelta:Number(event.sparksReconciliationDelta)||0
+    eventRowDelta:Number(event.storedBaseDifference)||0
   };
 });
 const missingStar=records.filter(x=>x.starSnapshot===null);
@@ -116,7 +118,10 @@ const missingSpark=records.filter(x=>x.sparkSnapshot===null);
 const overStar=records.filter(x=>x.starDelta!==null&&x.starDelta<0).sort((a,b)=>a.starDelta-b.starDelta);
 const overSpark=records.filter(x=>x.sparkDelta!==null&&x.sparkDelta<0).sort((a,b)=>a.sparkDelta-b.sparkDelta);
 const mismatches=records.filter(x=>Math.abs(x.sparksCategoryMismatch)>0.01);
-const eventDeltas=records.filter(x=>Math.abs(x.eventRowDelta)>0.01);
+const eventDeltas=records.filter(x=>x.eventRowDelta>0.01);
+const corrected=records.filter(x=>x.baseSupplementSparks>0.01);
+assert.equal(corrected.length,eventDeltas.length,'Recorded event base supplements must match positive historical differences');
+assert.equal(mismatches.length,0,'Reconciled event categories must sum to logged Sparks');
 const report={
   generatedFrom:'repository data sources',snapshotDate:'2026-10-15',
   loadedScriptCount:loaded.length,roster:{avengers:currentAv.length,av2:currentAv2.length},
@@ -125,6 +130,7 @@ const report={
   starSnapshots:{available:records.length-missingStar.length,missing:missingStar.length,
     negativeDifferences:overStar.length},
   categoryMismatches:mismatches.length,historicalEventVsBaseDeltas:eventDeltas.length,
+  eventBackedCorrections:corrected.length,eventBackedSupplementTotal:corrected.reduce((s,r)=>s+r.baseSupplementSparks,0),
   negativeSparks:overSpark.map(x=>({name:x.name,clan:x.clan,delta:x.sparkDelta,date:x.sparkSnapshotDate})),
   negativeStars:overStar.map(x=>({name:x.name,clan:x.clan,delta:x.starDelta})),
   missingSparkNames:missingSpark.map(x=>x.name),missingStarNames:missingStar.map(x=>x.name),
@@ -146,6 +152,7 @@ const lines=[
 '- Negative snapshot-minus-logged Sparks: '+overSpark.length+'; Stars: '+overStar.length+'.',
 '- Breakdown vs ledger mismatches: '+mismatches.length+'.',
 '- Historical per-event reward vs stored base differences: '+eventDeltas.length+'.',
+'- Conservative event-backed Spark base corrections: '+corrected.length+' members; '+report.eventBackedSupplementTotal+' Sparks of supported base floor above old stored totals.',
 '',
 '**Caution:** A negative Spark difference is not automatically a data error: AVENGERS all-time Spark screenshots are from September 29 and logged results include later events; AV-2 screenshots can have clan-specific zeros for transferred members. Flag for review rather than clamp and claim reconciled.',
 '',
@@ -172,7 +179,8 @@ fs.writeFileSync(path.join(dir,'roster-reconciliation-audit.md'),lines.join('\n'
 console.log('ROSTER_AUDIT_SUMMARY '+JSON.stringify({
   roster:report.roster,negativeSparks:overSpark.length,negativeStars:overStar.length,
   missingSparks:missingSpark.length,missingStars:missingStar.length,
-  categoryMismatches:mismatches.length,historicalEventDeltas:eventDeltas.length
+  categoryMismatches:mismatches.length,historicalEventDeltas:eventDeltas.length,
+  correctedBaselinePlayers:corrected.length,addedEventBackedSparkFloor:report.eventBackedSupplementTotal
 }));
 console.log('ROSTER_AUDIT_NEGATIVE_STARS '+JSON.stringify(report.negativeStars.slice(0,20)));
 console.log('ROSTER_AUDIT_NEGATIVE_SPARKS '+JSON.stringify(report.negativeSparks.slice(0,20)));

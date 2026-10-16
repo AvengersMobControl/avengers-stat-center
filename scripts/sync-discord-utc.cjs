@@ -175,16 +175,37 @@ function maxId(a, b) {
   return BigInt(b) > BigInt(a) ? String(b) : String(a);
 }
 async function fetchMessages(token, channelId, lastMessageId) {
-  const query = new URLSearchParams({limit: '100'});
-  if (lastMessageId) query.set('after', lastMessageId);
-  const response = await fetch('https://discord.com/api/v10/channels/' + channelId + '/messages?' + query, {
-    headers: {Authorization: 'Bot ' + token}
-  });
-  if (!response.ok) throw new Error('Discord messages request failed (' + response.status + '): ' + (await response.text()).slice(0, 250));
-  const messages = await response.json();
-  if (!Array.isArray(messages)) throw new Error('Discord messages response was not an array');
-  return messages.sort((a, b) => BigInt(a.id) < BigInt(b.id) ? -1 : BigInt(a.id) > BigInt(b.id) ? 1 : 0);
+  // Discord message pages are newest-first. Read backwards until we reach the
+  // saved checkpoint; a single "after" query can silently skip >100 messages.
+  const collected = [];
+  let before = null;
+  let pages = 0;
+  while (true) {
+    if (++pages > 100) throw new Error('Discord UTC backlog exceeded 10,000 messages; no checkpoint advanced');
+    const query = new URLSearchParams({limit: '100'});
+    if (before) query.set('before', before);
+    const response = await fetch('https://discord.com/api/v10/channels/' + channelId + '/messages?' + query, {
+      headers: {Authorization: 'Bot ' + token}
+    });
+    if (!response.ok) throw new Error('Discord messages request failed (' + response.status + '): ' + (await response.text()).slice(0, 250));
+    const batch = await response.json();
+    if (!Array.isArray(batch)) throw new Error('Discord messages response was not an array');
+    if (!batch.length) break;
+    for (const m of batch) {
+      if (!lastMessageId || BigInt(m.id) > BigInt(lastMessageId)) collected.push(m);
+    }
+    const oldest = batch.reduce((id, m) => !id || BigInt(m.id) < BigInt(id) ? String(m.id) : id, null);
+    if (lastMessageId && BigInt(oldest) <= BigInt(lastMessageId)) break;
+    if (batch.length < 100) break;
+    // Normally the first run just checkpoints the latest messages, without
+    // importing all historical channel discussion unless backfill is requested.
+    if (!lastMessageId && process.env.DISCORD_UTC_BACKFILL !== 'true') break;
+    if (oldest === before) throw new Error('Discord paging cursor did not advance');
+    before = oldest;
+  }
+  return collected.sort((a, b) => BigInt(a.id) < BigInt(b.id) ? -1 : BigInt(a.id) > BigInt(b.id) ? 1 : 0);
 }
+
 function load() {
   if (!fs.existsSync(dataPath)) return structuredClone(BLANK);
   const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
@@ -235,4 +256,4 @@ async function main() {
 }
 if (require.main === module) main().catch(err => {console.error(err); process.exitCode = 1;});
 module.exports = {parseUtc, countryOf, nameOf, clanOf, reconcile, knownRoster,
-  encryptState, decryptState, publicProjection};
+  encryptState, decryptState, publicProjection, fetchMessages};

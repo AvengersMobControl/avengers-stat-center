@@ -4,7 +4,7 @@ This is a separate, opt-in workflow. **Event-result screenshot channels remain r
 
 ## Before enabling
 
-1. **UTC channel selected by the clan leader:** [Discord channel 1422151197317529600](https://discord.com/channels/@me/1422151197317529600). The numeric channel ID is fixed in the scheduled workflow. Confirm the bot is in the same server and can read this channel.
+1. **UTC channel selected by the clan leader:** Discord channel ID `1422151197317529600`. The numeric channel ID is fixed in the scheduled workflow. Confirm the bot is in the same server and can read this channel.
 2. Ensure the existing AVENGERS bot can **View Channel** and **Read Message History** in that channel. Enable **Message Content Intent** for the bot application if required, so it can actually read UTC text.
 3. GitHub repository **Settings → Secrets and variables → Actions**:
    - Set **secret** `DISCORD_BOT_TOKEN` to the existing bot token (never commit or share the token in chat).

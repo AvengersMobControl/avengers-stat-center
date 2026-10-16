@@ -106,17 +106,37 @@ function project(ledger,{aliases={},members=[],snapshots={},arenaStart='2026-08-
     const categories=Object.fromEntries(KINDS.map(k=>[k,rewards(history.filter(r=>r.kind===k))]));
     const earned=rewards(history),evidence=Object.hasOwn(snapshots,m.name)?snapshots[m.name]:null;
     const sources=evidence===null?[]:Array.isArray(evidence)?evidence:[evidence];
+    // Earlier-to-later observations are required to detect an observed
+    // reset of a single clan's counter when a member leaves and rejoins.
+    const ordered=[...sources].sort((a,b)=>String(a?.beforeDate||'9999-12-31')
+      .localeCompare(String(b?.beforeDate||'9999-12-31'))||Number(a?.amount||0)-Number(b?.amount||0));
+    const priorByClan=new Map(),generationByClan=new Map();
     const snapshotBreakdown=[];
     const gapByStint=new Map();
-    for(const item of sources){
+    for(const item of ordered){
       const obj=typeof item==='number'?{amount:item}:item;
       requireThat(obj&&typeof obj==='object','Invalid screenshot evidence');
       const snapshot=amount(obj.amount,'snapshot');
-      const beforeDate=obj.beforeDate??null,stintStart=obj.stintStart??null;
-      const clan=obj.clan??null,stintId=obj.stintId??'unspecified';
+      const beforeDate=obj.beforeDate??null,clan=obj.clan??null;
+      let stintStart=obj.stintStart??null,stintId=obj.stintId??null;
       if(beforeDate!==null)requireThat(day(beforeDate),'Invalid screenshot cutoff date');
       if(stintStart!==null)requireThat(day(stintStart),'Invalid contribution stint start');
       if(clan!==null)requireThat(['AVENGERS','AV-2'].includes(clan),'Invalid screenshot clan');
+      // A strict drop in a single clan's consecutive in-game "All time"
+      // counter proves a reset between observations, not a continuous stint.
+      // The exact transfer timestamp remains unknown: use the previous
+      // snapshot's exclusive cutoff as a conservative evidence boundary.
+      const previous=clan?priorByClan.get(clan):null;
+      let generation=generationByClan.get(clan)||0;
+      if(previous&&beforeDate&&previous.beforeDate&&beforeDate>previous.beforeDate
+         &&snapshot!==null&&previous.amount!==null&&snapshot<previous.amount){
+        generation++;
+        generationByClan.set(clan,generation);
+        if(stintStart===null)stintStart=previous.beforeDate;
+      }
+      if(clan&&beforeDate&&(!previous||beforeDate>previous.beforeDate))
+        priorByClan.set(clan,{beforeDate,amount:snapshot});
+      if(stintId===null)stintId='observed-'+generation;
       if(stintStart&&beforeDate)requireThat(stintStart<beforeDate,'Screenshot stint ends before it starts');
       // A clan leaderboard resets upon transfer. Do not subtract rewards from
       // another clan or a separately evidenced contribution stint.
@@ -129,8 +149,10 @@ function project(ledger,{aliases={},members=[],snapshots={},arenaStart='2026-08-
       snapshotBreakdown.push({clan,stintId,beforeDate,stintStart,amount:snapshot,loggedAtSnapshot,gap,
         sourceName:obj.sourceName||null,label:obj.label||null});
     }
-    // Repeated observations of one clan stint overlap; take the strongest
-    // supported gap, not their sum. Distinct clans / proven separate stints add.
+    // Repeated observations in a nondecreasing stint overlap; take the
+    // strongest supported gap, not their sum. A subsequently *lower* same-
+    // clan balance is separately retained after a transfer reset, with an
+    // explicit conservative cutoff instead of a guessed exact move date.
     const screenshotGap=sources.length?[...gapByStint.values()].reduce((a,b)=>a+b,0):null;
     const loggedAtSnapshot=sources.length?snapshotBreakdown.at(-1).loggedAtSnapshot:earned.sparks;
     const ratingPB=cap(kinds.piggy.pb,35000)+cap(kinds.space.pb,350)+cap(kinds.kraken.pb,3500);

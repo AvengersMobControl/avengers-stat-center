@@ -119,3 +119,18 @@ test('real Hoops Sept 29 AVENGERS Sparks survive transfer to AV-2 on published r
    evidence:hoop.snapshotBreakdown
  }));
 });
+
+test('AV-Adigarian lower later in-game AVENGERS Sparks proves a separate return stint',()=>{
+ const player=BASE.projection.people.find(p=>p.name==='AV-Adigarian');
+ assert(player,'AV-Adigarian canonical account missing');
+ const older=player.snapshotBreakdown.find(s=>s.clan==='AVENGERS'&&s.amount===16851260);
+ const later=player.snapshotBreakdown.find(s=>s.clan==='AVENGERS'&&s.amount===2228373);
+ assert(older&&later,'Both leader-supplied screenshot contributions must be retained');
+ assert.equal(older.beforeDate,'2026-09-30');
+ assert.equal(later.beforeDate,'2026-10-16');
+ assert.notEqual(older.stintId,later.stintId,'AVENGERS reset cannot collapse old and new stint');
+ assert.equal(later.stintStart,'2026-09-30','Do not invent actual transfer date');
+ assert.equal(player.screenshotGap,player.snapshotBreakdown
+   .filter(s=>s.clan==='AVENGERS').reduce((n,s)=>n+s.gap,0)
+   +player.snapshotBreakdown.filter(s=>s.clan==='AV-2').reduce((n,s)=>n+s.gap,0));
+});

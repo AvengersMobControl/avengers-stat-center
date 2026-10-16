@@ -10,6 +10,7 @@ on:
       - 'scripts/council-minimums-core.test.cjs'
       - 'scripts/report-council-minimums.cjs'
       - 'scripts/audit-roster-reconciliation.cjs'
+      - 'scripts/roster-event-breakdown.test.cjs'
       - 'scripts/audit-sparks-root-cause.cjs'
       - '.github/workflows/roster-reconciliation-audit.yml'
   workflow_dispatch:
@@ -25,6 +26,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Test independent per-event Spark category calculation
+        run: node --test scripts/roster-event-breakdown.test.cjs
       - name: Check roster identities and reconcile rewards
         run: node scripts/audit-roster-reconciliation.cjs
       - name: Diagnose Spark ledger inflation across all current members

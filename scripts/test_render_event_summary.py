@@ -86,10 +86,24 @@ class ApprovedSourceModelTests(unittest.TestCase):
     def test_flash_pb_is_independent_of_piggy_and_respects_event_time_clan(self):
         m = renderer.resolve_summary(fixture(), "flash", "AV-2")
         self.assertEqual(m["eventId"], "flash|2026-10-13|2")
+        self.assertEqual(m["flashNumber"], "2")
         self.assertEqual(len(m["pbs"]), 0)
         self.assertEqual([r["player"] for r in m["firstTracked"]], ["AV-C"])
         self.assertEqual(m["knownScoreSum"], 13000)
         self.assertEqual(m["knownStars"], 2000)
+
+    def test_flash_title_parses_reviewed_number_not_internal_event_identifier(self):
+        release=fixture()
+        e=release["projection"]["events"][2]
+        e["id"]="flash|PF4-2026-10-14"
+        e["date"]="2026-10-14"
+        e["metadata"]={}
+        for person in release["projection"]["people"]:
+            for transition in person.get("kinds",{}).get("flash",{}).get("pbs",[]):
+                transition["eventId"]=e["id"]
+        m=renderer.resolve_summary(release,"flash","AVENGERS")
+        self.assertEqual(m["flashNumber"],"4")
+        self.assertEqual(m["eventId"],"flash|PF4-2026-10-14")
 
     def test_kraken_never_creates_stars_or_sparks_per_damage(self):
         m = renderer.resolve_summary(fixture(), "kraken", "AV-2")

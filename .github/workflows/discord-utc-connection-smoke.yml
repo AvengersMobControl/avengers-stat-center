@@ -4,12 +4,14 @@ on:
   pull_request:
     paths:
       - 'scripts/verify-discord-utc-connection.cjs'
+      - 'scripts/report-discord-utc-pending.cjs'
       - '.github/workflows/discord-utc-connection-smoke.yml'
   push:
     branches:
       - main
     paths:
       - 'scripts/verify-discord-utc-connection.cjs'
+      - 'scripts/report-discord-utc-pending.cjs'
       - '.github/workflows/discord-utc-connection-smoke.yml'
   workflow_dispatch:
 
@@ -27,6 +29,8 @@ jobs:
           node-version: '22'
       - name: Verify smoke test script syntax without exposing secrets
         run: node --check scripts/verify-discord-utc-connection.cjs
+      - name: Verify pending reason diagnostic syntax
+        run: node --check scripts/report-discord-utc-pending.cjs
 
   access:
     if: github.event_name != 'pull_request'
@@ -44,3 +48,7 @@ jobs:
           DISCORD_UTC_CHANNEL_ID: '1422151197317529600'
           DISCORD_UTC_COUNCIL_ROLE_IDS: '1427090799052587038'
         run: node scripts/verify-discord-utc-connection.cjs
+      - name: Report safe pending reason counts, no identities or message text
+        env:
+          DISCORD_UTC_STATE_KEY: ${{ secrets.DISCORD_UTC_STATE_KEY }}
+        run: node scripts/report-discord-utc-pending.cjs

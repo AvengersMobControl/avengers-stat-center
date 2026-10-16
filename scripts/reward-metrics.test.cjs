@@ -32,6 +32,34 @@ test('record date belongs to the actual PB, with corrected Oct 2 values never ad
  assert.deepEqual(record(D.space.history['AV-JAMO'],'yearsB'),{value:439.3,date:'2026-10-09'});
  assert.deepEqual(record([{date:'2026-10-02',score:100},{date:'2026-08-30',score:100}]),{value:100,date:'2026-08-30'});
 });
+test('Oct 2 Space Records display actual distance only for a standing Oct 2 PB',()=>{
+ const {spaceRecordDisplay}=require('../event-reward-metrics.js');
+ const D=require('./create-site-release.cjs').create().globals.AVENGERS_DATA;
+ const cases=[
+   ['AV-Pablin',478.7,319.1333333333333],
+   ['AV-Chuck',334.8,223.2],
+   ['AV-HN',327.8,218.53333333333333],
+   ['AV-Megalodon',183.8,122.53333333333333],
+   ['AV-23',162,108],
+   ['AV-Deviantdan',153.2,102.13333333333334],
+   ['AV-SMILINGBANDIT',137,91.33333333333333]
+ ];
+ for(const [name,pb,expected]of cases){
+   const member=D.members.find(m=>m.name.toLowerCase()===name.toLowerCase());
+   assert(member, name+' included');
+   assert(Math.abs(member.spacePB-pb)<.001,name+' approved normalized PB unchanged');
+   const hit=record(D.space.history[member.name]||[],'yearsB');
+   assert.equal(hit.date,'2026-10-02',name+' is an Oct 2 standing record');
+   const display=spaceRecordDisplay(member.spacePB,hit.date);
+   assert.equal(display.adjusted,true);
+   assert(Math.abs(display.value-expected)<.001,name+' original game distance recovered');
+   assert.equal(member.spacePB,pb,'underlying PB remains unchanged');
+ }
+ const prior=record(D.space.history['AV-HarryBallsagna'],'yearsB');
+ assert.equal(prior.date,'2026-08-30');
+ assert.deepEqual(spaceRecordDisplay(prior.value,prior.date),{value:549.9,adjusted:false});
+ assert.deepEqual(spaceRecordDisplay(500,'2026-10-09'),{value:500,adjusted:false});
+});
 test('partial player coverage does not erase calculable lobby pots; missing lobby rewards still do',()=>{
  const R=require('./create-site-release.cjs').create();const events=R.projection.events;
  const recent=events.find(e=>e.id==='space|2026-10-16');assert.equal(recent.status,'partial');

@@ -10,7 +10,8 @@
 
 | Order | Workstream | Status / next action |
 |---|---|---|
-| **NEXT / P0** | [#4 Event-result screenshot ingestion](https://github.com/AvengersMobControl/avengers-stat-center/issues/4) | Partial retrieval exists; end-to-end final-only multi-image import not verified. Start with approved-channel, read-only/sample dry-run, provenance and alias dedup. No unattended publication without leader authorization. |
+| **P0 — release gate** | [#42 Event → every dependent site view](https://github.com/AvengersMobControl/avengers-stat-center/issues/42) | **New leader mandate:** an accepted/corrected event updates every PB, history, average, rating, ranking, roster, record, achievement, clan/league total and export through a shared deterministic rebuild and sitewide tests. Existing code is partly disconnected; do not claim already implemented. Blocks unattended event ingestion. |
+| **NEXT / P0** | [#4 Event-result screenshot ingestion](https://github.com/AvengersMobControl/avengers-stat-center/issues/4) | Start with approved read-only ingestion sample; implement together with **#42** cross-site propagation, duplicate/correction tests and atomic full-site publication. No unattended Discord reads/posts without user authorization. |
 | P1 | [#8 Event summary images](https://github.com/AvengersMobControl/avengers-stat-center/issues/8) | Standardize Piggy/Space/Flash/Kraken data-driven graphics; prominent PB previous/new, % improvements, first-time players; avoid duplicate posts. |
 | P1 | [#7 Council minimums/near-miss reporting](https://github.com/AvengersMobControl/avengers-stat-center/issues/7) | **Core analysis and tests shipped in PR #32**. Need validate join dates, event completeness and Council outputs; PDF deliverable, not GitHub ZIP. |
 | P1 | [#6 Six five-week league accounting](https://github.com/AvengersMobControl/avengers-stat-center/issues/6) | Six periods rendered; validate true event-clan attribution, historical Kraken estimates, and leader's 165M → 171M reference against event records. |
@@ -55,4 +56,4 @@ Event participation and Sparks/Stars belong to the original event-time clan, eve
 5. Update the detailed issue and append a new entry to `docs/DECISION_LOG.md`. Update this roadmap and `docs/PROJECT_CONTINUITY.md` when priorities/policies change. Mark implemented, deployed and verified separately.
 6. Deliver finished report PDFs directly, not artifact ZIP links. Keep AVENGERS completely separate from SAC.
 
-**The next practical session should begin with issue #4, planning a validated read-only ingestion sample.** Do not automatically access/result-post to Discord without leader authorization.
+**The next practical session should begin with #42 + #4 together: map all site dependencies, then validate an end-to-end read-only event-ingestion sample.** Do not automatically access/result-post to Discord without leader authorization.

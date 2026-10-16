@@ -29,13 +29,13 @@ Total Sparks shown on roster = Logged Sparks + Screenshot Gap, where Screenshot 
 
 ## Automation status (updated October 16, 2026)
 - **Discord UTC/country:** Encrypted integration code is merged and bot read access was verified. A real test submission remained pending for identity verification; the leader explicitly paused further UTC work. Monday/Friday automated polling remains **disabled** unless `DISCORD_UTC_SYNC_ENABLED=true` is set deliberately after approval. See [current continuation status](docs/PROJECT_CONTINUITY.md) and [issue #3](https://github.com/AvengersMobControl/avengers-stat-center/issues/3).
-- **Event-result screenshot ingestion:** still needs approved-channel final-only validation, deduplication, identity mapping and safe review before any unattended publication. See [issue #4](https://github.com/AvengersMobControl/avengers-stat-center/issues/4).
+- **Event-result screenshot ingestion:** approval-gated read-only result review, capped-image pagination audits, stable result replays, and a source-image SHA-256 verifier exist. Genuine new results still require original authorized image bytes, verified final-only parsing, and explicit leader approval. **No unattended imports or Discord posting.** See [issue #4](https://github.com/AvengersMobControl/avengers-stat-center/issues/4) and [review guide](docs/RESULT_REVIEW_PIPELINE.md).
 - **Do not pursue** the missing October 13 AVENGERS Piggy Flash 1 main lobby; [issue #5](https://github.com/AvengersMobControl/avengers-stat-center/issues/5) is closed as not planned.
 
 Do **not** place raw Discord user IDs, bot tokens, or other private identifiers in public repository files. Do not infer country solely from UTC.
 
 ## Deployment and completion
-The repository includes a GitHub Pages publishing workflow. Additional Vercel previews are not necessarily the canonical production site.
+The canonical public site is GitHub Pages. Every Pages deployment now stamps the source Git commit in the public HTML and release manifest, then checks the live public DOM, export versions and both clans in Chromium. Its result is attached to the exact GitHub commit as the `AVENGERS GitHub Pages production` status. **Most recently verified on 2026-10-16:** `6e1441f7e424c097864919fb3d20c5feb32133e2` ([passing GitHub Pages run](https://github.com/AvengersMobControl/avengers-stat-center/actions/runs/38979178450)). Confirm the status of **current** main before relying on it; Vercel READY alone is not proof of canonical production.
 
 Separate **implemented**, **deployed**, and **verified**. A successful build is not enough: verify behavior and preserve historical data before closing a work item.
 

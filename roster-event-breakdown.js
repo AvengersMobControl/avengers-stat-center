@@ -48,48 +48,86 @@
       dest.stars+=row.stars;dest.events.add(row.key);
     });
 
-  // The original Kraken source's totalSparks is a Kraken-ONLY rewards
-  // aggregate, unlike D.members.totalSparks (which is ALL event categories).
-  // The October importer also adds the October payout to K.players.totalSparks.
-  // Remove that October payout from its aggregate, then count explicit October
-  // event rows ONCE. This also supports alias changes within a Kraken month.
-  const october=new Map(),octoberRowsByName=new Map();
-  (K.octEventRows||[]).forEach(r=>{
-    const name=canonical(r.name);
-    if(!name||!(Number(r.damage)>0)||!(Number(r.sparks)>=0))return;
-    const key=[r.eventDate||'2026-10-11',clan(r),name].join('|');
-    const prev=october.get(key);
-    if(!prev||Number(r.sparks)>prev.sparks)
-      october.set(key,{name,key,damage:Number(r.damage),sparks:Number(r.sparks)});
-  });
-  october.forEach(r=>{
-    get(r.name).kraken.october+=r.sparks;
-    get(r.name).kraken.events.add(r.key);
-    if(!octoberRowsByName.has(r.name))octoberRowsByName.set(r.name,[]);
-    octoberRowsByName.get(r.name).push(r);
-  });
-  (K.players||[]).forEach(p=>{
-    if(!p?.name)return;
-    const name=canonical(p.name),dest=get(name).kraken;
-    (K.months||[]).forEach(m=>{
-      if(m.key!=='oct'&&Number(p[m.key])>0)dest.events.add(m.key);
-    });
-    const recordedTotal=Number(p.totalSparks);
-    if(!Number.isFinite(recordedTotal)||recordedTotal<0)return;
-    const matchingOctober=(octoberRowsByName.get(name)||[]).find(r=>
-      Number(p.oct)>0&&Math.abs(r.damage-Number(p.oct))<0.001);
-    const historical=Math.max(0,recordedTotal-(matchingOctober?.sparks||0));
-    // Historical aliases sometimes have two Kraken player records. They
-    // represent one account, not two mutually additive lifetime aggregates.
-    dest.historical=Math.max(dest.historical,historical);
-  });
-  // June payouts reconstructed in the older ledger are included ONLY for
-  // accounts proven to have omitted June from the Kraken source aggregate.
-  // A player whose Kraken source already included June receives no backfill.
-  ledger.sources?.juneKrakenReconstructed?.forEach(r=>{
-    const dest=get(r.name).kraken;
-    dest.juneBackfill=Math.max(dest.juneBackfill,Number(r.sparks)||0);
-  });
+  // Kraken is derived from event-time payouts, NOT the old K.players.totalSparks
+  // lifetime aggregate. The latter was found to contain mismatched and in
+  // some cases inflated source totals (notably Saber, Animosity and Finnie).
+  // The six five-week league ledgers have explicit October rewards and
+  // older damage-based payouts with event-time clan inference.
+  const leagues=window.AVENGERS_CLAN_LEAGUE_REWARDS?.build?.()||[];
+  if(leagues.length!==6)
+    throw new Error('Missing six-period Kraken event provenance');
+  for(const league of leagues){
+    for(const row of league.rows||[]){
+      if(!(Number(row.krakenSparks)>0))continue;
+      const dest=get(row.name).kraken;
+      const estimated=Math.max(0,Number(row.estimatedKraken)||0);
+      const oct=Number(row.krakenSparks)-estimated;
+      dest.historical+=estimated;
+      dest.october+=Math.max(0,oct);
+      if(league.kraken==='june')dest.juneBackfill+=estimated;
+      dest.events.add(league.kraken+'|'+row.clan);
+    }
+  }
+  // The retained archive also includes Feb 2, Feb 23 and March Kraken
+  // (older than the six reported leagues). Reconstruct these ONLY when
+  // a dated Piggy/Space event provides a nearby historical clan. Never
+  // default to the player's current clan or an all-time stored number.
+  const proof=new Map();
+  const clanAt=(r,kind)=>{
+    const raw=String(r.eventClan||r.raceClan||r.clan||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+    if(raw==='avengers'||raw==='av')return 'AVENGERS';
+    if(raw==='av2')return 'AV-2';
+    if(kind==='piggy')return (Number(r.stars)>0||Number(r.sparks)>0||Number(r.share)>0)?'AVENGERS':'AV-2';
+    return 'AVENGERS';
+  };
+  for(const kind of ['piggy','space']){
+    for(const [date,rows] of Object.entries(D[kind]?.events||{})){
+      for(const r of rows||[]){
+        if(!r?.name||r.name==='Total'||r.name==='#N/A')continue;
+        if(!(Number(r[kind==='piggy'?'lines':'yearsB'])>0))continue;
+        const name=canonical(r.name);
+        if(!proof.has(name))proof.set(name,[]);
+        proof.get(name).push({date,clan:clanAt(r,kind)});
+      }
+    }
+  }
+  const earlier=[['feb02','2026-02-02'],['feb23','2026-02-23'],['march','2026-03-15']];
+  const earlyEventScores=new Map();
+  for(const p of K.players||[]){
+    if(!p?.name)continue;
+    const name=canonical(p.name);
+    for(const [month,date] of earlier){
+      const damage=Number(p[month])||0;
+      if(!(damage>0))continue;
+      const key=month+'|'+name;
+      const previous=earlyEventScores.get(key);
+      if(!previous||damage>previous.damage)
+        earlyEventScores.set(key,{name,month,date,damage});
+    }
+  }
+  for(const row of earlyEventScores.values()){
+    const end=Date.parse(row.date+'T00:00:00Z');
+    const nearby=(proof.get(row.name)||[]).filter(x=>{
+      const t=Date.parse(x.date+'T00:00:00Z');
+      return Number.isFinite(t)&&t<=end&&end-t<=34*86400000;
+    }).sort((a,b)=>b.date.localeCompare(a.date));
+    const nearest=nearby[0];
+    if(!nearest)continue; // unknown: no clan assigned and no inferred payout
+    if(nearby.some(x=>x.date===nearest.date&&x.clan!==nearest.clan))continue;
+    const rate=nearest.clan==='AVENGERS'?750:500;
+    const dest=get(row.name).kraken;
+    dest.historical+=row.damage*rate;
+    dest.events.add(row.month+'|'+nearest.clan);
+  }
+  // Counts represent observed Kraken activity even if a particular older
+  // event lacks sufficient historical clan evidence for a Spark payout.
+  for(const p of K.players||[]){
+    if(!p?.name)continue;
+    const dest=get(p.name).kraken.events;
+    for(const m of K.months||[]){
+      if(Number(p[m.key])>0)dest.add(m.key);
+    }
+  }
 
   window.AVENGERS_ROSTER_EVENT_BREAKDOWN={
     forMember(raw,legacyTotal=0){
@@ -105,7 +143,7 @@
         krakenHistoricalSparks:data.kraken.historical,
         krakenOctoberSparks:data.kraken.october,
         krakenJuneReconstructedSparks:data.kraken.juneBackfill,
-        krakenProvenance:'historical Kraken source aggregate (partly reconstructed) + unique October event + verified missing June',
+        krakenProvenance:'per-event damage x historical clan rate (estimates) + verified October payout; unknown-clan historical damage not assigned',
         historicBaseSparks:historicBase,eventBackedBaseFloor:directRewardFloor,
         baseSupplementSparks:0,directRewardFloor,
         historicalBaseDiscrepancy:historicBase-logged,

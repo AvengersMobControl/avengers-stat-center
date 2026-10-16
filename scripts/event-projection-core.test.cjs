@@ -144,3 +144,23 @@ test('two dated snapshots from same clan do not double-count an overlapping stin
  assert.equal(p.screenshotGap,640);
  assert.equal(p.totalSparks,650);
 });
+
+test('a lower later screenshot for same clan proves a separate reset stint and preserves both',()=>{
+ let l=put(empty(),ev('piggy','old','2026-09-20',50,'AVENGERS'));
+ l=put(l,ev('space','new','2026-10-10',60,'AVENGERS'));
+ const snapshots={A:[
+   {amount:500,beforeDate:'2026-09-30',clan:'AVENGERS'},
+   {amount:60,beforeDate:'2026-10-16',clan:'AVENGERS'}
+ ]};
+ const p=person(project(l,{members,snapshots}));
+ assert.equal(p.snapshotBreakdown.length,2);
+ assert.equal(p.snapshotBreakdown[1].stintStart,'2026-09-30');
+ assert.equal(p.snapshotBreakdown[0].gap,490);
+ assert.equal(p.snapshotBreakdown[1].gap,50);
+ assert.equal(p.screenshotGap,540);
+ assert.equal(p.earned.sparks,20);
+ assert.equal(p.totalSparks,560);
+ // A reordered source array has the same historical result.
+ const reversed=person(project(l,{members,snapshots:{A:[...snapshots.A].reverse()}}));
+ assert.equal(reversed.totalSparks,560);
+});

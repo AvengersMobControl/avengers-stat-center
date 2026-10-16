@@ -123,3 +123,54 @@ test('read-only candidate integrates with existing projected dry-run and cannot 
  assert.throws(()=>preview([] ,candidate,{requireApproval:true}),/reviewed approval/);
  assert.equal(fs.readFileSync(file,'utf8'),original);
 });
+
+test('real Oct 16 AV-2 final Space captures replay as unchanged, including canonical aliases',()=>{
+  // Nine visible final-claim rows were visually checked against the approved
+  // Oct 16 screenshots. Image digests below are TEST PLACEHOLDERS, not original
+  // Discord JPEG hashes: this test asserts replay/reconciliation only.
+  const accepted=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/approved-event-updates.json'),'utf8')).updates;
+  const {create}=require('./create-site-release.cjs');
+  const {migrate}=require('./migrate-event-ledger.cjs');
+  const {load}=require('./load-site-data.cjs');
+  const aliases=migrate(load()).aliases;
+  const baseline=create(),prior=baseline.ledger.events.find(x=>x.id==='space|2026-10-16');
+  assert(prior&&prior.revision>=2&&prior.status==='partial','Oct 16 approved event exists and is partial');
+  const e=event('space','2026-10-16');
+  const rows=[
+    row('AV-Witch-king','AV-2',65,23324,232155),
+    row('AV-EventHorizon','AV-2',33.1,18659,185724),
+    row('AV-Squishy','AV-2',22.3,16793,167152),
+    row('AV-OblivX','AV-2',16.8,11195,111434),
+    row('Punchy','AV-2',4.7,9329,92862),
+    row('AV-fueravini','AV-2',1.3,7464,74290),
+    row('AV-2Pipesis','AV-2',1,3732,37145),
+    row('kayesie','AV-2',.2186,1866,18572),
+    row('DedHed','AV-2',.1957,933,9286)
+  ];
+  // Simulate the two overlapping final captures, plus an identical repost.
+  const captures=review(e,[screen(e,'a',rows.slice(0,8)),
+    screen(e,'b',rows.slice(1)),screen(e,'a',rows.slice(0,8))]);
+  const originalAccepted=fs.readFileSync(path.join(__dirname,'../data/approved-event-updates.json'),'utf8');
+  const result=assemble(captures,{existingEvent:prior,aliases});
+  assert.equal(result.update.approved,false);
+  assert.equal(result.report.action,'unchanged');
+  assert.equal(result.report.newResults,0);
+  assert.equal(result.report.distinctResults,9);
+  assert.equal(result.report.excludedPreliminary,0);
+  assert.equal(result.report.finalImages,2);
+  assert.equal(result.report.repostImages,1);
+  assert(result.report.repeatedPlayerResults>0);
+  assert.equal(result.update.event.rows.length,prior.rows.length,'all 66 existing results retained');
+  const member=result.update.event.rows.find(r=>r.player==='AV-EXCALIBUR'&&r.clan==='AV-2');
+  assert.deepEqual([member.score,member.sparks,member.stars],[65,23324,232155],
+    'Witch-king source name resolves through reviewed historical alias');
+  assert.equal(result.update.event.rows.filter(r=>r.player==='AV-Witch-king').length,0,
+    'alias must not create a phantom extra person');
+  assert.deepEqual(result.update.event.sources,prior.sources,'a repost cannot fabricate new provenance');
+  const dry=preview(accepted,result.update);
+  assert.equal(dry.unchanged,true,'replay must not change the accepted projection version');
+  assert.equal(dry.before.projection.version,dry.after.projection.version);
+  assert.deepEqual(dry.changed,[]);
+  assert.equal(fs.readFileSync(path.join(__dirname,'../data/approved-event-updates.json'),'utf8'),originalAccepted,
+    'review and simulation never edit accepted event scores');
+});

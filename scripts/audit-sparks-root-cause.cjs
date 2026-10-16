@@ -47,7 +47,10 @@ const rows=current.map(r=>{
   const snapValue=snap?.allTimeSparks??null;
   const unlogged=snapValue==null?0:Math.max(0,Number(snapValue)-logged);
   const t=targetMap.get(n)||null;
-  const four=pb+sp+fl+kr;
+  const oldKrakenAggregateFour=pb+sp+fl+kr;
+  // Unlike K.players.totalSparks, the actual displayed categories are built
+  // independently from each Kraken event's damage and historical clan.
+  const four=b.piggySparks+b.spaceSparks+b.flashSparks+b.krakenSparks;
   const oldK=kr-(Number(e.octKrakenSparks)||0);
   const extraOct=Number(e.octKrakenSparks)||0;
   return {display:r.name,canonical:n,clan:r.status,storedBase:base,piggy:pb,space:sp,flash:fl,
@@ -55,7 +58,7 @@ const rows=current.map(r=>{
     storedBaseResidualKraken:Math.max(0,base-pb-sp),
     eventBackedBase:b.eventBackedBaseFloor,baseSupplement:b.baseSupplementSparks,
     shownKraken:remainder,shownLogged:logged,shownUnlogged:unlogged,shownTotal:logged+unlogged,
-    fourCategorySum:four,diffShownVsFour:logged-four,storedBaseDiffVsSources:base-(pb+sp+oldK),
+    fourCategorySum:four,diffShownVsFour:logged-four,oldKrakenAggregateFour,krakenAggregateDifference:b.krakenSparks-(kr+(Number(e.juneKrakenSparks)||0)),storedBaseDiffVsSources:base-(pb+sp+oldK),
     septSnapshot:snapValue,reportedTarget:t?.expected??null,example:t?.label??null,
     diffVsUserTarget:t?logged-t.expected:null};
 });
@@ -69,6 +72,10 @@ console.log('SUM logged-minus-four over roster: '+rows.reduce((s,r)=>s+r.diffSho
 console.log('SUM legacy base minus piggy,space,preOctKraken: '+rows.reduce((s,r)=>s+r.storedBaseDiffVsSources,0));
 console.log('TOP OVERAGES: '+JSON.stringify(signs.slice(0,18).map(x=>({name:x.display,shown:x.shownLogged,four:x.fourCategorySum,excess:x.diffShownVsFour,base:x.storedBase,baseDiff:x.storedBaseDiffVsSources}))));
 console.log('JUNE reconstruction rows: '+(L.sources.juneKrakenReconstructed||[]).length);
+console.log('LEGACY Kraken subtotal discrepancy vs independent event-derived Kraken: '+
+  rows.reduce((sum,row)=>sum+row.krakenAggregateDifference,0));
+console.log('EVENT-SOURCE coverage: '+rows.filter(row=>Math.abs(row.diffShownVsFour)>0.01).length+
+  ' members fail four-category invariant (must be zero)');
 const six=w.AVENGERS_CLAN_LEAGUE_REWARDS?.build()||[];
 for(const name of ['AV.Saberkong','AV-Abu//npjp','AV-Animosity','AV-Finnie','AV-8!l...Bil']){
   const byLeague=six.map(p=>({end:p.end,entries:p.rows.filter(x=>canon(x.name)===canon(name)).map(x=>({clan:x.clan,krakenSparks:x.krakenSparks,estimated:x.estimatedKraken}))})).filter(p=>p.entries.length);

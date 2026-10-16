@@ -133,7 +133,9 @@
     forMember(raw,legacyTotal=0){
       const data=get(raw),historicBase=Math.max(0,Number(legacyTotal)||0);
       const piggy=data.piggy.sparks,space=data.space.sparks,flash=data.flash.sparks;
-      // June is already included in historical per-event payouts; expose its\n      // provenance separately, never add it to the lifetime category again.\n      const kraken=data.kraken.historical+data.kraken.october;
+      // June is already included in historical per-event payouts.
+      // Its provenance is separate; do not add it again.
+      const kraken=data.kraken.historical+data.kraken.october;
       const logged=piggy+space+flash+kraken;
       const knownStars=data.piggy.stars+data.space.stars+data.flash.stars;
       const directRewardFloor=piggy+space;

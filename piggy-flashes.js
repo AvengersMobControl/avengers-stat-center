@@ -223,6 +223,7 @@
     return [...map.values()].map(x=>({...x,avg:x.sets?x.total/x.sets:0}));
   }
 
+  const effortText=rows=>{const m=window.AVENGERS_REWARD_METRICS.summarize(rows,'lines');return (m.value?.toLocaleString(undefined,{maximumFractionDigits:2})??'—')+(m.missing?' *':'');};
   function median(values){
     const a=values.filter(Number.isFinite).slice().sort((a,b)=>a-b);
     if(!a.length)return 0;
@@ -327,7 +328,7 @@
       const total=isDaily?r.total:r.lines;
       const events=isDaily?r.sets:r.flashes;
       const best=r.best;
-      return '<tr><td class="num">'+(i+1)+'</td><td><strong>'+esc(r.name)+'</strong></td><td class="num">'+fmt(events)+'</td><td class="num">'+fmt(total)+'</td><td class="num">'+fmt(Math.round(r.avg))+'</td><td class="num">'+fmt(best)+'</td><td>'+shortDate(r.pbDate)+'</td>'+(isDaily?'':'<td class="num">'+fmt(r.stars)+'</td><td class="num">'+fmt(r.sparks)+'</td>')+'</tr>';
+      return '<tr><td class="num">'+(i+1)+'</td><td><strong>'+esc(r.name)+'</strong></td><td class="num">'+fmt(events)+'</td><td class="num">'+fmt(total)+'</td><td class="num">'+fmt(Math.round(r.avg))+'</td><td class="num">'+fmt(best)+'</td><td>'+shortDate(r.pbDate)+'</td>'+(isDaily?'':'<td class="num">'+fmt(r.stars)+'</td><td class="num">'+fmt(r.sparks)+'</td>')+'<td class="num">'+effortText((isDaily?allRows:rows).filter(x=>x.name===r.name))+'</td></tr>';
     }).join('');
 
     const resultBody=isDaily?'':rows.slice().sort((a,b)=>String(b.eventDate).localeCompare(String(a.eventDate))||(Number(a.rank)||999)-(Number(b.rank)||999)).map(r=>'<tr><td>'+esc(r.eventDate||'—')+'</td><td>PF'+r.flash+'</td><td class="num">'+(r.rank??'—')+'</td><td><strong>'+esc(r.name||'—')+'</strong></td><td class="num">'+fmt(r.lines)+'</td><td class="num">'+fmt(r.stars)+'</td><td class="num">'+fmt(r.sparks)+'</td><td class="num">'+(window.AVENGERS_REWARD_METRICS.efficiency(r.sparks,r.lines)?.toLocaleString(undefined,{maximumFractionDigits:2})??'—')+'</td></tr>').join('');
@@ -335,11 +336,11 @@
     const dailyRows=[];
     [...setMap.values()].sort((a,b)=>String(b.date).localeCompare(String(a.date))).forEach(s=>{
       [...s.players.values()].sort((a,b)=>b.lines-a.lines).forEach((p,i)=>{
-        dailyRows.push('<tr><td>'+esc(s.id)+'</td><td class="num">'+s.flashes.size+'/4</td><td class="num">'+(i+1)+'</td><td><strong>'+esc(p.name)+'</strong></td><td class="num">'+fmt(p.lines)+'</td><td class="num">'+fmt(p.stars)+'</td><td class="num">'+fmt(p.sparks)+'</td></tr>');
+        dailyRows.push('<tr><td>'+esc(s.id)+'</td><td class="num">'+s.flashes.size+'/4</td><td class="num">'+(i+1)+'</td><td><strong>'+esc(p.name)+'</strong></td><td class="num">'+fmt(p.lines)+'</td><td class="num">'+fmt(p.stars)+'</td><td class="num">'+fmt(p.sparks)+'</td><td class="num">'+effortText(s.rows.filter(r=>r.name===p.name))+'</td></tr>');
       });
     });
 
-    const potRows=potEvents.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))||a.flash-b.flash).map(e=>'<tr><td>'+esc(e.date)+'</td><td>PF'+e.flash+'</td><td>'+esc(e.setId||'—')+'</td><td class="num">'+esc(e.potStarsDisplay||fmt(e.potStars))+'</td></tr>').join('');
+    const potRows=potEvents.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))||a.flash-b.flash).map(e=>'<tr><td>'+esc(e.date)+'</td><td>PF'+e.flash+'</td><td>'+esc(e.setId||'—')+'</td><td class="num">'+fmt(e.potStars)+'</td></tr>').join('');
 
     root.innerHTML=`
       ${tabsHtml()}
@@ -366,13 +367,13 @@
 
       <div class="table-card">
         <div class="table-titlebar"><div><h2>${isDaily?'Daily Total Leaderboard':'Performance Leaderboard'}</h2><div class="small-muted">${isDaily?'Combined result across each player’s recorded PF1-PF4 scores in a Flash Set.':'Totals, averages and PBs for the selected Flash view.'}</div></div></div>
-        <div class="table-wrap"><table><thead><tr><th class="num">#</th><th>Member</th><th class="num">${isDaily?'Sets':'Flashes'}</th><th class="num">Total Lines</th><th class="num">Average</th><th class="num">PB</th><th>PB Date</th>${isDaily?'':'<th class="num">Stars</th><th class="num">Sparks</th>'}</tr></thead><tbody>${performanceBody||'<tr><td colspan="9" class="empty">No flash data yet.</td></tr>'}</tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th class="num">#</th><th>Member</th><th class="num">${isDaily?'Sets':'Flashes'}</th><th class="num">Total Lines</th><th class="num">Average</th><th class="num">PB</th><th>PB Date</th>${isDaily?'':'<th class="num">Stars</th><th class="num">Sparks</th>'}<th class="num">Sparks/Effort (per line)</th></tr></thead><tbody>${performanceBody||'<tr><td colspan="9" class="empty">No flash data yet.</td></tr>'}</tbody></table></div>
       </div>
 
       ${isDaily?`
       <div class="table-card" style="margin-top:16px">
         <div class="table-titlebar"><div><h2>Flash Set Results</h2><div class="small-muted">Each player's combined PF1–PF4 result for every 24-hour set.</div></div></div>
-        <div class="table-wrap"><table><thead><tr><th>Flash Set</th><th class="num">Flashes</th><th class="num">Rank</th><th>Member</th><th class="num">Total Lines</th><th class="num">Stars</th><th class="num">Sparks</th></tr></thead><tbody>${dailyRows.join('')||'<tr><td colspan="7" class="empty">No set totals yet.</td></tr>'}</tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>Flash Set</th><th class="num">Flashes</th><th class="num">Rank</th><th>Member</th><th class="num">Total Lines</th><th class="num">Stars</th><th class="num">Sparks</th><th class="num">Sparks/Effort (per line)</th></tr></thead><tbody>${dailyRows.join('')||'<tr><td colspan="7" class="empty">No set totals yet.</td></tr>'}</tbody></table></div>
       </div>`:`
       <div class="table-card" style="margin-top:16px">
         <div class="table-titlebar"><div><h2>Pot Stars Log</h2><div class="small-muted">Only AVENGERS-dominant lobbies. Outside-lobby player scores are retained without using that lobby's pot.</div></div></div>

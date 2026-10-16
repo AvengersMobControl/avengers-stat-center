@@ -62,3 +62,4 @@ Event participation and Sparks/Stars belong to the original event-time clan, eve
 **The next practical session should begin with #42 + #4 together: map all site dependencies, then validate an end-to-end read-only event-ingestion sample.** Do not automatically access/result-post to Discord without leader authorization.
 
 - October16: leader adds full-integer Stars, ratio reconciliation/derived provenance, screenshot Share %, and Sparks/Effort reporting. Event table/CSV/export implementation underway; October16 candidate remains unapproved.
+- October 16 follow-up: leader approved 66 Space results. Extended paired Sparks/Effort to relevant summary/profile/roster/league/Flash/export views; corrected September 18 missing-reward semantics and visible coverage explanation; restored approved Space PNG design in reproducible renderer. Deployment/validation evidence belongs in issues #8 and #13.

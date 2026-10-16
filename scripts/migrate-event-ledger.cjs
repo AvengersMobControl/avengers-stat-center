@@ -39,8 +39,15 @@ function migrate(w){
         rows.push({player,clan:c,...(!c?{clanAttribution:'unknown'}:{}),score,sparks:number(r.sparks),stars:number(r.stars),metadata:rowMeta(r)});
         if(c&&score>0){const p=proof.get(player)||[];p.push({date,clan:c});proof.set(player,p);}
       }
-      const partial=Boolean(D[kind].historicalIncompleteDates?.[date]);
-      add({id:kind+'|'+date,kind,date,status:partial?'partial':'final',unit:UNITS[kind],sources:['repository:'+kind+'.events:'+date],rows});
+      // September 18 lobby 6 is distance-only in the retained workbook. No
+      // final reward capture exists in the reviewed channel window; zeros are
+      // placeholders, not proof of no payout. Preserve accepted distances.
+      const missingSept18=kind==='space'&&date==='2026-09-18';
+      if(missingSept18)for(const r of rows.filter(r=>r.metadata.group===6)){
+        r.stars=null;r.sparks=null;r.metadata.rewardCoverage='Final rewards unavailable for lobby 6; legacy zero placeholders removed.';
+      }
+      const partial=missingSept18||Boolean(D[kind].historicalIncompleteDates?.[date]);
+      add({id:kind+'|'+date,kind,date,status:partial?'partial':'final',unit:UNITS[kind],sources:['repository:'+kind+'.events:'+date],...(missingSept18?{metadata:{coverageNote:'Lobby 6 (Animosity, MotherboardBeans, Nicefellow, ColdCreeps) has recorded distances but no final reward screenshot. Five lobbies have known rewards; the full six-lobby pot is unavailable.'}}:{}),rows});
     }
   }
   // The one retained history-only result has no matching final screenshot;

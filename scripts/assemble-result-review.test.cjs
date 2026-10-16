@@ -103,7 +103,7 @@ test('event type and units enforce Piggy, Flash and Kraken without fabricating S
    assert.equal(out.update.event.rows[0].stars,stars);
    assert.equal(out.update.event.status,'partial');
  }
- const k=event('kraken','2026-10-11','kraken|oct');
+ const k={...event('kraken','2026-10-11','kraken|oct'),metadata:{monthKey:'oct',monthLabel:'October'}};
  assert.throws(()=>assemble(review(k,[screen(k,'a',[row('AV-Frenchie2','AV-2',123,10,100)])])),/Kraken has no Stars/);
 });
 test('final classification alone is not proof of complete coverage; explicit reviewed completeness required',()=>{

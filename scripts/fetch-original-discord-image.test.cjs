@@ -1,9 +1,10 @@
 'use strict';
 const {test}=require('node:test'),assert=require('node:assert/strict'),crypto=require('node:crypto');
 const {verifyDiscordUrl,retrieveOriginal}=require('./fetch-original-discord-image.cjs');
-const channelId='1548892164355006524',attachmentId='1560564518948446318';
+// Synthetic test snowflakes; do not commit actual Discord attachment IDs.
+const channelId='111111111111111111',attachmentId='222222222222222222';
 const base='https://cdn.discordapp.com/attachments/'+channelId+'/'+attachmentId+'/Screenshot_result.jpg';
-const query='?ex=6ad3d537&is=6ad283b7&hm='+('a'.repeat(64));
+const query='?ex=abcdefab&is=abcdefff&hm='+('a'.repeat(64));
 const url=base+query;
 const jpeg=Buffer.from([0xff,0xd8,0xff,0xe0,0x00,0x10,0x4a,0x46,0x49,0x46,0,0]);
 const opts={channelId,attachmentId,expectedContentType:'image/jpeg'};
@@ -28,7 +29,8 @@ test('retrieves exact authorized CDN bytes without exposing channel, signed URL,
  assert.equal(r.approved,false);
  assert.equal(r.verifiedFinal,false);
  const out=JSON.stringify(r);
- assert(!out.includes('discord')||out.includes('authorized-original-discord-cdn-response'));
+ assert(!out.includes('cdn.discordapp.com'),'do not output a signed URL');
+ assert(!out.includes(base),'do not output raw attachment URLs');
  assert(!out.includes(attachmentId)&&!out.includes(channelId)&&!out.includes('hm='));
 });
 test('rejects redirected, modified, mismatched, credentialed or unsafe URLs before fetch',async()=>{
@@ -43,10 +45,10 @@ test('rejects redirected, modified, mismatched, credentialed or unsafe URLs befo
  url+'&format=webp',
  url.replace('https://','https://example@'),
  url.replace('/attachments/','/ephemeral-attachments/'),
- url.replace('Screenshot_result.jpg','../../private.jpg'),
+ url.replace('Screenshot_result.jpg','..%2F..%2Fprivate.jpg'),
  url.replace('Screenshot_result.jpg','Screenshot_result.webp'),
- base+'?ex=6ad3d537',
- base+'?ex=6ad3d537&is=6ad283b7&hm=nope',
+ base+'?ex=abcdefab',
+ base+'?ex=abcdefab&is=abcdefff&hm=nope',
  url+'&hm='+('a'.repeat(64)),
  ];
  for(const value of bad)await assert.rejects(

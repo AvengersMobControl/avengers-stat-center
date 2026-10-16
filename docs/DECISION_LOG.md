@@ -1,0 +1,43 @@
+# AVENGERS project — chronological decisions and verified work
+
+**This is a living, append-only handoff log.** It is maintained by ChatGPT and other contributors through GitHub pull requests after meaningful decisions or milestones. It is **not automatically created from ChatGPT messages**, so every contributor must update it. Source code/CI/merged PRs remain authoritative for what shipped; [PROJECT_CONTINUITY.md](PROJECT_CONTINUITY.md) gives the current rules and [ROADMAP.md](../ROADMAP.md) the actionable priorities.
+
+## 2026-10-16 UTC — documentation becomes a GitHub living reference
+- **Decision:** Future chats should NOT force the clan leader to upload new handoff packages repeatedly. Keep this GitHub log and the continuity document current, and point future conversations to these via one short Project instruction when desired.
+- **Prior state:** GitHub already had issue #13, detailed issues, PRs/commit history, and `ROADMAP.md`, but no consolidated up-to-date chronological decision log; the separate project-upload handoff is a static October 15/16 snapshot.
+- **Implementation:** Introduce `docs/PROJECT_CONTINUITY.md`, `docs/DECISION_LOG.md`, refresh roadmap status, and use PR checklist to maintain them. This does not automatically ingest conversation content; updates are a required developer workflow.
+
+## 2026-10-16 UTC — Sparks totals display, final user correction
+- **User decision:** `Total Sparks = Logged Sparks + Screenshot Gap`, not another copy of `Logged Sparks`. `Screenshot Gap = max(0, all-time screenshot Sparks − Logged)`. Display **Logged Sparks**, **Screenshot Gap**, **Total Sparks**. Screenshots from Sep 29 naturally omit Sparks earned afterward; do not show warning triangles when logged Sparks exceed an old screenshot.
+- **Shipped:** [PR #39](https://github.com/AvengersMobControl/avengers-stat-center/pull/39), merge `7c66e643351aa00ee748f8c8a1a392707fc23f6d`, passing audit/CI [38847773590](https://github.com/AvengersMobControl/avengers-stat-center/actions/runs/38847773590), successful GitHub Pages deploy [38847812744](https://github.com/AvengersMobControl/avengers-stat-center/actions/runs/38847812744); Vercel READY for that SHA. The earlier claim that screenshots are never additive to Total is **obsolete**; they never inflate `Logged`, but positive Screenshot Gap does contribute to displayed `Total`.
+- **Previous PR #38:** warning triangles and misleading old-screenshot flags removed without changing underlying event data.
+
+## 2026-10-16 UTC — forensic Sparks correction
+- **User requirement:** Check all 100 current members, not just initial examples; Zolika is an unsuitable within-data-history benchmark because their clan tenure predates available events. Correct Animosity benchmark from 126,722,420 to **12,672,420**. Account for screenshot rounding/timing before calling remaining differences fraud or error.
+- **Root cause:** Old implementation treated an unaccounted-for `D.members.totalSparks` remainder as Kraken and added certain historical Kraken amounts twice. Older Kraken-only aggregates also included inconsistencies.
+- **Fix:** [PR #36](https://github.com/AvengersMobControl/avengers-stat-center/pull/36) event-backed Logged categories, Kraken from monthly damage/payouts and historical clan rates; [PR #37](https://github.com/AvengersMobControl/avengers-stat-center/pull/37) aligns profiles/achievements/Kraken overview; [PR #38](https://github.com/AvengersMobControl/avengers-stat-center/pull/38) removes stale warnings. Tests for 100-member category reconciliation and June/October single inclusion passed.
+- **Five benchmark comparisons after correction (computed Logged minus user value):** Saber −23,520; Abu +3,005; Animosity −38,273; Finnie +5,253; Bil +24,763 Sparks. These remaining gaps are *not* automatically errors. Track source issues in [#34](https://github.com/AvengersMobControl/avengers-stat-center/issues/34).
+- **Output preference:** Deliver Council/report results as actual PDFs, not GitHub Actions artifact ZIPs.
+
+## 2026-10-16 UTC — Council minimums report engine
+- **Approved rules effective Sept 11:** Piggy ≥3,500 lines each race and one ≥7,000 within the five-week league; Space ≥30B, Sept 27 weekend Space exception ≥50B; no minimum for Flashes. Cannot penalize people who weren't members yet; missing event records are unknown, not zeros.
+- **Shipped:** [PR #32](https://github.com/AvengersMobControl/avengers-stat-center/pull/32) provides six-league observed-result engine, tests, evidence-only exports. The initial October 11 period reported 567 observed member-races, 65 below-minimum entries and 8 near-threshold entries; these aren't final member penalties without join/completeness review.
+- **Still open:** validate event provenance/join/leave dates, publish a reviewed Council-specific PDF/dashboard when appropriate; [issue #7](https://github.com/AvengersMobControl/avengers-stat-center/issues/7).
+
+## 2026-10-15–16 UTC — Discord UTC integration deliberately paused
+- **Configured:** channel `1422151197317529600`, Council role `1427090799052587038`; Monday/Friday scheduled workflow at 15:00 UTC is **feature-gated OFF** absent explicit activation. Encrypted state protects IDs.
+- **Test evidence:** GitHub Actions repository secrets created, bot auth/read/history/message text check passed; first manual sync established encrypted checkpoint; second manual poll read a new submission but placed it in review `explicit_game_name_required`, **zero approved updates**. Do not claim full integration success.
+- **Latest user direction:** “Table this — move on.” Leave scheduled checks OFF; no new tests/backfill without explicit user request. [Issue #3](https://github.com/AvengersMobControl/avengers-stat-center/issues/3).
+
+## 2026-10-15 UTC — Current rosters and missing Piggy Flash source
+- **Roster baseline:** 48 current AVENGERS + 52 current AV-2. The AV-2 count includes 50 screenshot-confirmed plus manually added DrDetroit and Starred. Bubba inactive. Frenchie2 and Frenchie(-4) remain separate accounts. Historical clan membership must survive transfers.
+- **Missing PF1 October 13 main lobby:** user confirmed unavailable, closed [issue #5](https://github.com/AvengersMobControl/avengers-stat-center/issues/5) as **not planned**. Preserve partial verified records, do not estimate or pursue.
+
+## Earlier / continuing requirements
+- **Historical accounting:** Six 35-day leagues ending Apr 19, May 24, Jun 28, Aug 2, Sep 6, Oct 11. Flashes count toward logged Sparks, not Piggy/Space minimum compliance. User cited successive 165M and 171M clan Sparks: verify against records before presenting as a computed total. [#6](https://github.com/AvengersMobControl/avengers-stat-center/issues/6).
+- **Event ingest next:** authorized, final-only Discord result screenshots, both AVENGERS/AV-2; robust multi-image parsing, alias correction, provenance, dedup and reviewed site publication before unattended automation. [#4](https://github.com/AvengersMobControl/avengers-stat-center/issues/4). Next [#8](https://github.com/AvengersMobControl/avengers-stat-center/issues/8) uniform PB-focused event images.
+- **Kraken optimizer:** preserve no 10-ticket maps 4/5/6 constraint in applicable scenarios, 55/40/15 ticket fallback routes; map-ID transformations and champion comparisons. [#10](https://github.com/AvengersMobControl/avengers-stat-center/issues/10).
+- **Kraken video analysis:** focus pre-warning cannon/colored champion position vs future attack lane; Kraken retracting/raising tentacle is earlier onset cue; warning lane mechanics are well-known and not the research question. [#11](https://github.com/AvengersMobControl/avengers-stat-center/issues/11).
+
+## How to append the next entry
+Add a new dated section at the top stating: **user decision**, **what was implemented**, **linked PR/issues/CI/deployment SHA**, **verification scope**, **outstanding blockers**, and **next recommended action**. Update [PROJECT_CONTINUITY.md](PROJECT_CONTINUITY.md) and [ROADMAP.md](../ROADMAP.md) when the standing policy or priority changed. Never overwrite older decisions without marking which are superseded.

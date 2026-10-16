@@ -1,6 +1,6 @@
 # Discord UTC → AVENGERS / AV-2 roster
 
-**Selected channel:** `1422151197317529600` (clan-leader supplied). The ID is pinned in the [scheduled workflow](../.github/workflows/discord-utc-roster.yml). This feature is **not live on the public Stat Center** until production prerequisites below are verified.
+**Selected channel:** `1422151197317529600`; **Council role:** `1427090799052587038` (both clan-leader supplied). The ID is pinned in the [scheduled workflow](../.github/workflows/discord-utc-roster.yml). This feature is **not live on the public Stat Center** until production prerequisites below are verified.
 
 ## Submission rules
 
@@ -36,7 +36,7 @@ UTC is not sufficient evidence to infer country; `UTC+2, Germany`, `Country: Ger
 2. In GitHub repository **Settings → Secrets and variables → Actions**, configure:
    - **Secret** `DISCORD_BOT_TOKEN`: the existing AVENGERS bot token. Never publish it.
    - **Secret** `DISCORD_UTC_STATE_KEY`: an independently generated string ≥32 characters. Losing or rotating it without migrating state prevents decryption.
-   - **Variable** `DISCORD_UTC_COUNCIL_ROLE_IDS`: comma-separated numeric ID(s) of the actual Council Discord role(s). Required **only for Council-tagged posts**. Do not use role display names as authority.
+   - **Council role ID** `1427090799052587038` was provided by the clan leader and is pinned in the workflow as `DISCORD_UTC_COUNCIL_ROLE_IDS` (no GitHub variable is needed). The bot checks that the poster actually holds this role on every Council-tagged post; ordinary first self-reports require no role.
    - Optional **secret** `DISCORD_UTC_VERIFIED_LINKS`: council-verified JSON object mapping Discord IDs to existing canonical game names. Never publish real IDs in source control.
    - Optional **variable** `DISCORD_UTC_DEFAULT_CLAN`: `AVENGERS` or `AV-2` only if this is an exclusively single-clan channel. For the mixed-clan channel, leave blank and require a new recruit to specify their clan.
 3. Merge the feature branch into `main` **only after** reconciling other production changes and testing authorized first posts, Council proxy posts, spoofed claims, and a working live-to-browser roster update. Until then, keep [PR #1](https://github.com/AvengersMobControl/avengers-stat-center/pull/1) in draft.

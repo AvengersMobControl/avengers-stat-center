@@ -339,3 +339,11 @@ test('scheduled Discord polling is disabled until explicit rollout variable is e
   const workflow=fs.readFileSync(path.resolve(__dirname,'../.github/workflows/discord-utc-roster.yml'),'utf8');
   assert.ok(workflow.includes("if: ${{ github.event_name == 'workflow_dispatch' || vars.DISCORD_UTC_SYNC_ENABLED == 'true' }}"));
 });
+
+test('UTC roster checks are limited to Monday and Friday 15:00 UTC',()=>{
+  const fs=require('node:fs'),path=require('node:path');
+  const workflow=fs.readFileSync(path.resolve(__dirname,'../.github/workflows/discord-utc-roster.yml'),'utf8');
+  assert.match(workflow,/cron:\s*'0 15 \* \* 1,5'/);
+  assert.doesNotMatch(workflow,/cron:\s*'\*\/10 \* \* \* \*'/);
+  assert.ok(workflow.includes("vars.DISCORD_UTC_SYNC_ENABLED == 'true'"));
+});

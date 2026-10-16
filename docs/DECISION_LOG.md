@@ -7,6 +7,11 @@
 
 **This is a living, append-only handoff log.** It is maintained by ChatGPT and other contributors through GitHub pull requests after meaningful decisions or milestones. It is **not automatically created from ChatGPT messages**, so every contributor must update it. Source code/CI/merged PRs remain authoritative for what shipped; [PROJECT_CONTINUITY.md](PROJECT_CONTINUITY.md) gives the current rules and [ROADMAP.md](../ROADMAP.md) the actionable priorities.
 
+## 2026-10-16 UTC — October 2 actual-distance asterisk for standing Space Records
+- **User-approved display-only requirement:** In Records > Space Records, identify each current PB achieved **October 2, 2026** from the actual record history; mark the member with `*`, show **2/3 of the canonical 1.5× normalized PB** as the original game distance, and explain the discrepancy beneath that record board. Date matching is dynamic; do not hardcode the originally pictured eight members, because some later achieved a new PB.
+- **Invariant:** Rankings and all canonical PBs, records data, event histories, ratings, achievements, exports, other pages, and stored scores remain normalized. Earlier tie-breaking dates continue to win. A changed/currently non-Oct-2 PB is neither marked nor converted.
+- **Implementation:** Shared pure `spaceRecordDisplay` helper plus Records-only rendering and source-backed unit/Chromium regressions. See associated PR, checks and deployment for completion state.
+
 ## 2026-10-16 UTC — #50 record dates and calculable Space pots
 - **Leader-reported issue:** The Records page showed the wrong weeks for Space PBs and current Space Race pot columns were blank even though represented lobbies had calculable reward/share anchors.
 - **Root causes/fix:** A residual Oct 2 display-only `/0.6666` PB comparison distorted the date choice after the authorized 1.5× score correction was already applied. PR #50 uses the actual canonical score for both the PB and its event date, earliest date on ties, with no changes to accepted scores. An event-wide partial-data flag no longer hides pots inferable from all represented lobbies; derived pots are labeled approximately and retain explicit partial coverage.

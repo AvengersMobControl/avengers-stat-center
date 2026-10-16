@@ -2,7 +2,8 @@ name: Sync Discord UTC roster
 
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    # Monday and Friday 15:00 UTC (10:00 CDT / 09:00 CST in Omaha).
+    - cron: '0 15 * * 1,5'
   workflow_dispatch:
     inputs:
       backfill:

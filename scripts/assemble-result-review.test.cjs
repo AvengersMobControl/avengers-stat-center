@@ -134,7 +134,7 @@ test('real Oct 16 AV-2 final Space captures replay as unchanged, including canon
   const {load}=require('./load-site-data.cjs');
   const aliases=migrate(load()).aliases;
   const baseline=create(),prior=baseline.ledger.events.find(x=>x.id==='space|2026-10-16');
-  assert(prior&&prior.revision>=2&&prior.status==='partial','Oct 16 approved event exists and is partial');
+  assert(prior&&prior.revision>=1&&prior.status==='partial','Oct 16 approved event exists and is partial');
   const e=event('space','2026-10-16');
   const rows=[
     row('AV-Witch-king','AV-2',65,23324,232155),

@@ -60,7 +60,7 @@ function parseUtc(text) {
 }
 function countryOf(text) {
   const input = String(text || '');
-  const explicit = input.match(/\bcountry\s*[:=]\s*([^\n|,;]{2,60})/i);
+  const explicit = input.match(/\b(?:country|location)\s*[:=]\s*([^\n|,;]{2,60})/i);
   if (explicit) return explicit[1].trim();
   const compact = input.match(/\b(?:UTC|GMT)\s*[+-]\s*\d{1,2}(?::[0-5]\d|\.\d{1,2})?\s*[,|]\s*([a-z][\w \-'.()]{1,59})(?:$|[\n|,;])/i);
   return compact ? compact[1].trim() : '';
@@ -289,7 +289,11 @@ function reconcile(state, message, known, defaultClan, policy = {}) {
     submitPending(state,message,proposed,utc,providedCountry,'linked_identity_mismatch');
     return;
   }
-  if(!old && !knownMember && !explicitGameName(message.content)) {
+  // For newcomers, an unambiguous Discord *server nickname* is sufficient
+  // when the post includes a clan; no special form or Council role is needed.
+  // Account usernames alone are not assumed to be in-game names.
+  if(!old && !knownMember && !explicitGameName(message.content)
+      && !String(message.member?.nick||'').trim()) {
     submitPending(state,message,proposed,utc,providedCountry,'explicit_game_name_required');
     return;
   }

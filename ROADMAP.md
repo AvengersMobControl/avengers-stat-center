@@ -23,6 +23,10 @@
 | **PAUSED** | [#3 Discord UTC/country ingestion](https://github.com/AvengersMobControl/avengers-stat-center/issues/3) | Implemented encrypted sync and tested bot read; **live submission blocked by identity validation; user explicitly paused**. Monday/Friday schedule OFF. Don't restart without permission. |
 | **CLOSED** | [#5 Missing Oct 13 PF1 main leaderboard](https://github.com/AvengersMobControl/avengers-stat-center/issues/5) | **Not planned**: user confirmed unavailable. Preserve partial validated entries; do not chase or guess. |
 
+
+## October 16 next ingestion milestone (review-only)
+Implemented a review-side assembler for multiple *already parsed, human-verified* final screenshot result captures: digest-based repost deduplication, event/clan/score sanity checks, progress exclusion, conflict quarantine and a guaranteed unapproved staged candidate. New tests form a Pages/PR release gate. See docs/RESULT_REVIEW_PIPELINE.md. **No connector image reading, automated Discord ingestion, parsed-result approval or real event publication has been enabled.** Next step for #4: test this intake with a representative authorized read-only multi-image review, preserve accurate source hashes and uncertainties, then demonstrate explicitly approved end-to-end import and exact production Pages verification. #3 UTC sync stays paused.
+
 ## #42 connected build checkpoint — October 16
 `feat/connect-event-projection` connects published data to the shared projection: migration/revision overlays, synchronous page bundle, histories/PBs/ratings/roster/Kraken/league/achievement/recap adapters, versioned exports and publication/browser gates. See [EVENT_PROJECTION.md](docs/EVENT_PROJECTION.md) for verified source corrections and explicit unknown/unassigned records. Check #42 for exact merged-SHA deployment/browser evidence. #4 remains unfinished end to end. Daily morning screenshot review is now scheduled around 8 AM America/Chicago; parsed-result approval is required before any source write/publication. Automated import is OFF.
 

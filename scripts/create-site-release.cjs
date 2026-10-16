@@ -38,12 +38,15 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
     const name=resolve(r.profileName||r.name);if(r.allTimeSparks!=null)snapshots[name]=Number(r.allTimeSparks);
   }
   const p=project(ledger,{aliases,members:[...memberMap.values()].map(m=>({name:m.name,status:m.status})),snapshots,arenaStart:D.meta.arenaStart});
+  const metrics=require('../event-reward-metrics.js');
+  for(const person of p.people)person.effort=Object.fromEntries(['piggy','space','flash'].map(kind=>[kind,metrics.summarize(person.history.filter(r=>r.kind===kind))]));
   const activeEvents=p.events.filter(e=>e.status!=='revoked');
   for(const kind of ['piggy','space']){
     const X=D[kind],field=kind==='piggy'?'lines':'yearsB',events=activeEvents.filter(e=>e.kind===kind);
     X.events={};X.history={};X.latestPBs=[];X.latestNewMembers=[];
-    X.historicalIncompleteDates=Object.fromEntries(events.filter(e=>e.status==='partial').map(e=>[e.date,'Partial final-result coverage; only observed results are included.']));
+    X.historicalIncompleteDates=Object.fromEntries(events.filter(e=>e.status==='partial').map(e=>[e.date,e.metadata?.coverageNote||legacy.AVENGERS_DATA[kind].historicalIncompleteDates?.[e.date]||'Partial final-result coverage; only observed results are included.']));
     for(const e of events){
+      if(e.revision>1){delete X.historicalRewardTotals?.[e.date];delete X.historicalPotTotals?.[e.date];}
       X.events[e.date]=e.rows.map(r=>({...r.metadata,name:r.player,username:r.player,status:memberMap.get(r.player)?.status||'Inactive',
         [field]:r.score,...(kind==='space'?{years:r.score===null?null:r.score*1e9}:{}),sparks:r.sparks,stars:r.stars,clan:r.clan||'Unknown',eventClan:r.clan||'Unknown',partial:e.status==='partial'}));
       for(const r of X.events[e.date]){const h=X.history[r.name]||[];h.push({...r,date:e.date,code:e.date.replaceAll('-','').slice(2)});X.history[r.name]=h;}
@@ -107,10 +110,10 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
       if(e.kind==='kraken'&&r.estimatedSparks)rec.estimatedKraken+=r.sparks||0;
       rec.events++;people.set(key,rec);
     }
-    const rows=[...people.values()].map(r=>({...r,sparks:r.flashSparks+r.piggySparks+r.spaceSparks+r.krakenSparks,stars:r.flashStars+r.piggyStars+r.spaceStars}));
+    const rows=[...people.values()].map(r=>({...r,effort:Object.fromEntries(['piggy','space','flash'].map(kind=>[kind,metrics.summarize(events.filter(e=>e.kind===kind).flatMap(e=>e.rows).filter(x=>x.player===r.name&&x.clan===r.clan))])),sparks:r.flashSparks+r.piggySparks+r.spaceSparks+r.krakenSparks,stars:r.flashStars+r.piggyStars+r.spaceStars}));
     return {...period,kraken:events.find(e=>e.kind==='kraken')?.metadata?.monthKey,rows,eventCount:ids.size,memberEventCount:rows.reduce((s,r)=>s+r.events,0),gaps:rows.reduce((s,r)=>s+r.missing,0),estimates:rows.filter(r=>r.estimatedKraken>0).length};
   });
-  for(const person of p.people){const b=breakdowns[person.name];assert(Math.abs(b.eventLoggedSparks-b.piggySparks-b.spaceSparks-b.flashSparks-b.krakenSparks)<0.001);}
+  for(const person of p.people){const b=breakdowns[person.name];b.effort=person.effort;assert(Math.abs(b.eventLoggedSparks-b.piggySparks-b.spaceSparks-b.flashSparks-b.krakenSparks)<0.001);}
   return {projection:p,ledger,review:migration.review,breakdowns,leagues,globals:{AVENGERS_DATA:D,AVENGERS_KRAKEN_DATA:K,AVENGERS_PIGGY_FLASH_DATA:F,
     AVENGERS_SPARKS_SNAPSHOT:S,AVENGERS_MEMBER_TIMEZONES:R,AVENGERS_DISCORD_UTC_ROSTER:copy(legacy.AVENGERS_DISCORD_UTC_ROSTER),AVENGERS_KRAKEN_ROSTER_SNAPSHOT:copy(legacy.AVENGERS_KRAKEN_ROSTER_SNAPSHOT)}};
 }

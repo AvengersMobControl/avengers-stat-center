@@ -33,7 +33,23 @@ async function main(){
         assert.deepEqual(errors,[],name+' has no browser errors');
       }
     }
+    await page.click('.nav-btn[data-page="rosters"]');
+    await page.click('[data-roster-group="effort"]');
+    assert((await page.locator('#rostersContent').innerText()).includes('Sparks/Effort'));
     await page.click('.nav-btn[data-page="space"]');
+    await page.click('#spaceTabs [data-view="pot"]');
+    assert((await page.locator('#spaceContent').innerText()).includes('Oct 16, 2026'));
+    await page.selectOption('#globalStatusFilter','active');
+    assert((await page.locator('#spaceContent').innerText()).includes('Lobby 6'));
+    assert((await page.locator('#spaceContent').innerText()).includes('5,703,046'));
+    await page.selectOption('#globalStatusFilter','av2');
+    await page.selectOption('#spaceEventSelect','2026-10-16');
+    assert((await page.locator('#spaceContent').innerText()).includes('AV-SiFra'));
+    await page.selectOption('#globalStatusFilter','active');
+    await page.selectOption('#spaceEventSelect','2026-09-18');
+    assert((await page.locator('#spaceContent').innerText()).includes('Lobby 6'));
+    const missing=page.locator('#spaceContent tr').filter({hasText:'AV-Animosity'});
+    assert((await missing.innerText()).includes('—'));
     await page.selectOption('#spaceEventSelect','2026-10-09');
     assert((await page.locator('#spaceContent').innerText()).toLowerCase().includes('sparks/effort (per b)'));
     await page.click('.nav-btn[data-page="piggy"]');
@@ -50,6 +66,7 @@ async function main(){
       const D=window.AVENGERS_DATA,m=D.members.find(m=>m.name==='AV-HarryBallsagna');return{pb:m.spacePB,achievement:window.AVENGERS_COMMUNITY.achievementProfile(m.name).categories.find(c=>c.id==='space').value,
         expected:Math.max(...D.space.history[m.name].map(r=>r.yearsB)),roster:window.AVENGERS_ROSTER_EVENT_BREAKDOWN.forMember(m.name).eventLoggedSparks};
     });
+    assert((await page.locator('#playerModalContent').innerText()).includes('Sparks/Effort'));
     assert.equal(checks.pb,549.9);assert.equal(checks.pb,checks.achievement);assert.equal(checks.pb,checks.expected);
     await page.keyboard.press('Escape');
     await page.click('.nav-btn[data-page="weeklyRecap"]');
@@ -75,7 +92,8 @@ async function main(){
         const lower={approved:true,expectedRevision:1,event:{...event,rows:[{...event.rows[0],score:1,sparks:7}]}};
         const revoke={approved:true,expectedRevision:2,event:{...lower.event,status:'revoked'}};
         for(const [updates,extra]of [[[add],50],[[add,lower],7],[[add,lower,revoke],0]]){
-          const fixture=build({destination:dir,updates});
+          const approved=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/approved-event-updates.json'))).updates;
+          const fixture=build({destination:dir,updates:approved.concat(updates)});
           await page.setViewportSize({width:1440,height:1000});await page.goto(origin,{waitUntil:'networkidle'});
           await page.click('.nav-btn[data-page="rosters"]');
           const row=page.locator('#page-rosters tbody tr').filter({has:page.locator('[data-player="'+name+'"]')}).first();

@@ -158,6 +158,11 @@
     });
     return periods;
   }
+  function effort(r,p,kind){
+    const events=window.AVENGERS_EVENT_PROJECTION?.events||[];
+    return window.AVENGERS_REWARD_METRICS.summarize(events.filter(e=>e.kind===kind&&e.status!=='revoked'&&e.date>=p.start&&e.date<=p.end).flatMap(e=>e.rows).filter(x=>x.player===r.name&&x.clan===r.clan)).value;
+  }
+  function effortFmt(v){return v==null?'—':v.toLocaleString(undefined,{maximumFractionDigits:2});}
   function chosenRows(p){
     return p.rows.filter(r=>clanFilter==='All'||r.clan===clanFilter);
   }
@@ -176,9 +181,9 @@
       .filter(r=>!q||r.name.toLowerCase().includes(q));
   }
   function downloadCsv(rows,p){
-    const cols=['Name','Clan','League start','Kraken end','Flash Sparks','Piggy Sparks','Space Sparks','Kraken Sparks','Kraken Sparks estimated','Total Sparks','Flash Stars','Piggy Stars','Space Stars','Total Stars','Events','Missing reward records'];
+    const cols=['Name','Clan','League start','Kraken end','Flash Sparks','Piggy Sparks','Space Sparks','Kraken Sparks','Kraken Sparks estimated','Total Sparks','Flash Stars','Piggy Stars','Space Stars','Total Stars','Events','Missing reward records','Piggy Sparks/Effort (per line)','Space Sparks/Effort (per B)','Flash Sparks/Effort (per line)'];
     const quote=x=>{const s=String(x==null?'':x);return /[",\r\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
-    const body=rows.map(r=>[r.name,r.clan,p.start,p.end,r.flashSparks,r.piggySparks,r.spaceSparks,r.krakenSparks,r.estimatedKraken,r.sparks,r.flashStars,r.piggyStars,r.spaceStars,r.stars,r.events,r.missing].map(quote).join(','));
+    const body=rows.map(r=>[r.name,r.clan,p.start,p.end,r.flashSparks,r.piggySparks,r.spaceSparks,r.krakenSparks,r.estimatedKraken,r.sparks,r.flashStars,r.piggyStars,r.spaceStars,r.stars,r.events,r.missing,...['piggy','space','flash'].map(k=>effort(r,p,k))].map(quote).join(','));
     const blob=new Blob([[cols.map(quote).join(','),...body].join('\r\n')],{type:'text/csv;charset=utf-8;'});
     const url=URL.createObjectURL(blob),a=document.createElement('a');
     a.href=url;a.download='avengers-clan-league-rewards-'+p.end+'-'+clanFilter.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.csv';
@@ -214,7 +219,7 @@
       '<label>Rank by <select data-league-sort><option value="sparks">Sparks</option><option value="stars">Stars</option></select></label></div></div>'+
       '<div class="league-rewards-scroll"><table class="league-rewards-table"><thead><tr>'+
       '<th>#</th><th>Member</th><th>Clan</th><th class="num">Flash Sparks</th><th class="num">Piggy Sparks</th><th class="num">Space Sparks</th>'+
-      '<th class="num">Kraken Sparks</th><th class="num">Total Sparks</th><th class="num">Total Stars</th>'+
+      '<th class="num">Piggy Sparks/Effort / line</th><th class="num">Space Sparks/Effort / B</th><th class="num">Flash Sparks/Effort / line</th><th class="num">Kraken Sparks</th><th class="num">Total Sparks</th><th class="num">Total Stars</th>'+
       '</tr></thead><tbody data-league-body></tbody></table></div>'+
       '<div class="league-rewards-footnote">Stars are member rewards (not total race pots). Flash, Piggy and Space Sparks/Stars come from recorded final results. '+
       'Older Kraken Sparks marked * are estimates (damage × 750 for AVENGERS or × 500 for AV-2); clan is inferred from that league’s most recent recorded Piggy/Space event. '+
@@ -234,9 +239,9 @@
     body.innerHTML=rows.length?rows.map((r,i)=>
       '<tr><td>'+r.leagueRank+'</td><td class="league-player">'+escape(r.name)+'</td><td>'+escape(r.clan)+'</td>'+
       '<td class="num">'+num(r.flashSparks)+'</td><td class="num">'+num(r.piggySparks)+'</td><td class="num">'+num(r.spaceSparks)+'</td>'+
-      '<td class="num">'+num(r.krakenSparks)+(r.estimatedKraken?' <abbr title="Estimated from damage and inferred historical clan">*</abbr>':'')+'</td>'+
+      ['piggy','space','flash'].map(k=>'<td class="num">'+effortFmt(effort(r,p,k))+'</td>').join('')+'<td class="num">'+num(r.krakenSparks)+(r.estimatedKraken?' <abbr title="Estimated from damage and inferred historical clan">*</abbr>':'')+'</td>'+
       '<td class="num league-strong">'+num(r.sparks)+'</td><td class="num league-strong">'+num(r.stars)+'</td></tr>').join(''):
-      '<tr><td colspan="9" class="league-empty">No matching recorded members in this league.</td></tr>';
+      '<tr><td colspan="12" class="league-empty">No matching recorded members in this league.</td></tr>';
   }
   function setup(el){
     host=el;if(!host)return;

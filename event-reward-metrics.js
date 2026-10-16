@@ -8,7 +8,14 @@
       starsDerived:!known(stars)&&known(sparks),
       ratioDelta:known(stars)&&known(sparks)?stars-sparks*10:null};
   }
-  const api={efficiency,reconcile};
+  // Aggregate only matching reward/effort pairs; never divide all rewards by
+  // a subset of recorded effort. A ratio is weighted by effort, not by rows.
+  function summarize(rows,scoreKey='score'){
+    const paired=rows.filter(r=>known(r.sparks)&&known(r[scoreKey])&&r[scoreKey]>0);
+    const sparks=paired.reduce((s,r)=>s+r.sparks,0),effort=paired.reduce((s,r)=>s+r[scoreKey],0);
+    return {value:efficiency(sparks,effort),sparks,effort,paired:paired.length,missing:rows.length-paired.length};
+  }
+  const api={efficiency,reconcile,summarize};
   if(typeof module==='object'&&module.exports)module.exports=api;
   else root.AVENGERS_REWARD_METRICS=api;
 })(typeof window==='object'?window:globalThis);

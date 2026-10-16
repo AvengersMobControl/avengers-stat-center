@@ -6,6 +6,7 @@ function boot(r){
   for(const file of ['community-highlights.js','clan-league-rewards.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'..',file),'utf8'),sandbox);
   return sandbox.window;
 }
+const APPROVED=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/approved-event-updates.json'))).updates;
 const BASE=create(),BASEW=boot(BASE),member=(r,name)=>r.globals.AVENGERS_DATA.members.find(m=>m.name===name);
 for(const kind of Object.keys(UNITS))for(const clan of ['AVENGERS','AV-2'])test(kind+' / '+clan+' reaches histories, summary, PB/achievements, rewards, leagues and recap after correction/revocation',()=>{
   const name='AV-HarryBallsagna',id=kind+'|fixture',field=kind==='space'?'yearsB':'lines';
@@ -33,13 +34,13 @@ for(const kind of Object.keys(UNITS))for(const clan of ['AVENGERS','AV-2'])test(
     if(kind!=='flash')assert.equal(w.AVENGERS_COMMUNITY.achievementProfile(name).categories.find(x=>x.id===kind).value,p.kinds[kind].pb);
     assert.equal(w.AVENGERS_COMMUNITY.records.filter(x=>x.eventId===id).length,1);
   }
-  const added=create({updates:[update]});verify(added,90000,50);
+  const added=create({updates:[...APPROVED,update]});verify(added,90000,50);
   const corrected={approved:true,expectedRevision:1,event:{...event,rows:[{...event.rows[0],score:1,sparks:7}]}};
-  const lower=create({updates:[update,corrected]});verify(lower,1,7);
-  const revoked=create({updates:[update,corrected,{approved:true,expectedRevision:2,event:{...corrected.event,status:'revoked'}}]});
+  const lower=create({updates:[...APPROVED,update,corrected]});verify(lower,1,7);
+  const revoked=create({updates:[...APPROVED,update,corrected,{approved:true,expectedRevision:2,event:{...corrected.event,status:'revoked'}}]});
   assert.deepEqual(member(revoked,name),member(BASE,name));
   assert.equal(boot(revoked).AVENGERS_COMMUNITY.records.filter(x=>x.eventId===id).length,0);
-  const replay=create({updates:[update,update]});assert.equal(replay.projection.version,added.projection.version);
+  const replay=create({updates:[...APPROVED,update,update]});assert.equal(replay.projection.version,added.projection.version);
 });
 test('verified July 30 source corrections and actual October 2 values agree across profiles/achievements',()=>{
   const w=BASEW,D=w.AVENGERS_DATA;
@@ -86,7 +87,7 @@ test('current roster and every materialized PB/reward agree with independent can
 test('correcting an older event-time clan recalculates dependent inferred Kraken payout',()=>{
   const source=BASE.ledger.events.find(e=>e.id==='piggy|2026-06-28');
   const event={...source,rows:source.rows.map(r=>r.player==='AV-HarryBallsagna'?{...r,clan:'AV-2'}:r)};
-  const changed=create({updates:[{approved:true,expectedRevision:1,event}]});
+  const changed=create({updates:[...APPROVED,{approved:true,expectedRevision:1,event}]});
   const payout=changed.projection.events.find(e=>e.id==='kraken|june').rows.find(r=>r.player==='AV-HarryBallsagna');
   assert.equal(payout.clan,'AV-2');assert.equal(payout.sparks,4385.136*500);
   assert.equal(member(changed,'AV-HarryBallsagna').status,'Active');

@@ -81,3 +81,12 @@ Total Sparks   = Logged Sparks + Screenshot Gap
 
 ## Reward / effort reporting rule (October 16)
 Use 10:1 Stars:Sparks as a reconciliation check for Piggy/Flash/Space. Derive full Stars from exact Sparks only when Stars are rounded/missing, label the derivation, preserve conflicting directly visible rewards. Report full integer Stars and screenshot Share %. Sparks/Effort = Sparks per billion lightyears for Space (workbook formula); per line for Piggy/Flash. Lower ratio can identify unrewarded effort; compare within the same event/unit.
+
+## October 16 approved publication and complete effort rollout
+Leader explicitly approved the revised 44 AVENGERS + 22 AV-2 Space results for publication. `data/approved-event-updates.json` now records that approval; the normal canonical projection rebuilds every dependent total/PB/rating/history. Four AVENGERS PBs and three AV-2 PBs remain distinct. Zolika Stars = 4,153,180 (derived from exact Sparks; provenance retained).
+
+Sparks/Effort applies to Piggy/Space overall and last-three views, event rows, player event logs, roster grouped columns/sorting, league reward tables/CSV, Flash performance/daily/result tables, totals and machine exports. Aggregate ratios use sum of matching known Sparks / sum of their effort, never averages of individual ratios; missing pairs are excluded and marked. Compare only within the same event/unit; there is no blended Piggy/Space/Flash ratio.
+
+September 18 investigation: retained group 6 has four positive-distance records but zero reward placeholders and no final reward capture in the reviewed Space event window. Preserve the distances; replace unavailable rewards with null, mark partial coverage, explicitly explain missing lobby 6 (Animosity, MotherboardBeans, Nicefellow, ColdCreeps). Known AV rewards remain 56,995,119 Stars and 5,703,046 Sparks. Six AV lobbies are represented, five with known rewards. Full pot remains unavailable. No speculative pot or new screenshot-derived reward import.
+
+`python3 scripts/render-space-summary.py <release.json> <output.png>` reproduces the approved navy/cyan/purple Space clan graphic with prominent old/new/% PBs, top ten full reward/share/effort columns, first-tracked entries and a clearly described effort shoutout panel. Do not use first-tracked as proof of first-ever in-game racing.

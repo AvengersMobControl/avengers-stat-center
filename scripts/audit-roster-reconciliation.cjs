@@ -201,37 +201,53 @@ const leagueSummaries=leaguePeriods.map((p,index)=>{
     assert(Math.abs(r.stars-calculatedStars)<0.01,'Star categories do not sum for '+id);
     assert(r.estimatedKraken<=r.krakenSparks+0.01,'Estimated Kraken exceeds total for '+id);
     const c=clans[r.clan]||{players:0,sparks:0,stars:0,flashSparks:0,piggySparks:0,
-      spaceSparks:0,krakenSparks:0,estimatedKrakenSparks:0,incompleteRewardRecords:0};
+      spaceSparks:0,krakenSparks:0,estimatedKrakenSparks:0,rowsMissingRewardFields:0};
     c.players++;c.sparks+=r.sparks;c.stars+=r.stars;
     c.flashSparks+=r.flashSparks;c.piggySparks+=r.piggySparks;
     c.spaceSparks+=r.spaceSparks;c.krakenSparks+=r.krakenSparks;
-    c.estimatedKrakenSparks+=r.estimatedKraken;c.incompleteRewardRecords+=r.missing;
+    c.estimatedKrakenSparks+=r.estimatedKraken;c.rowsMissingRewardFields+=r.missing;
     clans[r.clan]=c;
   }
   return {start:p.start,end:p.end,rosterRecords:p.rows.length,
     uniqueEventMemberEntries:p.eventMembers.size,
     clans};
 });
+// Council-reported season totals are approximate external comparison points,
+// NOT authoritative inputs to the event ledger. Never force-match the data.
+const councilReportedApprox = {'2026-10-11':171000000,'2026-09-06':165000000};
+const comparisons=leagueSummaries
+  .filter(p=>Object.prototype.hasOwnProperty.call(councilReportedApprox,p.end))
+  .map(p=>({
+    end:p.end,reportedApprox:councilReportedApprox[p.end],
+    eventLedger:p.clans.AVENGERS?.sparks||0,
+    delta:(p.clans.AVENGERS?.sparks||0)-councilReportedApprox[p.end],
+    requiresSourceAudit:true
+  }));
 const leagueReport={
   source:'current Stat Center event ledgers; **not** proof all screenshots exist',
   scope:'six completed five-week Clan Leagues; includes estimated older Kraken amounts',
   warnings:['Missing and partly estimated rewards must not be described as verified clan-wide lifetime totals.',
     'Event-time clan is authoritative when recorded; historical Kraken reconstruction may use inferred last-known league clan.'],
-  periods:leagueSummaries
+  periods:leagueSummaries,reportedComparisons:comparisons
 };
 fs.writeFileSync(path.join(dir,'clan-league-audit.json'),JSON.stringify(leagueReport,null,2)+'\n');
 const clanLines=[
   '# Six Clan League accounting audit','',
   'Source: Stat Center event ledgers, replayed in published load order. **Not a complete external leaderboard.**',
   '',
-  'Earlier Kraken awards may be estimated from damage and historical clan inference. Missing reward records are reported but not invented.',
+  'Earlier Kraken awards may be estimated from damage and historical clan inference. A zero missing-field count does NOT establish that every event screenshot or player result was captured.',
   '',
   '| Period | Clan | Players | Sparks recorded/estimated | Stars recorded | Kraken Sparks estimated | Incomplete reward records |',
   '|---|---|---:|---:|---:|---:|---:|',
   ...leagueSummaries.flatMap(p=>Object.entries(p.clans).map(([clan,c])=>
-    '| '+p.start+' to '+p.end+' | '+clan+' | '+c.players+' | '+c.sparks+' | '+c.stars+' | '+c.estimatedKrakenSparks+' | '+c.incompleteRewardRecords+' |')),
+    '| '+p.start+' to '+p.end+' | '+clan+' | '+c.players+' | '+c.sparks+' | '+c.stars+' | '+c.estimatedKrakenSparks+' | '+c.rowsMissingRewardFields+' |')),
   '',
-  'The 171M clan Sparks comparison must be reconciled against the actual league award report before claiming equivalence.',
+  '## Comparison to approximate council-reported season totals', '',
+  '| Kraken end | Event-ledger AVENGERS Sparks | Council reported (approx.) | Difference |',
+  '|---|---:|---:|---:|',
+  ...comparisons.map(c=>'| '+c.end+' | '+c.eventLedger+' | '+c.reportedApprox+' | '+c.delta+' |'),
+  '',
+  'These differences require source-level reconciliation; do not alter source rewards to match rounded external reports.',
   'Original event records and inferred allocations were not modified.'
 ];
 fs.writeFileSync(path.join(dir,'clan-league-audit.md'),clanLines.join('\n')+'\n');

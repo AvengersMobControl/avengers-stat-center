@@ -134,3 +134,28 @@ test('AV-Adigarian lower later in-game AVENGERS Sparks proves a separate return 
    .filter(s=>s.clan==='AVENGERS').reduce((n,s)=>n+s.gap,0)
    +player.snapshotBreakdown.filter(s=>s.clan==='AV-2').reduce((n,s)=>n+s.gap,0));
 });
+
+
+const {audit:transferAudit}=require('./audit-transfer-restorations.cjs');
+test('transfer restoration reconciles every current member, not only Hoops',()=>{
+ const result=transferAudit(BASE);
+ assert.equal(result.summary.roster,100);
+ assert.equal(result.rows.length,100);
+ for(const r of result.rows){
+  const player=BASE.projection.people.find(p=>p.name===r.name);
+  assert(player,'Missing member '+r.name);
+  assert.equal(r.logged,BASE.breakdowns[r.name].eventLoggedSparks);
+  assert.equal(r.unlogged,player.screenshotGap||0);
+  assert.equal(r.total,player.totalSparks);
+  assert(Math.abs(r.total-r.logged-r.unlogged)<0.001);
+  const b=BASE.breakdowns[r.name];
+  assert(Math.abs(r.logged-b.piggySparks-b.spaceSparks-b.flashSparks-b.krakenSparks)<0.001);
+ }
+ const hoops=result.rows.find(r=>r.name==='AV-Hoops');
+ assert(hoops&&hoops.unlogged>0);
+ const after=BASE.projection.people.find(p=>p.name==='AV-Hoops').history
+  .filter(r=>r.date>='2026-09-30').reduce((n,r)=>n+(r.sparks||0),0);
+ assert(hoops.total>=12416538+after-0.001,
+  'Hoops preserves screenshot plus every approved later reward');
+ assert(result.rows.find(r=>r.name==='AV-Adigarian').stints>1);
+});

@@ -1630,14 +1630,11 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       // Legacy all-event bases and screenshots are comparisons, never payouts.
       const logged=Number(eventBreakdown.eventLoggedSparks)||0;
       const snapshotTotal=snapshot?Math.max(0,Number(snapshot.allTimeSparks)||0):null;
-      const beforeDate=snapshot?.beforeDate||((snap.currentAv2||[]).includes(snapshot)?'2026-10-16':'2026-09-30');
-      const asOf=window.AVENGERS_ROSTER_EVENT_BREAKDOWN?.loggedBefore?.(canonical,beforeDate);
-      const trackedAtCapture=Number.isFinite(asOf)?asOf:logged;
-      const sparkReconciliationDelta=snapshotTotal==null?null:snapshotTotal-trackedAtCapture;
-      const projectedGap=Number(eventBreakdown.screenshotGap);
-      const unlogged=eventBreakdown.screenshotGap!=null&&Number.isFinite(projectedGap)
-          ?Math.max(0,projectedGap)
-          :(snapshotTotal==null?0:Math.max(0,sparkReconciliationDelta));
+      // Production Total Sparks is derived only from the shared event-backed
+      // projector. One clan screenshot cannot override a previous clan/stint.
+      const unlogged=eventBreakdown.screenshotGap==null?0:
+        Math.max(0,Number(eventBreakdown.screenshotGap)||0);
+      const sparkReconciliationDelta=null;
       const sparkSnapshotDate=snapshot?snapshot.snapshotLabel||
         ((snap.currentAv2||[]).includes(snapshot)?snap.av2Date||'2026-10-15':snap.date||'2026-09-29'):null;
       const starSnapshot=starMap.get(canonical)||starMap.get(name);

@@ -1,0 +1,30 @@
+name: Test staged event projection
+on:
+  pull_request:
+    paths:
+      - 'scripts/event-projection*.cjs'
+      - 'scripts/audit-event-projection-migration.cjs'
+      - 'scripts/council-minimums-core.cjs'
+      - '.github/workflows/event-projection-test.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/event-projection*.cjs'
+      - 'scripts/audit-event-projection-migration.cjs'
+      - 'scripts/council-minimums-core.cjs'
+      - '.github/workflows/event-projection-test.yml'
+permissions:
+  contents: read
+jobs:
+  projection:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test scripts/event-projection-core.test.cjs scripts/council-minimums-core.test.cjs scripts/roster-event-breakdown.test.cjs scripts/sparks-ui-source.test.cjs
+      - name: Inventory legacy migration blockers (read only)
+        run: node scripts/audit-event-projection-migration.cjs
+      - name: Preserve current 100-member accounting invariants
+        run: node scripts/audit-roster-reconciliation.cjs

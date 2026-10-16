@@ -337,5 +337,5 @@ test('the Council role configured in GitHub Actions matches the leader-confirmed
 test('scheduled Discord polling is disabled until explicit rollout variable is enabled',()=>{
   const fs=require('node:fs'),path=require('node:path');
   const workflow=fs.readFileSync(path.resolve(__dirname,'../.github/workflows/discord-utc-roster.yml'),'utf8');
-  assert.match(workflow,/if:\\s*\\$\\{\\{\\s*github\\.event_name == 'workflow_dispatch' \\|\\| vars\\.DISCORD_UTC_SYNC_ENABLED == 'true'\\s*\\}\\}/);
+  assert.ok(workflow.includes("if: ${{ github.event_name == 'workflow_dispatch' || vars.DISCORD_UTC_SYNC_ENABLED == 'true' }}"));
 });

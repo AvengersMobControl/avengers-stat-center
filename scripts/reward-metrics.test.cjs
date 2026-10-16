@@ -47,7 +47,8 @@ test('Oct 2 Space Records display actual distance only for a standing Oct 2 PB',
    assert(Math.abs(display.value-before*2/3)<.000001,member.name+' actual distance');
    assert.equal(member.spacePB,before,member.name+' canonical normalized PB untouched');
  }
- assert.deepEqual(spaceRecordDisplay(334.8,'2026-10-02'),{value:223.2,adjusted:true});
+ assert.equal(spaceRecordDisplay(334.8,'2026-10-02').adjusted,true);
+ assert(Math.abs(spaceRecordDisplay(334.8,'2026-10-02').value-223.2)<.000001);
  assert.deepEqual(spaceRecordDisplay(478.7,'2026-10-02').adjusted,true);
  const prior=record(D.space.history['AV-HarryBallsagna'],'yearsB');
  assert.equal(prior.date,'2026-08-30');

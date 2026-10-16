@@ -24,7 +24,7 @@
 | **CLOSED** | [#5 Missing Oct 13 PF1 main leaderboard](https://github.com/AvengersMobControl/avengers-stat-center/issues/5) | **Not planned**: user confirmed unavailable. Preserve partial validated entries; do not chase or guess. |
 
 ## #42 connected build checkpoint — October 16
-`feat/connect-event-projection` connects published data to the shared projection: migration/revision overlays, synchronous page bundle, histories/PBs/ratings/roster/Kraken/league/achievement/recap adapters, versioned exports and publication/browser gates. See [EVENT_PROJECTION.md](docs/EVENT_PROJECTION.md) for verified source corrections and explicit unknown/unassigned records. Check #42 for exact merged-SHA deployment/browser evidence. #4 remains unfinished: screenshot validation/acquisition, dedup, reviewed source writes and pull scheduling are still OFF.
+`feat/connect-event-projection` connects published data to the shared projection: migration/revision overlays, synchronous page bundle, histories/PBs/ratings/roster/Kraken/league/achievement/recap adapters, versioned exports and publication/browser gates. See [EVENT_PROJECTION.md](docs/EVENT_PROJECTION.md) for verified source corrections and explicit unknown/unassigned records. Check #42 for exact merged-SHA deployment/browser evidence. #4 remains unfinished end to end. Daily morning screenshot review is now scheduled around 8 AM America/Chicago; parsed-result approval is required before any source write/publication. Automated import is OFF.
 
 ## Current accepted accounting requirements
 

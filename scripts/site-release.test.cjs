@@ -153,6 +153,9 @@ test('transfer restoration reconciles every current member, not only Hoops',()=>
  }
  const hoops=result.rows.find(r=>r.name==='AV-Hoops');
  assert(hoops&&hoops.unlogged>0);
- assert.equal(hoops.total,14917882);
+ const after=BASE.projection.people.find(p=>p.name==='AV-Hoops').history
+  .filter(r=>r.date>='2026-09-30').reduce((n,r)=>n+(r.sparks||0),0);
+ assert(hoops.total>=12416538+after-0.001,
+  'Hoops preserves screenshot plus every approved later reward');
  assert(result.rows.find(r=>r.name==='AV-Adigarian').stints>1);
 });

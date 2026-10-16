@@ -238,17 +238,23 @@ AV-Brisket\tActive\t\t\t\t`;
     if(!suppliedName||!['Active','AV2','Inactive'].includes(entry.status))return;
     const alias=Object.keys(aliases).find(a=>a.toLowerCase()===suppliedName.toLowerCase());
     const memberName=alias?aliases[alias]:suppliedName;
-    const utc=Number(entry.utc);
-    if(!Number.isFinite(utc)||utc< -12||utc>14)return;
+    // Number(null) === 0 in JavaScript. Do not turn a country-only Council
+    // submission into a false UTC±0 for the member.
+    const hasUtc=entry.utc!==null && entry.utc!==undefined && entry.utc!=='' &&
+      Number.isFinite(Number(entry.utc)) && Number(entry.utc)>= -12 && Number(entry.utc)<=14;
+    const utc=hasUtc?Number(entry.utc):null;
     const country=String(entry.country||'').trim();
+    if(!hasUtc && !country)return;
     const existing=rows.find(row=>row.name.toLowerCase()===memberName.toLowerCase());
     if(existing){
-      existing.utc=utc;
+      if(hasUtc)existing.utc=utc;
       if(country)existing.location=country;
       const current=byName[existing.name];
       if(current){
-        current.utc=utc;
-        current.utcLabel=formatUtc(utc);
+        if(hasUtc){
+          current.utc=utc;
+          current.utcLabel=formatUtc(utc);
+        }
         if(country)current.location=country;
       }
     }else{

@@ -1545,7 +1545,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   const labels={
     utcOffset:'UTC',timeZoneGroup:'TZG',state:'State',country:'Country',
     piggySparks:'Piggy',spaceSparks:'Space',flashSparks:'Flash',krakenSparks:'Kraken',
-    loggedSparks:'Logged Sparks',unloggedSparks:'Screenshot Gap',totalCombinedSparks:'Event Total',
+    loggedSparks:'Logged Sparks',unloggedSparks:'Screenshot Gap',totalCombinedSparks:'Total Sparks',
     piggyStars:'Piggy',spaceStars:'Space',flashStars:'Flash',
     loggedStars:'Logged Stars',unloggedStars:'Unlogged Stars',knownStars:'Total Stars',
     ratingTotal:'Rating',piggyPB:'Piggy PB',spacePB:'Space PB',krakenPB:'Kraken PB',
@@ -1663,7 +1663,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       return {...m,name,status:displayStatus,hasProfile:!!stored,
         loggedSparks:logged,flashSparks:extraSparks.flashSparks,latestKrakenSparks:extraSparks.octKrakenSparks,
         reconstructedJuneKrakenSparks:extraSparks.juneKrakenSparks||0,
-        unloggedSparks:unlogged,totalCombinedSparks:logged,snapshotTotal,
+        unloggedSparks:unlogged,totalCombinedSparks:logged+unlogged,snapshotTotal,
         sparkSnapshotDate,sparkReconciliationDelta,
         state:tz?.state||'',location:tz?.location||'',utcOffset:tz?.utc==null?null:Number(tz.utc),
         utcLabel:tz?.utcLabel||'',timeZoneGroup:tz?.timeZoneGroup||'',
@@ -1723,8 +1723,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       krakenEvents:{label:'Kraken Events',type:'number',get:r=>r.krakenEvents},
       totalEvents:{label:'Total Events',type:'number',get:r=>r.totalEvents},
       loggedSparks:{label:'Logged Sparks',type:'number',get:r=>r.loggedSparks},
-      unloggedSparks:{label:'Screenshot Gap (excluded)',type:'number',get:r=>r.unloggedSparks},
-      totalCombinedSparks:{label:'Event Total Sparks',type:'number',get:r=>r.totalCombinedSparks},
+      unloggedSparks:{label:'Screenshot Gap',type:'number',get:r=>r.unloggedSparks},
+      totalCombinedSparks:{label:'Total Sparks',type:'number',get:r=>r.totalCombinedSparks},
       ratingTotal:{label:'Rating',type:'number',get:r=>r.ratingTotal},
       piggyPB:{label:'Piggy PB',type:'number',get:r=>r.piggyPB},
       spacePB:{label:'Space PB',type:'number',get:r=>r.spacePB},
@@ -1812,11 +1812,11 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         ${target==='kraken'?`
           <div class="kpi"><div class="kpi-label">In-game Sparks</div><div class="kpi-value">${fmtNum(inGameSparksTotal,0)}</div><div class="kpi-note">sum of Oct 9 screenshot values</div></div>
           <div class="kpi"><div class="kpi-label">Logged Sparks</div><div class="kpi-value">${fmtNum(loggedTotal,0)}</div><div class="kpi-note">tracked event history</div></div>
-          <div class="kpi"><div class="kpi-label">Event Total</div><div class="kpi-value">${fmtNum(combinedTotal,0)}</div><div class="kpi-note">four event sources only</div></div>`
+          <div class="kpi"><div class="kpi-label">Total Sparks</div><div class="kpi-value">${fmtNum(combinedTotal,0)}</div><div class="kpi-note">logged + screenshot gap</div></div>`
         :`
           <div class="kpi"><div class="kpi-label">Logged Sparks</div><div class="kpi-value">${fmtNum(loggedTotal,0)}</div><div class="kpi-note">captured in tracked events</div></div>
-          <div class="kpi"><div class="kpi-label">Screenshot Gap</div><div class="kpi-value">${fmtNum(unloggedTotal,0)}</div><div class="kpi-note">comparison only; excluded from totals</div></div>
-          <div class="kpi"><div class="kpi-label">Event Total</div><div class="kpi-value">${fmtNum(combinedTotal,0)}</div><div class="kpi-note">Piggy + Space + Flash + Kraken</div></div>`}
+          <div class="kpi"><div class="kpi-label">Screenshot Gap</div><div class="kpi-value">${fmtNum(unloggedTotal,0)}</div><div class="kpi-note">screenshot total above logged</div></div>
+          <div class="kpi"><div class="kpi-label">Total Sparks</div><div class="kpi-value">${fmtNum(combinedTotal,0)}</div><div class="kpi-note">logged + screenshot gap</div></div>`}
       </div>
       <div class="tz-section">
         <div class="tz-section-head"><strong>Time Zone Groups</strong><span>Groups (TZG 1, 2, and 3) retained from supplied player metadata, never calculated from UTC.</span></div>
@@ -1831,8 +1831,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       <div class="records-note"><strong>Star totals:</strong> For screenshot members, Total Stars comes from Oct 15 in-game all-time totals. DrDetroit and Starred were added to AV-2 separately by the clan leader; their new all-time Sparks and Stars are not available, so any displayed total is only a tracked minimum (≥). Logged Stars include recorded Piggy, Space and Flash rewards (Kraken Stars are not recorded); Unlogged Stars is the nonnegative difference from screenshot totals. Event counts represent recorded Piggy, Space, Flash and Kraken participation.
       </div>
       <div class="records-note"><strong>Sparks totals:</strong>
-        Event Total = Piggy + Space + Flash + Kraken. September 29 screenshots predate later events, so an Event Total higher than that older snapshot is expected, not a discrepancy warning.
-        Screenshot Gap is shown separately for historical reference and does not change Event Total. Kraken includes reconstructed earlier rewards and unique October payouts.
+        Logged Sparks = Piggy + Space + Flash + Kraken. Screenshot Gap is the nonnegative difference when the recorded all-time screenshot exceeds logged Sparks.
+        Total Sparks = Logged Sparks + Screenshot Gap. September 29 screenshots predate subsequent events, so logged Sparks exceeding an older screenshot is expected and adds no gap.
       </div>
       ${rosterGroupedTable(label,rows,sortDef,sortDir,sortHeader,playerNameCell,state.rosterGroups,target)}
     `;

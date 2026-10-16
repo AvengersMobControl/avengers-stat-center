@@ -38,5 +38,20 @@ test('roster Sparks totals show unadorned event totals, not stale snapshot warni
  assert.doesNotMatch(src,/Snapshot discrepancy/);
  assert.doesNotMatch(src,/snapshot comparison flags/);
  assert.doesNotMatch(src,/roster-reconciliation-warning.*⚠/);
- assert.match(src,/September 29 screenshots predate later events/);
+ assert.match(src,/Total Sparks = Logged Sparks \+ Screenshot Gap/);
+ assert.match(src,/totalCombinedSparks:logged\+unlogged/);
+ assert.match(src,/case 'totalCombinedSparks':return fmtNum\(r\.totalCombinedSparks\);/);
+ assert.match(src,/const unlogged=sparkReconciliationDelta==null\?0:Math\.max\(0,sparkReconciliationDelta\);/);
+});
+
+test('positive screenshot gap adds to logged total but older snapshots never subtract',()=>{
+ const total=(logged,snapshot)=>{
+   const delta=snapshot==null?null:snapshot-logged;
+   const gap=delta==null?0:Math.max(0,delta);
+   return {logged,gap,total:logged+gap};
+ };
+ assert.deepEqual(total(1000,1250),{logged:1000,gap:250,total:1250});
+ assert.deepEqual(total(1000,750),{logged:1000,gap:0,total:1000});
+ assert.deepEqual(total(1000,null),{logged:1000,gap:0,total:1000});
+ assert.deepEqual(total(1000,1000),{logged:1000,gap:0,total:1000});
 });

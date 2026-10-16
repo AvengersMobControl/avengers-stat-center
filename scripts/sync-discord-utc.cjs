@@ -88,8 +88,10 @@ function knownRoster() {
   const lines = match[1].replace(/\\t/g, '\t').replace(/\\n/g, '\n').split(/\r?\n/);
   const historical = new Map();
   for (const line of lines.slice(1)) {
-    const [name, , , , , location] = line.split('\t');
-    if (name) historical.set(key(name), {name, status:'Inactive', country: location || ''});
+    const [name, , utcRaw, , , location] = line.split('\t');
+    const utc = utcRaw === '' ? null : Number(utcRaw);
+    if (name) historical.set(key(name), {name, status:'Inactive',
+      utc:Number.isFinite(utc)?utc:null,country:location || ''});
   }
 
   const rosterPath = path.join(root, 'roster-stars-snapshot-2026-10-15.js');
@@ -114,7 +116,7 @@ function knownRoster() {
   const current = new Map();
   function addCurrent(name, status, profileName) {
     const old = historical.get(key(profileName || name)) || historical.get(key(name));
-    const row = {name, status, country: old?.country || ''};
+    const row = {name, status, utc:old?.utc ?? null, country: old?.country || ''};
     for (const identifier of [name, profileName].filter(Boolean)) {
       const k = key(identifier);
       if (current.has(k) && current.get(k).name !== name)
@@ -146,83 +148,173 @@ function knownRoster() {
     map.set(key('take.them.out'), map.get(key('AV-ColdCreeps')));
   return map;
 }
-// The channel is for submissions, not proof that a Discord nickname owns an
-// existing in-game identity. Trusted onboarding roles can automatically add
-// genuinely new names. Existing identities require an explicitly verified link.
+// Members can self-report their first qualifying UTC/location message.
+// Council members may additionally report for exactly one mentioned member,
+// but only to fill fields not already present in the authoritative roster.
+// The council role is identified by Discord role ID, never by username.
 function onboardingPolicy() {
-  const trustedRoleIds = String(process.env.DISCORD_UTC_TRUSTED_ROLE_IDS || '')
-    .split(',').map(x => x.trim()).filter(Boolean);
-  if (!trustedRoleIds.length || trustedRoleIds.some(x => !/^\d{15,22}$/.test(x)))
-    throw new Error('Set DISCORD_UTC_TRUSTED_ROLE_IDS to at least one valid Discord role ID');
+  const councilRoleIds = String(process.env.DISCORD_UTC_COUNCIL_ROLE_IDS || '')
+    .split(',').map(s => s.trim()).filter(Boolean);
+  if (councilRoleIds.some(s => !/^\d{15,22}$/.test(s)))
+    throw new Error('DISCORD_UTC_COUNCIL_ROLE_IDS must contain numeric Discord role IDs');
   let verifiedLinks;
   try { verifiedLinks = JSON.parse(process.env.DISCORD_UTC_VERIFIED_LINKS || '{}'); }
-  catch { throw new Error('DISCORD_UTC_VERIFIED_LINKS must be a valid private JSON object'); }
+  catch { throw new Error('DISCORD_UTC_VERIFIED_LINKS must be a private JSON object'); }
   if (!verifiedLinks || Array.isArray(verifiedLinks) || typeof verifiedLinks !== 'object')
     throw new Error('DISCORD_UTC_VERIFIED_LINKS must be a JSON object');
-  return {trustedRoleIds,verifiedLinks};
+  return {councilRoleIds,verifiedLinks};
 }
-function submitPending(state, message, proposedName, utc, country, reason) {
-  const discordUserId = String(message.author.id);
+function submitPending(state, message, proposedName, utc, country, reason, targetId) {
+  const discordUserId = String(targetId || message.author.id);
   state.pending = state.pending.filter(p => p.discordUserId !== discordUserId);
-  state.pending.push({discordUserId, proposedName, utc, country,
-    reason, messageId:String(message.id)});
+  state.pending.push({discordUserId,submittedBy:String(message.author.id),
+    proposedName,utc,country,reason,messageId:String(message.id)});
 }
+function explicitGameName(content) {
+  return /\b(?:game\s*name|member|player|name)\s*[:=]\s*[^\n|,;]{1,70}/i.test(String(content||''));
+}
+function matchedIdentity(known, name) {
+  return known.get(key(name)) || null;
+}
+function councilTarget(message) {
+  const mentions=Array.isArray(message.mentions)?message.mentions:[];
+  if (mentions.length!==1) return null;
+  const target=mentions[0];
+  if (!target?.id || String(target.id)===String(message.author?.id) || target.bot) return null;
+  return {id:String(target.id),
+    name:String(target.member?.nick || target.global_name || target.username || '').trim()};
+}
+function isMissing(value) { return value==null || String(value).trim()===''; }
 function reconcile(state, message, known, defaultClan, policy = {}) {
   if (!message?.author?.id || message.author.bot) return;
-  const utc = parseUtc(message.content);
-  if (utc === null) return;
-  const discordUserId = String(message.author.id);
-  const old = state.members.find(m => m.discordUserId === discordUserId);
-  const proposed = nameOf(message);
-  const country = countryOf(message.content) || old?.country || '';
-  const trustedIds = policy.trustedRoleIds || [];
-  const roles = Array.isArray(message.member?.roles) ? message.member.roles.map(String) : [];
-  if (!trustedIds.length || !roles.some(role => trustedIds.includes(role))) {
-    submitPending(state,message,proposed,utc,country,
-      !trustedIds.length ? 'trusted_role_not_configured' : 'untrusted_role');
+  const utc=parseUtc(message.content);
+  if (utc===null) return; // A message without a UTC offset is not a submission.
+  const providedCountry=countryOf(message.content);
+  const authorId=String(message.author.id);
+  const mentions=Array.isArray(message.mentions)?message.mentions:[];
+  const isProxy=mentions.some(m=>m?.id && String(m.id)!==authorId);
+  const roles=Array.isArray(message.member?.roles)?message.member.roles.map(String):[];
+
+  if (isProxy) {
+    const target=councilTarget(message);
+    if (!target) {
+      submitPending(state,message,'',utc,providedCountry,'requires_exactly_one_tagged_member');
+      return;
+    }
+    if (!(policy.councilRoleIds||[]).some(id=>roles.includes(id))) {
+      submitPending(state,message,target.name,utc,providedCountry,
+        policy.councilRoleIds?.length?'council_role_required':'council_role_not_configured',target.id);
+      return;
+    }
+    // Use the actual mention target, not an untrusted Name: field in the
+    // posting councillor's message.
+    const verified=policy.verifiedLinks?.[target.id];
+    const knownMember=matchedIdentity(known,verified||target.name);
+    if (!knownMember || knownMember.status==='Inactive') {
+      submitPending(state,message,target.name,utc,providedCountry,
+        'tagged_member_not_in_active_roster',target.id);
+      return;
+    }
+    if (verified && key(knownMember.name)!==key(matchedIdentity(known,target.name)?.name||knownMember.name)) {
+      submitPending(state,message,target.name,utc,providedCountry,
+        'tagged_identity_conflict',target.id);
+      return;
+    }
+    const old=state.members.find(m=>m.discordUserId===target.id);
+    if (old && key(old.name)!==key(knownMember.name)) {
+      submitPending(state,message,target.name,utc,providedCountry,
+        'tagged_identity_conflict',target.id);
+      return;
+    }
+    const conflict=state.members.find(m=>key(m.name)===key(knownMember.name)&&m.discordUserId!==target.id);
+    if (conflict) {
+      submitPending(state,message,target.name,utc,providedCountry,
+        'name_already_linked_to_another_discord_account',target.id);
+      return;
+    }
+    // Council is allowed to supply MISSING data only; never overwrite
+    // existing UTC/country either from the historical roster or Discord.
+    const baselineUtc=old?.utc ?? knownMember.utc ?? null;
+    const baselineCountry=old?.country || knownMember.country || '';
+    if (!isMissing(baselineUtc)&&!isMissing(baselineCountry)) return;
+    const nextUtc=isMissing(baselineUtc)?utc:baselineUtc;
+    const nextCountry=isMissing(baselineCountry)?providedCountry:baselineCountry;
+    if (isMissing(nextCountry)) {
+      submitPending(state,message,target.name,utc,providedCountry,'country_missing',target.id);
+      return;
+    }
+    const next={discordUserId:target.id,name:knownMember.name,status:knownMember.status,
+      utc:nextUtc,country:nextCountry,
+      messageId:String(message.id),updatedAt:message.timestamp||new Date().toISOString(),
+      source:'council'};
+    if(old)Object.assign(old,next);else state.members.push(next);
+    state.pending=state.pending.filter(p=>p.discordUserId!==target.id);
     return;
   }
-  // An admin-confirmed ID→game-name mapping is stored only in a GitHub secret.
-  const linkedName = policy.verifiedLinks?.[discordUserId];
-  const linkedRoster = linkedName ? known.get(key(linkedName)) : null;
-  if (linkedName && !linkedRoster) {
-    submitPending(state,message,proposed,utc,country,'verified_link_not_in_roster');
+
+  // The member's own FIRST qualifying submission is accepted without any
+  // role requirement. Later posts cannot silently change that submission.
+  const old=state.members.find(m=>m.discordUserId===authorId);
+  if(old?.source==='self') return;
+  const proposed=nameOf(message);
+  const claimed=matchedIdentity(known,proposed);
+  const verifiedName=policy.verifiedLinks?.[authorId];
+  const linked=verifiedName?matchedIdentity(known,verifiedName):null;
+  if(verifiedName && !linked) {
+    submitPending(state,message,proposed,utc,providedCountry,'verified_link_not_in_roster');
     return;
   }
-  const claimedRoster = known.get(key(proposed));
-  // A new Discord account cannot claim an existing game identity merely by
-  // choosing its nickname or typing Name: ... in a message.
-  if (!old && claimedRoster && (!linkedRoster || key(claimedRoster.name) !== key(linkedRoster.name))) {
-    submitPending(state,message,proposed,utc,country,'existing_identity_requires_verification');
+  // Existing users may be matched through the Discord member nickname.
+  // A contradictory explicit Name: claim must be reviewed instead of guessed.
+  const nickname=String(message.member?.nick||'').trim();
+  const nickRoster=matchedIdentity(known,nickname);
+  if(linked && claimed && key(linked.name)!==key(claimed.name)) {
+    submitPending(state,message,proposed,utc,providedCountry,'linked_identity_mismatch');
     return;
   }
-  if (old && linkedRoster && key(old.name) !== key(linkedRoster.name)) {
-    submitPending(state,message,proposed,utc,country,'linked_identity_mismatch');
+  if(!linked && claimed && nickRoster && key(claimed.name)!==key(nickRoster.name)) {
+    submitPending(state,message,proposed,utc,providedCountry,'nickname_identity_conflict');
     return;
   }
-  if (!old && !linkedRoster && !claimedRoster &&
-    !/\b(?:game\s*name|member|player|name)\s*[:=]\s*[^\n|,;]{1,70}/i.test(String(message.content||''))) {
-    submitPending(state,message,proposed,utc,country,'explicit_game_name_required');
+  if(!linked && claimed && !nickRoster) {
+    submitPending(state,message,proposed,utc,providedCountry,'existing_identity_requires_nickname_match');
     return;
   }
-  const name = old?.name || linkedRoster?.name || proposed;
-  const status = old?.status || linkedRoster?.status || clanOf(message.content, defaultClan);
-  if (!name || !['Active', 'AV2', 'Inactive'].includes(status)) {
-    submitPending(state,message,proposed,utc,country,
-      !name ? 'missing_game_name' : 'missing_clan');
+  if(!linked && !claimed && nickRoster && explicitGameName(message.content)) {
+    submitPending(state,message,proposed,utc,providedCountry,'nickname_identity_conflict');
     return;
   }
-  const conflict = state.members.find(m => key(m.name) === key(name) && m.discordUserId !== discordUserId);
-  if (conflict) {
-    submitPending(state,message,proposed,utc,country,
+  const knownMember=linked||claimed;
+  if(old && knownMember && key(old.name)!==key(knownMember.name)) {
+    submitPending(state,message,proposed,utc,providedCountry,'linked_identity_mismatch');
+    return;
+  }
+  if(!old && !knownMember && !explicitGameName(message.content)) {
+    submitPending(state,message,proposed,utc,providedCountry,'explicit_game_name_required');
+    return;
+  }
+  const name=old?.name||knownMember?.name||proposed;
+  const status=knownMember?.status||old?.status||clanOf(message.content,defaultClan);
+  if(!name||!['Active','AV2'].includes(status)) {
+    submitPending(state,message,proposed,utc,providedCountry,'missing_or_inactive_clan');
+    return;
+  }
+  const conflict=state.members.find(m=>key(m.name)===key(name)&&m.discordUserId!==authorId);
+  if(conflict) {
+    submitPending(state,message,proposed,utc,providedCountry,
       'name_already_linked_to_another_discord_account');
     return;
   }
-  const next = {discordUserId, name, status, utc, country,
-    messageId:String(message.id), updatedAt:message.timestamp || new Date().toISOString()};
-  if (old) Object.assign(old,next);
-  else state.members.push(next);
-  state.pending = state.pending.filter(p => p.discordUserId !== discordUserId);
+  if(!providedCountry && isMissing(old?.country)&&isMissing(knownMember?.country)) {
+    submitPending(state,message,proposed,utc,providedCountry,'country_missing');
+    return;
+  }
+  const country=providedCountry||old?.country||knownMember?.country||'';
+  const next={discordUserId:authorId,name,status,utc,country,
+    messageId:String(message.id),updatedAt:message.timestamp||new Date().toISOString(),
+    source:'self'};
+  if(old)Object.assign(old,next);else state.members.push(next);
+  state.pending=state.pending.filter(p=>p.discordUserId!==authorId);
 }
 
 function maxId(a, b) {

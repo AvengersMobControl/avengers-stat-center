@@ -1,53 +1,57 @@
-# Discord UTC → AVENGERS roster
+# Discord UTC → AVENGERS / AV-2 roster
 
-This is a separate, opt-in workflow. **Event-result screenshot channels remain read-only and unchanged.** Once configured, a GitHub Action checks one authorized Discord text channel approximately every 10 minutes and publishes UTC updates for the Stat Center roster.
+**Selected channel:** `1422151197317529600` (clan-leader supplied). The ID is pinned in the [scheduled workflow](../.github/workflows/discord-utc-roster.yml). This feature is **not live on the public Stat Center** until production prerequisites below are verified.
 
-## Before enabling
+## Submission rules
 
-1. **UTC channel selected by the clan leader:** Discord channel ID `1422151197317529600`. The numeric channel ID is fixed in the scheduled workflow. Confirm the bot is in the same server and can read this channel.
-2. Ensure the existing AVENGERS bot can **View Channel** and **Read Message History** in that channel. Enable **Message Content Intent** for the bot application if required, so it can actually read UTC text.
-3. GitHub repository **Settings → Secrets and variables → Actions**:
-   - Set **secret** `DISCORD_BOT_TOKEN` to the existing bot token (never commit or share the token in chat).
-   - Set **secret** `DISCORD_UTC_STATE_KEY` to an independently generated random string of at least 32 characters. It encrypts private sync state before committing to the public repository. Preserve this key securely: losing it prevents decrypting the existing checkpoint/identity links.
-   - The channel ID **1422151197317529600** is now pinned in `.github/workflows/discord-utc-roster.yml` and does not require a GitHub variable. Change it only after the clan leader approves a different channel.
-   - Set **variable** `DISCORD_UTC_TRUSTED_ROLE_IDS` to the comma-separated numeric IDs of roles authorized to onboard new clan members through this channel. Posts by members lacking those roles enter private review and cannot update the public roster.
-   - Optional **secret** `DISCORD_UTC_VERIFIED_LINKS` is a JSON object mapping **verified** Discord user IDs to existing in-game names (for example, `{"123456789012345678":"AV-INTEN"}`). This must be maintained by a council member after confirming the identity; never publish actual IDs in a repository file.
-   - Optionally set **variable** `DISCORD_UTC_DEFAULT_CLAN` to `AVENGERS` or `AV-2` **only if** the channel is dedicated to that clan. For a mixed-clan channel, leave this blank and have new members state their clan.
-4. After merging this feature and configuring secrets/roles, use GitHub Actions → **Sync Discord UTC roster** → Run workflow. The first run checkpoints existing channel history; if the channel is empty, the first future post is processed. To scan existing history intentionally, select **backfill**. Never bulk-import unknown nicknames without council identity verification.
+There are two ways to log a member's UTC and country:
 
-## Member posts
+1. **The member posts for themselves:** Anyone in the channel, without a special Discord role, can submit their **first qualifying** post containing a valid UTC offset and country. The first valid entry is linked to that Discord author's stable ID. Later self-posts do **not** automatically rewrite it; corrections should be reviewed. An existing current-roster member is matched through their Discord server nickname against a recognized game name (or via a privately verified ID→player link); contradictory identity claims go to private review. A new member supplies `Name:` and `Clan:` explicitly, unless the channel has a leader-approved single-clan default. A valid country is required when no country is already logged.
+2. **A Council member posts for someone tagged:** A Discord user possessing a **configured Council role ID** can write a UTC/location message that tags **exactly one member**. The bot uses the **mentioned account's** Discord user ID and server nickname, not the councillor's ID/name or a posted `Name:` override. It only applies to a known **active** AVENGERS / AV-2 member and **only fills fields that are missing** from the stored roster/earlier Discord updates. A complete UTC + country record is untouched. Unknown/ambiguous/inactive targets and posts lacking the configured Council role enter private review. Council messages cannot create arbitrary new members or change a member's established clan.
 
-Recommended new-member example:
+Examples:
 
+```text
+UTC-5, USA
 ```
+
+```text
 Name: AV-NewRecruit
 Clan: AV-2
 UTC+5:30
 Country: India
 ```
 
-For **new players**, the first message must explicitly identify the game name (such as `Name: AV-NewRecruit`) and include a clan, or use a channel with a verified single-clan default. The Discord nickname alone is not enough to create a roster record. After linking, later posts such as `UTC+2, Germany` update the same account without changing its game name. The bot accepts `UTC-5`, `UTC+5.5`, `UTC+5:30`, `UTC+5.75`, or a signed number like `+2` at the start of a message.
+```text
+@AV-DrDetroit UTC-6, USA
+```
 
-**A UTC offset does not determine country.** When country is not provided, a new member's Country field stays blank and can be filled by a later post. Existing country information is retained. Time Zone Group (TZG) is **not** inferred from UTC because the clan has its own TZG grouping.
+The last example is accepted **only if posted by a Council-role member** and the tagged account's roster entry still lacks the corresponding data. A member's own first qualifying submission takes precedence over a prior Council proxy entry, but repeat self-posts do not silently rewrite a completed self report.
 
-## Safeguards
+UTC is not sufficient evidence to infer country; `UTC+2, Germany` and `Country: Germany` are accepted. TZG (the clan's time-zone group) is **never calculated from UTC**. Existing State, TZG, clan membership, and historical rewards remain unchanged.
 
-- The existing roster stays authoritative for membership status and historical stats.
-- Only trusted-role Discord members can submit an update. A new in-game name can be added automatically when an explicit name and clan are provided and no existing identity matches.
-- **Existing** in-game identities are not assigned by nickname or posted name alone. Link their Discord accounts via the private verified-links secret after identity review; until then, posts remain in encrypted pending state.
-- Updates are internally keyed by stable Discord user ID after the first approved link, not only by nickname. The public repository stores that state **encrypted**, not plaintext.
-- Explicitly known player aliases resolve to canonical names; e.g. `AV-Zolika.x.Kira` uses the existing roster record.
-- A name collision, unauthorized role, unknown clan, or attempt to claim an existing in-game account goes into encrypted pending-review state, not silently merged.
-- An unknown new member without a clear clan goes into encrypted pending-review state rather than being added to the wrong clan.
-- The GitHub Action updates only `discord-utc-roster.json` and `discord-utc-roster.js`. The website merges that overlay at load time; sparks, stars, ratings, events, and existing TZG/state are not overwritten.
-- GitHub Actions scheduling can be delayed. This is periodic polling, not instantaneous Discord Gateway event handling.
+## Setup before activating
 
-## Maintainer notes
+1. Verify the AVENGERS bot has **View Channel**, **Read Message History**, and required message-content access to channel `1422151197317529600`.
+2. In GitHub repository **Settings → Secrets and variables → Actions**, configure:
+   - **Secret** `DISCORD_BOT_TOKEN`: the existing AVENGERS bot token. Never publish it.
+   - **Secret** `DISCORD_UTC_STATE_KEY`: an independently generated string ≥32 characters. Losing or rotating it without migrating state prevents decryption.
+   - **Variable** `DISCORD_UTC_COUNCIL_ROLE_IDS`: comma-separated numeric ID(s) of the actual Council Discord role(s). Required **only for Council-tagged posts**. Do not use role display names as authority.
+   - Optional **secret** `DISCORD_UTC_VERIFIED_LINKS`: council-verified JSON object mapping Discord IDs to existing canonical game names. Never publish real IDs in source control.
+   - Optional **variable** `DISCORD_UTC_DEFAULT_CLAN`: `AVENGERS` or `AV-2` only if this is an exclusively single-clan channel. For the mixed-clan channel, leave blank and require a new recruit to specify their clan.
+3. Merge the feature branch into `main` **only after** reconciling other production changes and testing authorized first posts, Council proxy posts, spoofed claims, and a working live-to-browser roster update. Until then, keep [PR #1](https://github.com/AvengersMobControl/avengers-stat-center/pull/1) in draft.
+4. The first configured poll checkpoints old channel messages without importing them. It will process **future** posts. To intentionally ingest historical posts, a maintainer must opt into `backfill` via manual workflow dispatch.
 
-Code: `scripts/sync-discord-utc.cjs`. Tests: `node --test scripts/sync-discord-utc.test.cjs`. The Action workflow is `.github/workflows/discord-utc-roster.yml`. No credentials are stored in repository files. A subsequent change can expose pending entries to admins for review in the website.
+The GitHub Actions schedule polls roughly every 10 minutes (GitHub scheduling can delay). This is **not** a Discord real-time event listener.
 
-## Privacy and release gate
+## Safety and source handling
 
-`discord-utc-roster.json` contains AES-256-GCM-encrypted checkpoint, Discord identity links, and pending-review messages. Only the allowlisted `name`, `status`, `utc`, and `country` fields appear in public `discord-utc-roster.js`. The existing blank bootstrap JSON is accepted, but any nonempty plaintext state fails closed and requires a reviewed migration. Secrets must never be stored in the repository.
+- The October 15 screenshot + leader-corrected member roster governs status. No unverified posts may change AVENGERS/AV-2 membership of a known account.
+- A missing country remains unknown, not inferred from UTC or filled with a guessed country.
+- An encrypted private-state file holds Discord IDs, message checkpoints, Council-submitted identity links, and pending reviews. Only name, status, UTC, and disclosed country are published in `discord-utc-roster.js`.
+- Pending conflicts never rewrite public roster data. A Council role is required for proxy submissions even if a Discord user types another player's name.
+- A Council proxy only fills **empty** fields, never overwrites a previously logged location or UTC.
+- The event screenshot channels and historical statistics remain untouched. Do not commit raw Discord IDs, bot tokens or secrets into the public repository.
+- Incomplete October 13 PF1 event leaderboards stay incomplete; obtaining them is not part of this feature.
 
-**Current status:** October 15 roster lookup, dynamic roster preservation, privacy encryption, and backlog paging have automated tests. Production release still requires configuring the trusted-role IDs, bot token, channel ID and encryption key, verifying any existing player links, and confirming a real end-to-end post appears on the site. Unknown/conflicting identity claims remain pending until council review. See GitHub issue #3.
+Code: [`scripts/sync-discord-utc.cjs`](../scripts/sync-discord-utc.cjs). Tests: `node --test scripts/sync-discord-utc.test.cjs`. Work tracker: [issue #3](https://github.com/AvengersMobControl/avengers-stat-center/issues/3).

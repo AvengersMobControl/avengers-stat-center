@@ -37,7 +37,7 @@ jobs:
           # Public, council-supplied UTC roster channel; not a secret.
           DISCORD_UTC_CHANNEL_ID: '1422151197317529600'
           DISCORD_UTC_DEFAULT_CLAN: ${{ vars.DISCORD_UTC_DEFAULT_CLAN }}
-          DISCORD_UTC_TRUSTED_ROLE_IDS: ${{ vars.DISCORD_UTC_TRUSTED_ROLE_IDS }}
+          DISCORD_UTC_COUNCIL_ROLE_IDS: ${{ vars.DISCORD_UTC_COUNCIL_ROLE_IDS }}
           DISCORD_UTC_VERIFIED_LINKS: ${{ secrets.DISCORD_UTC_VERIFIED_LINKS }}
           DISCORD_UTC_BACKFILL: ${{ inputs.backfill }}
         run: node scripts/sync-discord-utc.cjs

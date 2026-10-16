@@ -60,10 +60,11 @@ Total Sparks   = Logged Sparks + Screenshot Gap
 6. [#10 Kraken route optimization](https://github.com/AvengersMobControl/avengers-stat-center/issues/10), [#11 video study](https://github.com/AvengersMobControl/avengers-stat-center/issues/11), [#12 player profiles/recruiting/guest passes](https://github.com/AvengersMobControl/avengers-stat-center/issues/12), after foundations.
 7. **PAUSED** [#3 Discord UTC/country](https://github.com/AvengersMobControl/avengers-stat-center/issues/3). **CLOSED** [#5 missing Oct 13 PF1 main lobby](https://github.com/AvengersMobControl/avengers-stat-center/issues/5).
 
-## Active #42 implementation checkpoint (October 16)
-- Branch `feat/sitewide-event-projection` adds a **staging-only** revisioned ledger/projection core; not loaded by production pages. 14 new fixtures and 38 combined tests pass; current 100-member accounting audit remains green.
-- [Migration dependency map, schema and blockers](EVENT_PROJECTION.md) is the exact continuation entry point. Read-only `scripts/audit-event-projection-migration.cjs` found 24 Space stored PB disagreements, six July 30 event/history conflicts, a Chuck alias cycle and missing explicit historical clan fields on 1,767 Piggy rows. Do not silently select a source or use current roster clan.
-- Next: resolve identity/source evidence, migrate ledger, wire all consumers and outputs, stage/version assets and verify deployed browser behavior. #42 remains release-blocking; no unattended #4, no UTC activation.
+## Active #42 implementation checkpoint (October 16 continuation)
+- PR #44 shipped the staging core. Branch `feat/connect-event-projection` now connects published data through `scripts/build-site.cjs`: one projected synchronous bundle, existing page adapters, shared Council/league/event-summary exports and content-addressed assets. Pages and Vercel build the same `dist` artifact; Pages gates projection and browser checks before upload.
+- [EVENT_PROJECTION.md](EVENT_PROJECTION.md) records the source review, current architecture, reviewed-update CLI, verification scope and remaining #4 work. The original six July 30 conflicts were resolved against final screenshots (Space review PDF `(2)`, pages 19–20); obsolete October 2 rescaling and Chuck alias cycle are fixed. Saber history-only 49.8 stays in review. An ambiguous October Frenchie source retains 18,100 AV-2 Sparks as unassigned, without merging Frenchie2 and Frenchie(-4).
+- Existing 48/52 current rosters are preserved. Unknown historical clans/payouts remain unknown. Historical Kraken estimates refresh from revised dated clan evidence; source partial coverage is exported explicitly.
+- #4 screenshot acquisition/validation/scheduling is still unfinished and OFF; UTC #3 remains paused. Check #42 comments for exact CI, merge SHA, deployment and production browser evidence before claiming live verification.
 
 ## Critical recently merged work
 - [PR #32](https://github.com/AvengersMobControl/avengers-stat-center/pull/32): Council six-period conservative observed-result audit (does not assume missing attendance equals a violation).

@@ -90,3 +90,15 @@ test('projection is deterministic, version covers membership and snapshots, sour
   assert.notEqual(a.version,project(l,{...options,snapshots:{A:501}}).version);
   assert.notEqual(a.version,project(l,{...options,members:members.map(m=>({...m,status:'Inactive'}))}).version);
 });
+test('unknown historical clan and unassigned reward stay explicit without fabricating a member',()=>{
+  const e=ev('kraken','unknown','2026-10-11',1,'AV-2',{rows:[
+    {player:null,sourceIdentity:'source-rank-20',clan:'AV-2',score:36.2,sparks:18100,stars:null},
+    {player:'A',clan:null,clanAttribution:'unknown',score:10,sparks:null,stars:null}
+  ]});
+  const p=project(put(empty(),e),options);
+  assert.equal(p.clans['AV-2'].sparks,18100);
+  assert.equal(p.coverage.unassignedRows.length,1);
+  assert.equal(p.coverage.unknownClanRows,1);
+  assert(!p.people.some(m=>m.name===null));
+  assert.equal(person(p).earned.unknownSparks,1);
+});

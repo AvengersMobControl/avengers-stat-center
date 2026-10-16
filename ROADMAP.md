@@ -23,8 +23,8 @@
 | **PAUSED** | [#3 Discord UTC/country ingestion](https://github.com/AvengersMobControl/avengers-stat-center/issues/3) | Implemented encrypted sync and tested bot read; **live submission blocked by identity validation; user explicitly paused**. Monday/Friday schedule OFF. Don't restart without permission. |
 | **CLOSED** | [#5 Missing Oct 13 PF1 main leaderboard](https://github.com/AvengersMobControl/avengers-stat-center/issues/5) | **Not planned**: user confirmed unavailable. Preserve partial validated entries; do not chase or guess. |
 
-## #42 implementation checkpoint — October 16
-Staging projection core and regression fixtures are on `feat/sitewide-event-projection`, **not connected to production**. See [EVENT_PROJECTION.md](docs/EVENT_PROJECTION.md) for the dependency map, exact legacy disagreements and migration order. 14 new / 38 combined tests plus the existing 100-member audit pass locally. Next is evidence-backed legacy migration and consumer adapters; full publication/graphics/browser acceptance remains outstanding.
+## #42 connected build checkpoint — October 16
+`feat/connect-event-projection` connects published data to the shared projection: migration/revision overlays, synchronous page bundle, histories/PBs/ratings/roster/Kraken/league/achievement/recap adapters, versioned exports and publication/browser gates. See [EVENT_PROJECTION.md](docs/EVENT_PROJECTION.md) for verified source corrections and explicit unknown/unassigned records. Check #42 for exact merged-SHA deployment/browser evidence. #4 remains unfinished: screenshot validation/acquisition, dedup, reviewed source writes and pull scheduling are still OFF.
 
 ## Current accepted accounting requirements
 

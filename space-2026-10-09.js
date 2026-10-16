@@ -119,7 +119,7 @@
       }
     }
     if(m){
-      m.spacePB=Math.max(Number(m.spacePB)||0,best);
+      m.spacePB=best;
       const ratingHist=hist.filter(x=>String(x.date||'')>=RATING_START);
       m.spaceAvg=ratingHist.length?ratingHist.reduce((sum,x)=>sum+(Number(x.yearsB)||0),0)/ratingHist.length:0;
     }

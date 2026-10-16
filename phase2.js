@@ -355,7 +355,7 @@
       return {
         key:m.key,
         label:m.label||m.key,
-        date:'2026-'+(monthNo[key]||'01')+'-01',
+        date:m.date||'2026-'+(monthNo[key]||'01')+'-01',
         value:v
       };
     }).filter(function(x){return x.value>0;});

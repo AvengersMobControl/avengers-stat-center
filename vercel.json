@@ -35,5 +35,7 @@
         }
       ]
     }
-  ]
+  ],
+  "buildCommand": "node scripts/build-site.cjs",
+  "outputDirectory": "dist"
 }

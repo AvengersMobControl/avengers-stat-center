@@ -49,9 +49,11 @@
 
   // Historical cohorts are event-time memberships, never current roster status.
   const septemberAV2=new Set(['av-mendoria','av-neez','av-excalibur']);
-  const eventClanFor=(key,name)=>key==='sept'&&septemberAV2.has(String(name||'').trim().toLowerCase())?'AV-2':'AVENGERS';
-  const eventSparksFor=(p,key)=>key==='oct' ? Number(p.octSparks)||0 :
-    (Number(p[key])||0)*(eventClanFor(key,p.name)==='AV-2'?500:750);
+  const legacyEventClanFor=(key,name)=>key==='sept'&&septemberAV2.has(String(name||'').trim().toLowerCase())?'AV-2':'AVENGERS';
+  const projectionRow=(key,name)=>window.AVENGERS_EVENT_PROJECTION?.events.find(e=>e.id==='kraken|'+key&&e.status!=='revoked')?.rows.find(r=>r.player===name);
+  const eventClanFor=(key,name)=>window.AVENGERS_EVENT_PROJECTION?(projectionRow(key,name)?.clan||'Unknown'):legacyEventClanFor(key,name);
+  const eventSparksFor=(p,key)=>key==='oct' ? Number(p.octSparks)||0 : window.AVENGERS_EVENT_PROJECTION?
+    Number(projectionRow(key,p.name)?.sparks)||0:(Number(p[key])||0)*(eventClanFor(key,p.name)==='AV-2'?500:750);
   const eventClanBadge=clan=>'<span class="status '+(clan==='AV-2'?'av2':'active')+'">'+esc(clan)+'</span>';
 
   function statusBadge(s,name=''){

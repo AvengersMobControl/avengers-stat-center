@@ -82,6 +82,7 @@
     }
   }
   function build(){
+    if(window.AVENGERS_EVENT_RELEASE)return window.AVENGERS_EVENT_RELEASE.leagues;
     const periods=LEAGUES.map(x=>({...x,members:new Map(),events:new Set(),eventMembers:new Set(),lastKnownClan:new Map(),gaps:0,estimates:0}));
     const which=date=>periods.find(p=>within(date,p));
     for(const kind of ['piggy','space']){

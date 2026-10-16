@@ -1565,6 +1565,9 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       case 'spacePB':return fmtB(r.spacePB);
       case 'krakenPB':return fmtNum(r.krakenPB,1);
       case 'unloggedStars':return r.unloggedStars==null?missing:fmtNum(r.unloggedStars);
+      case 'totalCombinedSparks':return r.sparkReconciliationDelta!=null&&r.sparkReconciliationDelta<0
+        ?`<span title="Needs review: tracked Sparks exceed the ${escapeHtml(r.sparkSnapshotDate||'undated')} snapshot by ${fmtNum(-r.sparkReconciliationDelta)}. Snapshot dates and transferred members may explain this. This is NOT a confirmed duplicate.">${fmtNum(r.totalCombinedSparks)} <span aria-label="Snapshot discrepancy" class="roster-reconciliation-warning">⚠</span></span>`
+        :fmtNum(r.totalCombinedSparks);
       case 'knownStars':return r.allTimeStars==null
         ?`<span title="Known logged Stars only; awaiting all-time roster screenshots">${Number(r.knownStars)>0?'≥'+fmtNum(r.knownStars):'—'}</span>`
         :`<span title="All-time Stars screenshot, reconciled with known tracked Stars">${fmtNum(r.knownStars)}</span>`;
@@ -1645,7 +1648,11 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       const extraSparks=window.AVENGERS_ROSTER_SPARKS_LEDGER?.forMember(canonical)||{flashSparks:0,octKrakenSparks:0};
       const logged=Math.max(0,Number(m.totalSparks)||0)+extraSparks.flashSparks+extraSparks.octKrakenSparks+(extraSparks.juneKrakenSparks||0);
       const snapshotTotal=snapshot?Math.max(0,Number(snapshot.allTimeSparks)||0):null;
-      const unlogged=snapshotTotal==null?0:Math.max(0,snapshotTotal-logged);
+      const sparkReconciliationDelta=snapshotTotal==null?null:snapshotTotal-logged;
+      const unlogged=sparkReconciliationDelta==null?0:Math.max(0,sparkReconciliationDelta);
+      const sparkSnapshotDate=snapshot
+        ?(snap.currentAv2||[]).includes(snapshot)?snap.av2Date||'2026-10-15':snap.date||'2026-09-29'
+        :null;
       const starSnapshot=starMap.get(canonical)||starMap.get(name);
       const starScreenshotTotal=starSnapshot?.allTimeStars==null?null:Math.max(0,Number(starSnapshot.allTimeStars)||0);
       const starLogged=Math.max(0,Number(eventBreakdown.loggedStars)||0);
@@ -1656,6 +1663,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         loggedSparks:logged,flashSparks:extraSparks.flashSparks,latestKrakenSparks:extraSparks.octKrakenSparks,
         reconstructedJuneKrakenSparks:extraSparks.juneKrakenSparks||0,
         unloggedSparks:unlogged,totalCombinedSparks:logged+unlogged,snapshotTotal,
+        sparkSnapshotDate,sparkReconciliationDelta,
         state:tz?.state||'',location:tz?.location||'',utcOffset:tz?.utc==null?null:Number(tz.utc),
         utcLabel:tz?.utcLabel||'',timeZoneGroup:tz?.timeZoneGroup||'',
         country:String(tz?.location||'').replace(/^USA[- ].*$/i,'USA').replace(/^Canada\s*-.*/i,'Canada').trim(),
@@ -1747,6 +1755,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const loggedTotal=rows.reduce((s,r)=>s+r.loggedSparks,0);
     const unloggedTotal=rows.reduce((s,r)=>s+r.unloggedSparks,0);
     const combinedTotal=rows.reduce((s,r)=>s+r.totalCombinedSparks,0);
+    const sparkComparisonWarnings=rows.filter(r=>r.sparkReconciliationDelta!=null&&r.sparkReconciliationDelta<0).length;
+    const missingSparkSnapshots=rows.filter(r=>r.snapshotTotal==null).length;
     const inGameSparksTotal=target==='kraken'?rows.reduce((s,r)=>s+(Number(r.krakenRosterSparks)||0),0):0;
 
     const zoneMap=new Map();
@@ -1822,7 +1832,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       <div class="records-note"><strong>Star totals:</strong> For screenshot members, Total Stars comes from Oct 15 in-game all-time totals. DrDetroit and Starred were added to AV-2 separately by the clan leader; their new all-time Sparks and Stars are not available, so any displayed total is only a tracked minimum (≥). Logged Stars include recorded Piggy, Space and Flash rewards (Kraken Stars are not recorded); Unlogged Stars is the nonnegative difference from screenshot totals. Event counts represent recorded Piggy, Space, Flash and Kraken participation.
       </div>
       <div class="records-note"><strong>Sparks reconciliation:</strong>
-        Logged Sparks includes Piggy, Space, Flash, and Kraken results. Missing June 2026 Kraken rewards for verified AVENGERS event participants are reconstructed from recorded damage at 750 Sparks per million and included once. Hover over Logged Sparks to see Flash, October Kraken, and June Kraken additions. Unlogged is the positive remainder against the Sep 29 all-time screenshot; it cannot be negative.
+        Logged Sparks includes Piggy, Space, Flash, and Kraken results. Some June 2026 Kraken rewards are reconstructed from damage instead of directly verified payouts. Snapshots are dated September 29 for AVENGERS and October 15 for AV-2; transfer-related in-game values may not be comparable with lifetime rewards. Unlogged is floored at zero, but a negative raw difference is <strong>not</strong> considered reconciled.
+        <strong>${sparkComparisonWarnings} snapshot comparison flags</strong> and <strong>${missingSparkSnapshots} missing Spark snapshots</strong> in this view. A ⚠ beside Total Sparks identifies a tracked total larger than the available screenshot; hover for details. Review discrepancies against the original event records before correcting any totals.
       </div>
       ${rosterGroupedTable(label,rows,sortDef,sortDir,sortHeader,playerNameCell,state.rosterGroups,target)}
     `;

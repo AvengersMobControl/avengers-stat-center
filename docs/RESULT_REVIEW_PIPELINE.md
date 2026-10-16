@@ -60,3 +60,29 @@ The sample name, date and hash are fixtures. Real candidates MUST compute SHA-25
 ## Still outstanding for issue #4
 
 A real end-to-end authorized retrieval, human final-vs-progress verification, source-image hashing, secure multi-image extraction, approval, and deployment has NOT been demonstrated by this work. Automated ingestion remains OFF. This module must not be described as image recognition or production-ready unattended import.
+
+
+## Capped Discord result-channel pagination (October 16 verified)
+
+**Only authorized manual read-only pulls:** the connected results viewer accepts `max_messages` up to 100 but returns at most **eight images** per call. Passing `max_messages=100` alone is not evidence that all screenshots were retrieved. The cutoff can fall **inside a Discord message** with multiple attachments.
+
+Use `scripts/audit-result-pagination.cjs` with a local, private JSON manifest of *metadata* for the sequence of authorized connector pulls. The manifest has `schemaVersion:1`, `channelKey`, `windowStart`, `windowEnd`, `pages`. Each page includes its exact `request: {maxImages, maxMessages, beforeMessageId?}`, `scannedMessages`, `imagePostsReturned`, `imageAttachmentsReturned` and `candidates: [{messageId,timestamp,attachments:[{id}]}]`. Take all counts and IDs directly from the connector; **never make them up**. Keep real Discord IDs and any attachment URLs in local/private review data, **never** in GitHub or deployed site bundles. Do not include raw message text, usernames, signed image URLs or file bytes in the audit manifest.
+
+To page backward safely:
+1. Begin with the newest page (no `beforeMessageId`) and at most eight images.
+2. If a page fills the eight-image cap, set `beforeMessageId` on the next pull to the **second-oldest returned message**, so the oldest returned message is fetched again. That protects against a final message being truncated at the cap. If the page contains only **one** message at the cap, **stop**: the connector cannot prove all attachments in that message were supplied. Do not invent a cursor.
+3. If the page is below cap and still within the target date, request older results with `beforeMessageId` set to its **oldest returned message**. If no messages appear, coverage is **blocked**, not proven.
+4. Stop as `window-covered` only after an uninterrupted, validated sequence includes an image from a date **strictly before** the earliest event date. The auditor checks cursor continuity, chronological order, overlap, duplicate attachment IDs and consistency. If it returns `needs-more-pages`, continue from its private `nextBeforeMessageId`; if `blocked`, resolve the missing evidence rather than publishing.
+5. Coverage of the post window is **not** final-image classification, actual-byte integrity verification, group/lobby completeness or leader approval. `reviewAllowed` means only that the enumerated image dates are ready for visual classification.
+
+**Read-only live observation, Oct 16 Space channel:** Three paginated calls with the overlap rule returned 8, 8 and 8 images respectively; repeated boundary images were deduplicated. The third page reached October 15 and October 9 captures, proving the October 16 date boundary was passed. The first page alone (eight images) was not sufficient. The provenance of **original source JPEG bytes remains unverified** from this viewing connector.
+
+### Original attachment SHA-256
+
+When a separately authorized workflow actually retrieves the **original image bytes** (not a transcoded ChatGPT/connector WebP preview), run:
+
+    node scripts/hash-original-image.cjs source-image.jpg --content-type=image/jpeg --attest-original
+
+The command requires an operator's **explicit original-byte attestation**, compares image signature against the claimed content type, and outputs SHA-256 of the exact file contents, byte length and content type. It does not download a URL, authenticate Discord provenance or prove the attestation independently. Verify the source against the authorized attachment ID before using the digest in a candidate; do **not** replace the digest with SHA-256 of a message ID, signed URL, WebP preview or imagined JPEG. Source files and signed URLs stay outside the repository. The existing `assemble-result-review.cjs` still requires a proper image-byte digest and `approved:false` on all staged candidates.
+
+**Release boundary unchanged:** no unattended fetch, score import, Discord posting or approval; current already-approved scores remain authoritative. The first genuinely *new* parsed event must be explicitly reviewed and authorized, then rebuilt and verified everywhere on the public site before task #4 can be closed.

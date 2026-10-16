@@ -19,7 +19,7 @@ test('reads country only when supplied rather than guessing it from UTC', () => 
   assert.equal(countryOf('UTC +5:30\nCountry: India'), 'India');
   assert.equal(countryOf('UTC-6\nLocation: USA'), 'USA');
 });
-const COUNCIL_ROLE='120000000000000001';
+const COUNCIL_ROLE='1427090799052587038';
 const noRoles={councilRoleIds:[],verifiedLinks:{}};
 const council={councilRoleIds:[COUNCIL_ROLE],verifiedLinks:{}};
 const msg=(id, content, name, opts={})=>({
@@ -324,4 +324,12 @@ test('empty UTC channel checkpoint processes its first later submission', () => 
   const backfill={lastMessageId:null};
   assert.equal(initializeCheckpoint(backfill,[{id:'101'}],'true'),false);
   assert.equal(backfill.lastMessageId,null);
+});
+
+test('the Council role configured in GitHub Actions matches the leader-confirmed role',()=>{
+  const fs=require('node:fs'),path=require('node:path');
+  const workflow=fs.readFileSync(path.resolve(__dirname,'../.github/workflows/discord-utc-roster.yml'),'utf8');
+  assert.match(workflow,/DISCORD_UTC_CHANNEL_ID:\s*'1422151197317529600'/);
+  assert.match(workflow,/DISCORD_UTC_COUNCIL_ROLE_IDS:\s*'1427090799052587038'/);
+  assert.equal(COUNCIL_ROLE,'1427090799052587038');
 });

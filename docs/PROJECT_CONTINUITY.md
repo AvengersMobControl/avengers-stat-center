@@ -92,3 +92,8 @@ September 18 investigation: retained group 6 has four positive-distance records 
 `python3 scripts/render-space-summary.py <release.json> <output.png>` reproduces the approved navy/cyan/purple Space clan graphic with prominent old/new/% PBs, top ten full reward/share/effort columns, first-tracked entries and a clearly described effort shoutout panel. Do not use first-tracked as proof of first-ever in-game racing.
 
 October 16 publication QA: latest Space preview, event result tables and historical PB/first-tracked lists must filter by event-time clan, never current roster status. Keep current status as an informational column. Browser assertions require all 44 AVENGERS and 22 AV-2 approved Oct 16 rows.
+
+## October 16: Records dates and partial pot coverage correction
+Records page had retained a display-only Oct 2 division by 0.6666 when choosing Space PB dates, despite canonical Oct 2 scores already having the approved 1.5 multiplier. Remove that display adjustment. Derive record date from the same actual unmodified score as the PB, earliest date for equal scores: HarryBallsagna 549.9B is August 30; JAMO 439.3B is October 9. Do not change scores to fit a date.
+
+Partial player coverage does not mean lobby pots are unknown. Show a pot calculated from each represented lobby's known reward/share when every represented lobby has a usable anchor, mark estimates with ≈ and retain partial coverage notes. A truly reward-missing lobby still prevents a complete total (Sept 18 AV lobby 6). Leader explicitly says that Sept 18 screenshot will not be supplied: keep unknown, do not schedule further retrieval. Pot CSV exports include estimate flags/coverage and obey selected event-time clan.

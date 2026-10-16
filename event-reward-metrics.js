@@ -15,7 +15,28 @@
     const sparks=paired.reduce((s,r)=>s+r.sparks,0),effort=paired.reduce((s,r)=>s+r[scoreKey],0);
     return {value:efficiency(sparks,effort),sparks,effort,paired:paired.length,missing:rows.length-paired.length};
   }
-  const api={efficiency,reconcile,summarize};
+  // Use the actual stored score for both a record and its date. Imported
+  // corrections are already applied; display code must not adjust them again.
+  function record(rows,key='score'){
+    const valid=rows.filter(r=>known(r[key])&&r[key]>0).slice()
+      .sort((a,b)=>b[key]-a[key]||String(a.date||'').localeCompare(String(b.date||'')));
+    return valid.length?{value:valid[0][key],date:valid[0].date||null}:null;
+  }
+  function potTotals(rows){
+    const groups=new Map();
+    for(const r of rows){const k=String(r.group??r.metadata?.group??'legacy');if(!groups.has(k))groups.set(k,[]);groups.get(k).push(r);}
+    const pots=[...groups.values()].map(rs=>{
+      const candidates=rs.map(r=>{let share=r.share??r.metadata?.share;if(share>=1)share/=100;
+        if(!(share>0))share=({1:.25,2:.20,3:.18,4:.12,5:.10,6:.08,7:.04,8:.02,9:.01})[r.rank??r.metadata?.rank]||0;
+        return {r,share:typeof share==='number'?share:0};}).filter(x=>x.share>0).sort((a,b)=>b.share-a.share);
+      const infer=key=>{const x=candidates.find(x=>known(x.r[key])&&x.r[key]>0);return x?x.r[key]/x.share:null;};
+      return {stars:infer('stars'),sparks:infer('sparks')};
+    });
+    const sum=key=>pots.length&&pots.every(p=>p[key]!==null)?pots.reduce((s,p)=>s+p[key],0):null;
+    return {groups:groups.size,potStars:sum('stars'),potSparks:sum('sparks'),
+      coveredStarGroups:pots.filter(p=>p.stars!==null).length,coveredSparkGroups:pots.filter(p=>p.sparks!==null).length};
+  }
+  const api={efficiency,reconcile,summarize,record,potTotals};
   if(typeof module==='object'&&module.exports)module.exports=api;
   else root.AVENGERS_REWARD_METRICS=api;
 })(typeof window==='object'?window:globalThis);

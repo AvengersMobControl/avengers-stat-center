@@ -69,6 +69,12 @@ test('complete staged site uses one projection bundle, immutable script/CSS refe
     for(const file of Object.values(r.manifest.exports))assert.equal(JSON.parse(fs.readFileSync(path.join(dest,file))).version,r.manifest.version);
     assert.equal(r.manifest.version,BASE.projection.version);
     assert.equal(r.manifest.unattendedIngestionEnabled,false);
+    const commit=(process.env.GITHUB_SHA||process.env.VERCEL_GIT_COMMIT_SHA||'');
+    if(/^[0-9a-f]{40}$/i.test(commit)){
+      assert.equal(r.manifest.sourceCommit,commit.toLowerCase());
+      assert(html.includes('data-release-commit="'+commit.toLowerCase()+'"'));
+    }else assert.equal(r.manifest.sourceCommit,null);
+
   }finally{fs.rmSync(dest,{recursive:true,force:true});}
 });
 test('current roster and every materialized PB/reward agree with independent canonical source sums',()=>{

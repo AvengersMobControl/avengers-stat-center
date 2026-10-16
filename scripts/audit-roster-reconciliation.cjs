@@ -9,6 +9,15 @@ const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const tags = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)];
+// Compile all inline and local external browser JavaScript, including UI code
+// not executed by the headless data replay. Catch malformed template strings.
+for (const [index, match] of tags.entries()) {
+  const source = (match[1].match(/\bsrc="([^"]+)"/) || [])[1];
+  const code = source
+    ? fs.readFileSync(path.join(root, source), 'utf8')
+    : match[2];
+  new vm.Script(code, {filename: source || 'index.html:inline:' + index});
+}
 const sandbox = {window: {}, console};
 vm.createContext(sandbox);
 const loaded = [];

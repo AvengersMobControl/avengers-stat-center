@@ -20,12 +20,12 @@ test('reads country only when supplied rather than guessing it from UTC', () => 
 });
 test('preserves known member clan and canonical name', () => {
   const known = knownRoster();
-  assert.equal(known.get('av-zolika.x.kira')?.name, 'AV-ZolikaLoveKira');
+  assert.equal(known.get('av-zolika.x.kira')?.name, 'AV-Zolika.x.Kira');
   const state = {members: [],pending: []};
   reconcile(state, {id:'101',timestamp:'2026-10-15T12:00:00Z',
     content:'UTC+2, Netherlands',author:{id:'15',username:'x'},
     member:{nick:'AV-Zolika.x.Kira'}}, known, '');
-  assert.equal(state.members[0].name, 'AV-ZolikaLoveKira');
+  assert.equal(state.members[0].name, 'AV-Zolika.x.Kira');
   assert.equal(state.members[0].status, 'Active');
   assert.equal(state.members[0].country, 'Netherlands');
 });
@@ -87,4 +87,17 @@ test('browser projection includes approved public fields only', () => {
   assert.equal(published.includes('discordUserId'),false);
   assert.equal(published.includes('messageId'),false);
   assert.equal(published.includes('pending'),false);
+});
+
+test('October 15 roster overrides stale October 1 clan statuses', () => {
+  const known = knownRoster();
+  assert.equal(known.get('av-eventhorizon')?.status, 'AV2');
+  assert.equal(known.get('av-drdetroit')?.status, 'AV2');
+  assert.equal(known.get('av-starred')?.status, 'AV2');
+  assert.equal(known.get('av-bubba0816')?.status, 'Inactive');
+  assert.equal(known.get('av-frenchie2')?.status, 'AV2');
+  assert.equal(known.get('av-frenchie(-4)')?.status, 'AV2');
+  assert.notEqual(known.get('av-frenchie2'), known.get('av-frenchie(-4)'));
+  assert.equal(known.get('av-zolika.x.theboss')?.name, 'AV-Zolika.x.Kira');
+  assert.equal(known.get('take.them.out')?.name, 'AV-ColdCreeps');
 });

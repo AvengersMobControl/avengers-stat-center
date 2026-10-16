@@ -33,8 +33,11 @@ for(const kind of ['piggy','space']){
   }
 }
 function total(kind,n){let sum=0;raw[kind].forEach(r=>{if(r.name===n)sum+=r.sparks});return sum;}
-const targets=[['Saber','AV.Saberkong',17620180],['Zolika','AV-Zolika.x.Kira',16174707],['Abu','AV-Abu//JPN',15902449],
- ['Animosity','AV-Animosity',126722420],['Finnie','AV-Finnie',14956807],['Bil','AV-8!l...Bil',13245089]];
+// Council-provided recent Sparks comparisons. Zolika explicitly excluded as a
+// validation benchmark: they participated before the currently covered history.
+// All 100 current players, including Zolika, remain in the systemic audit.
+const targets=[['Saber','AV.Saberkong',17620180],['Abu','AV-Abu//JPN',15902449],
+ ['Animosity','AV-Animosity',12672420],['Finnie','AV-Finnie',14956807],['Bil','AV-8!l...Bil',13245089]];
 const targetMap=new Map(targets.map(([label,n,t])=>[canon(n),{label,expected:t}]));
 const rows=current.map(r=>{
   const n=canon(r.name),m=storedMap.get(n)||{},p=krakenMap.get(n)||{},e=L.forMember(n),b=B.forMember(n,Number(m.totalSparks)||0);
@@ -57,6 +60,7 @@ const rows=current.map(r=>{
     diffVsUserTarget:t?logged-t.expected:null};
 });
 console.log('ROSTER-SCOPE audit: '+rows.length+' current member identities');
+console.log('External reference examples: '+targets.length+' (Zolika excluded as prehistory); Animosity 12,672,420; screenshot rounding not yet quantified');
 const cases=rows.filter(x=>x.example);
 for(const r of cases)console.log('EXAMPLE '+JSON.stringify(r));
 const signs=rows.filter(r=>r.diffShownVsFour>5000).sort((a,b)=>b.diffShownVsFour-a.diffShownVsFour);
@@ -65,6 +69,12 @@ console.log('SUM logged-minus-four over roster: '+rows.reduce((s,r)=>s+r.diffSho
 console.log('SUM legacy base minus piggy,space,preOctKraken: '+rows.reduce((s,r)=>s+r.storedBaseDiffVsSources,0));
 console.log('TOP OVERAGES: '+JSON.stringify(signs.slice(0,18).map(x=>({name:x.display,shown:x.shownLogged,four:x.fourCategorySum,excess:x.diffShownVsFour,base:x.storedBase,baseDiff:x.storedBaseDiffVsSources}))));
 console.log('JUNE reconstruction rows: '+(L.sources.juneKrakenReconstructed||[]).length);
-const report={notes:['Four-category sum includes K.players.totalSparks, which already includes October when published; Kraken rewards estimated from historical damage and may use non-event time clans','The six target figures are user-provided; Animosity value seems order of magnitude unusual, retained unchanged pending verification'],rows};
+const report={notes:[
+  'All 100 current roster members are audited. Zolika is excluded ONLY as an external validation benchmark because some membership predates the available source history.',
+  'Four-category sum includes K.players.totalSparks, which already includes October when published; Kraken rewards estimated from historical damage and may use non-event time clans.',
+  'Five user-provided comparison values are benchmarks, not source-of-truth replacements. Screenshot rounding, truncation and observation-time differences must be checked before calling small residuals arithmetic inflation.',
+  'Animosity user reference corrected to 12,672,420; its earlier 126,722,420 value was a typo.',
+  'Signed net of per-player differences does not measure total Sparks inflation and should not be interpreted as a confirmed accounting correction.'
+],comparisonReference:{numberOfExternalBenchmarks:targets.length,excluded:['AV-Zolika.x.Kira'],roundingTolerance:'unknown; requires source-display precision and screenshot times'},rows};
 fs.mkdirSync(path.join(root,'reports'),{recursive:true});
 fs.writeFileSync(path.join(root,'reports/sparks-root-cause-diagnostic.json'),JSON.stringify(report,null,2)+'\n');

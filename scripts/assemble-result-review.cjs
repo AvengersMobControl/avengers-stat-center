@@ -44,6 +44,16 @@ function assemble(review,{existingEvent=null,aliases={}}={}){
   check(e&&typeof e==='object'&&typeof e.id==='string'&&e.id.startsWith(e.kind+'|'),'Missing stable event identity');
   check(Object.hasOwn(UNITS,e.kind),'Unrecognized event type');
   check(e.unit===UNITS[e.kind],'Incorrect event score unit');
+  if(e.kind==='piggy'||e.kind==='space')check(e.id===e.kind+'|'+e.date,'Event id must match kind and date');
+  if(e.kind==='flash'){
+    check(Number.isInteger(e.metadata?.flash)&&e.metadata.flash>=1&&e.metadata.flash<=20,'Flash number required');
+    check(e.id==='flash|'+e.date+'|'+e.metadata.flash,'Flash identity mismatch');
+  }
+  if(e.kind==='kraken'){
+    check(typeof e.metadata?.monthKey==='string'&&/^[a-z0-9-]{2,24}$/.test(e.metadata.monthKey),'Kraken month key required');
+    check(e.id==='kraken|'+e.metadata.monthKey,'Kraken identity mismatch');
+    check(typeof e.metadata?.monthLabel==='string'&&/^[A-Za-z0-9 -]{1,40}$/.test(e.metadata.monthLabel),'Kraken month label required');
+  }
   check(typeof e.date==='string','Missing event date');
   check(review.coverageComplete===undefined||typeof review.coverageComplete==='boolean',
     'coverageComplete must be an explicit boolean');

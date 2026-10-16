@@ -1,7 +1,7 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const {parseUtc, countryOf, nameOf, clanOf, reconcile, knownRoster, encryptState, decryptState, publicProjection, fetchMessages, onboardingPolicy} = require('./sync-discord-utc.cjs');
+const {parseUtc, countryOf, nameOf, clanOf, reconcile, knownRoster, encryptState, decryptState, publicProjection, fetchMessages, onboardingPolicy, initializeCheckpoint} = require('./sync-discord-utc.cjs');
 
 test('handles signed, fractional and quarter-hour UTC offsets', () => {
   assert.equal(parseUtc('UTC -5'), -5);
@@ -190,4 +190,17 @@ test('Discord polling collects more than 100 newer messages without losing older
     assert.equal(result[0].id,messages[20].id);
     assert.equal(result.at(-1).id,messages.at(-1).id);
   } finally {global.fetch=oldFetch;}
+});
+
+test('empty UTC channel checkpoint processes its first later submission', () => {
+  const empty = {lastMessageId:null,members:[],pending:[]};
+  assert.equal(initializeCheckpoint(empty, [], 'false'), true);
+  assert.equal(empty.lastMessageId, '0');
+  assert.equal(initializeCheckpoint(empty, [], 'false'), false);
+  const historical={lastMessageId:null};
+  assert.equal(initializeCheckpoint(historical,[{id:'101'},{id:'102'}],'false'),true);
+  assert.equal(historical.lastMessageId,'102');
+  const backfill={lastMessageId:null};
+  assert.equal(initializeCheckpoint(backfill,[{id:'101'}],'true'),false);
+  assert.equal(backfill.lastMessageId,null);
 });

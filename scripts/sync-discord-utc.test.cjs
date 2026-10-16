@@ -1,7 +1,7 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const {parseUtc, countryOf, nameOf, clanOf, reconcile, knownRoster} = require('./sync-discord-utc.cjs');
+const {parseUtc, countryOf, nameOf, clanOf, reconcile, knownRoster, encryptState, decryptState, publicProjection, fetchMessages} = require('./sync-discord-utc.cjs');
 
 test('handles signed, fractional and quarter-hour UTC offsets', () => {
   assert.equal(parseUtc('UTC -5'), -5);
@@ -20,12 +20,12 @@ test('reads country only when supplied rather than guessing it from UTC', () => 
 });
 test('preserves known member clan and canonical name', () => {
   const known = knownRoster();
-  assert.equal(known.get('av-zolika.x.kira')?.name, 'AV-ZolikaLoveKira');
+  assert.equal(known.get('av-zolika.x.kira')?.name, 'AV-Zolika.x.Kira');
   const state = {members: [],pending: []};
   reconcile(state, {id:'101',timestamp:'2026-10-15T12:00:00Z',
     content:'UTC+2, Netherlands',author:{id:'15',username:'x'},
     member:{nick:'AV-Zolika.x.Kira'}}, known, '');
-  assert.equal(state.members[0].name, 'AV-ZolikaLoveKira');
+  assert.equal(state.members[0].name, 'AV-Zolika.x.Kira');
   assert.equal(state.members[0].status, 'Active');
   assert.equal(state.members[0].country, 'Netherlands');
 });
@@ -55,4 +55,74 @@ test('two different Discord users never overwrite the same overlay member', () =
   reconcile(state,sample('2'),new Map(),'');
   assert.equal(state.members.length,1);
   assert.equal(state.pending[0].reason,'name_already_linked_to_another_discord_account');
+});
+
+test('state encryption hides Discord identifiers and survives a round trip', () => {
+  const secret = 'a-long-test-secret-that-is-not-for-production-1234567890';
+  const state = {
+    lastMessageId: '987654321098765432',
+    members: [{discordUserId:'123456789012345678', name:'AV-NewPlayer',
+      status:'AV2', utc:5.5, country:'India', messageId:'987654321098765431'}],
+    pending: [{discordUserId:'555555555555555555',proposedName:'Unknown',utc:-5,
+      country:'USA',reason:'missing_clan',messageId:'987654321098765430'}]
+  };
+  const encrypted = encryptState(state, secret);
+  const raw = JSON.stringify(encrypted);
+  assert.equal(raw.includes('123456789012345678'), false);
+  assert.equal(raw.includes('987654321098765432'), false);
+  assert.equal(raw.includes('AV-NewPlayer'), false);
+  assert.deepEqual(decryptState(encrypted,secret), state);
+  assert.throws(() => decryptState(encrypted, secret+'wrong'), /auth|authenticate/i);
+  assert.throws(() => encryptState(state, 'short'), /at least 32 characters/);
+});
+test('browser projection includes approved public fields only', () => {
+  const state = {lastMessageId:'987654321098765432',
+    members:[{discordUserId:'123456789012345678',name:'AV-NewPlayer',status:'AV2',
+      utc:5.5,country:'India',messageId:'987654321098765431'}],
+    pending:[{discordUserId:'555555555555555555',reason:'missing_clan'}]};
+  const projection=publicProjection(state);
+  assert.deepEqual(projection, {members:[{name:'AV-NewPlayer',status:'AV2',
+    utc:5.5,country:'India'}]});
+  const published=JSON.stringify(projection);
+  assert.equal(published.includes('discordUserId'),false);
+  assert.equal(published.includes('messageId'),false);
+  assert.equal(published.includes('pending'),false);
+});
+
+test('October 15 roster overrides stale October 1 clan statuses', () => {
+  const known = knownRoster();
+  assert.equal(known.get('av-eventhorizon')?.status, 'AV2');
+  assert.equal(known.get('av-drdetroit')?.status, 'AV2');
+  assert.equal(known.get('av-starred')?.status, 'AV2');
+  assert.equal(known.get('av-bubba0816')?.status, 'Inactive');
+  assert.equal(known.get('av-frenchie2')?.status, 'AV2');
+  assert.equal(known.get('av-frenchie(-4)')?.status, 'AV2');
+  assert.notEqual(known.get('av-frenchie2'), known.get('av-frenchie(-4)'));
+  assert.equal(known.get('av-zolika.x.theboss')?.name, 'AV-Zolika.x.Kira');
+  assert.equal(known.get('take.them.out')?.name, 'AV-ColdCreeps');
+});
+
+test('Discord polling collects more than 100 newer messages without losing older results', async () => {
+  const base = 1100000000000000000n;
+  const messages = Array.from({length: 230}, (_, i) => ({
+    id:String(base+BigInt(i+1)),content:'UTC+2, Germany',author:{id:String(i+1)}
+  }));
+  const checkpoint=messages[19].id;
+  const oldFetch=global.fetch;
+  let pageCount=0;
+  try {
+    global.fetch=async url => {
+      pageCount++;
+      const u=new URL(url);
+      const before=u.searchParams.get('before');
+      const next=messages.filter(m => !before || BigInt(m.id)<BigInt(before))
+        .sort((a,b) => BigInt(a.id)>BigInt(b.id)?-1:1).slice(0,100);
+      return {ok:true,json:async()=>next};
+    };
+    const result=await fetchMessages('token','100000000000000000',checkpoint);
+    assert.equal(pageCount,3);
+    assert.equal(result.length,210);
+    assert.equal(result[0].id,messages[20].id);
+    assert.equal(result.at(-1).id,messages.at(-1).id);
+  } finally {global.fetch=oldFetch;}
 });

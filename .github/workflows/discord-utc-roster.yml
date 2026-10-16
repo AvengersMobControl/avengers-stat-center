@@ -33,6 +33,7 @@ jobs:
       - name: Read UTC submissions
         env:
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_UTC_STATE_KEY: ${{ secrets.DISCORD_UTC_STATE_KEY }}
           DISCORD_UTC_CHANNEL_ID: ${{ vars.DISCORD_UTC_CHANNEL_ID }}
           DISCORD_UTC_DEFAULT_CLAN: ${{ vars.DISCORD_UTC_DEFAULT_CLAN }}
           DISCORD_UTC_BACKFILL: ${{ inputs.backfill }}

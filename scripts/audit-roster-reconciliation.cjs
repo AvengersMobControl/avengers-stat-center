@@ -220,7 +220,10 @@ const comparisons=leagueSummaries
   .map(p=>({
     end:p.end,reportedApprox:councilReportedApprox[p.end],
     eventLedger:p.clans.AVENGERS?.sparks||0,
+    flashSparks:p.clans.AVENGERS?.flashSparks||0,
+    eventLedgerWithoutFlash:(p.clans.AVENGERS?.sparks||0)-(p.clans.AVENGERS?.flashSparks||0),
     delta:(p.clans.AVENGERS?.sparks||0)-councilReportedApprox[p.end],
+    remainingDeltaWithoutFlash:(p.clans.AVENGERS?.sparks||0)-(p.clans.AVENGERS?.flashSparks||0)-councilReportedApprox[p.end],
     requiresSourceAudit:true
   }));
 const leagueReport={
@@ -243,11 +246,11 @@ const clanLines=[
     '| '+p.start+' to '+p.end+' | '+clan+' | '+c.players+' | '+c.sparks+' | '+c.stars+' | '+c.estimatedKrakenSparks+' | '+c.rowsMissingRewardFields+' |')),
   '',
   '## Comparison to approximate council-reported season totals', '',
-  '| Kraken end | Event-ledger AVENGERS Sparks | Council reported (approx.) | Difference |',
-  '|---|---:|---:|---:|',
-  ...comparisons.map(c=>'| '+c.end+' | '+c.eventLedger+' | '+c.reportedApprox+' | '+c.delta+' |'),
+  '| Kraken end | Including Flash | Flash Sparks | Excluding Flash | Council reported (approx.) | Residual excluding Flash |',
+  '|---|---:|---:|---:|---:|---:|',
+  ...comparisons.map(c=>'| '+c.end+' | '+c.eventLedger+' | '+c.flashSparks+' | '+c.eventLedgerWithoutFlash+' | '+c.reportedApprox+' | '+c.remainingDeltaWithoutFlash+' |'),
   '',
-  'These differences require source-level reconciliation; do not alter source rewards to match rounded external reports.',
+  'Most of the headline difference is consistent with Flash Sparks being included in the new ledger but possibly excluded from earlier reported approximations. This is a hypothesis, not a verified source reconciliation. Do not alter source rewards to match rounded reports.',
   'Original event records and inferred allocations were not modified.'
 ];
 fs.writeFileSync(path.join(dir,'clan-league-audit.md'),clanLines.join('\n')+'\n');

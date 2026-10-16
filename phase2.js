@@ -386,10 +386,11 @@
   function combinedSparksFor(name){
     var canonical=canonicalNameFor(name);
     var m=memberByName[canonical]||memberByName[name]||{};
-    // Profile Sparks must use the same independently sourced four-event
-    // ledger as the roster. Historic snapshots are not earned event payouts.
-    return Number(window.AVENGERS_ROSTER_EVENT_BREAKDOWN
-      ?.forMember(canonical,Number(m.totalSparks)||0)?.eventLoggedSparks)||0;
+    // "Total Sparks" on the player profile must match the roster Total:
+    // independently earned Piggy+Space+Flash+Kraken, plus distinct historical
+    // clan-contribution screenshot gaps. Gaps are never event payouts.
+    var source=window.AVENGERS_ROSTER_EVENT_BREAKDOWN?.forMember(canonical,Number(m.totalSparks)||0)||{};
+    return Math.max(0,Number(source.eventLoggedSparks)||0)+Math.max(0,Number(source.screenshotGap)||0);
   }
 
   function profileMetricValue(name,key){

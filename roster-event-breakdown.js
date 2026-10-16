@@ -33,7 +33,7 @@
     const stars=Number.isFinite(Number(r?.stars))?Math.max(0,Number(r.stars)):0;
     const prev=records[kind].get(key);
     if(!prev||sparks>prev.sparks||(sparks===prev.sparks&&stars>prev.stars))
-      records[kind].set(key,{name,key,sparks,stars,date:kind==='flash'?ev?.date:id});
+      records[kind].set(key,{name,key,sparks,stars,date:kind==='flash'?ev?.date:id,clan:clan(r,ev)});
   };
   for(const kind of ['piggy','space'])
     Object.entries(D[kind]?.events||{}).forEach(([date,rows])=>
@@ -46,7 +46,7 @@
     records[kind].forEach(row=>{
       const dest=get(row.name)[kind];dest.sparks+=row.sparks;
       dest.stars+=row.stars;dest.events.add(row.key);
-      get(row.name).datedSparks.push({date:row.date,sparks:row.sparks});
+      get(row.name).datedSparks.push({date:row.date,sparks:row.sparks,clan:row.clan});
     });
 
   // Kraken is derived from event-time payouts, NOT the old K.players.totalSparks
@@ -67,7 +67,7 @@
       dest.october+=Math.max(0,oct);
       if(league.kraken==='june')dest.juneBackfill+=estimated;
       dest.events.add(league.kraken);
-      get(row.name).datedSparks.push({date:league.end||({oct:'2026-10-11',sept:'2026-09-06',aug:'2026-08-02',june:'2026-06-28',may:'2026-05-24',april:'2026-04-19'}[league.kraken]),sparks:Number(row.krakenSparks)});
+      get(row.name).datedSparks.push({date:league.end||({oct:'2026-10-11',sept:'2026-09-06',aug:'2026-08-02',june:'2026-06-28',may:'2026-05-24',april:'2026-04-19'}[league.kraken]),sparks:Number(row.krakenSparks),clan:String(row.clan||'').toUpperCase().replace(/[^A-Z0-9]/g,'')});
     }
   }
   // The retained archive also includes Feb 2, Feb 23 and March Kraken
@@ -120,7 +120,7 @@
     const dest=get(row.name).kraken;
     dest.historical+=row.damage*rate;
     dest.events.add(row.month);
-    get(row.name).datedSparks.push({date:row.date,sparks:row.damage*rate});
+    get(row.name).datedSparks.push({date:row.date,sparks:row.damage*rate,clan:nearest.clan.replace(/[^A-Z0-9]/g,'')});
   }
   // Counts represent observed Kraken activity even if a particular older
   // event lacks sufficient historical clan evidence for a Spark payout.
@@ -133,9 +133,11 @@
   }
 
   window.AVENGERS_ROSTER_EVENT_BREAKDOWN={
-    loggedBefore(raw,beforeDate){
+    loggedBefore(raw,beforeDate,clanFilter=null,stintStart=null){
       if(!/^\d{4}-\d{2}-\d{2}$/.test(String(beforeDate)))return null;
-      return get(raw).datedSparks.reduce((sum,r)=>sum+(typeof r.date==='string'&&r.date<beforeDate?r.sparks:0),0);
+      const expected=clanFilter==null?null:String(clanFilter).toUpperCase().replace(/[^A-Z0-9]/g,'');
+      return get(raw).datedSparks.reduce((sum,r)=>sum+(typeof r.date==='string'&&r.date<beforeDate
+        &&(!stintStart||r.date>=stintStart)&&(!expected||r.clan===expected)?r.sparks:0),0);
     },
     forMember(raw,legacyTotal=0){
       const data=get(raw),historicBase=Math.max(0,Number(legacyTotal)||0);

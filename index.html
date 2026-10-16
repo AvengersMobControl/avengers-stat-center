@@ -1584,16 +1584,20 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       if(canon && !baseMap.has(canon)) baseMap.set(canon,m);
     });
 
-    // Do the same for the Sep 29 Sparks snapshot so renamed players still reconcile correctly.
+    // Preserve the strongest historical clan contribution snapshot when
+    // a player transfers. The receiving clan's reset-to-zero leaderboard
+    // cannot replace the departing clan's earlier contribution evidence.
     const snapMap=new Map();
+    const remember=(key,row)=>{
+      if(!key)return;
+      const prior=snapMap.get(key);
+      if(!prior||Number(row.allTimeSparks)>Number(prior.allTimeSparks))snapMap.set(key,row);
+    };
     snapRows.forEach(x=>{
-      snapMap.set(x.name,x);
-      // The later AV-2 snapshot supersedes September's AVENGERS snapshot
-      // for members who subsequently moved clans or changed names.
+      remember(x.name,x);
       const canonical=canonicalPlayerName(x.profileName||x.name);
-      if(canonical) snapMap.set(canonical,x);
-      const canon=tzByName[x.name]?.canonicalName;
-      if(canon) snapMap.set(canon,x);
+      remember(canonical,x);
+      remember(tzByName[x.name]?.canonicalName,x);
     });
     // Star screenshots (Oct 15) are more recent than the older Sparks
     // snapshot (Sep 29). Keep them independent: don't accidentally replace
@@ -1631,9 +1635,9 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       const trackedAtCapture=Number.isFinite(asOf)?asOf:logged;
       const sparkReconciliationDelta=snapshotTotal==null?null:snapshotTotal-trackedAtCapture;
       const projectedGap=Number(eventBreakdown.screenshotGap);
-      const unlogged=snapshotTotal==null?0:
-        (eventBreakdown.screenshotGap!=null&&Number.isFinite(projectedGap)
-          ?Math.max(0,projectedGap):Math.max(0,sparkReconciliationDelta));
+      const unlogged=eventBreakdown.screenshotGap!=null&&Number.isFinite(projectedGap)
+          ?Math.max(0,projectedGap)
+          :(snapshotTotal==null?0:Math.max(0,sparkReconciliationDelta));
       const sparkSnapshotDate=snapshot?snapshot.snapshotLabel||
         ((snap.currentAv2||[]).includes(snapshot)?snap.av2Date||'2026-10-15':snap.date||'2026-09-29'):null;
       const starSnapshot=starMap.get(canonical)||starMap.get(name);

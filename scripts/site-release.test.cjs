@@ -98,3 +98,24 @@ test('correcting an older event-time clan recalculates dependent inferred Kraken
   assert.equal(payout.clan,'AV-2');assert.equal(payout.sparks,4385.136*500);
   assert.equal(member(changed,'AV-HarryBallsagna').status,'Active');
 });
+
+test('real Hoops Sept 29 AVENGERS Sparks survive transfer to AV-2 on published roster',()=>{
+ const hoop=BASE.projection.people.find(p=>p.name==='AV-Hoops');
+ assert(hoop,'Hoops canonical profile missing');
+ assert.equal(hoop.snapshotBreakdown.find(s=>s.clan==='AVENGERS'&&s.beforeDate==='2026-09-30')?.amount,12416538);
+ const oct15=hoop.snapshotBreakdown.find(s=>s.clan==='AV-2'&&s.beforeDate==='2026-10-16');
+ assert(oct15&&oct15.amount===0);
+ const avBase=hoop.snapshotBreakdown.find(s=>s.clan==='AVENGERS'&&s.amount===12416538);
+ assert(avBase.gap>0,'Hoops needs documented historical unlogged Sparks');
+ const post=hoop.history.filter(r=>r.date>='2026-09-30').reduce((t,r)=>t+(r.sparks||0),0);
+ assert(hoop.totalSparks>=12416538+post-0.001);
+ assert.equal(BASE.breakdowns[hoop.name].screenshotGap,hoop.screenshotGap);
+ assert.equal(BASE.breakdowns[hoop.name].eventLoggedSparks,hoop.earned.sparks);
+ const trackedAfterSep29=post;
+ const oldOtherClan=hoop.history.filter(r=>r.date<'2026-09-30'&&r.clan==='AV-2').reduce((t,r)=>t+(r.sparks||0),0);
+ console.log('HOOPS_SPARKS_PROJECTION '+JSON.stringify({
+   snapshotSep29:12416538,trackedAfterSep29,trackedBeforeSep29OtherClan:oldOtherClan,
+   loggedSparks:hoop.earned.sparks,unloggedSparks:hoop.screenshotGap,totalSparks:hoop.totalSparks,
+   evidence:hoop.snapshotBreakdown
+ }));
+});

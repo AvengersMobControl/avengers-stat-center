@@ -8,6 +8,8 @@ test('profile Spark metric is backed by four-category roster ledger',()=>{
  assert.match(src,/function combinedSparksFor\(name\)/);
  assert.match(src,/AVENGERS_ROSTER_EVENT_BREAKDOWN/);
  assert.match(src,/eventLoggedSparks/);
+ assert.match(src,/screenshotGap/);
+ assert.match(src,/Math\.max\(0,Number\(source\.eventLoggedSparks\)/);
  assert.doesNotMatch(src,/return Math\.max\(logged,snap\)/);
 });
 test('achievements Spark tiers use recorded ledger rather than legacy total',()=>{
@@ -64,4 +66,10 @@ test('pre-Space screenshots and Hoops pre-transfer amount preserve source proven
  assert.match(s,/12416538/);
  assert.match(s,/2026-09-30/);
  assert(read('index.html').includes('sparks-pre-space-2026-10-16.js'));
+});
+
+test('roster preserves pre-transfer Sparks when AV-2 later shows zero',()=>{
+ const code=read('index.html');
+ assert(code.includes('const remember=(key,row)=>'));
+ assert(code.includes('Number(row.allTimeSparks)>Number(prior.allTimeSparks)'));
 });

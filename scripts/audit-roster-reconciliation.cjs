@@ -75,14 +75,16 @@ for(const x of starRows){
     stars.set(key,x);
 }
 const sparkRows=[
-  ...(S.currentAvengers||[]).map(x=>({...x,beforeDate:'2026-09-30',snapshotLabel:'2026-09-29'})),
-  ...(S.currentAv2||[]).map(x=>({...x,beforeDate:'2026-10-16',snapshotLabel:'2026-10-15'})),
-  ...(S.preSpaceOct16||[]),...(S.historicalSparkFloors||[])
+  ...(S.currentAvengers||[]).map(x=>({...x,clan:'AVENGERS',beforeDate:'2026-09-30',snapshotLabel:'2026-09-29'})),
+  ...(S.currentAv2||[]).map(x=>({...x,clan:'AV-2',beforeDate:'2026-10-16',snapshotLabel:'2026-10-15'})),
+  ...(S.preSpaceOct16||[]).map(x=>({...x,clan:'AVENGERS'})),
+  ...(S.historicalSparkFloors||[]).map(x=>({...x,clan:x.clan||'AVENGERS'}))
 ];
 const sparks=new Map();
 for(const x of sparkRows){
-  for(const key of [x.name,x.profileName,canonical(x.profileName||x.name)].filter(Boolean))
-    sparks.set(key,x);
+  const key=canonical(x.profileName||x.name);
+  if(!sparks.has(key))sparks.set(key,[]);
+  sparks.get(key).push(x);
 }
 const members=new Map((D.members||[]).map(x=>[canonical(x.name),x]));
 const records=current.map(r=>{
@@ -106,13 +108,23 @@ const records=current.map(r=>{
     (Number(event.krakenHistoricalSparks)||0)+0.01,
     'June Kraken should be included inside historical category, never additive: '+r.name);
   const starLogged=Number(event.loggedStars)||0;
-  const spark=sparks.get(name)||sparks.get(r.name);
+  const observations=(sparks.get(name)||[]).map(s=>{
+    const earned=B.loggedBefore(name,s.beforeDate,s.clan,s.stintStart||null);
+    const baseline=Number(s.allTimeSparks);
+    return {...s,earned,gap:Math.max(0,baseline-earned)};
+  });
+  const spark=observations.reduce((a,b)=>!a||b.allTimeSparks>a.allTimeSparks?b:a,null);
+  const byStint=new Map();
+  for(const s of observations){
+    const group=s.clan+'|'+(s.stintId||'unspecified');
+    byStint.set(group,Math.max(byStint.get(group)||0,s.gap));
+  }
   const star=stars.get(name)||stars.get(r.name);
   const sparkScreenshot=spark?.allTimeSparks==null?null:Number(spark.allTimeSparks);
   const starScreenshot=star?.allTimeStars==null?null:Number(star.allTimeStars);
-  const sparkAsOf=sparkScreenshot===null?null:B.loggedBefore(name,spark.beforeDate);
+  const sparkAsOf=sparkScreenshot===null?null:spark.earned;
   const sparkDelta=sparkScreenshot===null?null:sparkScreenshot-sparkAsOf;
-  const unloggedSparks=Math.max(0,sparkDelta||0);
+  const unloggedSparks=[...byStint.values()].reduce((a,b)=>a+b,0);
   assert(Number.isFinite(loggedSparks)&&loggedSparks>=0, 'Invalid logged Sparks: '+r.name);
   assert(Number.isFinite(starLogged)&&starLogged>=0, 'Invalid logged Stars: '+r.name);
   if(sparkScreenshot!==null)assert(Number.isFinite(sparkScreenshot)&&sparkScreenshot>=0,'Invalid screenshot Sparks: '+r.name);
@@ -122,6 +134,7 @@ const records=current.map(r=>{
     sparkSnapshotDate:spark?.snapshotLabel||null,
     starSnapshotDate:star? '2026-10-15':null,
     sparkSnapshot:sparkScreenshot,starSnapshot:starScreenshot,
+    sparkEvidence:observations.map(s=>({amount:s.allTimeSparks,clan:s.clan,earnedAtCapture:s.earned,gap:s.gap,date:s.snapshotLabel})),
     loggedSparks,loggedStars:starLogged,baseSupplementSparks,loggedAtSnapshot:sparkAsOf,
     unloggedSparks,totalCombinedSparks:loggedSparks+unloggedSparks,
     sparkDelta,
@@ -137,6 +150,7 @@ const hoops=records.find(x=>x.name==='AV-Hoops');
 if(hoops){
   assert.equal(hoops.sparkSnapshot,12416538,'Hoops lifetime Sparks must survive AV-2 transfer');
   assert.equal(hoops.totalCombinedSparks,hoops.loggedSparks+hoops.unloggedSparks);
+  assert(hoops.unloggedSparks>0,'Hoops must retain unlogged Sparks from pre-transfer AVENGERS');
 }
 const currentInten=records.find(x=>x.name==='AV-INTEN');
 if(currentInten)assert.equal(currentInten.sparkSnapshot,38323359,'New pre-Space benchmark did not load');
@@ -286,6 +300,11 @@ const clanLines=[
 fs.writeFileSync(path.join(dir,'clan-league-audit.md'),clanLines.join('\n')+'\n');
 console.log('CLAN_LEAGUE_AUDIT '+JSON.stringify(leagueSummaries));
 
+if(hoops)console.log('HOOPS_SPARKS_ROSTER_AUDIT '+JSON.stringify({
+  oldAvengersSnapshot:12416538,loggedSparks:hoops.loggedSparks,
+  unloggedSparks:hoops.unloggedSparks,totalSparks:hoops.totalCombinedSparks,
+  screenshotEvidence:hoops.sparkEvidence
+}));
 console.log('ROSTER_AUDIT_SUMMARY '+JSON.stringify({
   roster:report.roster,negativeSparks:overSpark.length,negativeStars:overStar.length,
   missingSparks:missingSpark.length,missingStars:missingStar.length,
@@ -296,3 +315,43 @@ console.log('ROSTER_AUDIT_NEGATIVE_STARS '+JSON.stringify(report.negativeStars.s
 console.log('ROSTER_AUDIT_NEGATIVE_SPARKS '+JSON.stringify(report.negativeSparks.slice(0,20)));
 console.log('ROSTER_AUDIT_EVENT_BASE_DIFFERENCES '+JSON.stringify(report.historicEventDifferenceNames));
 console.log('ROSTER_AUDIT_MISSING '+JSON.stringify({spark:report.missingSparkNames,star:report.missingStarNames}));
+
+
+// The legacy replay above is a *source completeness diagnostic*; it cannot
+// include the staged-and-approved canonical 2026-10-16 event revisions.
+// Publish a separate release-version-matched roster audit, otherwise an audit
+// downloaded after deployment could misleadingly quote older Hoops totals.
+const publishedRelease=require('./create-site-release.cjs').create();
+const publishedRoster=new Set(current.map(r=>canonical(r.name)));
+const publishedPeople=publishedRelease.projection.people
+  .filter(p=>publishedRoster.has(p.name))
+  .map(p=>({
+    name:p.name,status:p.status,loggedSparks:p.earned.sparks,
+    screenshotGap:p.screenshotGap,totalSparks:p.totalSparks,
+    loggedStars:p.earned.stars,missingEventRewards:p.earned.unknownSparks,
+    snapshotSources:p.snapshotBreakdown
+  }));
+const publishedAudit={
+  source:'Reviewed canonical event projection (includes approved updates)',
+  version:publishedRelease.projection.version,
+  rosterCount:publishedPeople.length,
+  members:publishedPeople
+};
+assert.equal(publishedPeople.length,current.length,'Published roster audit must cover all current members');
+for(const p of publishedPeople)assert(Math.abs(p.totalSparks-p.loggedSparks-(p.screenshotGap||0))<0.001,
+  'Published Total must be Logged + screenshot historical gap for '+p.name);
+fs.writeFileSync(path.join(dir,'roster-reconciliation-audit.published.json'),
+  JSON.stringify(publishedAudit,null,2)+'\n');
+const publishedHoops=publishedPeople.find(p=>p.name==='AV-Hoops');
+if(publishedHoops){
+  const afterSep29=publishedRelease.projection.people
+    .find(p=>p.name==='AV-Hoops').history
+    .filter(r=>r.date>='2026-09-30').reduce((n,r)=>n+(r.sparks||0),0);
+  console.log('HOOPS_SPARKS_PUBLISHED '+JSON.stringify({
+    september29Snapshot:12416538,trackedRewardsAfterSeptember29:afterSep29,
+    loggedSparks:publishedHoops.loggedSparks,
+    unloggedSparks:publishedHoops.screenshotGap,
+    totalSparks:publishedHoops.totalSparks,
+    source:'Approved canonical release (not legacy replay)'
+  }));
+}

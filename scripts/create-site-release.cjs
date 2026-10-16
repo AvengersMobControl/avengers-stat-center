@@ -33,15 +33,25 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
   const memberMap=new Map();for(const m of D.members){const name=resolve(m.name);if(!memberMap.has(name))memberMap.set(name,{...m,name});}
   // Current roster authority is applied only to current status, not past events.
   for(const r of R.rows||[]){const name=resolve(r.profileName||r.name);if(memberMap.has(name))memberMap.get(name).status=r.status;}
+  // Game "All time" clan Sparks reset when a player moves between clans.
+  // Screenshots are per-clan contribution balances, NOT account lifetime totals.
+  // Keep old-clan evidence on the canonical player when the member transfers.
   const snapshots={};
   const sources=[
-    ...(S.currentAvengers||[]).map(r=>({...r,beforeDate:'2026-09-30'})),
-    ...(S.currentAv2||[]).map(r=>({...r,beforeDate:'2026-10-16'})),
-    ...(S.preSpaceOct16||[]),...(S.historicalSparkFloors||[])
+    ...(S.currentAvengers||[]).map(r=>({...r,clan:'AVENGERS',beforeDate:'2026-09-30',snapshotLabel:'2026-09-29'})),
+    ...(S.currentAv2||[]).map(r=>({...r,clan:'AV-2',beforeDate:'2026-10-16',snapshotLabel:'2026-10-15'})),
+    ...(S.preSpaceOct16||[]).map(r=>({...r,clan:'AVENGERS'})),
+    ...(S.historicalSparkFloors||[]).map(r=>({...r,clan:r.clan||'AVENGERS'}))
   ];
   for(const r of sources){
+    if(r.allTimeSparks==null)continue;
     const name=resolve(r.profileName||r.name);
-    if(r.allTimeSparks!=null)snapshots[name]={amount:Number(r.allTimeSparks),beforeDate:r.beforeDate};
+    (snapshots[name]??=[]).push({
+      amount:Number(r.allTimeSparks),clan:r.clan,beforeDate:r.beforeDate,
+      label:r.snapshotLabel||'',sourceName:r.name,
+      ...(r.stintId?{stintId:r.stintId}:{}),
+      ...(r.stintStart?{stintStart:r.stintStart}:{})
+    });
   }
   const p=project(ledger,{aliases,members:[...memberMap.values()].map(m=>({name:m.name,status:m.status})),snapshots,arenaStart:D.meta.arenaStart});
   const metrics=require('../event-reward-metrics.js');
@@ -101,6 +111,7 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
     const c=person.categories,kraken=person.history.filter(r=>r.kind==='kraken'),oct=kraken.filter(r=>r.eventId==='kraken|oct'),june=kraken.filter(r=>r.eventId==='kraken|june'&&r.estimatedSparks),historic=kraken.filter(r=>r.estimatedSparks);
     return [person.name,{piggySparks:c.piggy.sparks,spaceSparks:c.space.sparks,flashSparks:c.flash.sparks,krakenSparks:c.kraken.sparks,eventLoggedSparks:person.earned.sparks,
       screenshotGap:person.screenshotGap,loggedAtSnapshot:person.loggedAtSnapshot,
+      snapshotBreakdown:person.snapshotBreakdown,
       krakenHistoricalSparks:sum(historic,'sparks'),krakenOctoberSparks:sum(oct,'sparks'),krakenJuneReconstructedSparks:sum(june,'sparks'),
       piggyStars:c.piggy.stars,spaceStars:c.space.stars,flashStars:c.flash.stars,krakenStars:null,loggedStars:person.earned.stars,knownStars:person.earned.stars,
       piggyEvents:c.piggy.events,spaceEvents:c.space.events,flashEvents:c.flash.events,krakenEvents:c.kraken.events,totalEvents:person.earned.events,

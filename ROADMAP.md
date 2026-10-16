@@ -12,7 +12,7 @@ This plan covers **AVENGERS / AV-2 Mob Control only**. Do not combine with SAC/L
 | P0 | Roster, identities, lifetime Spark/Star ledger | [#2](https://github.com/AvengersMobControl/avengers-stat-center/issues/2) | Partially implemented; reconciliation required |
 | P0 | Discord UTC/country intake | [#3](https://github.com/AvengersMobControl/avengers-stat-center/issues/3) | Development branch; do not merge without safety fixes |
 | P0 | Discord event screenshot ingestion | [#4](https://github.com/AvengersMobControl/avengers-stat-center/issues/4) | Retrieval partial; validation/import outstanding |
-| P0 | Missing AVENGERS Piggy Flash 1 | [#5](https://github.com/AvengersMobControl/avengers-stat-center/issues/5) | Data gap |
+| Closed | October 13 AVENGERS PF1 main lobby | [#5](https://github.com/AvengersMobControl/avengers-stat-center/issues/5) | **Not planned** — final main screenshot unavailable; retain sourced partial results and unknowns |
 | P1 | Production deployment and regression coverage | [#9](https://github.com/AvengersMobControl/avengers-stat-center/issues/9) | Verification outstanding |
 | P1 | Six Clan League reports | [#6](https://github.com/AvengersMobControl/avengers-stat-center/issues/6) | Partially implemented |
 | P1 | Council minimums and near-minimum reports | [#7](https://github.com/AvengersMobControl/avengers-stat-center/issues/7) | Manual workflows; automate |
@@ -49,7 +49,7 @@ All work moves independently through **Implemented → Deployed → Verified**. 
 ## Operating order
 1. Reconcile roster/ledger truth and protect historic data.
 2. Secure UTC intake and complete end-to-end tests before merging into production.
-3. Complete Discord event import and missing PF1 recovery.
+3. Complete Discord event import; **do not pursue the unavailable October 13 main PF1 screenshot** (issue #5 closed by leader direction).
 4. Add six-league and council reporting.
 5. Automate consistent event graphics.
 6. Extend Kraken optimization, video research and player experiences.

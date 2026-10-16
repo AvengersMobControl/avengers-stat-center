@@ -1,57 +1,58 @@
-# AVENGERS development roadmap
+# AVENGERS / AV-2 Mob Control — living development roadmap
 
-**Canonical tracker:** [Master roadmap issue #13](https://github.com/AvengersMobControl/avengers-stat-center/issues/13)  
-**Last organized:** 2026-10-15
+**Updated:** 2026-10-16 UTC. **AVENGERS ONLY — never mix with SAC / Lock It In.**
+- [Project continuity handoff](docs/PROJECT_CONTINUITY.md) — user rules, identities, current code and pause decisions.
+- [Dated decision / implementation log](docs/DECISION_LOG.md) — append every meaningful milestone and record verification evidence.
+- **Canonical work tracker:** [master issue #13](https://github.com/AvengersMobControl/avengers-stat-center/issues/13), with individual GitHub issues for acceptance criteria.
+- **Main site:** https://avengersmobcontrol.github.io/avengers-stat-center/.
 
-This plan covers **AVENGERS / AV-2 Mob Control only**. Do not combine with SAC/Lock It In work.
+## Priority and accurate current state
 
-## Current priorities
+| Order | Workstream | Status / next action |
+|---|---|---|
+| **NEXT / P0** | [#4 Event-result screenshot ingestion](https://github.com/AvengersMobControl/avengers-stat-center/issues/4) | Partial retrieval exists; end-to-end final-only multi-image import not verified. Start with approved-channel, read-only/sample dry-run, provenance and alias dedup. No unattended publication without leader authorization. |
+| P1 | [#8 Event summary images](https://github.com/AvengersMobControl/avengers-stat-center/issues/8) | Standardize Piggy/Space/Flash/Kraken data-driven graphics; prominent PB previous/new, % improvements, first-time players; avoid duplicate posts. |
+| P1 | [#7 Council minimums/near-miss reporting](https://github.com/AvengersMobControl/avengers-stat-center/issues/7) | **Core analysis and tests shipped in PR #32**. Need validate join dates, event completeness and Council outputs; PDF deliverable, not GitHub ZIP. |
+| P1 | [#6 Six five-week league accounting](https://github.com/AvengersMobControl/avengers-stat-center/issues/6) | Six periods rendered; validate true event-clan attribution, historical Kraken estimates, and leader's 165M → 171M reference against event records. |
+| P1 | [#2 Roster identity and accounting](https://github.com/AvengersMobControl/avengers-stat-center/issues/2) / [#34 Spark source gaps](https://github.com/AvengersMobControl/avengers-stat-center/issues/34) | **100-player four-category Logged fix shipped; Total Sparks = Logged + positive Screenshot Gap**. Continue aliases/transfer/completeness/rounding evidence; don't fabricate amounts. |
+| P1 | [#9 Deployment, UI and regression protection](https://github.com/AvengersMobControl/avengers-stat-center/issues/9) | Recent main GitHub Pages and Vercel deploys succeeded; still improve actual rendered UI verification, CI smoke, rollback docs and stale metadata. |
+| P2 | [#10 Kraken route optimizer](https://github.com/AvengersMobControl/avengers-stat-center/issues/10) | Existing research/prototypes; legal ticket-path engine and champion/map matching remain. |
+| P2 | [#11 Kraken attack video study](https://github.com/AvengersMobControl/avengers-stat-center/issues/11) | Answer pre-warning targeting hypothesis with data, not descriptions of known gameplay mechanics. |
+| P2 | [#12 Profiles, recruitment and guest passes](https://github.com/AvengersMobControl/avengers-stat-center/issues/12) | Profiles and Sparks views exist; recruitment/guest-pass and transfer UX remain. |
+| **PAUSED** | [#3 Discord UTC/country ingestion](https://github.com/AvengersMobControl/avengers-stat-center/issues/3) | Implemented encrypted sync and tested bot read; **live submission blocked by identity validation; user explicitly paused**. Monday/Friday schedule OFF. Don't restart without permission. |
+| **CLOSED** | [#5 Missing Oct 13 PF1 main leaderboard](https://github.com/AvengersMobControl/avengers-stat-center/issues/5) | **Not planned**: user confirmed unavailable. Preserve partial validated entries; do not chase or guess. |
 
-| Priority | Workstream | Issue | State as of Oct 15 |
-|---|---|---|---|
-| P0 | Roster, identities, lifetime Spark/Star ledger | [#2](https://github.com/AvengersMobControl/avengers-stat-center/issues/2) | Partially implemented; reconciliation required |
-| P0 | Discord UTC/country intake | [#3](https://github.com/AvengersMobControl/avengers-stat-center/issues/3) | Development branch; do not merge without safety fixes |
-| P0 | Discord event screenshot ingestion | [#4](https://github.com/AvengersMobControl/avengers-stat-center/issues/4) | Retrieval partial; validation/import outstanding |
-| Closed | October 13 AVENGERS PF1 main lobby | [#5](https://github.com/AvengersMobControl/avengers-stat-center/issues/5) | **Not planned** — final main screenshot unavailable; retain sourced partial results and unknowns |
-| P1 | Production deployment and regression coverage | [#9](https://github.com/AvengersMobControl/avengers-stat-center/issues/9) | Verification outstanding |
-| P1 | Six Clan League reports | [#6](https://github.com/AvengersMobControl/avengers-stat-center/issues/6) | Partially implemented |
-| P1 | Council minimums and near-minimum reports | [#7](https://github.com/AvengersMobControl/avengers-stat-center/issues/7) | Manual workflows; automate |
-| P1 | Event PNG and Discord summaries | [#8](https://github.com/AvengersMobControl/avengers-stat-center/issues/8) | Partially implemented |
-| P2 | Kraken route optimizer | [#10](https://github.com/AvengersMobControl/avengers-stat-center/issues/10) | Prototypes/research |
-| P2 | Kraken attack-onset targeting study | [#11](https://github.com/AvengersMobControl/avengers-stat-center/issues/11) | Inconclusive |
-| P2 | Unified player profiles and recruitment UX | [#12](https://github.com/AvengersMobControl/avengers-stat-center/issues/12) | Core UI exists; integrations pending |
+## Current accepted accounting requirements
 
-## Current roster facts
-- October 15, 2026 screenshot roster: 48 AVENGERS, 50 AV-2.
-- Leadership explicitly added **DrDetroit** and **Starred** to AV-2, giving 52 tracked AV-2 roster entries. No unverified lifetime Spark/Star totals should be assigned to them.
-- Bubba remains inactive; Frenchie2 and Frenchie(-4) are distinct accounts.
-- Preserve the **event-time** clan on past Piggy/Space/Flash/Kraken records.
+```text
+Logged Sparks  = Piggy + Space + Flash + Kraken  [independently recorded]
+Screenshot Gap = max(0, earlier all-time screenshot Sparks − Logged Sparks)
+Total Sparks   = Logged Sparks + Screenshot Gap [roster display]
+Logged Stars   = Piggy Stars + Space Stars + Flash Stars
+```
 
-## Accounting invariants
-- Logged Sparks = Piggy + Space + Flash + Kraken.
-- Logged Stars = Piggy + Space + Flash. There is no Kraken Stars column.
-- Lifetime snapshots **are not additional event awards**.
-- Unlogged totals must not silently conceal duplicate payouts, mapping errors or negative differences.
-- Missing data stays unknown, not zero.
-- A correction to historical scores must update dependent leaderboards, personal bests and Clan League summaries without double counting.
+No Kraken Stars; no legacy Sparks remainder silently recast as Kraken. Keep screenshot gap out of individual event payout categories. A Sept 29 in-game snapshot legitimately predates later Spark earnings: no warning triangles merely because logged is higher than that old screenshot.
 
-## Automated data ingestion rules
-- Apply new event results only after event and player identity verification.
-- Reject preliminary screenshots. Preserve sources for final records.
-- Keep Discord secrets and raw Discord IDs out of public repository files and browser data.
-- Discord UTC offsets do **not** establish nationality/country. Accept only explicit country disclosures.
-- Discord nickname alone is not a sufficiently trusted account-linking mechanism without safeguards.
-- Detect channel backlog pagination, retries and duplicate messages.
+Event participation and Sparks/Stars belong to the original event-time clan, even after transfers. All sourced player IDs/names must be canonicalized and distinct. Missing data/attendance/join dates remain UNKNOWN; cannot assume zero or sanctions from absent leaderboard rows.
 
-## Definition of complete
-All work moves independently through **Implemented → Deployed → Verified**. Only close an issue when its acceptance criteria have passed and the evidence is recorded. A GitHub/Vercel build marked READY is not sufficient.
+**Current roster baseline:** 48 AVENGERS; 52 AV-2 (50 screenshot + leader-added DrDetroit and Starred, screenshot totals for those two unknown). Bubba inactive, Frenchie2 distinct from Frenchie(-4).
 
-## Operating order
-1. Reconcile roster/ledger truth and protect historic data.
-2. Secure UTC intake and complete end-to-end tests before merging into production.
-3. Complete Discord event import; **do not pursue the unavailable October 13 main PF1 screenshot** (issue #5 closed by leader direction).
-4. Add six-league and council reporting.
-5. Automate consistent event graphics.
-6. Extend Kraken optimization, video research and player experiences.
+**League/minimums:** five-week cycles, last six ending Apr 19, May 24, Jun 28, Aug 2, Sep 6 and Oct 11 2026; Piggy >=3,500 lines each race and >=7,000 once/league; Space >=30B except Sep 27 weekend 50B; policy effective Sept 11. Flashes count for Sparks, not compliance. Verify historical coverage and event-time clan before final judgments.
 
-For detailed tasks and dependencies, follow the linked GitHub issues rather than copying separate chat checklists.
+## Latest completed fixes — do not repeat
+
+- [PR #36](https://github.com/AvengersMobControl/avengers-stat-center/pull/36): independently sourced Logged and reconstructed historical Kraken, 100-player invariant.
+- [PR #37](https://github.com/AvengersMobControl/avengers-stat-center/pull/37): profiles/achievements/Kraken overview use the corrected event-backed ledger.
+- [PR #38](https://github.com/AvengersMobControl/avengers-stat-center/pull/38): remove outdated screenshot warnings.
+- **[PR #39](https://github.com/AvengersMobControl/avengers-stat-center/pull/39)**: Total Sparks column and KPI restored as Logged + nonnegative Screenshot Gap. Main commit `7c66e643351aa00ee748f8c8a1a392707fc23f6d`, CI passed, GitHub Pages deploy succeeded. Always fetch latest GitHub main; this historical SHA won't stay current.
+- [PR #32](https://github.com/AvengersMobControl/avengers-stat-center/pull/32): Council minimum observed-result reports and six-league audit engine.
+
+## Safe work and proof of completion
+1. Verify the current `main` commit, these living docs, latest user instructions, relevant issue/source data and unknowns; design a small testable change.
+2. Implement in branch/PR, preserve provenance and event-time clan, deduplicate imports, keep Discord tokens/IDs out of public assets.
+3. Run applicable tests; include regressions for the specific bug; DO NOT merge failing accounting or privacy checks.
+4. Merge and verify **GitHub Pages deployed that exact commit**. Separately verify browser behavior where possible.
+5. Update the detailed issue and append a new entry to `docs/DECISION_LOG.md`. Update this roadmap and `docs/PROJECT_CONTINUITY.md` when priorities/policies change. Mark implemented, deployed and verified separately.
+6. Deliver finished report PDFs directly, not artifact ZIP links. Keep AVENGERS completely separate from SAC.
+
+**The next practical session should begin with issue #4, planning a validated read-only ingestion sample.** Do not automatically access/result-post to Discord without leader authorization.

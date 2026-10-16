@@ -6,6 +6,9 @@ on:
       - '*-snapshot*.js'
       - 'roster-*.js'
       - 'clan-league-rewards.js'
+      - 'scripts/council-minimums-core.cjs'
+      - 'scripts/council-minimums-core.test.cjs'
+      - 'scripts/report-council-minimums.cjs'
       - 'scripts/audit-roster-reconciliation.cjs'
       - '.github/workflows/roster-reconciliation-audit.yml'
   workflow_dispatch:
@@ -23,6 +26,10 @@ jobs:
           node-version: '22'
       - name: Check roster identities and reconcile rewards
         run: node scripts/audit-roster-reconciliation.cjs
+      - name: Check Council compliance policy on synthetic historical fixtures
+        run: node --test scripts/council-minimums-core.test.cjs
+      - name: Generate evidence-only Council minimums report from real event ledger
+        run: node scripts/report-council-minimums.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -30,4 +37,5 @@ jobs:
           path: |
             reports/roster-reconciliation-audit.*
             reports/clan-league-audit.*
+            reports/council-minimums-audit.*
           if-no-files-found: warn

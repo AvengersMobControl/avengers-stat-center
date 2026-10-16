@@ -1965,14 +1965,21 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       <div class="records-grid">${groups.map(g=>{
         const ranked=[...rows].filter(r=>Number(r[g.key])>0).sort((a,b)=>(Number(b[g.key])||0)-(Number(a[g.key])||0));
         return `<div class="card record-card"><div class="card-header"><div><div class="card-title">${g.title}</div><div class="card-sub">${g.sub} • ${ranked.length} tracked players</div></div></div><div class="card-body">
-          ${ranked.map((r,i)=>`<div class="record-row">
+          ${ranked.map((r,i)=>{
+            const iso=g.kind==='space'?window.AVENGERS_REWARD_METRICS.record(D.space?.history?.[canonicalPlayerName(r.name)]||[],'yearsB')?.date:null;
+            const display=g.kind==='space'?window.AVENGERS_REWARD_METRICS.spaceRecordDisplay(Number(r.spacePB),iso):null;
+            const marked=!!display?.adjusted;
+            const value=marked?fmtB(display.value):g.fmt(r[g.key]);
+            return `<div class="record-row">
             <div class="record-badge">${i+1}</div>
             <div class="record-player">
-              <button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button>
+              <button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}${marked?'*':''}</button>
               ${statusBadge(r.status,r.name)}
             </div>
-            <div class="record-value">${g.fmt(r[g.key])}<span class="record-date">${recordDate(r,g.kind)}</span></div>
-          </div>`).join('')}
+            <div class="record-value"${marked?' title="Oct 2 actual distance; normalized Stat Center PB: '+escapeHtml(fmtB(r.spacePB))+'"':''}>${value}<span class="record-date">${recordDate(r,g.kind)}</span></div>
+          </div>`;
+          }).join('')}
+          ${g.kind==='space'?'<div class="records-note"><strong>* October 2, 2026:</strong> Original game distance shown (2/3 of the normalized Stat Center PB). Record ranking and other statistics continue using the approved normalized 1.5× PB.</div>':''}
           <div class="benchmark">${g.bench}</div>
         </div></div>`;
       }).join('')}</div>`;

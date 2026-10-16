@@ -3,7 +3,10 @@
 Mob Control statistics, historical event records, ratings, player profiles, current AVENGERS / AV-2 membership, and reporting tools.
 
 **Public site:** https://avengersmobcontrol.github.io/avengers-stat-center/  
+**Live project handoff:** [Current decisions and requirements](docs/PROJECT_CONTINUITY.md) · [Dated decision/implementation log](docs/DECISION_LOG.md)  
 **Development tracker:** [Master issue #13](https://github.com/AvengersMobControl/avengers-stat-center/issues/13) · [Full roadmap](ROADMAP.md)
+
+**For future ChatGPT sessions:** read the live GitHub handoff, log, roadmap and relevant issues before doing work. GitHub is the maintained continuity source; a ChatGPT Project-uploaded PDF/Markdown copy is optional and becomes stale unless manually replaced. The PDF is for human reading; do not make the leader re-upload it as a prerequisite for continuing work.
 
 ## Data and website
 The application currently uses `index.html` and associated local data/source scripts. It includes Piggy/Space/Flash/Kraken records, ratings, player history, achievements, clan views and exports. The historical arena era begins August 1, 2026.
@@ -22,10 +25,12 @@ Event results belong to the clan in the original result screenshot, **not the pl
 Logged Sparks = Piggy + Space + Flash + Kraken.  
 Logged Stars = Piggy + Space + Flash; do not create Kraken Stars.
 
-All-time screenshot snapshots are reconciliation references, not additive reward transactions. Missing historical results should remain explicitly unresolved.
+Total Sparks shown on roster = Logged Sparks + Screenshot Gap, where Screenshot Gap = max(0, earlier all-time screenshot Sparks minus Logged Sparks). Screenshot Gap is not a new event reward and must never inflate the four Logged categories. Older Sep 29 screenshots naturally lack Sparks earned afterward, so do not add warning triangles when Logged exceeds those snapshots. Missing historical results should remain explicitly unresolved.
 
-## Automation status
-An experimental UTC/Country Discord sync exists in `feat/discord-utc-roster-sync`. **It is not approved as a production-ready integration.** It needs the safety, current-roster freshness, identity assurance, pagination and end-to-end checks tracked in [#3](https://github.com/AvengersMobControl/avengers-stat-center/issues/3).
+## Automation status (updated October 16, 2026)
+- **Discord UTC/country:** Encrypted integration code is merged and bot read access was verified. A real test submission remained pending for identity verification; the leader explicitly paused further UTC work. Monday/Friday automated polling remains **disabled** unless `DISCORD_UTC_SYNC_ENABLED=true` is set deliberately after approval. See [current continuation status](docs/PROJECT_CONTINUITY.md) and [issue #3](https://github.com/AvengersMobControl/avengers-stat-center/issues/3).
+- **Event-result screenshot ingestion:** still needs approved-channel final-only validation, deduplication, identity mapping and safe review before any unattended publication. See [issue #4](https://github.com/AvengersMobControl/avengers-stat-center/issues/4).
+- **Do not pursue** the missing October 13 AVENGERS Piggy Flash 1 main lobby; [issue #5](https://github.com/AvengersMobControl/avengers-stat-center/issues/5) is closed as not planned.
 
 Do **not** place raw Discord user IDs, bot tokens, or other private identifiers in public repository files. Do not infer country solely from UTC.
 

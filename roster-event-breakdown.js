@@ -18,7 +18,7 @@
       piggy:{sparks:0,stars:0,events:new Set()},
       space:{sparks:0,stars:0,events:new Set()},
       flash:{sparks:0,stars:0,events:new Set()},
-      kraken:{events:new Set(),historical:0,october:0,juneBackfill:0}
+      kraken:{events:new Set(),historical:0,october:0,juneBackfill:0},datedSparks:[]
     });
     return totals.get(name);
   };
@@ -33,7 +33,7 @@
     const stars=Number.isFinite(Number(r?.stars))?Math.max(0,Number(r.stars)):0;
     const prev=records[kind].get(key);
     if(!prev||sparks>prev.sparks||(sparks===prev.sparks&&stars>prev.stars))
-      records[kind].set(key,{name,key,sparks,stars});
+      records[kind].set(key,{name,key,sparks,stars,date:kind==='flash'?ev?.date:id});
   };
   for(const kind of ['piggy','space'])
     Object.entries(D[kind]?.events||{}).forEach(([date,rows])=>
@@ -46,6 +46,7 @@
     records[kind].forEach(row=>{
       const dest=get(row.name)[kind];dest.sparks+=row.sparks;
       dest.stars+=row.stars;dest.events.add(row.key);
+      get(row.name).datedSparks.push({date:row.date,sparks:row.sparks});
     });
 
   // Kraken is derived from event-time payouts, NOT the old K.players.totalSparks
@@ -66,6 +67,7 @@
       dest.october+=Math.max(0,oct);
       if(league.kraken==='june')dest.juneBackfill+=estimated;
       dest.events.add(league.kraken);
+      get(row.name).datedSparks.push({date:league.end||({oct:'2026-10-11',sept:'2026-09-06',aug:'2026-08-02',june:'2026-06-28',may:'2026-05-24',april:'2026-04-19'}[league.kraken]),sparks:Number(row.krakenSparks)});
     }
   }
   // The retained archive also includes Feb 2, Feb 23 and March Kraken
@@ -118,6 +120,7 @@
     const dest=get(row.name).kraken;
     dest.historical+=row.damage*rate;
     dest.events.add(row.month);
+    get(row.name).datedSparks.push({date:row.date,sparks:row.damage*rate});
   }
   // Counts represent observed Kraken activity even if a particular older
   // event lacks sufficient historical clan evidence for a Spark payout.
@@ -130,6 +133,10 @@
   }
 
   window.AVENGERS_ROSTER_EVENT_BREAKDOWN={
+    loggedBefore(raw,beforeDate){
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(String(beforeDate)))return null;
+      return get(raw).datedSparks.reduce((sum,r)=>sum+(typeof r.date==='string'&&r.date<beforeDate?r.sparks:0),0);
+    },
     forMember(raw,legacyTotal=0){
       const data=get(raw),historicBase=Math.max(0,Number(legacyTotal)||0);
       const piggy=data.piggy.sparks,space=data.space.sparks,flash=data.flash.sparks;

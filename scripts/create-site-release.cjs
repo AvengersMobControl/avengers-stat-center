@@ -34,8 +34,14 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
   // Current roster authority is applied only to current status, not past events.
   for(const r of R.rows||[]){const name=resolve(r.profileName||r.name);if(memberMap.has(name))memberMap.get(name).status=r.status;}
   const snapshots={};
-  for(const r of [...S.currentAvengers||[],...S.currentAv2||[]]){
-    const name=resolve(r.profileName||r.name);if(r.allTimeSparks!=null)snapshots[name]=Number(r.allTimeSparks);
+  const sources=[
+    ...(S.currentAvengers||[]).map(r=>({...r,beforeDate:'2026-09-30'})),
+    ...(S.currentAv2||[]).map(r=>({...r,beforeDate:'2026-10-16'})),
+    ...(S.preSpaceOct16||[]),...(S.historicalSparkFloors||[])
+  ];
+  for(const r of sources){
+    const name=resolve(r.profileName||r.name);
+    if(r.allTimeSparks!=null)snapshots[name]={amount:Number(r.allTimeSparks),beforeDate:r.beforeDate};
   }
   const p=project(ledger,{aliases,members:[...memberMap.values()].map(m=>({name:m.name,status:m.status})),snapshots,arenaStart:D.meta.arenaStart});
   const metrics=require('../event-reward-metrics.js');
@@ -94,6 +100,7 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
   const breakdowns=Object.fromEntries(p.people.map(person=>{
     const c=person.categories,kraken=person.history.filter(r=>r.kind==='kraken'),oct=kraken.filter(r=>r.eventId==='kraken|oct'),june=kraken.filter(r=>r.eventId==='kraken|june'&&r.estimatedSparks),historic=kraken.filter(r=>r.estimatedSparks);
     return [person.name,{piggySparks:c.piggy.sparks,spaceSparks:c.space.sparks,flashSparks:c.flash.sparks,krakenSparks:c.kraken.sparks,eventLoggedSparks:person.earned.sparks,
+      screenshotGap:person.screenshotGap,loggedAtSnapshot:person.loggedAtSnapshot,
       krakenHistoricalSparks:sum(historic,'sparks'),krakenOctoberSparks:sum(oct,'sparks'),krakenJuneReconstructedSparks:sum(june,'sparks'),
       piggyStars:c.piggy.stars,spaceStars:c.space.stars,flashStars:c.flash.stars,krakenStars:null,loggedStars:person.earned.stars,knownStars:person.earned.stars,
       piggyEvents:c.piggy.events,spaceEvents:c.space.events,flashEvents:c.flash.events,krakenEvents:c.kraken.events,totalEvents:person.earned.events,

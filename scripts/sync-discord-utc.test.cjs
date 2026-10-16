@@ -154,6 +154,12 @@ test('October 15 roster overrides stale October 1 clan statuses', () => {
   assert.equal(known.get('av-drdetroit')?.status, 'AV2');
   assert.equal(known.get('av-starred')?.status, 'AV2');
   assert.equal(known.get('av-bubba0816')?.status, 'Inactive');
+  assert.equal(known.get('av-chuck')?.status, 'AV2');
+  assert.equal(known.get('av-chuck')?.name, 'AV-CHUCK');
+  assert.equal(known.get('av-jeffkintz05')?.status, 'AV2');
+  assert.equal(known.get('av-jeffkintz05')?.name, 'AV-JefhKintz05');
+  assert.equal(known.get('av-brisket')?.name, 'AV2-Brisket');
+  assert.equal(known.get('av-frenchieusa')?.name, 'AV-Frenchie(-4)');
   assert.equal(known.get('av-frenchie2')?.status, 'AV2');
   assert.equal(known.get('av-frenchie(-4)')?.status, 'AV2');
   assert.notEqual(known.get('av-frenchie2'), known.get('av-frenchie(-4)'));

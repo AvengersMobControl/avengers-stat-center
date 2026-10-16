@@ -102,8 +102,15 @@ function knownRoster() {
   }
   const avengers = parsedArray('avengers');
   const av2 = parsedArray('av2Stars');
-  if (avengers.length !== 48 || av2.length !== 50)
-    throw new Error('Incomplete October 15 current roster baseline');
+  // Current display names in the Stars snapshot must remain linked to their
+  // historical profile names from the October 15 Sparks roster source.
+  const av2RosterSource = fs.readFileSync(path.join(root, 'av2-roster-snapshot-2026-10-15.js'),'utf8');
+  const av2RosterMatch = av2RosterSource.match(/const entries=(\[[^\n]+\]);/);
+  if (!av2RosterMatch) throw new Error('Cannot find October 15 AV-2 profile mappings');
+  const av2Profiles = new Map(JSON.parse(av2RosterMatch[1]).map(([name,,profile]) => [name,profile||name]));
+  if (avengers.length !== 48 || av2.length !== 50 || av2Profiles.size !== 50 ||
+      av2.some(([name]) => !av2Profiles.has(name)))
+    throw new Error('Incomplete or mismatched October 15 current roster baseline');
   const current = new Map();
   function addCurrent(name, status, profileName) {
     const old = historical.get(key(profileName || name)) || historical.get(key(name));
@@ -116,7 +123,7 @@ function knownRoster() {
     }
   }
   for (const [name, , profileName] of avengers) addCurrent(name, 'Active', profileName);
-  for (const [name] of av2) addCurrent(name, 'AV2');
+  for (const [name] of av2) addCurrent(name, 'AV2', av2Profiles.get(name));
   // Explicit October 15 council correction beyond the 50 AV-2 screenshots.
   addCurrent('AV-DrDetroit', 'AV2');
   addCurrent('AV-Starred', 'AV2');

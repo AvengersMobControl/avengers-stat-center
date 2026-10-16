@@ -44,7 +44,8 @@ test('roster Sparks totals show unadorned event totals, not stale snapshot warni
  assert.match(src,/totalCombinedSparks:logged\+unlogged/);
  assert.match(src,/case 'totalCombinedSparks':return fmtNum\(r\.totalCombinedSparks\);/);
  assert(src.includes('eventBreakdown.screenshotGap'));
- assert.match(src,/loggedBefore/);
+ assert(!src.includes('const trackedAtCapture='));
+ assert(src.includes('const unlogged=eventBreakdown.screenshotGap==null?0:'));
 });
 
 test('positive screenshot gap adds to logged total but older snapshots never subtract',()=>{

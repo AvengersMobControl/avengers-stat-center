@@ -145,7 +145,7 @@ function knownRoster() {
 function onboardingPolicy() {
   const trustedRoleIds = String(process.env.DISCORD_UTC_TRUSTED_ROLE_IDS || '')
     .split(',').map(x => x.trim()).filter(Boolean);
-  if (!trustedRoleIds.length || trustedRoleIds.some(x => !/^\\d{15,22}$/.test(x)))
+  if (!trustedRoleIds.length || trustedRoleIds.some(x => !/^\d{15,22}$/.test(x)))
     throw new Error('Set DISCORD_UTC_TRUSTED_ROLE_IDS to at least one valid Discord role ID');
   let verifiedLinks;
   try { verifiedLinks = JSON.parse(process.env.DISCORD_UTC_VERIFIED_LINKS || '{}'); }
@@ -194,7 +194,7 @@ function reconcile(state, message, known, defaultClan, policy = {}) {
     return;
   }
   if (!old && !linkedRoster && !claimedRoster &&
-    !/\\b(?:game\\s*name|member|player|name)\\s*[:=]\\s*[^\\n|,;]{1,70}/i.test(String(message.content||''))) {
+    !/\b(?:game\s*name|member|player|name)\s*[:=]\s*[^\n|,;]{1,70}/i.test(String(message.content||''))) {
     submitPending(state,message,proposed,utc,country,'explicit_game_name_required');
     return;
   }

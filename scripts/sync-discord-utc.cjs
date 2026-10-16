@@ -239,6 +239,10 @@ function reconcile(state, message, known, defaultClan, policy = {}) {
     if (!isMissing(baselineUtc)&&!isMissing(baselineCountry)) return;
     const nextUtc=isMissing(baselineUtc)?utc:baselineUtc;
     const nextCountry=isMissing(baselineCountry)?providedCountry:baselineCountry;
+    if (isMissing(nextCountry)) {
+      submitPending(state,message,target.name,utc,providedCountry,'country_missing',target.id);
+      return;
+    }
     const next={discordUserId:target.id,name:knownMember.name,status:knownMember.status,
       utc:nextUtc,country:nextCountry,
       messageId:String(message.id),updatedAt:message.timestamp||new Date().toISOString(),
@@ -274,6 +278,10 @@ function reconcile(state, message, known, defaultClan, policy = {}) {
   }
   if(!linked && claimed && !nickRoster) {
     submitPending(state,message,proposed,utc,providedCountry,'existing_identity_requires_nickname_match');
+    return;
+  }
+  if(!linked && !claimed && nickRoster && explicitGameName(message.content)) {
+    submitPending(state,message,proposed,utc,providedCountry,'nickname_identity_conflict');
     return;
   }
   const knownMember=linked||claimed;

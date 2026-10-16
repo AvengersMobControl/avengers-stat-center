@@ -102,3 +102,13 @@ test('unknown historical clan and unassigned reward stay explicit without fabric
   assert(!p.people.some(m=>m.name===null));
   assert.equal(person(p).earned.unknownSparks,1);
 });
+
+test('dated lifetime Sparks gap persists after later earnings across a transfer',()=>{
+ let l=put(empty(),ev('piggy','earlier','2026-09-28',50));
+ l=put(l,ev('space','later','2026-10-16',60,'AV-2'));
+ const p=project(l,{members:[{name:'A',status:'AV2'}],snapshots:{A:{amount:500,beforeDate:'2026-09-30'}}});
+ const a=person(p);
+ assert.equal(a.loggedAtSnapshot,10);assert.equal(a.screenshotGap,490);
+ assert.equal(a.totalSparks,510);assert.equal(a.earned.sparks,20);
+ assert.equal(p.clans.AVENGERS.sparks,10);assert.equal(p.clans['AV-2'].sparks,10);
+});

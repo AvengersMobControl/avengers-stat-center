@@ -76,3 +76,11 @@ test('current clan never overrides six-league event-time Kraken attribution',()=
   assert.equal(data.krakenHistoricalSparks,750);
   assert.equal(data.krakenOctoberSparks,200);
 });
+
+test('a September lifetime screenshot cannot swallow October Space earnings',()=>{
+ const b=fixture({space:{'2026-09-27':[{name:'AV-Hoops',yearsB:45,sparks:25}],
+ '2026-10-16':[{name:'AV-Hoops',yearsB:55,sparks:35}]}});
+ assert.equal(b.loggedBefore('AV-Hoops','2026-09-30'),25);
+ assert.equal(b.loggedBefore('AV-Hoops','2026-10-17'),60);
+ assert.equal(b.forMember('AV-Hoops').eventLoggedSparks,60);
+});

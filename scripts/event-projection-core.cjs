@@ -104,11 +104,15 @@ function project(ledger,{aliases={},members=[],snapshots={},arenaStart='2026-08-
   const people=[...memberMap.values()].sort((a,b)=>a.name.localeCompare(b.name)).map(m=>{
     const history=rows.filter(r=>r.player===m.name),kinds=Object.fromEntries(KINDS.map(k=>[k,summary(history.filter(r=>r.kind===k),arenaStart)]));
     const categories=Object.fromEntries(KINDS.map(k=>[k,rewards(history.filter(r=>r.kind===k))]));
-    const earned=rewards(history),snapshot=Object.hasOwn(snapshots,m.name)?amount(snapshots[m.name],'snapshot'):null;
-    const screenshotGap=snapshot===null?null:Math.max(0,snapshot-earned.sparks);
+    const earned=rewards(history),source=Object.hasOwn(snapshots,m.name)?snapshots[m.name]:null;
+    const snapshot=source===null?null:amount(typeof source==='object'?source.amount:source,'snapshot');
+    const beforeDate=source&&typeof source==='object'?source.beforeDate:null;
+    if(beforeDate!==null&&beforeDate!==undefined)requireThat(day(beforeDate),'Invalid screenshot cutoff date');
+    const loggedAtSnapshot=beforeDate?rewards(history.filter(r=>r.date<beforeDate)).sparks:earned.sparks;
+    const screenshotGap=snapshot===null?null:Math.max(0,snapshot-loggedAtSnapshot);
     const ratingPB=cap(kinds.piggy.pb,35000)+cap(kinds.space.pb,350)+cap(kinds.kraken.pb,3500);
     const ratingAvg=cap(kinds.piggy.arenaAverage,25000)+cap(kinds.space.arenaAverage,200)+cap(kinds.kraken.last3,2800);
-    return {...m,kinds,categories,history,earned,screenshotGap,totalSparks:earned.sparks+(screenshotGap??0),
+    return {...m,kinds,categories,history,earned,screenshotGap,loggedAtSnapshot,totalSparks:earned.sparks+(screenshotGap??0),
       totalSparksComplete:earned.unknownSparks===0&&snapshot!==null,
       ratingPB,ratingAvg,ratingTotal:ratingPB+ratingAvg,ratingComplete:['piggy','space','kraken'].every(k=>kinds[k].knownScores>0&&kinds[k].unknownScores===0)};
   });

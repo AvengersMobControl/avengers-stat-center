@@ -355,3 +355,16 @@ if(publishedHoops){
     source:'Approved canonical release (not legacy replay)'
   }));
 }
+
+
+const transferAudit=require('./audit-transfer-restorations.cjs').audit(publishedRelease);
+fs.writeFileSync(path.join(dir,'sparks-transfer-restorations.json'),
+  JSON.stringify(transferAudit,null,2)+'\n');
+const transferColumns=['name','roster','logged','oldGap','unlogged','total','recovered','screenshots','stints'];
+fs.writeFileSync(path.join(dir,'sparks-transfer-restorations.csv'),
+  [transferColumns.join(','),...transferAudit.rows.map(r=>transferColumns.map(k=>r[k]).join(','))].join('\n')+'\n');
+console.log('SPARKS_TRANSFER_ALL_MEMBERS '+JSON.stringify(transferAudit.summary));
+console.log('SPARKS_TRANSFER_RESTORED '+JSON.stringify(transferAudit.rows
+ .filter(r=>r.recovered>0.001).map(r=>({name:r.name,amount:r.recovered,unlogged:r.unlogged}))));
+console.log('SPARKS_TRANSFER_REDUCED '+JSON.stringify(transferAudit.rows
+ .filter(r=>r.recovered< -0.001).map(r=>({name:r.name,amount:r.recovered}))));

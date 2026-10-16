@@ -136,7 +136,7 @@ function project(ledger,{aliases={},members=[],snapshots={},arenaStart='2026-08-
     const ratingPB=cap(kinds.piggy.pb,35000)+cap(kinds.space.pb,350)+cap(kinds.kraken.pb,3500);
     const ratingAvg=cap(kinds.piggy.arenaAverage,25000)+cap(kinds.space.arenaAverage,200)+cap(kinds.kraken.last3,2800);
     return {...m,kinds,categories,history,earned,screenshotGap,loggedAtSnapshot,snapshotBreakdown,totalSparks:earned.sparks+(screenshotGap??0),
-      totalSparksComplete:earned.unknownSparks===0&&snapshot!==null,
+      totalSparksComplete:earned.unknownSparks===0&&sources.length>0,
       ratingPB,ratingAvg,ratingTotal:ratingPB+ratingAvg,ratingComplete:['piggy','space','kraken'].every(k=>kinds[k].knownScores>0&&kinds[k].unknownScores===0)};
   });
   const clans=Object.fromEntries(['AVENGERS','AV-2'].map(c=>[c,rewards(rows.filter(r=>r.clan===c))]));

@@ -95,8 +95,8 @@ test('Council tag fills only previously missing UTC and location',()=>{
   const target=tagged(33,'AV-DrDetroit');
   const post=msg(4,'<@33> UTC-6, USA','CouncilMember',
     {roles:[COUNCIL_ROLE],mentions:[target]});
-  const known=knownRoster();
-  assert.equal(known.get('av-drdetroit').utc,null);
+  const known=new Map([['av-drdetroit',
+    {name:'AV-DrDetroit',status:'AV2',utc:null,country:''}]]);
   reconcile(state,post,known,'',council);
   assert.equal(state.members.length,1);
   assert.equal(state.members[0].discordUserId,'33');

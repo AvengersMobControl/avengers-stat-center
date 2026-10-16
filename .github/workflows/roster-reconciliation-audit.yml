@@ -5,6 +5,7 @@ on:
       - 'index.html'
       - '*-snapshot*.js'
       - 'roster-*.js'
+      - 'clan-league-rewards.js'
       - 'scripts/audit-roster-reconciliation.cjs'
       - '.github/workflows/roster-reconciliation-audit.yml'
   workflow_dispatch:
@@ -26,5 +27,7 @@ jobs:
         if: always()
         with:
           name: roster-reconciliation-audit
-          path: reports/roster-reconciliation-audit.*
+          path: |
+            reports/roster-reconciliation-audit.*
+            reports/clan-league-audit.*
           if-no-files-found: warn

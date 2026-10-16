@@ -17,6 +17,7 @@ test('reads country only when supplied rather than guessing it from UTC', () => 
   assert.equal(countryOf('UTC+2, Germany'), 'Germany');
   assert.equal(countryOf('UTC+2 | Germany'), 'Germany');
   assert.equal(countryOf('UTC +5:30\nCountry: India'), 'India');
+  assert.equal(countryOf('UTC-6\nLocation: USA'), 'USA');
 });
 const COUNCIL_ROLE='120000000000000001';
 const noRoles={councilRoleIds:[],verifiedLinks:{}};
@@ -52,13 +53,25 @@ test('any new member can self-report with explicit game name and clan',()=>{
   assert.deepEqual([state.members[0].name,state.members[0].status,
     state.members[0].utc,state.members[0].country],['AV-Newbie','AV2',5.5,'India']);
 });
-test('new member without a clan or game name is pending rather than guessed',()=>{
+test('new member nickname can self-submit without Name field when clan is explicit',()=>{
+  const state={members:[],pending:[]};
+  reconcile(state,msg(19,'Clan: AV-2\nUTC+2, Germany','AV-NewMember'),new Map(),'',noRoles);
+  assert.equal(state.members[0].name,'AV-NewMember');
+  assert.equal(state.members[0].country,'Germany');
+});
+test('new member with no known clan waits for identity or clan verification',()=>{
   const state={members:[],pending:[]};
   reconcile(state,msg(19,'UTC+2, Germany','SomeDiscordUser'),new Map(),'',noRoles);
   assert.equal(state.members.length,0);
-  assert.equal(state.pending[0].reason,'explicit_game_name_required');
+  assert.equal(state.pending[0].reason,'missing_or_inactive_clan');
   reconcile(state,msg(19,'Name: AV-Newbie\nUTC+2, Germany','AV-Newbie'),new Map(),'',noRoles);
   assert.equal(state.pending[0].reason,'missing_or_inactive_clan');
+});
+test('absent server nickname and absent explicit name cannot add a new member',()=>{
+  const state={members:[],pending:[]};
+  reconcile(state,msg(19,'Clan: AVENGERS\nUTC+2, Germany',null),new Map(),'',noRoles);
+  assert.equal(state.members.length,0);
+  assert.equal(state.pending[0].reason,'explicit_game_name_required');
 });
 test('direct self report requires country when it was not previously logged',()=>{
   const state={members:[],pending:[]};

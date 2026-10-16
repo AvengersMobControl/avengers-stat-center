@@ -6,7 +6,7 @@
 
 There are two ways to log a member's UTC and country:
 
-1. **The member posts for themselves:** Anyone in the channel, without a special Discord role, can submit their **first qualifying** post containing a valid UTC offset and country. The first valid entry is linked to that Discord author's stable ID. Later self-posts do **not** automatically rewrite it; corrections should be reviewed. An existing current-roster member is matched through their Discord server nickname against a recognized game name (or via a privately verified ID→player link); contradictory identity claims go to private review. A new member supplies `Name:` and `Clan:` explicitly, unless the channel has a leader-approved single-clan default. A valid country is required when no country is already logged.
+1. **The member posts for themselves:** Anyone in the channel, without a special Discord role, can submit their **first qualifying** post containing a valid UTC offset and country. The first valid entry is linked to that Discord author's stable ID. Later self-posts do **not** automatically rewrite it; corrections should be reviewed. An existing current-roster member is matched through their Discord server nickname against a recognized game name (or via a privately verified ID→player link); contradictory identity claims go to private review. For a new member, the Discord server nickname can serve as their game name; `Name:` is optional. A new member still needs `Clan: AVENGERS` or `Clan: AV-2`, unless the channel has a leader-approved single-clan default. A valid country is required when no country is already logged.
 2. **A Council member posts for someone tagged:** A Discord user possessing a **configured Council role ID** can write a UTC/location message that tags **exactly one member**. The bot uses the **mentioned account's** Discord user ID and server nickname, not the councillor's ID/name or a posted `Name:` override. It only applies to a known **active** AVENGERS / AV-2 member and **only fills fields that are missing** from the stored roster/earlier Discord updates. A complete UTC + country record is untouched. Unknown/ambiguous/inactive targets and posts lacking the configured Council role enter private review. Council messages cannot create arbitrary new members or change a member's established clan.
 
 Examples:
@@ -28,7 +28,7 @@ Country: India
 
 The last example is accepted **only if posted by a Council-role member** and the tagged account's roster entry still lacks the corresponding data. A member's own first qualifying submission takes precedence over a prior Council proxy entry, but repeat self-posts do not silently rewrite a completed self report.
 
-UTC is not sufficient evidence to infer country; `UTC+2, Germany` and `Country: Germany` are accepted. TZG (the clan's time-zone group) is **never calculated from UTC**. Existing State, TZG, clan membership, and historical rewards remain unchanged.
+UTC is not sufficient evidence to infer country; `UTC+2, Germany`, `Country: Germany` and `Location: Germany` are accepted. TZG (the clan's time-zone group) is **never calculated from UTC**. Existing State, TZG, clan membership, and historical rewards remain unchanged.
 
 ## Setup before activating
 

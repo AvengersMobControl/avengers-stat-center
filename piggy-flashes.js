@@ -330,7 +330,7 @@
       return '<tr><td class="num">'+(i+1)+'</td><td><strong>'+esc(r.name)+'</strong></td><td class="num">'+fmt(events)+'</td><td class="num">'+fmt(total)+'</td><td class="num">'+fmt(Math.round(r.avg))+'</td><td class="num">'+fmt(best)+'</td><td>'+shortDate(r.pbDate)+'</td>'+(isDaily?'':'<td class="num">'+fmt(r.stars)+'</td><td class="num">'+fmt(r.sparks)+'</td>')+'</tr>';
     }).join('');
 
-    const resultBody=isDaily?'':rows.slice().sort((a,b)=>String(b.eventDate).localeCompare(String(a.eventDate))||(Number(a.rank)||999)-(Number(b.rank)||999)).map(r=>'<tr><td>'+esc(r.eventDate||'—')+'</td><td>PF'+r.flash+'</td><td class="num">'+(r.rank??'—')+'</td><td><strong>'+esc(r.name||'—')+'</strong></td><td class="num">'+fmt(r.lines)+'</td><td class="num">'+fmt(r.stars)+'</td><td class="num">'+fmt(r.sparks)+'</td></tr>').join('');
+    const resultBody=isDaily?'':rows.slice().sort((a,b)=>String(b.eventDate).localeCompare(String(a.eventDate))||(Number(a.rank)||999)-(Number(b.rank)||999)).map(r=>'<tr><td>'+esc(r.eventDate||'—')+'</td><td>PF'+r.flash+'</td><td class="num">'+(r.rank??'—')+'</td><td><strong>'+esc(r.name||'—')+'</strong></td><td class="num">'+fmt(r.lines)+'</td><td class="num">'+fmt(r.stars)+'</td><td class="num">'+fmt(r.sparks)+'</td><td class="num">'+(window.AVENGERS_REWARD_METRICS.efficiency(r.sparks,r.lines)?.toLocaleString(undefined,{maximumFractionDigits:2})??'—')+'</td></tr>').join('');
 
     const dailyRows=[];
     [...setMap.values()].sort((a,b)=>String(b.date).localeCompare(String(a.date))).forEach(s=>{
@@ -379,8 +379,8 @@
         <div class="table-wrap"><table><thead><tr><th>Event</th><th>Flash</th><th>Flash Set</th><th class="num">Pot Stars</th></tr></thead><tbody>${potRows||'<tr><td colspan="4" class="empty">No pot totals in this view.</td></tr>'}</tbody></table></div>
       </div>
       <div class="table-card" style="margin-top:16px">
-        <div class="table-titlebar"><div><h2>Individual Results</h2><div class="small-muted">Recorded player-level Flash results.</div></div></div>
-        <div class="table-wrap"><table><thead><tr><th>Event</th><th>Flash</th><th class="num">Rank</th><th>Member</th><th class="num">Lines</th><th class="num">Stars</th><th class="num">Sparks</th></tr></thead><tbody>${resultBody||'<tr><td colspan="7" class="empty">No results in this view.</td></tr>'}</tbody></table></div>
+        <div class="table-titlebar"><div><h2>Individual Results</h2><div class="small-muted">Recorded player-level Flash results. Sparks/Effort = Sparks per line; lower values indicate less reward per unit of effort.</div></div></div>
+        <div class="table-wrap"><table><thead><tr><th>Event</th><th>Flash</th><th class="num">Rank</th><th>Member</th><th class="num">Lines</th><th class="num">Stars</th><th class="num">Sparks</th><th class="num">Sparks/Effort (per line)</th></tr></thead><tbody>${resultBody||'<tr><td colspan="8" class="empty">No results in this view.</td></tr>'}</tbody></table></div>
       </div>`}
     `;
 

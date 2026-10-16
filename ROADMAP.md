@@ -60,3 +60,5 @@ Event participation and Sparks/Stars belong to the original event-time clan, eve
 6. Deliver finished report PDFs directly, not artifact ZIP links. Keep AVENGERS completely separate from SAC.
 
 **The next practical session should begin with #42 + #4 together: map all site dependencies, then validate an end-to-end read-only event-ingestion sample.** Do not automatically access/result-post to Discord without leader authorization.
+
+- October16: leader adds full-integer Stars, ratio reconciliation/derived provenance, screenshot Share %, and Sparks/Effort reporting. Event table/CSV/export implementation underway; October16 candidate remains unapproved.

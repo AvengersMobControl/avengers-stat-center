@@ -38,7 +38,8 @@ function build({destination=path.join(root,'dist'),updates}={}){
   html=html.replace('<main class="main">','<main class="main"><div style="padding:8px 28px;color:#91a5bf;font-size:12px" data-release-version="'+P.version+'">'+P.coverage.unassignedRows.length+' result awaiting account identification; its known rewards remain in clan totals. Historical coverage details are included in exports.</div>');
   const exportsDir=path.join(destination,'exports');fs.mkdirSync(exportsDir,{recursive:true});
   const exportFiles={};
-  const summaries=P.events.filter(e=>e.status!=='revoked').map(e=>({...e,rows:e.rows.map(r=>({...r,pbTransition:r.player?P.people.find(p=>p.name===r.player)?.kinds[e.kind]?.pbs.find(b=>b.eventId===e.id)||null:null}))}));
+  const metrics=require('../event-reward-metrics.js');
+  const summaries=P.events.filter(e=>e.status!=='revoked').map(e=>({...e,rows:e.rows.map(r=>({...r,sparksPerEffort:e.kind==='kraken'?null:metrics.efficiency(r.sparks,r.score),effortUnit:e.kind==='space'?'billion-lightyears':e.kind==='kraken'?null:'lines',rewardCheck:e.kind==='kraken'?null:metrics.reconcile(r),pbTransition:r.player?P.people.find(p=>p.name===r.player)?.kinds[e.kind]?.pbs.find(b=>b.eventId===e.id)||null:null}))}));
   for(const [name,value]of Object.entries({eventSummaries:summaries,projection:P,ledger:release.ledger,council:P.council,leagues:release.leagues,review:release.review})){
     const file=name+'.'+P.version.slice(0,16)+'.json';fs.writeFileSync(path.join(exportsDir,file),JSON.stringify({version:P.version,data:value}));exportFiles[name]='exports/'+file;
   }

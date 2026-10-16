@@ -1,3 +1,8 @@
+## 2026-10-16 - Reward relationship and effort reporting
+- John directs use of Sparks = 10% of Stars to audit Piggy/Flash/Space rewards, deriving full Stars from exact Sparks when only rounded Stars are visible (Zolika 415,318 Sparks -> 4,153,180 Stars). Preserve explicitly observed conflicting numbers and mark derived values; Space exceptions are real review items, not permission to force-match.
+- Reports must show full integer Stars, screenshot Share %, and Sparks/Effort. Workbook 260830SR I2 confirms Space Sparks / Years * 1e9, equivalently Sparks per billion lightyears. Piggy/Flash uses Sparks per line. Lower ratio identifies lower reward for the same effort; not comparable across different units.
+- Added event-table columns for Piggy/Space/Flash, Piggy/Space CSV columns, shared formula/validation helper and generated event-summary export fields. Missing values and zero effort stay unknown. No proposed October16 results published without parsed approval.
+
 # AVENGERS project — chronological decisions and verified work
 
 **This is a living, append-only handoff log.** It is maintained by ChatGPT and other contributors through GitHub pull requests after meaningful decisions or milestones. It is **not automatically created from ChatGPT messages**, so every contributor must update it. Source code/CI/merged PRs remain authoritative for what shipped; [PROJECT_CONTINUITY.md](PROJECT_CONTINUITY.md) gives the current rules and [ROADMAP.md](../ROADMAP.md) the actionable priorities.

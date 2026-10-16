@@ -21,6 +21,7 @@ async function main(){
     const origin=process.env.AVENGERS_SMOKE_URL||'http://127.0.0.1:'+server.address().port;
     await page.goto(origin,{waitUntil:'networkidle'});
     await page.waitForFunction(()=>window.AVENGERS_EVENT_PROJECTION&&window.AVENGERS_COMMUNITY);
+    assert.equal(await page.evaluate(()=>window.AVENGERS_REWARD_METRICS.efficiency(100,25)),4);
     const version=await page.evaluate(()=>window.AVENGERS_EVENT_PROJECTION.version);
     if(!process.env.AVENGERS_SMOKE_URL)assert.equal(version,built.manifest.version);
     for(const status of ['active','av2']){
@@ -32,6 +33,14 @@ async function main(){
         assert.deepEqual(errors,[],name+' has no browser errors');
       }
     }
+    await page.click('.nav-btn[data-page="space"]');
+    await page.selectOption('#spaceEventSelect','2026-10-09');
+    assert((await page.locator('#spaceContent').innerText()).toLowerCase().includes('sparks/effort (per b)'));
+    await page.click('.nav-btn[data-page="piggy"]');
+    await page.selectOption('#piggyEventSelect','2026-10-11');
+    assert((await page.locator('#piggyContent').innerText()).toLowerCase().includes('sparks/effort (per line)'));
+    await page.click('.nav-btn[data-page="piggyFlashes"]');
+    assert((await page.locator('#page-piggyFlashes').innerText()).toLowerCase().includes('sparks/effort (per line)'));
     await page.selectOption('#globalStatusFilter','active');
     await page.click('.nav-btn[data-page="players"]');
     await page.fill('#playerSearch','HarryBallsagna');

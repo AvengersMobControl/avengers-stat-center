@@ -188,11 +188,13 @@ function isMissing(value) { return value==null || String(value).trim()===''; }
 function reconcile(state, message, known, defaultClan, policy = {}) {
   if (!message?.author?.id || message.author.bot) return;
   const utc=parseUtc(message.content);
-  if (utc===null) return; // A message without a UTC offset is not a submission.
   const providedCountry=countryOf(message.content);
   const authorId=String(message.author.id);
   const mentions=Array.isArray(message.mentions)?message.mentions:[];
   const isProxy=mentions.some(m=>m?.id && String(m.id)!==authorId);
+  // A member's own submission needs UTC. Council may fill only country
+  // when an existing member has no logged country yet.
+  if(utc===null && (!isProxy || !providedCountry)) return;
   const roles=Array.isArray(message.member?.roles)?message.member.roles.map(String):[];
 
   if (isProxy) {

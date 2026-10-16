@@ -65,3 +65,9 @@ test('pre-Space screenshots and Hoops pre-transfer amount preserve source proven
  assert.match(s,/2026-09-30/);
  assert(read('index.html').includes('sparks-pre-space-2026-10-16.js'));
 });
+
+test('roster preserves pre-transfer Sparks when AV-2 later shows zero',()=>{
+ const code=read('index.html');
+ assert(code.includes('const remember=(key,row)=>'));
+ assert(code.includes('Number(row.allTimeSparks)>Number(prior.allTimeSparks)'));
+});

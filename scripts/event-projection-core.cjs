@@ -104,15 +104,38 @@ function project(ledger,{aliases={},members=[],snapshots={},arenaStart='2026-08-
   const people=[...memberMap.values()].sort((a,b)=>a.name.localeCompare(b.name)).map(m=>{
     const history=rows.filter(r=>r.player===m.name),kinds=Object.fromEntries(KINDS.map(k=>[k,summary(history.filter(r=>r.kind===k),arenaStart)]));
     const categories=Object.fromEntries(KINDS.map(k=>[k,rewards(history.filter(r=>r.kind===k))]));
-    const earned=rewards(history),source=Object.hasOwn(snapshots,m.name)?snapshots[m.name]:null;
-    const snapshot=source===null?null:amount(typeof source==='object'?source.amount:source,'snapshot');
-    const beforeDate=source&&typeof source==='object'?source.beforeDate:null;
-    if(beforeDate!==null&&beforeDate!==undefined)requireThat(day(beforeDate),'Invalid screenshot cutoff date');
-    const loggedAtSnapshot=beforeDate?rewards(history.filter(r=>r.date<beforeDate)).sparks:earned.sparks;
-    const screenshotGap=snapshot===null?null:Math.max(0,snapshot-loggedAtSnapshot);
+    const earned=rewards(history),evidence=Object.hasOwn(snapshots,m.name)?snapshots[m.name]:null;
+    const sources=evidence===null?[]:Array.isArray(evidence)?evidence:[evidence];
+    const snapshotBreakdown=[];
+    const gapByStint=new Map();
+    for(const item of sources){
+      const obj=typeof item==='number'?{amount:item}:item;
+      requireThat(obj&&typeof obj==='object','Invalid screenshot evidence');
+      const snapshot=amount(obj.amount,'snapshot');
+      const beforeDate=obj.beforeDate??null,stintStart=obj.stintStart??null;
+      const clan=obj.clan??null,stintId=obj.stintId??'unspecified';
+      if(beforeDate!==null)requireThat(day(beforeDate),'Invalid screenshot cutoff date');
+      if(stintStart!==null)requireThat(day(stintStart),'Invalid contribution stint start');
+      if(clan!==null)requireThat(['AVENGERS','AV-2'].includes(clan),'Invalid screenshot clan');
+      if(stintStart&&beforeDate)requireThat(stintStart<beforeDate,'Screenshot stint ends before it starts');
+      // A clan leaderboard resets upon transfer. Do not subtract rewards from
+      // another clan or a separately evidenced contribution stint.
+      const tracked=history.filter(r=>(!clan||r.clan===clan)
+        &&(!stintStart||r.date>=stintStart)&&(!beforeDate||r.date<beforeDate));
+      const loggedAtSnapshot=rewards(tracked).sparks;
+      const gap=snapshot===null?0:Math.max(0,snapshot-loggedAtSnapshot);
+      const group=clan+'|'+stintId;
+      gapByStint.set(group,Math.max(gapByStint.get(group)||0,gap));
+      snapshotBreakdown.push({clan,stintId,beforeDate,stintStart,amount:snapshot,loggedAtSnapshot,gap,
+        sourceName:obj.sourceName||null,label:obj.label||null});
+    }
+    // Repeated observations of one clan stint overlap; take the strongest
+    // supported gap, not their sum. Distinct clans / proven separate stints add.
+    const screenshotGap=sources.length?[...gapByStint.values()].reduce((a,b)=>a+b,0):null;
+    const loggedAtSnapshot=sources.length?snapshotBreakdown.at(-1).loggedAtSnapshot:earned.sparks;
     const ratingPB=cap(kinds.piggy.pb,35000)+cap(kinds.space.pb,350)+cap(kinds.kraken.pb,3500);
     const ratingAvg=cap(kinds.piggy.arenaAverage,25000)+cap(kinds.space.arenaAverage,200)+cap(kinds.kraken.last3,2800);
-    return {...m,kinds,categories,history,earned,screenshotGap,loggedAtSnapshot,totalSparks:earned.sparks+(screenshotGap??0),
+    return {...m,kinds,categories,history,earned,screenshotGap,loggedAtSnapshot,snapshotBreakdown,totalSparks:earned.sparks+(screenshotGap??0),
       totalSparksComplete:earned.unknownSparks===0&&snapshot!==null,
       ratingPB,ratingAvg,ratingTotal:ratingPB+ratingAvg,ratingComplete:['piggy','space','kraken'].every(k=>kinds[k].knownScores>0&&kinds[k].unknownScores===0)};
   });

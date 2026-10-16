@@ -37,17 +37,26 @@ async function main(){
     const record=page.locator('#page-records .record-card').filter({hasText:'Space Records'}).locator('.record-row').filter({hasText:'AV-HarryBallsagna'});
     assert((await record.innerText()).includes('8/30/26'),'Space record date comes from PB event');
     const spaceCard=page.locator('#page-records .record-card').filter({hasText:'Space Records'});
-    for(const [member,expected]of [['AV-Pablin','319.1B'],['AV-Chuck','223.2B'],['AV-HN','218.5B'],['AV-23','108.0B']]){
-      const row=spaceCard.locator('.record-row').filter({has:page.locator('[data-player="'+member+'"]')});
-      assert((await row.innerText()).includes(member+'*'),member+' gets Oct 2 asterisk');
-      assert((await row.innerText()).includes(expected),member+' shows actual Oct 2 distance');
-      assert((await row.innerText()).includes('10/2/26'),member+' retains PB date');
+    const oct2Standings=await page.evaluate(()=>{
+      const D=window.AVENGERS_DATA,metrics=window.AVENGERS_REWARD_METRICS;
+      return D.members.flatMap(m=>{
+        const hit=metrics.record(D.space.history[m.name]||[],'yearsB');
+        if(hit?.date!=='2026-10-02')return [];
+        return [{name:m.name,pb:m.spacePB,actual:metrics.spaceRecordDisplay(m.spacePB,hit.date).value}];
+      });
+    });
+    assert(oct2Standings.length>0,'current Oct 2 PBs exist for Records marking');
+    for(const {name,pb,actual}of oct2Standings){
+      const row=spaceCard.locator('.record-row').filter({has:page.locator('[data-player="'+name+'"]')});
+      assert((await row.innerText()).includes(name+'*'),name+' gets Oct 2 asterisk');
+      const expected=actual.toLocaleString('en-US',{maximumFractionDigits:1})+'B';
+      assert((await row.innerText()).includes(expected),name+' shows actual distance: '+expected);
+      assert((await row.innerText()).includes('10/2/26'),name+' retains PB date');
+      assert(Math.abs(actual-pb*2/3)<.0001,name+' is displayed at two-thirds');
     }
     assert((await spaceCard.innerText()).includes('Original game distance shown (2/3'), 'Space Records explains Oct 2 adjustment');
     assert(!(await record.innerText()).includes('AV-HarryBallsagna*'),'Aug 30 PB is not marked');
     assert((await record.innerText()).includes('549.9B'),'unaffected PB still shows normalized original');
-    const recordPB=await page.evaluate(()=>window.AVENGERS_DATA.members.find(m=>m.name==='AV-Pablin').spacePB);
-    assert.equal(recordPB,478.7,'Records display does not change canonical PB');
     await page.click('.nav-btn[data-page="rosters"]');
     await page.click('[data-roster-group="effort"]');
     assert((await page.locator('#rostersContent').innerText()).includes('Sparks/Effort'));

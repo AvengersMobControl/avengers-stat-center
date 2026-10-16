@@ -28,7 +28,17 @@ jobs:
         with:
           node-version: '22'
       - name: Verify full-site projections before publication
-        run: node --test scripts/event-projection-core.test.cjs scripts/site-release.test.cjs scripts/assemble-result-review.test.cjs scripts/audit-result-pagination.test.cjs scripts/hash-original-image.test.cjs scripts/fetch-original-discord-image.test.cjs scripts/verify-live-pages.test.cjs
+        run: node --test scripts/event-projection-core.test.cjs scripts/site-release.test.cjs scripts/assemble-result-review.test.cjs scripts/audit-result-pagination.test.cjs scripts/hash-original-image.test.cjs scripts/fetch-original-discord-image.test.cjs scripts/verify-live-pages.test.cjs scripts/export-event-summary.test.cjs
+      - name: Validate event summary PNG output against approved ledger
+        run: |
+          python3 -m pip install --disable-pip-version-check Pillow==11.3.0
+          python3 -m unittest discover -s scripts -p test_render_event_summary.py -v
+          node scripts/export-event-summary.cjs approved-summary-release.json
+          for kind in piggy flash kraken; do
+            for clan in AVENGERS AV-2; do
+              python3 scripts/render-event-summary.py reports/approved-summary-release.json "reports/event-summary-preview-${kind}-${clan}.png" --kind "$kind" --clan "$clan"
+            done
+          done
       - name: Stage a coherent versioned site
         run: node scripts/build-site.cjs
       - name: Install browser verification dependency

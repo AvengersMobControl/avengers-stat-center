@@ -315,3 +315,43 @@ console.log('ROSTER_AUDIT_NEGATIVE_STARS '+JSON.stringify(report.negativeStars.s
 console.log('ROSTER_AUDIT_NEGATIVE_SPARKS '+JSON.stringify(report.negativeSparks.slice(0,20)));
 console.log('ROSTER_AUDIT_EVENT_BASE_DIFFERENCES '+JSON.stringify(report.historicEventDifferenceNames));
 console.log('ROSTER_AUDIT_MISSING '+JSON.stringify({spark:report.missingSparkNames,star:report.missingStarNames}));
+
+
+// The legacy replay above is a *source completeness diagnostic*; it cannot
+// include the staged-and-approved canonical 2026-10-16 event revisions.
+// Publish a separate release-version-matched roster audit, otherwise an audit
+// downloaded after deployment could misleadingly quote older Hoops totals.
+const publishedRelease=require('./create-site-release.cjs').create();
+const publishedRoster=new Set(current.map(r=>canonical(r.name)));
+const publishedPeople=publishedRelease.projection.people
+  .filter(p=>publishedRoster.has(p.name))
+  .map(p=>({
+    name:p.name,status:p.status,loggedSparks:p.earned.sparks,
+    screenshotGap:p.screenshotGap,totalSparks:p.totalSparks,
+    loggedStars:p.earned.stars,missingEventRewards:p.earned.unknownSparks,
+    snapshotSources:p.snapshotBreakdown
+  }));
+const publishedAudit={
+  source:'Reviewed canonical event projection (includes approved updates)',
+  version:publishedRelease.projection.version,
+  rosterCount:publishedPeople.length,
+  members:publishedPeople
+};
+assert.equal(publishedPeople.length,current.length,'Published roster audit must cover all current members');
+for(const p of publishedPeople)assert(Math.abs(p.totalSparks-p.loggedSparks-(p.screenshotGap||0))<0.001,
+  'Published Total must be Logged + screenshot historical gap for '+p.name);
+fs.writeFileSync(path.join(dir,'roster-reconciliation-audit.published.json'),
+  JSON.stringify(publishedAudit,null,2)+'\n');
+const publishedHoops=publishedPeople.find(p=>p.name==='AV-Hoops');
+if(publishedHoops){
+  const afterSep29=publishedRelease.projection.people
+    .find(p=>p.name==='AV-Hoops').history
+    .filter(r=>r.date>='2026-09-30').reduce((n,r)=>n+(r.sparks||0),0);
+  console.log('HOOPS_SPARKS_PUBLISHED '+JSON.stringify({
+    september29Snapshot:12416538,trackedRewardsAfterSeptember29:afterSep29,
+    loggedSparks:publishedHoops.loggedSparks,
+    unloggedSparks:publishedHoops.screenshotGap,
+    totalSparks:publishedHoops.totalSparks,
+    source:'Approved canonical release (not legacy replay)'
+  }));
+}

@@ -221,7 +221,10 @@
       '<th>#</th><th>Member</th><th>Clan</th><th class="num">Flash Sparks</th><th class="num">Piggy Sparks</th><th class="num">Space Sparks</th>'+
       '<th class="num">Piggy Sparks/Effort / line</th><th class="num">Space Sparks/Effort / B</th><th class="num">Flash Sparks/Effort / line</th><th class="num">Kraken Sparks</th><th class="num">Total Sparks</th><th class="num">Total Stars</th>'+
       '</tr></thead><tbody data-league-body></tbody></table></div>'+
-      '<div class="league-rewards-footnote">Stars are member rewards (not total race pots). Flash, Piggy and Space Sparks/Stars come from recorded final results. '+
+      '<div class="league-rewards-footnote"><strong>Recorded rewards are not verified full clan race-pot totals.</strong> '+
+      (Array.isArray(p.partialEventIds)&&p.partialEventIds.length?'<strong>'+num(p.partialEventIds.length)+' event sets have partial screenshot coverage.</strong> ':'')+
+      ((p.unknownClanRows||0)>0?'<strong>'+num(p.unknownClanRows)+' result rows have unknown event-time clan; not assigned to a clan.</strong> ':'')+
+      'Stars are member rewards (not total race pots). Flash, Piggy and Space Sparks/Stars come from recorded final results. '+
       'Older Kraken Sparks marked * are estimates (damage × 750 for AVENGERS or × 500 for AV-2); clan is inferred from that league’s most recent recorded Piggy/Space event. '+
       'Members without evidence of their historical Kraken clan are not assigned estimated Kraken Sparks. '+
       'October Kraken Sparks are from the recorded event import. Historical Flash rewards can be incomplete where screenshots are missing. '+

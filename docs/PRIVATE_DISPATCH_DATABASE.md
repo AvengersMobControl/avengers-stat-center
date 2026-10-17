@@ -1,3 +1,10 @@
+## Current production deployment — VERIFIED (2026-10-16/17)
+**This section supersedes the historical temporary-branch status below.** Leader explicitly approved the production migration and cleanup. Migration `4e339ecb-c779-44c1-a5da-9c3c786e74b3` was applied to Neon project `wandering-dream-60244468` / branch `br-hidden-sound-b59pbiav` / DB `avengers_private` from the reviewed `001_private_dispatch_ledger.sql`. All five tables, three uniqueness safety indexes, six-column intent/receipt FK, zero ledger/audit rows and three hard-off runtime flags were verified on actual production. The approved temporary branch `br-fragrant-night-b5le2syd` and older superseded `br-curly-voice-b5qqhmoy` are **both deleted**, leaving production alone. The Vercel `AVENGERS_DISPATCH_DATABASE_URL` remains encrypted and production-only.
+
+**Critical unresolved permission issue:** Neon-created `avengers_dispatch_app` inherits an elevated role. The migration granted it no additional explicit privileges; this **does not** neutralize its inherited privileges. Vercel also currently has an owner-level database connection. No live serverless/public endpoint may use these credentials until a truly restricted role is independently verified and the production application credential is rotated. No Discord transport, send/delete operation or automatic publishing was enabled. Further runtime integration and explicit authorization remain required. Everything below about *migration not yet applied* is historical pre-deployment guidance and should not be followed as current instructions.
+
+---
+
 # AVENGERS private Discord publication database — migration approval required
 
 **State (2026-10-16/17):** PostgreSQL 17 Neon project `avengers-stat-center-private`, database `avengers_private`, connected to Vercel project `league-hq/avengers-stat-center` via encrypted **production-only** `AVENGERS_DISPATCH_DATABASE_URL`. The app is not using it to publish anything. No actual Discord message IDs, screenshots, bot tokens, payout figures or personal secrets are committed to GitHub.

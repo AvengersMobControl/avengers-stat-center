@@ -1,3 +1,10 @@
+## 2026-10-17 — #4 original-image proof binding staged (PR #81)
+
+- **Decision:** final screenshot candidates must reference actual original Discord CDN bytes, not an arbitrary 64-character digest or transcoded preview. Keep the original source URL, private IDs and operator mapping out of the repository and public site. Event approval, final-vs-progress image classification and game result review remain separate mandatory human gates.
+- **Implementation (branch `feat/result-original-proof-binding-20261017`, PR #81):** private `reviewKey` on each final visual-review entry must resolve uniquely to the `fetch-original-discord-image.cjs` receipt. The review CLI fails closed without `--proofs` and rejects absent/unused/duplicate receipt keys, hash mismatch, invalid MIME/length and unverified/manual proof provenance. `assemble()` continues to support synthetic test inputs; private keys are removed before candidate output. New tests participate in staged PR and Pages release gates.
+- **Safety:** A JSON receipt is NOT a Discord cryptographic signature; the reviewer must establish that the attachment URL/ID, fetched original bytes and inspected screenshot are the same capture. No live CDN bytes were accessed in this session; tests use synthetic hashes. No scores/Sparks/Stars, historical baselines, approved PNG art, monitoring, Neon credentials, live Discord publisher/deleter or paused UTC #3 modified.
+- **Verification:** see PR #81 for CI/merge outcome; only claim production when actual Pages post-deploy exact SHA/browser check succeeds. **#4 remains open** pending real original bytes, complete final-image review, specific parsed-result approval and first successful coherent new-event import.
+
 ## 2026-10-16/17 — #8 SQL-created restricted Neon runtime role tested; production role migration awaiting confirmation
 
 ## 2026-10-17 monitoring rollout - isolated live verification

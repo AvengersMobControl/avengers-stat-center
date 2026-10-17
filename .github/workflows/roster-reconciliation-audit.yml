@@ -15,6 +15,7 @@ on:
       - 'scripts/report-council-minimums.cjs'
       - 'scripts/audit-roster-reconciliation.cjs'
       - 'scripts/report-prior-logging-sparks.cjs'
+      - 'data/sparks-prior-to-logging-2026-10-16.json'
       - 'scripts/audit-transfer-restorations.cjs'
       - 'scripts/roster-event-breakdown.test.cjs'
       - 'scripts/audit-sparks-root-cause.cjs'
@@ -57,4 +58,5 @@ jobs:
             reports/sparks-root-cause-diagnostic.*
             reports/sparks-transfer-restorations.*
             reports/prior-to-logging-sparks.*
+            reports/official-unlogged-sparks.*
           if-no-files-found: warn

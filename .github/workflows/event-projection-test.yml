@@ -13,7 +13,8 @@ on:
       - 'scripts/plan-event-summary-dispatch*.cjs'
       - 'scripts/private-summary-publication*.cjs'
       - 'database/migrations/*.sql'
-      - 'scripts/private-dispatch-schema.test.cjs'
+      - 'scripts/private-dispatch-role.test.cjs'
+      - 'scripts/private-dispatch-schema.test.cjs scripts/private-dispatch-role.test.cjs'
       - 'scripts/render-event-summary.py'
       - 'scripts/test_render_event_summary.py'
       - 'scripts/export-event-summary*.cjs'
@@ -57,7 +58,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test scripts/reward-metrics.test.cjs scripts/event-projection-core.test.cjs scripts/council-minimums-core.test.cjs scripts/roster-event-breakdown.test.cjs scripts/sparks-ui-source.test.cjs scripts/site-release.test.cjs scripts/stage-event-update.test.cjs scripts/assemble-result-review.test.cjs scripts/audit-result-pagination.test.cjs scripts/hash-original-image.test.cjs scripts/fetch-original-discord-image.test.cjs scripts/verify-live-pages.test.cjs scripts/export-event-summary.test.cjs scripts/plan-event-summary-dispatch.test.cjs scripts/private-summary-publication-state.test.cjs scripts/private-dispatch-schema.test.cjs scripts/audit-six-clan-leagues.test.cjs
+      - run: node --test scripts/reward-metrics.test.cjs scripts/event-projection-core.test.cjs scripts/council-minimums-core.test.cjs scripts/roster-event-breakdown.test.cjs scripts/sparks-ui-source.test.cjs scripts/site-release.test.cjs scripts/stage-event-update.test.cjs scripts/assemble-result-review.test.cjs scripts/audit-result-pagination.test.cjs scripts/hash-original-image.test.cjs scripts/fetch-original-discord-image.test.cjs scripts/verify-live-pages.test.cjs scripts/export-event-summary.test.cjs scripts/plan-event-summary-dispatch.test.cjs scripts/private-summary-publication-state.test.cjs scripts/private-dispatch-schema.test.cjs scripts/private-dispatch-role.test.cjs scripts/audit-six-clan-leagues.test.cjs
       - name: Verify six canonical event PNG previews
         run: |
           python3 -m pip install --disable-pip-version-check Pillow==11.3.0

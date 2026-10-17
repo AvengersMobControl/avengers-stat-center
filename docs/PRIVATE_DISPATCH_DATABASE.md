@@ -1,3 +1,23 @@
+## October 16/17 — Restricted runtime role design (prepared, NOT yet production)
+
+**Access-control finding:** Neon `create_postgres_role` placed `avengers_dispatch_app` in the elevated `neon_superuser` group with both `INHERIT` and `SET ROLE` permissions. It could DELETE private ledger rows and modify the supposedly hard-off runtime safety flags despite no direct grants. The production account's SQL role **cannot revoke** the managed `neon_superuser` membership (`permission denied`). Do NOT use or advertise that auto-created role as least privilege.
+
+**Working alternative:** A **SQL-created** `avengers_dispatch_runtime` role, using PostgreSQL defaults, was prepared on a **temporary** Neon branch. Verified `rolsuper=false`, `rolcreaterole=false`, `rolcreatedb=false`, `rolcanlogin=true`, with **zero inherited roles**. It has only `CONNECT` to this DB, `USAGE` on `avengers_dispatch_private`, `SELECT/INSERT/UPDATE` on publication slots/intents/receipts, `SELECT/INSERT` on private audit events and `SELECT` on kill switches. Effective privilege queries verified `slots INSERT=true`, `slots DELETE=false`, `audit INSERT=true`, `audit UPDATE=false`, `safety SELECT=true`, `safety UPDATE=false`, `database CREATE=false`. All kill switches stayed FALSE, source data/receipts zero. Actual limited-role login **not yet tested**, because the SQL-created role has `rolpassword=NULL`.
+
+Versioned migration: `database/migrations/002_restrict_dispatch_app_role.sql` (**historical filename**, contents actually create `avengers_dispatch_runtime`; leave the old elevated role unused). The **exact executable SQL** is provided without leading commentary because Neon's migration parser rejected commented versions with a syntax error. Only use the reviewed SQL, not ad hoc GRANTs. New static Node regression and CI ensure no elevated role membership, DELETE/TRUNCATE/CREATE, kill-switch writes or hardcoded credentials.
+
+- **Neon prepared migration:** `7ae71335-068f-48cb-abf8-73bee07abad8`
+- **Temporary branch:** `br-holy-credit-b5isd6p4` (reviewed test branch; NO production application yet)
+- **Parent production branch:** `br-hidden-sound-b59pbiav`
+- **Project / database:** `wandering-dream-60244468` / `avengers_private`
+- **Production Vercel secret:** existing encrypted `AVENGERS_DISPATCH_DATABASE_URL` **still uses owner credentials**; no secret rotation or runtime changes yet.
+
+**Next explicit approval required:** Neon `complete_database_migration` for the exact versioned SQL, followed by production read-only inspection. Neither tests nor a GitHub merge authorize applying to production automatically. Password initialization must be done *separately* through an authorized private secrets channel: Neon cannot reset a role with a null password (HTTP 422); the available tool would require setting a cryptographically strong initial password by a protected mechanism first. NEVER commit/embed passwords, print connection strings, or insert secrets in CI logs. After that, validate an actual session as restricted role, and only then rotate Vercel's **production-only encrypted secret**, with a tested rollback procedure. Do not expose a serverless handler or activate Discord sends/deletes until end-to-end verification and separate leader approval. The old elevated auto-created role should be disabled only after explicit reviewed migration, if confirmed unused.
+
+Superseded earlier test branch `br-young-glitter-b5xbpfh0` was canceled and deleted; the current test branch `br-holy-credit-b5isd6p4` is the only prepared role migration. No public website, roster, historical Sparks, accepted event payout or approved PNG changes.
+
+---
+
 ## Current production deployment — VERIFIED (2026-10-16/17)
 **This section supersedes the historical temporary-branch status below.** Leader explicitly approved the production migration and cleanup. Migration `4e339ecb-c779-44c1-a5da-9c3c786e74b3` was applied to Neon project `wandering-dream-60244468` / branch `br-hidden-sound-b59pbiav` / DB `avengers_private` from the reviewed `001_private_dispatch_ledger.sql`. All five tables, three uniqueness safety indexes, six-column intent/receipt FK, zero ledger/audit rows and three hard-off runtime flags were verified on actual production. The approved temporary branch `br-fragrant-night-b5le2syd` and older superseded `br-curly-voice-b5qqhmoy` are **both deleted**, leaving production alone. The Vercel `AVENGERS_DISPATCH_DATABASE_URL` remains encrypted and production-only.
 

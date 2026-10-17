@@ -33,13 +33,24 @@ function audit(release){
   // can be rounding, not actual unrecorded historical rewards.
   const saved=require('../data/sparks-prior-to-logging-2026-10-16.json');
   const committed=saved.amounts[id]||0;
+  // Only user-approved whole-number Unlogged Sparks enter the canonical total.
+  // The 1% exclusion was a ONE-TIME decision, not a recurring percentage test
+  // that could silently clear approved history as new Logged Sparks arrive.
   if(Math.abs(current-committed)>0.001)
-   throw Error('Frozen historical Sparks changed for '+id);
-  if(maxObserved>=saved.roundingReviewThreshold
-     &&Math.abs(current-maxObserved)>0.500001)
-   throw Error('Pre-logging amount differs from rounded screenshot evidence for '+id);
-  if(maxObserved>0&&maxObserved<saved.roundingReviewThreshold&&current!==0)
-   throw Error('Small rounding candidate not held for '+id);
+   throw Error('User-locked Unlogged Sparks changed for '+id);
+  if(committed>0&&Math.abs(committed-maxObserved)>0.500001)
+   throw Error('Approved Unlogged Sparks lack matching screenshot evidence for '+id);
+  if(saved.excludedBelowOnePercent?.[id]){
+   const excluded=saved.excludedBelowOnePercent[id];
+   if(current!==0||excluded.sharePctAtApproval>=1)
+    throw Error('Excluded sub-1% balance incorrectly restored for '+id);
+   if(Math.abs(excluded.originalUnloggedSparks-maxObserved)>0.500001)
+    throw Error('Excluded sub-1% evidence lost for '+id);
+  }else if(saved.excludedRoundingReview?.[id]){
+   if(current!==0||maxObserved>=1000)
+    throw Error('Sub-1000 rounding candidate incorrectly restored for '+id);
+  }else if(committed===0&&maxObserved>=1000)
+   throw Error('Unreviewed substantial historical Sparks gap for '+id);
   if(Math.abs(p.totalSparks-p.earned.sparks-current)>0.001)
    throw Error('Sparks reconciliation failed for '+id);
   return {name:id,roster:r.status,logged:p.earned.sparks,oldGap:previous,

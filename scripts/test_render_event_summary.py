@@ -183,6 +183,13 @@ class TemporarilyApprovedTemplateTests(unittest.TestCase):
         self.assertEqual(registry["space"]["status"], "approved-existing-unchanged")
         self.assertEqual(set(registry["templates"]), {"piggy", "flash", "kraken"})
         self.assertEqual(sum(len(x["clans"]) for x in registry["templates"].values()), 6)
+        expected = {kind + ":" + clan for kind in ("piggy", "flash", "kraken")
+                    for clan in ("AVENGERS", "AV-2")}
+        images = registry["baseline"]["previewImageSHA256"]
+        self.assertEqual(set(images), expected, "Pin all six visually reviewed PNGs")
+        self.assertTrue(all(len(digest) == 64 and all(c in "0123456789abcdef" for c in digest)
+                            for digest in images.values()))
+        self.assertEqual(registry["baseline"]["previewArtifactId"], 12081364157)
         for kind, template in registry["templates"].items():
             self.assertEqual(template["status"], "temporarily-approved")
             self.assertEqual(template["version"], kind + "-temp-v1-20261016")

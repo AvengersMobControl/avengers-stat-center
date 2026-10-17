@@ -29,6 +29,26 @@ const dir=path.join(root,'reports');fs.mkdirSync(dir,{recursive:true});
 fs.writeFileSync(path.join(dir,'prior-to-logging-sparks.json'),JSON.stringify({version:release.projection.version,summary,rows},null,2)+'\n');
 const cols=['name','clan','loggedSparks','priorToLoggingSparks','roundedTotalSparks','priorPercent'];
 fs.writeFileSync(path.join(dir,'prior-to-logging-sparks.csv'),[cols.join(','),...rows.map(r=>cols.map(k=>r[k]).join(','))].join('\n')+'\n');
+
+const official={
+ approvedStatus:'leader-approved, immutable unless explicitly directed by leader',
+ approvedPctThreshold:1,
+ approvedCount:positives.length,
+ approvedTotalUnloggedSparks:summary.priorTotal,
+ members:positives.map(r=>({
+  name:r.name,clan:r.clan,loggedSparks:r.loggedSparks,
+  unloggedSparks:r.priorToLoggingSparks,totalSparks:r.totalSparks,
+  percentOfTotal:r.priorPercent,
+  evidence:r.screenshots
+ }))
+};
+fs.writeFileSync(path.join(dir,'official-unlogged-sparks.json'),JSON.stringify(official,null,2)+'\n');
+const officialCols=['name','clan','loggedSparks','unloggedSparks','totalSparks','percentOfTotal'];
+fs.writeFileSync(path.join(dir,'official-unlogged-sparks.csv'),
+ [officialCols.join(','),...official.members.map(m=>officialCols.map(k=>m[k]).join(','))].join('\n')+'\n');
+console.log('OFFICIAL_UNLOGGED_SPARKS '+JSON.stringify({members:official.approvedCount,
+ totalUnloggedSparks:official.approvedTotalUnloggedSparks}));
+
 console.log('PRIOR_TO_LOGGING_SUMMARY '+JSON.stringify(summary));
 console.log('PRIOR_TO_LOGGING_MEMBERS '+JSON.stringify(positives.map(r=>({name:r.name,gap:r.priorToLoggingSparks,clan:r.clan}))));
 

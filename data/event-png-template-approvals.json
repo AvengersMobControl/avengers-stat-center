@@ -9,7 +9,16 @@
     "rendererPath": "scripts/render-event-summary.py",
     "rendererGitBlobSha": "0095f8e2fc3164fe5899da66b66393c17b61c756",
     "verifiedPreviewRun": 38983713426,
-    "previewArtifactId": 12081364157
+    "previewArtifactId": 12081364157,
+    "previewProjectionVersion": "56774157dc6459cfc9736ae9c9349531622dbb5f038289c4829574e3e17cc4dc",
+    "previewImageSHA256": {
+      "piggy:AVENGERS": "6f7f1cb51ece2e0f7d738f3961887d9fd01ef2627c952c52a2f0fc35638932cb",
+      "piggy:AV-2": "aeac07e68b99ff60d07d07891174d2a60ee5c6d36071d7a089409f8514b87e69",
+      "flash:AVENGERS": "f48dd77c42b17ec409903def1e8f03bc14a993eaa443095124ca20a9973fa14f",
+      "flash:AV-2": "9421cd5436fd127cef807a435c39835eeaee46a8c8001075a68f79eaf3c906c1",
+      "kraken:AVENGERS": "9aec54f869e3cabf5518679a87de343294431238e6f76bc89a4021e50aea25e3",
+      "kraken:AV-2": "b87e2088da5df7f822b02185384f097a0634c8eb8804a198c15e1b29cdc106bf"
+    }
   },
   "space": {
     "status": "approved-existing-unchanged",

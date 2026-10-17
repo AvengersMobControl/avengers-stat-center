@@ -82,6 +82,8 @@ function auditRelease(release){
   assert.equal(ui.memberEventCount,p.members.reduce((n,x)=>n+x.events,0),'League row count drift');
   assert.equal(ui.gaps,p.members.reduce((n,x)=>n+x.missing,0),'League reward gap drift');
   assert.equal(ui.estimates,p.members.filter(x=>x.estimatedKraken>0).length,'Kraken estimate count drift');
+  assert.deepEqual(ui.partialEventIds,p.partialEvents,'Partial screenshot coverage drift '+p.end);
+  assert.equal(ui.unknownClanRows,p.clanSums.Unknown.events,'Unknown historical clan rows drift '+p.end);
   for(const clan of CLANS){
    const r=p.clanSums[clan],x=source.clans[clan];
    assert(x,'Projection missing '+clan);

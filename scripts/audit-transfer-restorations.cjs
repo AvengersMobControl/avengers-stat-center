@@ -29,8 +29,17 @@ function audit(release){
   const previous=last?Math.max(0,last.allTimeSparks-tracked):0;
   const current=p.screenshotGap||0;
   const maxObserved=Math.max(0,...(p.snapshotBreakdown||[]).map(x=>x.gap));
-  if(Math.abs(maxObserved-current)>0.001)
-   throw Error('Prior-to-logging snapshot maximum incorrect for '+id);
+  // The saved baseline is authoritative. Minor positive screenshot residuals
+  // can be rounding, not actual unrecorded historical rewards.
+  const saved=require('../data/sparks-prior-to-logging-2026-10-16.json');
+  const committed=saved.amounts[id]||0;
+  if(Math.abs(current-committed)>0.001)
+   throw Error('Frozen historical Sparks changed for '+id);
+  if(maxObserved>=saved.roundingReviewThreshold
+     &&Math.abs(current-maxObserved)>0.001)
+   throw Error('Unreviewed substantial screenshot gap for '+id);
+  if(maxObserved>0&&maxObserved<saved.roundingReviewThreshold&&current!==0)
+   throw Error('Small rounding candidate not held for '+id);
   if(Math.abs(p.totalSparks-p.earned.sparks-current)>0.001)
    throw Error('Sparks reconciliation failed for '+id);
   return {name:id,roster:r.status,logged:p.earned.sparks,oldGap:previous,

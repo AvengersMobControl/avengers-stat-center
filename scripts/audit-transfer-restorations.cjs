@@ -28,18 +28,23 @@ function audit(release){
   const tracked=before?p.history.filter(x=>x.date<before).reduce((n,x)=>n+(x.sparks||0),0):p.earned.sparks;
   const previous=last?Math.max(0,last.allTimeSparks-tracked):0;
   const current=p.screenshotGap||0;
-  const groups=new Map();
-  for(const e of p.snapshotBreakdown||[]){
-   const key=e.clan+'|'+e.stintId;
-   groups.set(key,Math.max(groups.get(key)||0,e.gap));
-  }
-  if(Math.abs([...groups.values()].reduce((a,b)=>a+b,0)-current)>0.001)
-   throw Error('Duplicate/dropped screenshot stint for '+id);
+  const maxObserved=Math.max(0,...(p.snapshotBreakdown||[]).map(x=>x.gap));
+  // The saved baseline is authoritative. Minor positive screenshot residuals
+  // can be rounding, not actual unrecorded historical rewards.
+  const saved=require('../data/sparks-prior-to-logging-2026-10-16.json');
+  const committed=saved.amounts[id]||0;
+  if(Math.abs(current-committed)>0.001)
+   throw Error('Frozen historical Sparks changed for '+id);
+  if(maxObserved>=saved.roundingReviewThreshold
+     &&Math.abs(current-maxObserved)>0.001)
+   throw Error('Unreviewed substantial screenshot gap for '+id);
+  if(maxObserved>0&&maxObserved<saved.roundingReviewThreshold&&current!==0)
+   throw Error('Small rounding candidate not held for '+id);
   if(Math.abs(p.totalSparks-p.earned.sparks-current)>0.001)
    throw Error('Sparks reconciliation failed for '+id);
   return {name:id,roster:r.status,logged:p.earned.sparks,oldGap:previous,
    unlogged:current,total:p.totalSparks,recovered:current-previous,
-   screenshots:p.snapshotBreakdown?.length||0,stints:groups.size,
+   screenshots:p.snapshotBreakdown?.length||0,qualifyingScreenshots:(p.snapshotBreakdown||[]).filter(x=>x.gap>0).length,
    evidence:p.snapshotBreakdown};
  });
  if(rows.length!==100||new Set(rows.map(r=>r.name)).size!==100)

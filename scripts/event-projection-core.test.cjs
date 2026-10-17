@@ -113,54 +113,59 @@ test('dated lifetime Sparks gap persists after later earnings across a transfer'
  assert.equal(p.clans.AVENGERS.sparks,10);assert.equal(p.clans['AV-2'].sparks,10);
 });
 
-test('clan Sparks reset on transfer: preserve independent AVENGERS and AV-2 screenshot floors',()=>{
- let l=put(empty(),ev('piggy','avold','2026-09-22',10,'AVENGERS'));
- l=put(l,ev('space','av2new','2026-10-12',20,'AV-2'));
- const snapshots={A:[
-   {amount:500,beforeDate:'2026-09-30',clan:'AVENGERS'},
-   {amount:0,beforeDate:'2026-10-16',clan:'AV-2'}
- ]};
- const a=person(project(l,{members,snapshots}));
- assert.equal(a.screenshotGap,490,'AV-2 reset-to-zero must not erase earlier AVENGERS 490');
- assert.equal(a.totalSparks,510,'old AVENGERS 500 plus later AV-2 tracked 10');
- assert.equal(a.earned.sparks,20);
- assert.equal(a.snapshotBreakdown.length,2);
- assert.equal(a.snapshotBreakdown[0].loggedAtSnapshot,10);
- assert.equal(a.snapshotBreakdown[1].loggedAtSnapshot,10);
- const b=person(project(l,{members,snapshots:{A:[...snapshots.A,
-   {amount:600,beforeDate:'2026-10-17',clan:'AV-2'}]}}));
- assert.equal(b.screenshotGap,1080,'AV and AV-2 gaps add; same-clan screenshots never add twice');
- assert.equal(b.totalSparks,1100);
- const replay=person(project(l,{members:[...members].reverse(),snapshots:{A:[...snapshots.A].reverse()}}));
- assert.equal(replay.totalSparks,a.totalSparks,'roster and screenshot ordering irrelevant');
-});
-test('two dated snapshots from same clan do not double-count an overlapping stint',()=>{
- const l=put(empty(),ev('piggy','first','2026-09-12',10,'AVENGERS'));
- const evidence={A:[
-   {amount:500,beforeDate:'2026-09-15',clan:'AVENGERS'},
-   {amount:650,beforeDate:'2026-09-30',clan:'AVENGERS'}
- ]};
+test('pre-logging gap stays fixed after Space payout and transfer resets',()=>{
+ let l=put(empty(),ev('piggy','old','2026-09-22',1,'AVENGERS'));
+ l=put(l,ev('space','oct16','2026-10-16',1,'AV-2'));
+ const evidence={A:[{amount:500,beforeDate:'2026-09-30',clan:'AVENGERS'},
+  {amount:0,beforeDate:'2026-10-16',clan:'AV-2'}]};
  const p=person(project(l,{members,snapshots:evidence}));
- assert.equal(p.screenshotGap,640);
- assert.equal(p.totalSparks,650);
+ assert.equal(p.loggedAtSnapshot,10);
+ assert.equal(p.screenshotGap,490);
+ assert.equal(p.totalSparks,510);
+ assert.equal(p.snapshotBreakdown[1].gap,0);
+ const reversed=person(project(l,{members,snapshots:{A:[...evidence.A].reverse()}}));
+ assert.equal(reversed.screenshotGap,490);
+});
+test('different clan screens never create additive historical Sparks',()=>{
+ let l=put(empty(),ev('piggy','old','2026-09-22',1,'AVENGERS'));
+ l=put(l,ev('space','new','2026-10-12',1,'AV-2'));
+ const evidence={A:[{amount:500,beforeDate:'2026-09-30',clan:'AVENGERS'},
+   {amount:600,beforeDate:'2026-10-16',clan:'AV-2'}]};
+ const p=person(project(l,{members,snapshots:evidence}));
+ assert.equal(p.screenshotGap,580);
+ assert.equal(p.totalSparks,600);
+ assert.equal(p.snapshotBreakdown[0].gap,490);
+ assert.equal(p.snapshotBreakdown[1].gap,580);
+});
+test('smaller later same-clan screenshot never adds a second stint balance',()=>{
+ let l=put(empty(),ev('piggy','old','2026-09-20',1));
+ l=put(l,ev('space','new','2026-10-10',1));
+ const evidence={A:[{amount:500,beforeDate:'2026-09-30',clan:'AVENGERS'},
+  {amount:60,beforeDate:'2026-10-16',clan:'AVENGERS'}]};
+ const p=person(project(l,{members,snapshots:evidence}));
+ assert.equal(p.screenshotGap,490);
+ assert.equal(p.totalSparks,510);
+ assert.equal(p.snapshotBreakdown[1].gap,40);
+});
+test('Oct 16 pre-Space screenshot excludes same-day Space reward',()=>{
+ let l=put(empty(),ev('piggy','old','2026-10-12',1));
+ l=put(l,ev('space','space','2026-10-16',1));
+ const p=person(project(l,{members,snapshots:{A:{amount:60,beforeDate:'2026-10-16',clan:'AVENGERS'}}}));
+ assert.equal(p.screenshotGap,50);
+ assert.equal(p.totalSparks,70);
 });
 
-test('a lower later screenshot for same clan proves a separate reset stint and preserves both',()=>{
- let l=put(empty(),ev('piggy','old','2026-09-20',50,'AVENGERS'));
- l=put(l,ev('space','new','2026-10-10',60,'AVENGERS'));
- const snapshots={A:[
-   {amount:500,beforeDate:'2026-09-30',clan:'AVENGERS'},
-   {amount:60,beforeDate:'2026-10-16',clan:'AVENGERS'}
- ]};
- const p=person(project(l,{members,snapshots}));
- assert.equal(p.snapshotBreakdown.length,2);
- assert.equal(p.snapshotBreakdown[1].stintStart,'2026-09-30');
- assert.equal(p.snapshotBreakdown[0].gap,490);
- assert.equal(p.snapshotBreakdown[1].gap,50);
- assert.equal(p.screenshotGap,540);
- assert.equal(p.earned.sparks,20);
- assert.equal(p.totalSparks,560);
- // A reordered source array has the same historical result.
- const reversed=person(project(l,{members,snapshots:{A:[...snapshots.A].reverse()}}));
- assert.equal(reversed.totalSparks,560);
+test('approved prior-to-logging Sparks never change when newer events are logged',()=>{
+ let ledger=put(empty(),ev('piggy','before','2026-09-28',10));
+ const snapshots={A:[{amount:500,beforeDate:'2026-09-30',clan:'AVENGERS'}]};
+ const opts={members,snapshots,priorToLogging:{A:490,B:0,Untouched:0}};
+ const before=person(project(ledger,opts));
+ assert.equal(before.screenshotGap,490);
+ ledger=put(ledger,ev('space','future','2026-10-16',10,'AV-2'));
+ const after=person(project(ledger,opts));
+ assert.equal(after.screenshotGap,490);
+ assert.equal(after.totalSparks,510);
+ const changed=person(project(ledger,{...opts,snapshots:{A:[...snapshots.A,{amount:0,beforeDate:'2026-10-17',clan:'AV-2'}]}}));
+ assert.equal(changed.screenshotGap,490);
+ assert.equal(changed.totalSparks,510);
 });

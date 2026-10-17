@@ -120,21 +120,17 @@ test('real Hoops Sept 29 AVENGERS Sparks survive transfer to AV-2 on published r
  }));
 });
 
-test('AV-Adigarian lower later in-game AVENGERS Sparks proves a separate return stint',()=>{
- const player=BASE.projection.people.find(p=>p.name==='AV-Adigarian');
- assert(player,'AV-Adigarian canonical account missing');
- const older=player.snapshotBreakdown.find(s=>s.clan==='AVENGERS'&&s.amount===16851260);
- const later=player.snapshotBreakdown.find(s=>s.clan==='AVENGERS'&&s.amount===2228373);
- assert(older&&later,'Both leader-supplied screenshot contributions must be retained');
- assert.equal(older.beforeDate,'2026-09-30');
+test('Adigarian does not get artificial gap from a reset returning-clan counter',()=>{
+ const p=BASE.projection.people.find(x=>x.name==='AV-Adigarian');
+ assert(p);
+ const earlier=p.snapshotBreakdown.find(s=>s.clan==='AVENGERS'&&s.amount===16851260);
+ const later=p.snapshotBreakdown.find(s=>s.clan==='AVENGERS'&&s.amount===2228373);
+ assert(earlier&&later);
+ assert.equal(earlier.beforeDate,'2026-09-30');
  assert.equal(later.beforeDate,'2026-10-16');
- assert.notEqual(older.stintId,later.stintId,'AVENGERS reset cannot collapse old and new stint');
- assert.equal(later.stintStart,'2026-09-30','Do not invent actual transfer date');
- assert.equal(player.screenshotGap,player.snapshotBreakdown
-   .filter(s=>s.clan==='AVENGERS').reduce((n,s)=>n+s.gap,0)
-   +player.snapshotBreakdown.filter(s=>s.clan==='AV-2').reduce((n,s)=>n+s.gap,0));
+ assert.equal(p.screenshotGap,Math.max(0,...p.snapshotBreakdown.map(s=>s.gap)));
+ assert.equal(p.totalSparks,p.earned.sparks+p.screenshotGap);
 });
-
 
 const {audit:transferAudit}=require('./audit-transfer-restorations.cjs');
 test('transfer restoration reconciles every current member, not only Hoops',()=>{
@@ -157,5 +153,5 @@ test('transfer restoration reconciles every current member, not only Hoops',()=>
   .filter(r=>r.date>='2026-09-30').reduce((n,r)=>n+(r.sparks||0),0);
  assert(hoops.total>=12416538+after-0.001,
   'Hoops preserves screenshot plus every approved later reward');
- assert(result.rows.find(r=>r.name==='AV-Adigarian').stints>1);
+ assert(result.rows.find(r=>r.name==='AV-Adigarian').screenshots>=2);
 });

@@ -14,6 +14,7 @@ on:
       - 'scripts/council-minimums-core.test.cjs'
       - 'scripts/report-council-minimums.cjs'
       - 'scripts/audit-roster-reconciliation.cjs'
+      - 'scripts/report-prior-logging-sparks.cjs'
       - 'scripts/audit-transfer-restorations.cjs'
       - 'scripts/roster-event-breakdown.test.cjs'
       - 'scripts/audit-sparks-root-cause.cjs'
@@ -37,6 +38,8 @@ jobs:
         run: node --test scripts/sparks-ui-source.test.cjs
       - name: Check roster identities and reconcile rewards
         run: node scripts/audit-roster-reconciliation.cjs
+      - name: Generate fixed prior-to-logging Sparks roster report
+        run: node scripts/report-prior-logging-sparks.cjs
       - name: Diagnose Spark ledger inflation across all current members
         run: node scripts/audit-sparks-root-cause.cjs
       - name: Check Council compliance policy on synthetic historical fixtures
@@ -53,4 +56,5 @@ jobs:
             reports/council-minimums-audit.*
             reports/sparks-root-cause-diagnostic.*
             reports/sparks-transfer-restorations.*
+            reports/prior-to-logging-sparks.*
           if-no-files-found: warn

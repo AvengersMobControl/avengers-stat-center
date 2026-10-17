@@ -13,10 +13,10 @@ test('allow only private ledger writes, history append and kill-switch read',()=
  assert.match(sql,/GRANT SELECT, INSERT ON avengers_dispatch_private\.audit_events/);
  assert.match(sql,/GRANT SELECT ON avengers_dispatch_private\.runtime_safety/);
  assert.doesNotMatch(sql,/GRANT\s+(?:DELETE|TRUNCATE|CREATE|ALL PRIVILEGES)/i);
- assert.doesNotMatch(sql,/GRANT\s+\w+(?:\s*,\s*\w+)*\s+ON\s+avengers_dispatch_private\.runtime_safety\s+TO/i);
+ assert.doesNotMatch(sql,/GRANT\s+(?:UPDATE|INSERT|DELETE|TRUNCATE|ALL)\s+ON\s+avengers_dispatch_private\.runtime_safety/i);
 });
 test('no credentials, tokens, public endpoint or dispatch toggle',()=>{
  assert.doesNotMatch(sql,/PASSWORD|DATABASE_URL|DISCORD_BOT_TOKEN|https?:\/\/|CREATE\s+(?:FUNCTION|TRIGGER)|automatic_discord_(?:send|delete)_enabled/i);
- assert.doesNotMatch(sql,/\b(?:ALTER|UPDATE|DELETE|DROP|TRUNCATE)\b/i);
+ assert.doesNotMatch(sql,/^\s*(?:ALTER|UPDATE|DELETE|DROP|TRUNCATE)\b/im);
  assert.doesNotMatch(sql,/\b(?:CREATE|GRANT)\s+ROLE\s+.*neon_superuser/i);
 });

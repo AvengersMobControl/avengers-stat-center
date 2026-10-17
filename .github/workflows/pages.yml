@@ -81,3 +81,12 @@ jobs:
                 : 'GitHub Pages public post-deploy verification incomplete or failed',
               target_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             });
+      - name: Emit sanitized AVENGERS release outcome (best effort)
+        if: always() && !cancelled()
+        continue-on-error: true
+        env:
+          AVENGERS_POSTHOG_ENABLED: ${{ vars.AVENGERS_POSTHOG_ENABLED }}
+          AVENGERS_POSTHOG_PROJECT_ID: '670043'
+          AVENGERS_POSTHOG_PROJECT_TOKEN: ${{ secrets.AVENGERS_POSTHOG_PROJECT_TOKEN }}
+          AVENGERS_TELEMETRY_OUTCOME: ${{ steps.live_verify.outcome == 'success' && 'success' || 'failure' }}
+        run: node scripts/posthog-operations.cjs

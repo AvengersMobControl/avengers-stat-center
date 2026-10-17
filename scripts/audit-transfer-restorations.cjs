@@ -36,8 +36,8 @@ function audit(release){
   if(Math.abs(current-committed)>0.001)
    throw Error('Frozen historical Sparks changed for '+id);
   if(maxObserved>=saved.roundingReviewThreshold
-     &&Math.abs(current-maxObserved)>0.001)
-   throw Error('Unreviewed substantial screenshot gap for '+id);
+     &&Math.abs(current-maxObserved)>0.500001)
+   throw Error('Pre-logging amount differs from rounded screenshot evidence for '+id);
   if(maxObserved>0&&maxObserved<saved.roundingReviewThreshold&&current!==0)
    throw Error('Small rounding candidate not held for '+id);
   if(Math.abs(p.totalSparks-p.earned.sparks-current)>0.001)

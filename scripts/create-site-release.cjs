@@ -53,7 +53,11 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
       ...(r.stintStart?{stintStart:r.stintStart}:{})
     });
   }
-  const p=project(ledger,{aliases,members:[...memberMap.values()].map(m=>({name:m.name,status:m.status})),snapshots,arenaStart:D.meta.arenaStart});
+  const fixed=JSON.parse(fs.readFileSync(path.join(root,'data/sparks-prior-to-logging-2026-10-16.json'),'utf8'));
+  const priorToLogging=fixed.amounts;
+  // Screenshots remain provenance only. Historical Sparks are frozen on
+  // approval and are never recalculated after new events or clan transfers.
+  const p=project(ledger,{aliases,members:[...memberMap.values()].map(m=>({name:m.name,status:m.status})),snapshots,priorToLogging,arenaStart:D.meta.arenaStart});
   const metrics=require('../event-reward-metrics.js');
   for(const person of p.people)person.effort=Object.fromEntries(['piggy','space','flash'].map(kind=>[kind,metrics.summarize(person.history.filter(r=>r.kind===kind))]));
   const activeEvents=p.events.filter(e=>e.status!=='revoked');

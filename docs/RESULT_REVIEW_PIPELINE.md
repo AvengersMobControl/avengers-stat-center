@@ -5,11 +5,12 @@ This is a **read-only intake adapter for already visually reviewed image data**,
 ## Workflow
 
 1. Retrieve only authorized Results-channel screenshots using the existing approved read-only review workflow. Classify each image as **final-claim**, **preliminary** or **progress** by visual inspection. A digest or reward amount is not proof an image is final.
-2. Supply a JSON review containing the event identity/kind/date/score unit and multiple screenshot entries. Every verified final image requires its **actual image SHA-256**, verifiedFinal=true, matching event identity and parsed player rows. Each player needs the original **event-time clan**, exact score, and Sparks/Stars numbers or explicit null for unknown. Do not derive zero or current-clan identity from absent data.
-3. Run: node scripts/assemble-result-review.cjs review.json --out safe-candidate.json
-4. The candidate is written only under gitignored reports/. Without --out, the unapproved candidate is printed. Full projected-site dry-run and changed-member checks occur without touching the approved source.
-5. Reconcile the preview with final screenshots and present it for explicit leader approval. The generated update always has approved=false. Conflicting rows, missing clan, wrong unit and wrong event identifiers fail without a candidate.
-6. Only after separately documented leader approval, set approved=true in the reviewed candidate, then run node scripts/stage-event-update.cjs reports/safe-candidate.json --apply in a development checkout, run the full projection/browser gate, review the data diff and publish the coherent site using normal PR/Pages deployment. No automatic Git commits, live imports or Discord messages.
+2. Supply a JSON review containing the event identity/kind/date/score unit and multiple screenshot entries. Every verified final image requires a private reviewKey bound to its **actual original CDN image SHA-256 receipt**, verifiedFinal=true, matching event identity and parsed player rows. Each player needs the original **event-time clan**, exact score, and Sparks/Stars numbers or explicit null for unknown. Do not derive zero or current-clan identity from absent data.
+3. For each final capture, record a private opaque `reviewKey` (e.g. `capture_A`). Independently fetch the exact authorized original attachment with `fetch-original-discord-image.cjs` and privately associate its printed receipt with that same `reviewKey`. Do not use a viewer WebP, guessed digest, message/attachment ID hash, or a screenshot re-encoding. The reviewer remains responsible for matching each receipt to the correct visible original.
+4. Run: `node scripts/assemble-result-review.cjs review.json --proofs private-original-receipts.json --out safe-candidate.json`. The CLI now **fails closed without** a private original-CDN proof receipt for every final-claim screenshot; hashes must match, and duplicate/unused receipts are rejected. The pure `assemble()` helper remains available for synthetic offline tests.
+5. The candidate is written only under gitignored reports/. Without `--out`, the unapproved candidate is printed. Full projected-site dry-run and changed-member checks occur without touching the approved source.
+6. Reconcile the preview with final screenshots and present it for explicit leader approval. The generated update always has approved=false. Conflicting rows, missing clan, wrong unit and wrong event identifiers fail without a candidate.
+7. Only after separately documented leader approval, set approved=true in the reviewed candidate, then run node scripts/stage-event-update.cjs reports/safe-candidate.json --apply in a development checkout, run the full projection/browser gate, review the data diff and publish the coherent site using normal PR/Pages deployment. No automatic Git commits, live imports or Discord messages.
 
 ## Example parsed input (SYNTHETIC ONLY; not an actual race or valid real screenshot)
 
@@ -30,7 +31,7 @@ This is a **read-only intake adapter for already visually reviewed image data**,
           "eventId": "space|2026-10-17",
           "eventDate": "2026-10-17",
           "eventKind": "space",
-          "imageSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "reviewKey": "capture_A",
           "rows": [
             {
               "player": "AV-Example",
@@ -46,6 +47,29 @@ This is a **read-only intake adapter for already visually reviewed image data**,
     }
 
 The sample name, date and hash are fixtures. Real candidates MUST compute SHA-256 from the actual original image bytes. Never substitute Discord IDs, user IDs, URLs, fabricated hashes or message identifiers. The output copies only image hashes and allowlisted gameplay metadata, not raw chat content, URLs or hidden screenshot context.
+
+## Private original-byte receipt manifest (reviewer-only)
+
+The CLI reads a **separate private file** containing the exact proof objects emitted by `fetch-original-discord-image.cjs`. For each final-claim screen in the parsed input, the reviewer chooses an opaque `reviewKey` and checks that the corresponding attachment URL, source IDs, visually inspected screenshot and downloaded original CDN response all refer to the **same** image. The receipt contains no source IDs or URL: the human-verified correspondence is an explicit trust boundary, not a cryptographically signed Discord attestation.
+
+Example **shape only**, with a deliberately non-genuine digest (never usable for real approval):
+
+    {
+      "schemaVersion": 1,
+      "receipts": [{
+        "reviewKey": "capture_A",
+        "proof": {
+          "imageSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "byteLength": 2048,
+          "contentType": "image/jpeg",
+          "provenance": "authorized-original-discord-cdn-response",
+          "verifiedFinal": false,
+          "approved": false
+        }
+      }]
+    }
+
+The binder `scripts/verify-result-image-proofs.cjs` refuses missing/unused/duplicated proof keys, wrong digests, transformed or manually attested provenance, unsupported image types, and bogus byte lengths. It removes private `reviewKey` before the accepted result assembler generates public-safe source hash references. Independent human final-status classification and exact event-time player/reward verification are still required. **A syntactically valid JSON receipt can be forged**; this gate checks consistency of separately obtained byte evidence, not a server signature or Discord origin authentication beyond the downloader's stated scope. Original bytes, private source metadata, signed URLs and receipt manifests must never be committed or deployed. The existing first genuinely new import and all automatic sending remain approval-gated.
 
 ## Safety, identity and coverage
 

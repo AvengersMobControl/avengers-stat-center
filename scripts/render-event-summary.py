@@ -13,6 +13,7 @@ import datetime as dt
 import hashlib
 import json
 import math
+import re
 import os
 from pathlib import Path
 
@@ -122,8 +123,13 @@ def resolve_summary(release, kind, clan, event_id=None):
                   and any(r.get("clan") == clan for r in e.get("rows", []))), None)
     prior_rows = [r for r in prior.get("rows", []) if r.get("clan") == clan] if prior else []
     prior_known = [numeric(r.get("score")) for r in prior_rows if numeric(r.get("score")) is not None]
+    flash_num = event.get("metadata", {}).get("flash") if kind == "flash" else None
+    if kind == "flash" and not flash_num:
+        parsed = re.search(r"PF(\d+)", event["id"], re.IGNORECASE)
+        flash_num = parsed.group(1) if parsed else None
     return {
         "eventId": event["id"], "date": event["date"], "kind": kind, "clan": clan,
+        "flashNumber": str(flash_num) if flash_num else None,
         "status": event["status"], "unit": event["unit"], "projectionVersion": projection["version"],
         "rows": rank_rows, "pbs": pbs, "firstTracked": first,
         "participantRows": len(rank_rows), "knownScoreSum": total_score,
@@ -177,8 +183,8 @@ def draw_png(model, dest):
         dr.arc((-550, -70 + shift, 900, 1270 + shift), 235, 55, fill="#10405a", width=2)
     kind = model["kind"]
     heading = KINDS[kind][0]
-    if kind == "flash":
-        heading += " #" + str(model["eventId"].split("|")[-1])
+    if kind == "flash" and model.get("flashNumber"):
+        heading += " #" + str(model["flashNumber"])
     if kind == "kraken":
         heading += " · MONTHLY RESULTS"
     else:
@@ -241,9 +247,13 @@ def draw_png(model, dest):
     box(rx,378,2355,1070)
     txt(rx+30,405,"TOP 10 — "+KINDS[kind][1],38,"fg",True)
     txt(rx+30,458,model["clan"]+" event-time competitors",23,"muted")
-    headers=[(rx+27,"#",False),(rx+83,"PLAYER",False),(rx+570,"SCORE",True),
-             (rx+765,"STARS",True),(rx+944,"SPARKS",True),(rx+1062,"SHARE",True),
-             (rx+1154,"SP / UNIT",True)]
+    if kind == "kraken":
+        headers=[(rx+27,"#",False),(rx+83,"PLAYER",False),(rx+570,"DAMAGE",True),
+                 (rx+855,"SPARKS",True),(rx+1030,"SHARE",True),(rx+1154,"PAYOUT",True)]
+    else:
+        headers=[(rx+27,"#",False),(rx+83,"PLAYER",False),(rx+570,"SCORE",True),
+                 (rx+765,"STARS",True),(rx+944,"SPARKS",True),(rx+1062,"SHARE",True),
+                 (rx+1154,"SP / LN",True)]
     for x, label, right in headers:
         txt(x,508,label,19,"muted",True,"ra" if right else None)
     for i, entry in enumerate(model["rows"][:10]):
@@ -253,14 +263,20 @@ def draw_png(model, dest):
         txt(rx+27,y,i+1,25,shade,True)
         fit(rx+83,y,display_name(entry["player"]),360,26,shade,True)
         txt(rx+570,y,format_score(kind,entry["score"]),23,"fg",True,"ra")
-        txt(rx+765,y,"N/A" if kind=="kraken" else format_number(entry["stars"]),22,"muted",False,"ra")
-        txt(rx+944,y,format_number(entry["sparks"]),23,"muted",False,"ra")
         share=entry["share"]
-        txt(rx+1062,y,f'{share*100:g}%' if share is not None else "—",
-            22,"muted",False,"ra")
-        effort=entry["sparks"]/entry["score"] if entry["sparks"] is not None and entry["score"] else None
-        txt(rx+1154,y,format_number(effort,1) if kind!="kraken" else "—",23,
-            "cyan",False,"ra")
+        share_text=f'{share*100:.1f}%' if share is not None else "—"
+        if kind=="kraken":
+            sparks_text=("≈" if entry["estimatedSparks"] and entry["sparks"] is not None else "")+format_number(entry["sparks"])
+            txt(rx+855,y,sparks_text,23,"muted",False,"ra")
+            txt(rx+1030,y,share_text,22,"muted",False,"ra")
+            payout="EST." if entry["estimatedSparks"] else ("UNKNOWN" if entry["sparks"] is None else "RECORDED")
+            fit(rx+1062,y,payout,118,18,"cyan")
+        else:
+            txt(rx+765,y,format_number(entry["stars"]),22,"muted",False,"ra")
+            txt(rx+944,y,format_number(entry["sparks"]),23,"muted",False,"ra")
+            txt(rx+1062,y,share_text,22,"muted",False,"ra")
+            effort=entry["sparks"]/entry["score"] if entry["sparks"] is not None and entry["score"] else None
+            txt(rx+1154,y,format_number(effort,1),23,"cyan",False,"ra")
     box(lx,869,1138,1070)
     txt(lx+28,893,"FIRST TRACKED "+heading.split(" · ")[0]+" RESULTS",27,"cyan",True)
     for i, entry in enumerate(model["firstTracked"][:4]):
@@ -280,9 +296,10 @@ def draw_png(model, dest):
         note(lx+30,1220,"Estimated or missing payouts stay labeled as such",1000)
         note(lx+30,1270,"No Kraken Stars or mixed-unit Sparks/Effort",1000)
     else:
-        note(lx+30,1170,"Lowest known Sparks per line · at least 3,500 lines",1000)
+        threshold=3500 if kind=="piggy" else 1
+        note(lx+30,1170,"Lowest known Sparks per line · "+("at least 3,500 lines" if kind=="piggy" else "positive Flash results"),1000)
         shouts=sorted((r for r in model["rows"] if r["sparks"] is not None
-                        and r["score"] is not None and r["score"] >= 3500),
+                        and r["score"] is not None and r["score"] >= threshold),
                       key=lambda r:(r["sparks"]/r["score"],r["player"]))[:3]
         for i, entry in enumerate(shouts):
             y=1205+i*44

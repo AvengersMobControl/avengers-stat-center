@@ -1,61 +1,45 @@
-# AVENGERS monitoring setup checkpoint — 2026-10-17
-AVENGERS / AV-2 ONLY. Workstream #78; master #13. Infrastructure is IN PROGRESS.
+# AVENGERS monitoring setup - verified 2026-10-17
+## Scope and status
+LIVE VERIFIED: canonical Pages website uptime; exact-commit release verification and isolated operational PostHog event; owner-only Better Stack email delivery.
+No clan result, frozen unlogged Sparks, aliases, approved PNGs, publishing state or Neon changes as part of this infrastructure setup.
 
-## Verified baseline
-- main before monitoring work: be4966d3a028164cf01ceb3d7e8b455b9ea54386.
-- GitHub Pages run 38998966990 and staged projection run 38998967003 SUCCESS for that SHA.
-- Public Pages root GET HTTP200 independently observed. Existing Pages workflow contains exact live SHA/export/browser verification after deploy. Root availability alone is not stats integrity evidence.
-- Vercel project env metadata inspected with decrypt=false: encrypted production AVENGERS_DISPATCH_DATABASE_URL plus project-scoped Discord/auth secrets. No PostHog/heartbeat key shown. No credential values decrypted.
-- No Discord publication, UTC run, migration, data correction or PNG modification performed.
+## Objects and isolation
+- Shared administrative Better Stack team t617000 (one owner/admin), not account-level isolation.
+- Existing monitor5085541 renamed AVENGERS - Stat Center, monitor group AVENGERS1538160. https://avengersmobcontrol.github.io/avengers-stat-center/ GET every3min, SSL validation ON, recovery3min, email-only, no paid alerts.
+- PostHog project670043 AVENGERS - Stat Center in org Lock It In HQ. AV-only event avengers_pages_release, separate ingestion token/fingerprint.
+- Encrypted AVENGERS_POSTHOG_PROJECT_TOKEN exists ONLY in this repo Actions secrets; AVENGERS_POSTHOG_ENABLED=true. Fixed project ID670043. No SAC source, tokens, heartbeat URLs, events or queues.
+- Neon project wandering-dream-60244468 remains AV-only; not accessed or changed by monitoring setup. Restricted-role migration/private backend work remains existing separate #8 approval task.
 
-## Actual automation inventory
-| Workflow | Trigger | Monitoring consequence |
-| --- | --- | --- |
-| pages.yml | push main / manual | event-driven release; report failure and successful exact-SHA live verification, not daily absence |
-| event-projection-test.yml | source CI | gate releases; CI failure signal, no recurring absence expectation |
-| roster-reconciliation-audit.yml | filtered PR / manual | no scheduled heartbeat |
-| discord-utc-roster.yml | Mon/Fri15UTC declared, feature-gated; manual bypass exists | PAUSED per authoritative record; never manually dispatch for monitoring; no expected heartbeat |
-| Discord summary publisher | hard OFF / not live | no expected heartbeat |
+## Production evidence
+PR80 merged2ed17a63d369e0e2123bae011657c6a8d1ab8397 after privacy CI39007440283 and full projection/browser CI39007440211 SUCCESS.
+Pages run39007847915/job117323863163 SUCCESS, including full-site projections, six-league reconciliation, approved PNG ledger validation, rendered browser checks, deployment and exact published commit/export/browser verification.
+Final Actions log AVENGERS_TELEMETRY accepted. Independent AV project query returned avengers_pages_release, production, success/verified, release2ed17a63d369e0e2123bae011657c6a8d1ab8397 at2026-10-17 00:56:29CT.
+Owner-only Better Stack test accepted; matching email received2026-10-17 00:59:40CT. Monitor observed UP repeatedly, no duplicate site monitor.
+Source has7 privacy tests; no-network disabled/wrong-scope handling, allowlisted payload, fixed host and timeout/no retries pass.
 
-Do not invent periodic imports or conflate a ChatGPT review automation with a repository scheduler. GitHub Actions source alone cannot prove current repo-variable state; no variable-write/activation performed.
+## Monthly cost/privacy controls
+User requires AV to remain within monthly free limits. All14 shared-org usage-product caps set to0 and read back after reload after explicit owner authorization. Paid overage ingestion is capped; caps can stop telemetry, so missing events must not trigger automatic paid upgrades.
+No paid add-ons, custom Logs retention or AI SRE purchased. Logs custom retention is explicitly outside ingestion cap and remains unused. Do not claim a blanket guarantee against future unrelated account purchases.
+No browser SDK, autocapture, replay, console recording, surveys, heatmaps, automatic exceptions/web vitals, profiles, raw errors/chat/member identities/private URLs or clan source data. Payload fixed project/environment/outcome/code/exact release and random operational distinct_id. IP anonymization and geo disabled.
+Do not add broad PostHog LLM analytics or increase caps to troubleshoot. Repo opt-out AVENGERS_POSTHOG_ENABLED=false reverses delivery independently of Pages.
 
-## Better Stack — prepared, access blocked
-Target independent group AVENGERS / Mob Control; existing site monitor name AVENGERS - Stat Center. Existing 3-minute UP screenshot is historical; monitor ID/current interval/alert destinations NOT yet inspected.
-Secure browser sign-in reached SSO provider selection but authentication declined. No objects/routing changed.
-Next authenticated step: list existing monitors, move rather than duplicate, verify content/redirect and owner route. No paid AI SRE, phone/SMS or sensitive log capture enabled.
+## Real workflow inventory
+| Job | Trigger/cadence | Monitoring decision |
+|---|---|---|
+| Pages release | push main/manual, not periodic | Existing verification and commit status; one event after actual final live_verify outcome |
+| Projection / roster audit / privacy tests | path-specific PR/push/manual | Existing CI checks/artifacts; no false recurring heartbeat |
+| Discord UTC roster | Mon/Fri15UTC schedule present, feature gate PAUSED | No dispatch or heartbeat; #3 stays paused |
+| Summary publisher | OFF | No sending/deletion or expected-heartbeat alarms |
 
-For release checks, use existing Pages post-deploy verify as success boundary. A generic interval heartbeat would falsely alert when there is no release. Use deployment-failure event and bounded in-progress deployment expectation instead. If adding a new recurring public read-only health workflow later, document cadence and enable monitor/secret together after tests.
+No AV recurring heartbeat was created: this project has no verified active periodic business job requiring one. Event-driven release inactivity is normal, not a missed-job incident. Failed deployment attempts can emit a failure event after live verification fails; cancellations are skipped. PostHog delivery is best effort and never changes business result. It is not proof of Discord delivery or correctness of source ledger.
+The shared disposable missed-heartbeat test used only SAC STAGING510983/incident1033400904 and owner email; that tests platform alert/recovery mechanics, not an AV scheduled task.
 
-## PostHog — inventory, not configured
-Current connector exposes org Lock It In HQ, ID 01a147de-5097-0000-6c55-2240f21247ca, only empty Default project 669926 (onboarding false, ingested_event=false). Do not assign this default to AVENGERS or share with another product.
-Proposed independent project AVENGERS - Stat Center. Name confirmation required by project-create tool; pending. Separate organization is optional owner/billing decision, not silently provisioned. No key, dashboard, exception capture or production telemetry exists from this setup.
+## Safe diagnostics / response
+1. Read failed Pages job step and artifacts, then source commit/status; compare live public release to exact Actions source SHA. Do not infer latest main is already deployed.
+2. Use existing projection/roster/PNG validation and public browser checks. Fix source/validation error before rerunning deployment. Do not recalculate frozen Sparks or edit ledger to silence a monitoring warning.
+3. If PostHog lacks an event, first check AV opt-in/secret name, fixed project670043, sanitized accepted/unavailable log and monthly cap; never export raw exceptions/source data or use SAC token.
+4. Website uptime failure is owner email; no phone/SMS or paid AI SRE. Existing GitHub CI produces actual technical diagnosis. Neither Better Stack nor PostHog automatically wakes an ordinary ChatGPT conversation.
+5. Rollback telemetry by AVENGERS_POSTHOG_ENABLED=false; keep existing Pages verification and paused Discord gates. Do not apply Neon migrations/credential rotations as monitoring repairs.
 
-Candidate allowlisted operational events: pages_release_verified / pages_release_failed / data_projection_validation_failed. Properties limited to fixed project, environment, release SHA, operation, sanitized code/count/duration bucket. No clan member identifiers, Discord content/IDs, raw screenshots, raw errors, private URLs/query strings, IPs or secrets. No replay, autocapture, automatic pageviews or person profiles. Use manual sanitized events only after schema tests and preview ingestion readback. Reference https://posthog.com/docs/privacy/data-collection.
-
-## Safe diagnosis and routing
-1. GET canonical Pages root and public release manifest/exports found in verified source; compare SHA to actual successful Pages run.
-2. Inspect release job/log outcomes and deterministic validation results without importing new source events.
-3. Report source versus projection versus deploy failure; no stats rewrite, payout inference, frozen Sparks recalculation or blind re-deploy.
-4. No automatic Discord send/delete/retry. Uncertain outcome requires receipt reconciliation.
-5. Staging-only missed-signal/recovery test must use separate object and no real Discord channel.
-6. Monitoring rollback removes only newly scoped telemetry/hooks; leaves existing monitors and business hard-offs unchanged.
-
-## Boundaries / acceptance
-- Frozen Sparks Prior to Logging, roster identities and original approved event PNGs unchanged.
-- UTC paused, automatic Discord send/delete/publication OFF.
-- Existing Neon role limitation remains a separate #8 security task; no migration rerun or owner-credential exposure.
-- Endpoint HTTP200: observed. Pages workflow success: read back. Better Stack grouping/routing: BLOCKED. Heartbeat/incident staging test: NOT implemented. Separate PostHog project: BLOCKED name confirmation. Instrumentation/deploy/ingest: NOT implemented.
-- Final normal-chat handoff is NOT ready until infrastructure verification complete.
-
-Next: resume authenticated Better Stack inventory if user elects, confirm project name, create independent PostHog project with privacy protections, then stage scoped Pages outcome reporting without altering public statistics or activating Discord. Record exact IDs, commit/tests and ingest evidence in #78/#13.
-
-
-## Superseding live PostHog checkpoint — Oct 17
-User confirmed both exact names and added card. Independent project **AVENGERS - Stat Center**, ID **670043**, CREATED and re-listed. Default669926 unchanged. Same organization remains administrative/billing umbrella; projects have separate tokens, no shared data/key. Tokens withheld from logs and GitHub.
-Project settings updated and response verified: anonymize_ips=true, timezone=America/Chicago, autocapture_opt_out=true, automatic exceptions/web vitals=false, console/performance capture=false, session replay=false, surveys/heatmaps/dead clicks=false, proactive_tasks_enabled=false. No ingested events or code integration yet.
-Browser authenticated to PostHog billing, confirmed pay-as-you-go, current bill $0.00. Organization-level Product analytics, Session replay, Data pipelines and Error tracking caps SAVED and visibly verified at $0. These are organization-wide and apply across projects, NOT independent per-project budgets. Product analytics free allowance1M; Error tracking100K shown. Retention/paid add-ons remain unused; no platform package selected. Do not imply all account charges are universally capped: Logs custom retention explicitly outside Logs ingestion cap.
-Automatic approval review rejected broad remaining-product cap batch, first due nonspecific targets, second despite named targets because AI/desktop/inbox/workflow products weren't proven authorized targets. Exact separately inspected Error tracking cap succeeded. Remaining uncapped/default-paid products unchanged and unused by this integration. Need explicit owner authorization before broader account-wide cap changes; do not bypass review. No telemetry until only capped products and sanitized allowlist integration tested. Better Stack still requires independently authorized sign-in resumption. Infrastructure still incomplete.
-
-
-## Oct17 owner-approved remaining billing caps completed
-Owner expressly approved setting ALL remaining organization-wide product caps to $0. Named controls individually saved and verified, then page reloaded and all 14 product cap confirmations read back: Product analytics, Session replay, Data pipelines, Feature flags & Experiments, Surveys, Data warehouse, Error tracking, AI Observability, Logs, PostHog AI, Replay vision, Self-driving inbox, PostHog Desktop (usage-based), Workflows. Prior broad-scope approval blocker resolved. This applies to both separate projects under shared organization billing. No telemetry enabled. Logs CUSTOM RETENTION is explicitly outside ingestion cap, remains unused/$0; no platform subscriptions/add-ons selected. Do not promise universal zero charges for future purchases or unbounded retention. Continue with sanitized, project-scoped instrumentation and independent ingest verification; Better Stack authenticated setup/routing/heartbeats still outstanding. No bots/data/PNGs/Neon changes.
+## Return to AV normal conversation
+Read docs/PROJECT_CONTINUITY.md, docs/DECISION_LOG.md, ROADMAP.md, latest master #13 and relevant issue comments. Resume the existing product task order from latest GitHub. Preserve temporarily approved PNGs under #8, frozen unlogged Sparks/1% policy, identity mappings, all linked cross-site projections. UTC #3 remains paused and automatic Discord publishing/deletion OFF. Restricted Neon runtime role/credential migration is separate unfinished work requiring its existing explicit approval.

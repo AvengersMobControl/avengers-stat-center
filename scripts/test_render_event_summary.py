@@ -1,5 +1,6 @@
 """Regression coverage for approved-source-only event PNG model and rendering."""
 import importlib.util
+import hashlib
 import json
 import pathlib
 import tempfile
@@ -166,6 +167,45 @@ class ApprovedSourceModelTests(unittest.TestCase):
                 result=renderer.render(data,kind,clan,None,str(out))
                 self.assertEqual(result["kind"],kind)
                 self.assertEqual(Image.open(out).size,(2400,1500))
+
+
+
+class TemporarilyApprovedTemplateTests(unittest.TestCase):
+    def test_six_variants_are_pinned_and_not_authorized_for_auto_posting(self):
+        registry = json.loads((ROOT.parent / "data/event-png-template-approvals.json")
+                              .read_text(encoding="utf-8"))
+        self.assertEqual(registry["schemaVersion"], 1)
+        self.assertEqual(registry["approvalScope"],
+                         "temporary visual-template approval, not event/result or Discord-post approval")
+        self.assertEqual(registry["baseline"]["reviewedPR"], 65)
+        self.assertFalse(registry["discordPostingEnabled"])
+        self.assertFalse(registry["automaticDispatchEnabled"])
+        self.assertEqual(registry["space"]["status"], "approved-existing-unchanged")
+        self.assertEqual(set(registry["templates"]), {"piggy", "flash", "kraken"})
+        self.assertEqual(sum(len(x["clans"]) for x in registry["templates"].values()), 6)
+        expected = {kind + ":" + clan for kind in ("piggy", "flash", "kraken")
+                    for clan in ("AVENGERS", "AV-2")}
+        images = registry["baseline"]["previewImageSHA256"]
+        self.assertEqual(set(images), expected, "Pin all six visually reviewed PNGs")
+        self.assertTrue(all(len(digest) == 64 and all(c in "0123456789abcdef" for c in digest)
+                            for digest in images.values()))
+        self.assertEqual(registry["baseline"]["previewArtifactId"], 12081364157)
+        for kind, template in registry["templates"].items():
+            self.assertEqual(template["status"], "temporarily-approved")
+            self.assertEqual(template["version"], kind + "-temp-v1-20261016")
+            self.assertEqual(template["clans"], ["AVENGERS", "AV-2"])
+            self.assertTrue(template["availableForManualUse"])
+            self.assertTrue(template["visualAdjustmentsPending"])
+            self.assertFalse(template["automaticDiscordPostingAllowed"])
+            self.assertTrue(template["eventResultApprovalIndependent"])
+        # Pin the precise previously reviewed renderer to avoid silent template
+        # changes while temporary approval is in force.
+        data = (ROOT / registry["baseline"]["rendererPath"].split("/")[-1]).read_bytes()
+        blob = b"blob " + str(len(data)).encode() + b"\x00" + data
+        self.assertEqual(hashlib.sha1(blob).hexdigest(),
+                         registry["baseline"]["rendererGitBlobSha"],
+                         "Any design/code change requires a new template review and version")
+
 
 
 if __name__ == "__main__":

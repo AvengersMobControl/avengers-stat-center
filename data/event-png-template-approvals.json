@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "recordedOn": "2026-10-16",
+  "approvedBy": "clan-leader",
+  "approvalScope": "temporary visual-template approval, not event/result or Discord-post approval",
+  "baseline": {
+    "reviewedPR": 65,
+    "mergedCommit": "fc4cba994a93538ffa88802313394c05db95833f",
+    "rendererPath": "scripts/render-event-summary.py",
+    "rendererGitBlobSha": "0095f8e2fc3164fe5899da66b66393c17b61c756",
+    "verifiedPreviewRun": 38983713426,
+    "previewArtifactId": 12081364157
+  },
+  "space": {
+    "status": "approved-existing-unchanged",
+    "renderer": "scripts/render-space-summary.py"
+  },
+  "templates": {
+    "piggy": {
+      "status": "temporarily-approved",
+      "version": "piggy-temp-v1-20261016",
+      "renderer": "scripts/render-event-summary.py",
+      "clans": [
+        "AVENGERS",
+        "AV-2"
+      ],
+      "availableForManualUse": true,
+      "visualAdjustmentsPending": true,
+      "automaticDiscordPostingAllowed": false,
+      "eventResultApprovalIndependent": true
+    },
+    "flash": {
+      "status": "temporarily-approved",
+      "version": "flash-temp-v1-20261016",
+      "renderer": "scripts/render-event-summary.py",
+      "clans": [
+        "AVENGERS",
+        "AV-2"
+      ],
+      "availableForManualUse": true,
+      "visualAdjustmentsPending": true,
+      "automaticDiscordPostingAllowed": false,
+      "eventResultApprovalIndependent": true
+    },
+    "kraken": {
+      "status": "temporarily-approved",
+      "version": "kraken-temp-v1-20261016",
+      "renderer": "scripts/render-event-summary.py",
+      "clans": [
+        "AVENGERS",
+        "AV-2"
+      ],
+      "availableForManualUse": true,
+      "visualAdjustmentsPending": true,
+      "automaticDiscordPostingAllowed": false,
+      "eventResultApprovalIndependent": true
+    }
+  },
+  "discordPostingEnabled": false,
+  "automaticDispatchEnabled": false
+}

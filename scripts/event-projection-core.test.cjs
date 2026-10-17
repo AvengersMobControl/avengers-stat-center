@@ -169,3 +169,19 @@ test('approved prior-to-logging Sparks never change when newer events are logged
  assert.equal(changed.screenshotGap,490);
  assert.equal(changed.totalSparks,510);
 });
+
+test('approved Unlogged Sparks remain locked when their share later falls below 1%',()=>{
+ let ledger=put(empty(),ev('piggy','before','2026-09-28',10));
+ const opts={members,snapshots:{A:{amount:500,beforeDate:'2026-09-30'}},
+  priorToLogging:{A:490,B:0,Untouched:0}};
+ const old=person(project(ledger,opts));
+ assert.equal(old.screenshotGap,490);
+ const largeFuture=ev('space','future','2026-10-19',25,'AV-2');
+ largeFuture.rows[0].sparks=100000;
+ ledger=put(ledger,largeFuture);
+ const later=person(project(ledger,opts));
+ assert.equal(later.screenshotGap,490);
+ assert.equal(later.totalSparks,later.earned.sparks+490);
+ assert(100*later.screenshotGap/later.totalSparks<1,
+  'The share must be below 1% while historic Unlogged Sparks stay locked');
+});

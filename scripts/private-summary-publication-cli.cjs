@@ -6,6 +6,7 @@ const fs=require('node:fs');
 const state=require('./private-summary-publication-state.cjs');
 const store=require('./private-summary-publication-store.cjs');
 const registry=require('../data/event-png-template-approvals.json');
+const {manifestHash}=require('./plan-event-summary-dispatch.cjs');
 const command=process.argv[2],file=process.env.AVENGERS_PRIVATE_DISPATCH_REGISTRY;
 try{
  if(!['inspect','review','stage','receipt','retire'].includes(command)||!file||process.argv.length!==3)
@@ -13,8 +14,10 @@ try{
  const readInput=()=>JSON.parse(fs.readFileSync(0,'utf8'));
  let result;
  if(command==='inspect')result=state.reconcileReport(store.load(file));
- else if(command==='review')result=state.viewPlan(store.load(file),{
-   candidate:readInput(),registry});
+ else if(command==='review'){
+  const review=state.viewPlan(store.load(file),{candidate:readInput(),registry});
+  result={...review,planDigest:review.decision?.startsWith('needs-')?manifestHash(review):null};
+ }
  else{
   const input=readInput();
   const operation=command==='stage'?

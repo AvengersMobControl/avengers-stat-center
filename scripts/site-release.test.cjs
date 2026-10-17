@@ -156,23 +156,41 @@ test('transfer restoration reconciles every current member, not only Hoops',()=>
  assert(result.rows.find(r=>r.name==='AV-Adigarian').screenshots>=2);
 });
 
-test('frozen historical Sparks are whole numbers, while event rewards retain original precision',()=>{
+test('official Unlogged Sparks are explicitly frozen at 28 records after one-time 1% exclusion',()=>{
  const fixed=require('../data/sparks-prior-to-logging-2026-10-16.json');
  const amounts=fixed.amounts;
- assert.equal(Object.keys(amounts).length,41);
+ assert.equal(fixed.officialFieldName,'Unlogged Sparks');
+ assert.equal(fixed.approvalThresholdPct,1);
+ assert.equal(Object.keys(amounts).length,28);
+ assert.equal(Object.keys(fixed.excludedBelowOnePercent).length,13);
+ assert.equal(Object.keys(fixed.excludedRoundingReview).length,6);
+ assert.equal(Object.values(amounts).reduce((s,n)=>s+n,0),32404095);
+ assert.equal(fixed.approvedTotalSparks,32404095);
+ let fingerprint=2166136261>>>0;
+ const sorted=JSON.stringify(Object.entries(amounts).sort(([a],[b])=>a.localeCompare(b)));
+ for(const ch of sorted){fingerprint^=ch.charCodeAt(0);fingerprint=Math.imul(fingerprint,16777619)>>>0;}
+ assert.equal(fingerprint,2786907390,
+  'Immutable leader-approved amounts changed: an explicit leader directive and test update are required');
  for(const [name,prior] of Object.entries(amounts)){
-   assert(Number.isSafeInteger(prior)&&prior>=1000,'not a rounded historical amount: '+name);
-   const p=BASE.projection.people.find(x=>x.name===name);
-   assert(p,'missing account '+name);
-   assert.equal(p.screenshotGap,prior);
-   assert.equal(p.totalSparks,p.earned.sparks+prior);
+  assert(Number.isSafeInteger(prior)&&prior>0,'Invalid official Unlogged Sparks for '+name);
+  const p=BASE.projection.people.find(x=>x.name===name);
+  assert(p,'missing canonical account '+name);
+  assert.equal(p.screenshotGap,prior,name+' frozen Unlogged Sparks');
+  assert.equal(p.totalSparks,p.earned.sparks+prior);
+ }
+ for(const [name,original] of Object.entries(fixed.excludedBelowOnePercent)){
+  assert(original.sharePctAtApproval<1, 'Not below 1% at approval: '+name);
+  assert(original.originalUnloggedSparks>0);
+  const p=BASE.projection.people.find(x=>x.name===name);
+  assert(p&&p.screenshotGap===0,'Excluded 1% amount restored for '+name);
  }
  for(const [name,raw] of Object.entries(fixed.originalFractionalGaps)){
-   assert.equal(amounts[name],Math.round(raw),'rounded source must match screenshot evidence '+name);
+  const expected=amounts[name]??fixed.excludedBelowOnePercent[name]?.originalUnloggedSparks;
+  assert.equal(expected,Math.round(raw),'Fractional proof missing for '+name);
  }
- for(const name of Object.keys(fixed.roundingReview)){
-   const p=BASE.projection.people.find(x=>x.name===name);
-   assert(p&&p.screenshotGap===0,'excluded small discrepancy should remain zero: '+name);
+ for(const name of Object.keys(fixed.excludedRoundingReview)){
+  const p=BASE.projection.people.find(x=>x.name===name);
+  assert(p&&p.screenshotGap===0,'Excluded small rounding candidate restored for '+name);
  }
 });
 test('near-one-million AV gaps appear in both dated photos and are not additive',()=>{

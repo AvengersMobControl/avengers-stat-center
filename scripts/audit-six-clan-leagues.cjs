@@ -104,11 +104,21 @@ function auditRelease(release){
  }
  const newest=sixPeriods.at(-1),previous=sixPeriods.at(-2);
  // Reported 165M -> 171M is NOT presumed identical to known participant rewards.
+ const earlierAV=previous.clanTotals.AVENGERS,latestAV=newest.clanTotals.AVENGERS;
+ const earlierExFlash=earlierAV.sparks-earlierAV.flashSparks;
+ const latestExFlash=latestAV.sparks-latestAV.flashSparks;
  const reference={reportedEarlier:165000000,reportedLatest:171000000,reportedChange:6000000,
-  verifiedMemberRewardsEarlier:previous.knownClanSparks,
-  verifiedMemberRewardsLatest:newest.knownClanSparks,
-  comparisonStatus:'unverified-scope',
-  note:'Leader-reported league Sparks may represent whole-clan awards/pots; event member rewards are only a verified lower bound where source images or payouts are missing.'};
+  avengersEarlierIncludingFlash:earlierAV.sparks,
+  avengersLatestIncludingFlash:latestAV.sparks,
+  avengersEarlierFlashSparks:earlierAV.flashSparks,
+  avengersLatestFlashSparks:latestAV.flashSparks,
+  avengersEarlierExcludingFlash:earlierExFlash,
+  avengersLatestExcludingFlash:latestExFlash,
+  excludingFlashEarlierResidual:earlierExFlash-165000000,
+  excludingFlashLatestResidual:latestExFlash-171000000,
+  excludingFlashDelta:latestExFlash-earlierExFlash,
+  comparisonStatus:'scope-hypothesis-not-proven',
+  note:'Leader reports are approximate AVENGERS league figures; recorded Sparks excluding Flash come close, suggesting historic headline totals may omit Flash. This is a hypothesis, not a source-approved correction. Do not force a match or transfer clan/unknown rewards.'};
  return {schemaVersion:1,projectionVersion:release.projection.version,
    source:'accepted-event-ledger',sixPeriods,reference,
    verified:'all six period/clan/member/category rollups match independent event rows',

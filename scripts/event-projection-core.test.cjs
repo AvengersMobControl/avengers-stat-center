@@ -154,3 +154,18 @@ test('Oct 16 pre-Space screenshot excludes same-day Space reward',()=>{
  assert.equal(p.screenshotGap,50);
  assert.equal(p.totalSparks,70);
 });
+
+test('approved prior-to-logging Sparks never change when newer events are logged',()=>{
+ let ledger=put(empty(),ev('piggy','before','2026-09-28',10));
+ const snapshots={A:[{amount:500,beforeDate:'2026-09-30',clan:'AVENGERS'}]};
+ const opts={members,snapshots,priorToLogging:{A:490,B:0,Untouched:0}};
+ const before=person(project(ledger,opts));
+ assert.equal(before.screenshotGap,490);
+ ledger=put(ledger,ev('space','future','2026-10-16',10,'AV-2'));
+ const after=person(project(ledger,opts));
+ assert.equal(after.screenshotGap,490);
+ assert.equal(after.totalSparks,510);
+ const changed=person(project(ledger,{...opts,snapshots:{A:[...snapshots.A,{amount:0,beforeDate:'2026-10-17',clan:'AV-2'}]}}));
+ assert.equal(changed.screenshotGap,490);
+ assert.equal(changed.totalSparks,510);
+});

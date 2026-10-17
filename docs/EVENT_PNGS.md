@@ -1,6 +1,6 @@
 # AVENGERS / AV-2 event summary PNGs — repeatable, review-only
 
-**Issue:** [#8](https://github.com/AvengersMobControl/avengers-stat-center/issues/8). The earlier approved **Space** graphic remains owned by `scripts/render-space-summary.py`. **Do not silently replace or restyle it.** This milestone adds sibling Piggy, Piggy Flash, and Kraken formats using its 2400×1500 navy/cyan/purple visual language. These *new* designs require leader visual signoff before they become approved broadcast templates.
+**Issue:** [#8](https://github.com/AvengersMobControl/avengers-stat-center/issues/8). The earlier approved **Space** graphic remains owned by `scripts/render-space-summary.py`. **Do not silently replace or restyle it.** This milestone adds sibling Piggy, Piggy Flash, and Kraken formats using its 2400×1500 navy/cyan/purple visual language. **October 16 leader decision:** All six Piggy / Piggy Flash / Kraken designs (two clans each) are **TEMPORARILY APPROVED for reuse**, despite anticipated visual refinements. The exact six preview image SHA-256s, their approved projection version, PR #65 renderer Git blob, and version IDs are frozen in `data/event-png-template-approvals.json`. This is a provisional **template/design** approval, not blanket approval for new event results or unattended Discord publishing.
 
 ## Make previews from the same accepted event ledger used by the live site
 
@@ -34,6 +34,8 @@ PR and Pages workflows regenerate **six previews** (Piggy / Flash / Kraken × AV
 
 ## Outstanding issue #8
 
-1. Leader reviews the new PNG previews and approves (or requests changes to) Piggy, Flash and Kraken layouts.
-2. Add finalized shared template versioning, human approval and explicit message-id dedup/revision/retraction logic before allowing actual Discord publication.
+1. Leader has temporarily approved all six previews, so reuse these versions without re-asking for aesthetic signoff each time; defer desired refinements until they are specifically requested. Any renderer/design change requires a NEW reviewed template version and must not silently alter this pinned baseline.
+2. Version IDs are provisionally frozen in `data/event-png-template-approvals.json`; add human result review plus explicit message-id dedup/revision/retraction logic before allowing any automatic Discord publication.
 3. Preserve partial-source disclaimers and separately approved event-result ingestion #4 restrictions; don't enable unattended posting merely because PNGs render successfully.
+
+**Pinned preview artifact:** [Six temporarily approved PNGs (PR #65 Actions artifact)](https://github.com/AvengersMobControl/avengers-stat-center/actions/runs/38983713426/artifacts/12081364157). If the artifact expires, regenerate these exact source-era examples from the frozen input projection and verify against the stored six SHA-256 values, or request a new reviewed template version. Approved Space remains a separate, unchanged template.

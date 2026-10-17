@@ -33,6 +33,13 @@ async function main(){
         assert.deepEqual(errors,[],name+' has no browser errors');
       }
     }
+    await page.click('.nav-btn[data-page="eventTotals"]');
+    const leagueFooter=page.locator('#page-eventTotals .league-rewards-footnote');
+    assert(await leagueFooter.count(),'historical league coverage summary is visible');
+    assert((await leagueFooter.innerText()).includes('partial screenshot coverage'),
+      'Incomplete historical event source coverage must be visible');
+    assert((await leagueFooter.innerText()).includes('unknown event-time clan'),
+      'Missing event-time clan attribution must not be hidden');
     await page.click('.nav-btn[data-page="records"]');
     const record=page.locator('#page-records .record-card').filter({hasText:'Space Records'}).locator('.record-row').filter({hasText:'AV-HarryBallsagna'});
     assert((await record.innerText()).includes('8/30/26'),'Space record date comes from PB event');

@@ -133,7 +133,9 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
       rec.events++;people.set(key,rec);
     }
     const rows=[...people.values()].map(r=>({...r,effort:Object.fromEntries(['piggy','space','flash'].map(kind=>[kind,metrics.summarize(events.filter(e=>e.kind===kind).flatMap(e=>e.rows).filter(x=>x.player===r.name&&x.clan===r.clan))])),sparks:r.flashSparks+r.piggySparks+r.spaceSparks+r.krakenSparks,stars:r.flashStars+r.piggyStars+r.spaceStars}));
-    return {...period,kraken:events.find(e=>e.kind==='kraken')?.metadata?.monthKey,rows,eventCount:ids.size,memberEventCount:rows.reduce((s,r)=>s+r.events,0),gaps:rows.reduce((s,r)=>s+r.missing,0),estimates:rows.filter(r=>r.estimatedKraken>0).length};
+    return {...period,kraken:events.find(e=>e.kind==='kraken')?.metadata?.monthKey,rows,eventCount:ids.size,memberEventCount:rows.reduce((s,r)=>s+r.events,0),gaps:rows.reduce((s,r)=>s+r.missing,0),estimates:rows.filter(r=>r.estimatedKraken>0).length,
+      partialEventIds:events.filter(e=>e.status==='partial').map(e=>e.id).sort(),
+      unknownClanRows:events.reduce((sum,e)=>sum+e.rows.filter(r=>r.clan===null).length,0)};
   });
   for(const person of p.people){const b=breakdowns[person.name];b.effort=person.effort;assert(Math.abs(b.eventLoggedSparks-b.piggySparks-b.spaceSparks-b.flashSparks-b.krakenSparks)<0.001);}
   return {projection:p,ledger,review:migration.review,breakdowns,leagues,globals:{AVENGERS_DATA:D,AVENGERS_KRAKEN_DATA:K,AVENGERS_PIGGY_FLASH_DATA:F,

@@ -21,6 +21,7 @@ on:
       - 'index.html'
       - '*.js'
       - '.github/workflows/pages.yml'
+      - 'scripts/audit-six-clan-leagues*.cjs'
       - 'scripts/audit-event-projection-migration.cjs'
       - 'scripts/council-minimums-core.cjs'
       - '.github/workflows/event-projection-test.yml'
@@ -52,7 +53,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test scripts/reward-metrics.test.cjs scripts/event-projection-core.test.cjs scripts/council-minimums-core.test.cjs scripts/roster-event-breakdown.test.cjs scripts/sparks-ui-source.test.cjs scripts/site-release.test.cjs scripts/stage-event-update.test.cjs scripts/assemble-result-review.test.cjs scripts/audit-result-pagination.test.cjs scripts/hash-original-image.test.cjs scripts/fetch-original-discord-image.test.cjs scripts/verify-live-pages.test.cjs scripts/export-event-summary.test.cjs
+      - run: node --test scripts/reward-metrics.test.cjs scripts/event-projection-core.test.cjs scripts/council-minimums-core.test.cjs scripts/roster-event-breakdown.test.cjs scripts/sparks-ui-source.test.cjs scripts/site-release.test.cjs scripts/stage-event-update.test.cjs scripts/assemble-result-review.test.cjs scripts/audit-result-pagination.test.cjs scripts/hash-original-image.test.cjs scripts/fetch-original-discord-image.test.cjs scripts/verify-live-pages.test.cjs scripts/export-event-summary.test.cjs scripts/audit-six-clan-leagues.test.cjs
       - name: Verify six canonical event PNG previews
         run: |
           python3 -m pip install --disable-pip-version-check Pillow==11.3.0
@@ -71,6 +72,8 @@ jobs:
             reports/event-summary-preview-*.png
             reports/event-summary-preview-*.json
           if-no-files-found: ignore
+      - name: Independently verify six league category totals and source coverage
+        run: node scripts/audit-six-clan-leagues.cjs
       - name: Inventory legacy migration blockers (read only)
         run: node scripts/audit-event-projection-migration.cjs
       - name: Preserve current 100-member accounting invariants
@@ -84,5 +87,7 @@ jobs:
         if: always()
         with:
           name: site-browser-evidence
-          path: reports/site-browser-*.png
+          path: |
+            reports/site-browser-*.png
+            reports/clan-league-ledger-audit.*
           if-no-files-found: ignore

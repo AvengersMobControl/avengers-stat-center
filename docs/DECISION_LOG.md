@@ -1,3 +1,11 @@
+## 2026-10-17 — #8 defensive runtime access preflight; publishing still disabled
+
+- **Decision:** while Sunday final-source acquisition is deferred, advance safe summary-publishing infrastructure without sending anything or applying the blocked Neon role migration.
+- **Code:** `scripts/private-dispatch-readiness.cjs` adds a read-only, credentials-free privilege/kill-switch snapshot and fail-closed policy for future private backend sessions. Reject elevated or inherited roles, owner SET ROLE connections, ability to DELETE or mutate safety/audit, wrong DB, missing flags, or absent data. PR and Pages CI enforce the new tests.
+- **Real database evidence:** identical single `SELECT` executed on both existing AV-only temporary and production Neon branches through privileged owner read-only connections. Both correctly report role mismatch and unsafe inherited/delete/safety-update rights, all three publication flags FALSE. No restricted runtime login has been demonstrated.
+- **Unchanged:** real dispatch/database writes, migration application, secrets/rotation, Discord sending and deletion, UTC #3, approved PNG art and Sparks/Stars/rosters, and all SAC systems.
+- **Next:** secure approval-compatible restricted runtime role credential initialization and direct login verification; only then a transaction-safe, manually authorized, Discord receipt-verifying adapter. See issue #8 and the associated PR for CI/merge/exact-release proof.
+
 ## 2026-10-17 — #4 original-image proof binding staged (PR #81)
 
 - **Decision:** final screenshot candidates must reference actual original Discord CDN bytes, not an arbitrary 64-character digest or transcoded preview. Keep the original source URL, private IDs and operator mapping out of the repository and public site. Event approval, final-vs-progress image classification and game result review remain separate mandatory human gates.

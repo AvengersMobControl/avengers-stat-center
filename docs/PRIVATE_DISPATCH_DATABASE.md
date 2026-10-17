@@ -1,3 +1,18 @@
+## October 17 — read-only runtime credential safety preflight (code-only)
+
+A deterministic private access check is now available as `scripts/private-dispatch-readiness.cjs`. It exports a **single fixed read-only SQL SELECT** `READ_ONLY_SQL`, a pure `evaluate(snapshot)`, and `inspect(client)` for an injected PostgreSQL client. This module does not open a database connection, accept a database URL, modify any records or toggle Discord on. The caller must independently provide a **secret-protected, server-only connection**, and must never print database URLs, passwords or private rows.
+
+Before a future *private* publication adapter can use a credential, the readiness check demands:
+
+- `current_user = session_user = avengers_dispatch_runtime`, in `avengers_private` (forbids a privileged owner session using `SET ROLE`).
+- SQL role has LOGIN, no superuser/CREATEROLE/CREATEDB/BYPASSRLS, no inherited membership and no database/schema CREATE.
+- Read/write ledger access to slots, intents and receipts; only read/append to audit. NO DELETE, audit UPDATE, or runtime-safety writes.
+- Exactly one safety row and `automatic_discord_send_enabled`, `automatic_discord_delete_enabled`, and `publication_endpoint_enabled` all exactly FALSE.
+
+Every missing/null/incorrect check **blocks**. Query errors are redacted. A green readiness check is only proof of expected credential restrictions, **never approval to post/delete or run an endpoint**. Real protected-session login must be independently verified after the existing production role migration approval gate is resolved; owner credentials, `avengers_dispatch_app`, or passwordless prepared temp-role sessions do not qualify.
+
+The identical fixed SQL was safely exercised against both Neon branches using existing owner read-only connections; both were correctly identified as overly privileged (owner/role inheritance, DELETE, safety UPDATE) while all three publishing flags remained false. This confirms query syntax and blocked owner posture only, not a restricted runtime login. No SQL grants or credential changes were made.
+
 ## October 16/17 — Restricted runtime role design (prepared, NOT yet production)
 
 **Access-control finding:** Neon `create_postgres_role` placed `avengers_dispatch_app` in the elevated `neon_superuser` group with both `INHERIT` and `SET ROLE` permissions. It could DELETE private ledger rows and modify the supposedly hard-off runtime safety flags despite no direct grants. The production account's SQL role **cannot revoke** the managed `neon_superuser` membership (`permission denied`). Do NOT use or advertise that auto-created role as least privilege.

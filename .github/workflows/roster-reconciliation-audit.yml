@@ -14,6 +14,7 @@ on:
       - 'scripts/council-minimums-core.test.cjs'
       - 'scripts/report-council-minimums.cjs'
       - 'scripts/audit-roster-reconciliation.cjs'
+      - 'scripts/audit-six-clan-leagues*.cjs'
       - 'scripts/report-prior-logging-sparks.cjs'
       - 'scripts/audit-transfer-restorations.cjs'
       - 'scripts/roster-event-breakdown.test.cjs'
@@ -46,6 +47,10 @@ jobs:
         run: node --test scripts/council-minimums-core.test.cjs
       - name: Generate evidence-only Council minimums report from real event ledger
         run: node scripts/report-council-minimums.cjs
+      - name: Audit all six Clan Leagues against canonical event results
+        run: |
+          node --test scripts/audit-six-clan-leagues.test.cjs
+          node scripts/audit-six-clan-leagues.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -53,6 +58,7 @@ jobs:
           path: |
             reports/roster-reconciliation-audit.*
             reports/clan-league-audit.*
+            reports/clan-league-ledger-audit.*
             reports/council-minimums-audit.*
             reports/sparks-root-cause-diagnostic.*
             reports/sparks-transfer-restorations.*

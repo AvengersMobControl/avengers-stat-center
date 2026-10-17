@@ -37,7 +37,8 @@ CREATE TABLE IF NOT EXISTS avengers_dispatch_private.send_intents (
   resolved_at timestamptz,
   CHECK ((intent_status = 'awaiting_manual_receipt' AND resolved_at IS NULL)
       OR (intent_status <> 'awaiting_manual_receipt' AND resolved_at IS NOT NULL)),
-  UNIQUE (slot_id,plan_sha256)
+  UNIQUE (slot_id,plan_sha256),
+  UNIQUE (id,slot_id,destination_channel_id,projection_sha256,image_sha256,template_version)
 );
 CREATE UNIQUE INDEX IF NOT EXISTS av_dispatch_one_unresolved_intent
  ON avengers_dispatch_private.send_intents(slot_id)
@@ -46,7 +47,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS av_dispatch_one_unresolved_intent
 CREATE TABLE IF NOT EXISTS avengers_dispatch_private.message_receipts (
   id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   slot_id bigint NOT NULL REFERENCES avengers_dispatch_private.publication_slots(id) ON DELETE RESTRICT,
-  intent_id bigint NOT NULL UNIQUE REFERENCES avengers_dispatch_private.send_intents(id) ON DELETE RESTRICT,
+  intent_id bigint NOT NULL UNIQUE,
   discord_channel_id text NOT NULL CHECK (discord_channel_id ~ '^[0-9]{15,22}$'),
   discord_message_id text NOT NULL CHECK (discord_message_id ~ '^[0-9]{15,22}$'),
   projection_sha256 text NOT NULL CHECK (projection_sha256 ~ '^[0-9a-f]{64}$'),
@@ -61,7 +62,12 @@ CREATE TABLE IF NOT EXISTS avengers_dispatch_private.message_receipts (
   retirement_verified_by text,
   CHECK ((receipt_status = 'retired' AND retired_at IS NOT NULL AND retirement_verified_by IS NOT NULL)
     OR (receipt_status <> 'retired' AND retired_at IS NULL AND retirement_verified_by IS NULL)),
-  UNIQUE (discord_channel_id,discord_message_id)
+  UNIQUE (discord_channel_id,discord_message_id),
+  CONSTRAINT receipt_matches_approved_intent FOREIGN KEY
+    (intent_id,slot_id,discord_channel_id,projection_sha256,image_sha256,template_version)
+    REFERENCES avengers_dispatch_private.send_intents
+    (id,slot_id,destination_channel_id,projection_sha256,image_sha256,template_version)
+    ON DELETE RESTRICT
 );
 CREATE UNIQUE INDEX IF NOT EXISTS av_dispatch_one_current_message
  ON avengers_dispatch_private.message_receipts(slot_id)
@@ -91,13 +97,9 @@ CREATE TABLE IF NOT EXISTS avengers_dispatch_private.runtime_safety (
 INSERT INTO avengers_dispatch_private.runtime_safety(singleton)
  VALUES (TRUE) ON CONFLICT (singleton) DO NOTHING;
 
--- Existing Neon role is a dedicated login, but no data has been written yet.
--- Grant only the private schema/table operations needed for a later reviewed adapter.
--- No table DELETE or TRUNCATE privileges, no ability to edit immutable audit rows.
-GRANT USAGE ON SCHEMA avengers_dispatch_private TO avengers_dispatch_app;
-GRANT SELECT, INSERT, UPDATE ON avengers_dispatch_private.publication_slots,
-  avengers_dispatch_private.send_intents,
-  avengers_dispatch_private.message_receipts TO avengers_dispatch_app;
-GRANT SELECT, INSERT ON avengers_dispatch_private.audit_events TO avengers_dispatch_app;
-GRANT SELECT ON avengers_dispatch_private.runtime_safety TO avengers_dispatch_app;
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA avengers_dispatch_private TO avengers_dispatch_app;
+-- SECURITY GATE: Neon-created avengers_dispatch_app currently inherits neon_superuser
+-- with SET ROLE rights. Granting limited table privileges DOES NOT restrict it.
+-- Do not use that role, nor the database-owner DATABASE_URL, for a public endpoint.
+-- A separate, reviewed least-privilege role migration and private secret rotation
+-- are required before any runtime connectivity or Discord dispatcher is enabled.
+-- This v1 migration intentionally grants NO application role access.

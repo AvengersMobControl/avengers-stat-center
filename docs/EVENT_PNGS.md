@@ -42,3 +42,47 @@ PR and Pages workflows regenerate **six previews** (Piggy / Flash / Kraken × AV
 
 ## Duplicate prevention and correction planning (approval-gated)
 `scripts/plan-event-summary-dispatch.cjs` is a **pure review-only planner**, not a Discord client. From a confirmed final event PNG sidecar with `approvedSourceOnly:true` and the pinned temporary template registry, it derives the event-time publication identity `kind + eventId + clan` and edition `projectionVersion + templateVersion + imageSHA256`. A matching previously posted edition is a **no-op**. A changed edition requires explicit human approval of a correction; it retains the old confirmed channel/message ID until a separately authorized replacement is posted and verified. Two active records, missing verified Discord IDs or non-final source fail closed. There is no send, delete, authentication, retry, posted-message store or output ready-to-post flag. Do not commit Discord source IDs. Template appearance approval remains distinct from result approval and send approval.
+
+## Owner-only publication receipts and crash recovery
+
+The **offline/private** tools `scripts/private-summary-publication-state.cjs`, `scripts/private-summary-publication-store.cjs` and `scripts/private-summary-publication-cli.cjs` record only human-attested Discord publication actions. **These tools do not contain a Discord API client, token, send, retry, delete or lookup operation.** Temporary template design approval does **not** authorize publication. No real message IDs are stored in public GitHub data or static-site exports.
+
+The private registry must be an **absolute filename in a dedicated owner-only directory outside this repository**, e.g. a manually created `/path/to/private-0700/registry.json`. Set permissions `0700` on the directory and `0600` on the file. Do not save this registry in `reports/`, in a commit, in a public workflow artifact, or on ephemeral CI storage. Protect and back up the private directory separately; access permissions protect it from other local users but **this registry is not encrypted**. Do not include real IDs in terminal history or sample test fixtures.
+
+Operator invocation (examples of control flow, NOT permission for a send):
+
+```bash
+# Create a dedicated private location outside the repository first:
+mkdir -m 700 /path/to/private-0700
+export AVENGERS_PRIVATE_DISPATCH_REGISTRY=/path/to/private-0700/registry.json
+
+# Inspect outstanding manual reconciliation:
+node scripts/private-summary-publication-cli.cjs inspect
+
+# Preview a specific final accepted-ledger PNG sidecar via private stdin:
+node scripts/private-summary-publication-cli.cjs review < PRIVATE_FINAL_SIDECAR.json
+
+# Stage ONLY after the leader approves the exact edition shown by "review".
+# PRIVATE_STAGE.json includes {candidate,authorization}, where authorization
+# supplies approvedThisExactPlan:true, planDigest:<exact review plan SHA-256>,
+# reviewedBy and approvedAt. Staging NEVER sends:
+node scripts/private-summary-publication-cli.cjs stage < PRIVATE_STAGE.json
+
+# AFTER a separate authorized human posts and visually verifies a Discord
+# message, PRIVATE_RECEIPT.json supplies identity plus proof:
+# {verifiedInDiscord:true, verifiedBy, observedAt, edition, discordChannelId,
+#  discordMessageId}. This only records an external human attestation.
+node scripts/private-summary-publication-cli.cjs receipt < PRIVATE_RECEIPT.json
+
+# For a correction, original stays tracked until replacement receipt is
+# recorded. Only after separate verified manual removal of the old Discord
+# message, PRIVATE_RETIREMENT.json supplies identity, exact old IDs and:
+# {confirmedAbsentInDiscord:true, confirmedBy, observedAt,...}.
+node scripts/private-summary-publication-cli.cjs retire < PRIVATE_RETIREMENT.json
+```
+
+**Recovering after interruption:** On staging a send or a correction, the registry durably records `awaiting-manual-receipt` *before* anyone posts anything. If the process stops before receipt verification, rerunning the planner **blocks all duplicate sends**, even if no message can be found yet. An operator must manually inspect the Discord channel and either enter the actual verified receipt or reconcile the incomplete external action outside the tool; it cannot infer whether Discord accepted an attempted send. For corrections, the old Discord message remains the active publication until the new receipt is entered; once the new one is confirmed, both messages are tracked until the original's removal is independently witnessed. A newer correction cannot start with a pending old-message retirement.
+
+The local write uses a same-directory temporary file, flush-to-disk, atomic rename and directory fsync. An exclusive owner-only lock blocks concurrent writers; a stale lock **must not be auto-broken**—investigate the process and real Discord channel first. Broken/corrupt files, group-readable paths, repo-relative paths and ambiguous records fail closed. The CLI's `inspect` is read-only. All actual Discord message presence/deletion is **human-attested**, not API-verified, and there is no automatic notification or message sending. Future production integration requires a separately approved private durable host, token-scoped external API adapter, confirmed receipts and explicit permission for every send/deletion.
+
+These stages are a recovery/reconciliation capability, **not proof that any clan message has been posted**. Existing accepted results, temporary PNG appearance approvals, and paused UTC #3 remain untouched.

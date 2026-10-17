@@ -14,6 +14,8 @@ const rows=(R.rows||[]).filter(r=>['Active','AV2'].includes(r.status)).map(r=>{
    loggedSparks:p.earned.sparks,
    priorToLoggingSparks:p.screenshotGap||0,
    totalSparks:p.totalSparks,
+   priorPercent:p.totalSparks>0?100*(p.screenshotGap||0)/p.totalSparks:0,
+   categories:Object.fromEntries(Object.entries(p.categories).map(([k,v])=>[k,v.sparks])),
    screenshots:p.snapshotBreakdown||[]};
 });
 if(rows.length!==100||new Set(rows.map(r=>r.name)).size!==100)throw Error('Expected 100 current distinct members');
@@ -24,7 +26,14 @@ const summary={all:rows.length,positive:positives.length,over1000:positives.filt
   priorTotal:positives.reduce((s,r)=>s+r.priorToLoggingSparks,0)};
 const dir=path.join(root,'reports');fs.mkdirSync(dir,{recursive:true});
 fs.writeFileSync(path.join(dir,'prior-to-logging-sparks.json'),JSON.stringify({version:release.projection.version,summary,rows},null,2)+'\n');
-const cols=['name','clan','loggedSparks','priorToLoggingSparks','totalSparks'];
+const cols=['name','clan','loggedSparks','priorToLoggingSparks','totalSparks','priorPercent'];
 fs.writeFileSync(path.join(dir,'prior-to-logging-sparks.csv'),[cols.join(','),...rows.map(r=>cols.map(k=>r[k]).join(','))].join('\n')+'\n');
 console.log('PRIOR_TO_LOGGING_SUMMARY '+JSON.stringify(summary));
 console.log('PRIOR_TO_LOGGING_MEMBERS '+JSON.stringify(positives.map(r=>({name:r.name,gap:r.priorToLoggingSparks,clan:r.clan}))));
+
+console.log('PRIOR_TO_LOGGING_COMPLETE '+JSON.stringify(positives.map(r=>({
+ name:r.name,clan:r.clan,logged:r.loggedSparks,prior:r.priorToLoggingSparks,
+ total:r.totalSparks,pct:Number(r.priorPercent.toFixed(3))
+}))));
+console.log('PRIOR_TO_LOGGING_SUSPECTS '+JSON.stringify(rows.filter(r=>
+ ['AV-I.S.O','AV<STAR-LORD>','AV-SMILINGBANDIT','AV-Adigarian'].includes(r.name))));

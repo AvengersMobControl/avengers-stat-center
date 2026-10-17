@@ -14,7 +14,11 @@ test('all SIX actual league periods independently match approved source event ro
  assert.equal(r.discordPosting,false);
  assert.deepEqual(r.sixPeriods.map(p=>p.end),periods.map(p=>p.end));
  assert.equal(r.reference.reportedChange,6000000);
- assert.equal(r.reference.comparisonStatus,'unverified-scope');
+ assert.equal(r.reference.comparisonStatus,'scope-hypothesis-not-proven');
+ assert.equal(r.reference.avengersEarlierExcludingFlash,r.reference.avengersEarlierIncludingFlash-r.reference.avengersEarlierFlashSparks);
+ assert.equal(r.reference.avengersLatestExcludingFlash,r.reference.avengersLatestIncludingFlash-r.reference.avengersLatestFlashSparks);
+ assert(Math.abs(r.reference.excludingFlashLatestResidual)<2000000,'Reference remains approximate, not forced equal');
+ assert(Math.abs(r.reference.excludingFlashEarlierResidual)<2000000,'Source comparison uses AVENGERS-only');
  assert(r.sixPeriods.some(p=>p.byKind.flash>0),'Flash activity represented');
  assert(r.sixPeriods.some(p=>p.clanTotals.AVENGERS.piggySparks>0));
  assert(r.sixPeriods.some(p=>p.clanTotals['AV-2'].spaceSparks>0));

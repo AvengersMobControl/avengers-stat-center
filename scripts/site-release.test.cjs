@@ -128,7 +128,7 @@ test('Adigarian does not get artificial gap from a reset returning-clan counter'
  assert(earlier&&later);
  assert.equal(earlier.beforeDate,'2026-09-30');
  assert.equal(later.beforeDate,'2026-10-16');
- assert.equal(p.screenshotGap,Math.max(0,...p.snapshotBreakdown.map(s=>s.gap)));
+ assert(Math.abs(p.screenshotGap-Math.max(0,...p.snapshotBreakdown.map(s=>s.gap)))<=0.5);
  assert.equal(p.totalSparks,p.earned.sparks+p.screenshotGap);
 });
 
@@ -154,4 +154,35 @@ test('transfer restoration reconciles every current member, not only Hoops',()=>
  assert(hoops.total>=12416538+after-0.001,
   'Hoops preserves screenshot plus every approved later reward');
  assert(result.rows.find(r=>r.name==='AV-Adigarian').screenshots>=2);
+});
+
+test('frozen historical Sparks are whole numbers, while event rewards retain original precision',()=>{
+ const fixed=require('../data/sparks-prior-to-logging-2026-10-16.json');
+ const amounts=fixed.amounts;
+ assert.equal(Object.keys(amounts).length,41);
+ for(const [name,prior] of Object.entries(amounts)){
+   assert(Number.isSafeInteger(prior)&&prior>=1000,'not a rounded historical amount: '+name);
+   const p=BASE.projection.people.find(x=>x.name===name);
+   assert(p,'missing account '+name);
+   assert.equal(p.screenshotGap,prior);
+   assert.equal(p.totalSparks,p.earned.sparks+prior);
+ }
+ for(const [name,raw] of Object.entries(fixed.originalFractionalGaps)){
+   assert.equal(amounts[name],Math.round(raw),'rounded source must match screenshot evidence '+name);
+ }
+ for(const name of Object.keys(fixed.roundingReview)){
+   const p=BASE.projection.people.find(x=>x.name===name);
+   assert(p&&p.screenshotGap===0,'excluded small discrepancy should remain zero: '+name);
+ }
+});
+test('near-one-million AV gaps appear in both dated photos and are not additive',()=>{
+ for(const name of ['AV-I.S.O','AV<STAR-LORD>','AV-SMILINGBANDIT']){
+  const p=BASE.projection.people.find(x=>x.name===name),e=p?.snapshotBreakdown||[];
+  assert.equal(e.length,2,name+' two screenshot dates');
+  assert.equal(e[0].beforeDate,'2026-09-30');
+  assert.equal(e[1].beforeDate,'2026-10-16');
+  assert(e[0].gap>900000&&e[1].gap>900000,name+' original gaps');
+  assert(Math.abs(e[0].gap-e[1].gap)<30000,name+' stable over time');
+  assert(Math.abs(p.screenshotGap-Math.max(e[0].gap,e[1].gap))<=0.5);
+ }
 });

@@ -86,7 +86,7 @@ function rewards(rows){
     if(r.kind!=='kraken'){if(r.stars===null)totals.unknownStars++;else totals.stars+=r.stars;}}
   return totals;
 }
-function project(ledger,{aliases={},members=[],snapshots={},arenaStart='2026-08-01'}={}){
+function project(ledger,{aliases={},members=[],snapshots={},priorToLogging=null,arenaStart='2026-08-01'}={}){
   validate(ledger,aliases);requireThat(day(arenaStart),'Invalid arena start');
   const events=ledger.events.map(e=>({...normalize(e,aliases),revision:e.revision})).sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
   // Ambiguous concurrent events for the same player/date/type require migration review;
@@ -118,7 +118,13 @@ function project(ledger,{aliases={},members=[],snapshots={},arenaStart='2026-08-
       return {clan,beforeDate,amount:snapshot,loggedAtSnapshot,gap,sourceName:obj.sourceName||null,label:obj.label||null};
     });
     // Screenshots are observations, not additive transfer-stint balances.
-    const screenshotGap=sources.length?Math.max(0,...snapshotBreakdown.map(s=>s.gap)):null;
+    const calculatedGap=sources.length?Math.max(0,...snapshotBreakdown.map(s=>s.gap)):null;
+    // The reviewed, committed historical baseline is immutable. New rewards,
+    // changes of clan and later screenshots must not recalculate this value.
+    const frozen=priorToLogging!==null;
+    const screenshotGap=frozen
+      ?amount(Object.hasOwn(priorToLogging,m.name)?priorToLogging[m.name]:0,'prior-to-logging Sparks')
+      :calculatedGap;
     const loggedAtSnapshot=sources.length?snapshotBreakdown.at(-1).loggedAtSnapshot:earned.sparks;
     const ratingPB=cap(kinds.piggy.pb,35000)+cap(kinds.space.pb,350)+cap(kinds.kraken.pb,3500);
     const ratingAvg=cap(kinds.piggy.arenaAverage,25000)+cap(kinds.space.arenaAverage,200)+cap(kinds.kraken.last3,2800);

@@ -141,9 +141,12 @@ module.exports={assemble,publicRow};
 if(require.main===module){
   try{
     const args=process.argv.slice(2);
-    check(args.length===1||(args.length===3&&args[1]==='--out'),
-      'Usage: node scripts/assemble-result-review.cjs parsed-review.json [--out safe-file.json]');
-    const review=JSON.parse(fs.readFileSync(args[0],'utf8'));
+    check((args.length===3||args.length===5)&&args[1]==='--proofs'&&
+      (args.length===3||args[3]==='--out'),
+      'Usage: node scripts/assemble-result-review.cjs parsed-review.json --proofs private-original-receipts.json [--out safe-file.json]');
+    const {bindOriginalProofs}=require('./verify-result-image-proofs.cjs');
+    const review=bindOriginalProofs(JSON.parse(fs.readFileSync(args[0],'utf8')),
+      JSON.parse(fs.readFileSync(args[2],'utf8')));
     const {create}=require('./create-site-release.cjs');
     const {migrate}=require('./migrate-event-ledger.cjs');
     const {load}=require('./load-site-data.cjs');
@@ -154,8 +157,8 @@ if(require.main===module){
     const {preview}=require('./stage-event-update.cjs');
     const dry=preview(accepted,result.update);
     let output=null;
-    if(args.length===3){
-      const name=args[2];
+    if(args.length===5){
+      const name=args[4];
       check(/^[A-Za-z0-9_-][A-Za-z0-9_.-]*\.json$/.test(name),'Output must be a safe .json filename (reports/ only)');
       const folder=path.join(root,'reports');fs.mkdirSync(folder,{recursive:true});
       output=path.join(folder,name);fs.writeFileSync(output,JSON.stringify(result.update,null,2)+'\n');

@@ -55,6 +55,23 @@ async function main(){
       }
     }
     assert.equal(originalActiveRank,allMembersRank,'Player best race finish cannot change when roster view changes');
+    // A placement-only Piggy PB is visible in the historical PBs & New tab,
+    // even when it is NOT a new high number of lines.
+    await page.click('.nav-btn[data-page="piggy"]');
+    await page.click('#piggyTabs [data-view="pbs"]');
+    await page.selectOption('#piggyPBEventSelect','2026-10-11');
+    assert((await page.locator('#piggyContent').innerText()).includes('Piggy Finishing-Place Personal Bests'));
+    assert((await page.locator('#piggyContent').innerText()).includes('Previous Best Finish'));
+    assert((await page.locator('#piggyContent').innerText()).includes('30+ AVENGERS'));
+    const placementExpected=await page.evaluate(()=>{
+      const events=window.AVENGERS_EVENT_PROJECTION.events;
+      return window.AVENGERS_ROSTER_PIGGY_PB_RANK.placementHistory(events).byEvent.get('piggy|2026-10-11')||[];
+    });
+    const placeCard=page.locator('#piggyContent .table-card').filter({hasText:'Piggy Finishing-Place Personal Bests'});
+    const placeText=await placeCard.innerText();
+    if(placementExpected.length){
+      for(const pb of placementExpected)assert(placeText.includes(pb.player),pb.player+' has website placement PB');
+    }else assert(placeText.includes('No new qualifying finish PBs'));
     await page.click('.nav-btn[data-page="eventTotals"]');
     const leagueFooter=page.locator('#page-eventTotals .league-rewards-footnote');
     assert(await leagueFooter.count(),'historical league coverage summary is visible');

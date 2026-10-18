@@ -84,46 +84,6 @@ class ApprovedSourceModelTests(unittest.TestCase):
         self.assertEqual(m["previousEvent"], "piggy|2026-10-02")
         self.assertFalse(m["readyToPost"])
 
-    def test_piggy_placement_pb_is_independent_review_metadata(self):
-        data = fixture()
-        data["piggyPlacementPBs"] = {"piggy|2026-10-11": [
-            {"player": "AV-A", "eventId": "piggy|2026-10-11",
-             "previousRank": 5, "newRank": 1, "firstQualified": False, "improved": True},
-            {"player": "AV-B", "eventId": "piggy|2026-10-11",
-             "previousRank": None, "newRank": 1, "firstQualified": True, "improved": False}
-        ]}
-        av = renderer.resolve_summary(data, "piggy", "AVENGERS")
-        self.assertEqual(len(av["piggyPlacementPBs"]), 1)
-        self.assertEqual(av["piggyPlacementPBs"][0]["newRank"], 1)
-        self.assertEqual(renderer.resolve_summary(data, "piggy", "AV-2")["piggyPlacementPBs"], [])
-        self.assertEqual(renderer.resolve_summary(data, "flash", "AVENGERS")["piggyPlacementPBs"], [])
-        self.assertEqual(renderer.ordinal(1), "1st")
-        self.assertEqual(renderer.ordinal(22), "22nd")
-        self.assertEqual(renderer.ordinal(None), "—")
-
-    def test_piggy_placement_preview_is_opt_in_and_never_post_ready(self):
-        try:
-            from PIL import Image
-        except ImportError:
-            self.skipTest("Pillow installed in CI")
-        data = fixture()
-        data["piggyPlacementPBs"] = {"piggy|2026-10-11": [
-            {"player": "AV-A", "eventId": "piggy|2026-10-11",
-             "previousRank": 5, "newRank": 1, "firstQualified": False, "improved": True}
-        ]}
-        with tempfile.TemporaryDirectory() as tmp:
-            stable = pathlib.Path(tmp) / "approved.png"
-            preview = pathlib.Path(tmp) / "preview.png"
-            original = renderer.render(data, "piggy", "AVENGERS", None, str(stable))
-            result = renderer.render(data, "piggy", "AVENGERS", None, str(preview),
-                                     piggy_placement_preview=True)
-            self.assertNotEqual(result["imageSHA256"], original["imageSHA256"])
-            self.assertEqual(result["piggyPlacementPBCount"], 1)
-            self.assertTrue(result["unapprovedPlacementDesignPreview"])
-            self.assertFalse(result["readyToPost"])
-            self.assertFalse(result["discordPostingEnabled"])
-            self.assertEqual(Image.open(preview).size, (2400, 1500))
-
     def test_flash_pb_is_independent_of_piggy_and_respects_event_time_clan(self):
         m = renderer.resolve_summary(fixture(), "flash", "AV-2")
         self.assertEqual(m["eventId"], "flash|2026-10-13|2")

@@ -3,27 +3,70 @@ const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const {readFileSync}=require('node:fs');
 const {join}=require('node:path');
-const {rankRows}=require('../roster-piggy-pb-rank.js');
-
-test('Piggy PB rank uses highest recorded lines, competition ties, and omits missing data',()=>{
-  const original=[{name:'A',piggyPB:47000},{name:'B',piggyPB:51000},{name:'C',piggyPB:51000},{name:'D',piggyPB:12000},{name:'E',piggyPB:0},{name:'F',piggyPB:null},{name:'G',piggyPB:NaN}];
-  const out=rankRows(original);
-  assert.deepEqual(out.map(r=>r.piggyPBRank),[3,1,1,4,null,null,null]);
-  assert.equal(original[0].piggyPBRank,undefined,'should not mutate source event projection rows');
+const {rankRows,bestFinishes,formatFinish,MIN_AVENGERS_IN_LOBBY}=require('../roster-piggy-pb-rank.js');
+function race(id,clan='AVENGERS',size=30,opts={}){
+  const rows=Array.from({length:size},(_,i)=>({
+    player:i===0?(opts.first||'Hero'):'Player '+i,
+    clan,
+    score:i===0?(opts.firstLines||10000):50000-i*80,
+    metadata:{rank:i+1,...(opts.lobby!==undefined?{lobby:opts.lobby}:{})}
+  }));
+  return {id,kind:opts.kind||'piggy',date:'2026-10-11',status:opts.status||'final',rows};
+}
+test('best finishing rank ignores lines and finds the best place across large AVENGERS races',()=>{
+  const first=race('piggy|first');
+  const fifth=race('piggy|fifth');
+  fifth.rows[0].metadata.rank=5;
+  fifth.rows[0].score=30000;
+  assert.equal(first.rows[0].score,10000);
+  assert.equal(fifth.rows[0].score,30000);
+  const result=rankRows([{name:'Hero',piggyPB:30000},{name:'Player 1',piggyPB:49920}],[first,fifth]);
+  assert.equal(result[0].piggyPBRank,1,'1st with 10k overrides 5th with 30k');
+  assert.equal(result[1].piggyPBRank,2,'other members retain their best literal place');
+  assert.equal(formatFinish(result[0].piggyPBRank),'1st');
+  assert.equal(formatFinish(result[1].piggyPBRank),'2nd');
 });
-test('Piggy PB ranks recompute per selected clan or all-members roster',()=>{
-  const av=[{name:'AV top',piggyPB:70000},{name:'AV second',piggyPB:40000}];
-  const av2=[{name:'AV-2 top',piggyPB:60000},{name:'AV-2 missing',piggyPB:0}];
-  assert.deepEqual(rankRows(av).map(r=>r.piggyPBRank),[1,2]);
-  assert.deepEqual(rankRows(av2).map(r=>r.piggyPBRank),[1,null]);
-  assert.deepEqual(rankRows([...av,...av2]).map(r=>r.piggyPBRank),[1,3,2,null]);
-  assert.deepEqual(rankRows([]),[]);
+test('AV-2 races excluded even if they contain 35 racers, as are solo and 29-player AVENGERS races',()=>{
+  const av2=race('piggy|av2','AV-2',35,{first:'AV2Only'});
+  const small=race('piggy|small','AVENGERS',29,{first:'SmallOnly'});
+  const solo=race('piggy|solo','AVENGERS',1,{first:'Solo'});
+  const rows=rankRows([{name:'AV2Only'},{name:'SmallOnly'},{name:'Solo'}],[av2,small,solo]);
+  assert.deepEqual(rows.map(r=>r.piggyPBRank),[null,null,null]);
+  assert.equal(MIN_AVENGERS_IN_LOBBY,30);
 });
-test('Rosters render the always-visible sortable Piggy PB Rank column',()=>{
+test('Two separate sub-30 AVENGERS lobbies on same date do not combine; solo winner never beats main',()=>{
+  const event=race('piggy|oct11','AVENGERS',30,{first:'MainWinner',lobby:'main'});
+  event.rows.push({player:'SoloWinner',clan:'AVENGERS',score:100,metadata:{rank:1,lobby:'solo'}});
+  const out=rankRows([{name:'MainWinner'},{name:'SoloWinner'}],[event]);
+  assert.deepEqual(out.map(r=>r.piggyPBRank),[1,null]);
+  const split=race('piggy|split','AVENGERS',20,{first:'LobbyA',lobby:'A'});
+  split.rows.push(...race('unused','AVENGERS',20,{first:'LobbyB',lobby:'B'}).rows);
+  assert.equal(bestFinishes([split]).qualifying.size,0);
+});
+test('A qualifying rank is lifetime per player; clan roster filtering must not rerank finishes',()=>{
+  const event=race('piggy|large');
+  const currentAV=rankRows([{name:'Hero'}],[event]);
+  const transferredToAV2=rankRows([{name:'Alias'}],[event],{Alias:'Hero'});
+  assert.deepEqual(currentAV.map(r=>r.piggyPBRank),[1]);
+  assert.deepEqual(transferredToAV2.map(r=>r.piggyPBRank),[1]);
+  assert.equal(rankRows([{name:'Untracked'}],[event])[0].piggyPBRank,null);
+});
+test('Never infer finish from a line score if original rank missing, invalid or revoked',()=>{
+  const event=race('piggy|valid');
+  event.rows[0].metadata.rank=null;
+  const flash=race('flash|1','AVENGERS',35,{first:'FlashWinner',kind:'flash'});
+  const revoked=race('piggy|revoked','AVENGERS',35,{first:'RevokedWinner',status:'revoked'});
+  const out=rankRows([{name:'Hero'},{name:'FlashWinner'},{name:'RevokedWinner'}],[event,flash,revoked]);
+  assert.deepEqual(out.map(r=>r.piggyPBRank),[null,null,null]);
+  assert.deepEqual([1,2,3,4,11,12,13,21,22,23,30].map(formatFinish),
+    ['1st','2nd','3rd','4th','11th','12th','13th','21st','22nd','23rd','30th']);
+});
+test('Rosters use approved event results and display sortable ordinal placement, not personal-best lines',()=>{
   const html=readFileSync(join(__dirname,'../index.html'),'utf8');
   assert.match(html,/<script src="roster-piggy-pb-rank\.js"><\/script>/);
-  assert.match(html,/rows=window\.AVENGERS_ROSTER_PIGGY_PB_RANK\.rankRows\(rows\);/);
+  assert.match(html,/rows=window\.AVENGERS_ROSTER_PIGGY_PB_RANK\.rankRows\(rows,window\.AVENGERS_EVENT_PROJECTION\?\.events\|\|\[\],D\.aliasMap\|\|\{\}\);/);
   assert.match(html,/piggyPBRank:\{label:'Piggy PB Rank',type:'number',get:r=>r\.piggyPBRank\}/);
   assert.match(html,/sortHeader\('Piggy PB Rank','piggyPBRank',true\)/);
-  assert.match(html,/r\.piggyPBRank==null\?missing:/);
+  assert.match(html,/r\.piggyPBRank==null\?missing:window\.AVENGERS_ROSTER_PIGGY_PB_RANK\.formatFinish\(r\.piggyPBRank\)/);
+  assert.match(html,/Line totals do not determine this number/);
 });

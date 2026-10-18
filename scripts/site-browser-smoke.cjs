@@ -61,7 +61,8 @@ async function main(){
     await page.click('#piggyTabs [data-view="pbs"]');
     await page.selectOption('#piggyPBEventSelect','2026-10-11');
     assert((await page.locator('#piggyContent').innerText()).includes('Piggy Finishing-Place Personal Bests'));
-    assert((await page.locator('#piggyContent').innerText()).includes('Previous Best Finish'));
+    assert((await page.locator('#piggyContent').innerText()).toLowerCase().includes('previous best finish'));
+    // Table headers are uppercase by CSS; browser innerText reflects that styling.
     assert((await page.locator('#piggyContent').innerText()).includes('30+ AVENGERS'));
     const placementExpected=await page.evaluate(()=>{
       const events=window.AVENGERS_EVENT_PROJECTION.events;

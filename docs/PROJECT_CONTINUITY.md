@@ -4,8 +4,10 @@
 
 **Last reconciled:** 2026-10-18 UTC. **Validated main before this documentation PR:** `7c66e643351aa00ee748f8c8a1a392707fc23f6d`. The commit SHA is a dated baseline, not a permanent latest revision. Fetch live `main` before making code changes.
 
-## October 18 — Piggy PB roster rank
-The leader asked for an always-visible, sortable **Piggy PB Rank** column on both main clan rosters (AVENGERS and AV-2) and All Members. PB = personal best Piggy lines, not event finish position. Rank 1 is highest PB in the *selected roster*; equal PBs tie, and unknown/zero PB is unranked. Rankings must be recomputed from the same projected PB values as the records/profile and must not be a separately maintained number. See `roster-piggy-pb-rank.js` and the October 18 DECISION_LOG entry. This UI work does not authorize automatic event imports or event-summary PNG sending.
+## October 18 — Piggy PB Rank (leader-corrected meaning)
+**The earlier interpretation of PB Rank as lines-based roster rank is WRONG and superseded.** The roster column must report the player's **best numeric finishing PLACE** across historic qualifying Piggy **Races** with at least 30 *distinct AVENGERS participants in one lobby*, independent of lines. A 1st place with 10K lines outranks a 5th with 30K. Small/solo AVENGERS lobbies and all AV-2 lobbies do not count; distinct small lobbies on the same day must not be combined. Use the source event's actual rank, event-time AVENGERS clan and verified lobby cohort, not sorted line scores. Missing validated qualifying finishes display —. An AV-2 member retains a genuine earlier AVENGERS-lobby finish; current roster filtering must not change their PB. Existing Piggy PB **lines** metric remains separate. See issue #86, October 18 correction in DECISION_LOG and `roster-piggy-pb-rank.js`.
+
+Automatic Discord PNG sending is still **OFF for every event type in both clans**, irrespective of template provisional approval or this site release. Fine-tune/approve Piggy PNG and receive separate explicit leader authorization before any automatic sending.
 
 ## Start here in a fresh chat
 1. Read this file, [the live roadmap](../ROADMAP.md), [the dated decision log](DECISION_LOG.md), and [master issue #13](https://github.com/AvengersMobControl/avengers-stat-center/issues/13). Then inspect the issue and scripts relevant to the current request.

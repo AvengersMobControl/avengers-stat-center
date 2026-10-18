@@ -57,6 +57,7 @@ async function main(){
     assert.equal(originalActiveRank,allMembersRank,'Player best race finish cannot change when roster view changes');
     // A placement-only Piggy PB is visible in the historical PBs & New tab,
     // even when it is NOT a new high number of lines.
+    await page.selectOption('#globalStatusFilter','active');
     await page.click('.nav-btn[data-page="piggy"]');
     await page.click('#piggyTabs [data-view="pbs"]');
     await page.selectOption('#piggyPBEventSelect','2026-10-11');

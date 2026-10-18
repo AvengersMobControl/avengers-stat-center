@@ -24,7 +24,7 @@ The leader wants the separate **best finishing place** on Piggy Race → PBs & N
 **NO change to pinned images by default.** A candidate Piggy rank PB panel, visually **unapproved**, can be rendered from an approved summary export:
 
 ```bash
-python3 scripts/render-event-summary.py reports/approved-summary-release.json reports/piggy-finishing-place-PREVIEW.png --kind piggy --clan AVENGERS --piggy-placement-preview
+python3 scripts/render-piggy-finish-pb-preview.py reports/approved-summary-release.json reports/piggy-finishing-place-PREVIEW.png
 ```
 
 The preview panel lists up to three qualified placement PBs (previous → new) with `readyToPost:false`, `discordPostingEnabled:false` and `unapprovedPlacementDesignPreview:true`. Leader visual approval and a new pinned template version are required before adopting the artwork. **Nothing is automatically sent for either clan or any event type.**

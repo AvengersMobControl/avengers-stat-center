@@ -6,10 +6,16 @@
 const fs=require('node:fs'),path=require('node:path');
 const {create}=require('./create-site-release.cjs');
 const {root}=require('./load-site-data.cjs');
+const {placementHistory}=require('../roster-piggy-pb-rank.js');
 function exportRelease(){
  const release=create();
  if(!release?.projection?.version||!Array.isArray(release.projection.events))throw Error('Canonical projection unavailable');
- return {schemaVersion:1,source:'approved-event-ledger',projection:release.projection};
+ // A separately derived PB stream for qualifying AVENGERS finishing positions.
+ // It never modifies the accepted source projection or approved PNG artwork.
+ const transitions=placementHistory(release.projection.events);
+ const piggyPlacementPBs=Object.fromEntries([...transitions.byEvent].map(([eventId,rows])=>[eventId,rows]));
+ return {schemaVersion:1,source:'approved-event-ledger',projection:release.projection,
+   piggyPlacementPBs};
 }
 function writeApprovedRelease(name){
  if(!/^[A-Za-z0-9][A-Za-z0-9_.-]*\.json$/.test(name||''))throw Error('Output must be a local JSON filename');

@@ -1,10 +1,13 @@
 # AVENGERS / AV-2 Mob Control — living development roadmap
 
-**Updated:** 2026-10-16 UTC. **AVENGERS ONLY — never mix with SAC / Lock It In.**
+**Updated:** 2026-10-18 UTC. **AVENGERS ONLY — never mix with SAC / Lock It In.**
 - [Project continuity handoff](docs/PROJECT_CONTINUITY.md) — user rules, identities, current code and pause decisions.
 - [Dated decision / implementation log](docs/DECISION_LOG.md) — append every meaningful milestone and record verification evidence.
 - **Canonical work tracker:** [master issue #13](https://github.com/AvengersMobControl/avengers-stat-center/issues/13), with individual GitHub issues for acceptance criteria.
 - **Main site:** https://avengersmobcontrol.github.io/avengers-stat-center/.
+
+## October 18 — Piggy PB event history and revised graphic input
+Track first/new qualifying **finishing-place personal bests** per event in Piggy Race → PBs & New alongside the independent existing line PB table; carry event-indexed original-place transitions in approved data passed to Piggy PNG generation. Optional new Piggy PB-panel preview is **unapproved art**, while temporarily approved pinned PNGs remain unchanged and ALL automatic event sends in both clans remain OFF.
 
 ## October 18 — corrected Piggy PB Rank scope
 **Supersedes the October 18 lines-based rank interpretation.** Show each member's best original Piggy Race finish (1st/2nd/...), independent of lines, in an individually observed lobby with **30+ AVENGERS**, excluding **AV-2** and all small/solo lobby results. Do not aggregate multiple small lobbies, infer rank from effort, or rerank by current roster. Existing personal-best lines stay separate. Implemented as a projection-derived and tested roster feature; [issue #86](https://github.com/AvengersMobControl/avengers-stat-center/issues/86) tracks review and exact production deployment. No new event ingestion; automatic PNG sending remains **OFF** for all event types and both clans until separate authorization.

@@ -982,6 +982,11 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       const dates=Object.keys(D.piggy.events||{}).sort().reverse();
       if(!D.piggy.events?.[state.piggyPBEvent]) state.piggyPBEvent=dates[0]||D.meta.latestPiggy;
       const hist=historicalPBs('piggy',state.piggyPBEvent,'lines');
+      const finishPBs=window.AVENGERS_ROSTER_PIGGY_PB_RANK.placementHistory(window.AVENGERS_EVENT_PROJECTION?.events||[]);
+      const finishEvents=[...(window.AVENGERS_EVENT_PROJECTION?.events||[])].filter(e=>e.kind==='piggy'&&e.status!=='revoked'&&e.date<=state.piggyPBEvent);
+      const finishAsOf=window.AVENGERS_ROSTER_PIGGY_PB_RANK.placementHistory(finishEvents).byPlayer;
+      const placeChanges=finishPBs.byEvent.get('piggy|'+state.piggyPBEvent)||[];
+      const displayedPlaceChanges=state.status==='av2'?[]:placeChanges;
       const pbsSorters={
         newpb:(a,b)=>(Number(b.score)||0)-(Number(a.score)||0),
         previouspb:(a,b)=>(Number(b.previous)||0)-(Number(a.previous)||0),
@@ -996,13 +1001,22 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <td class="num">${fmtNum(x.previous)}</td>
         <td class="num">${fmtNum(x.score)}</td>
         <td class="num positive">+${fmtPct(x.improvement||0)}</td>
-      </tr>`).join('') || `<tr><td colspan="5" class="empty">No returning-player PBs in this race.</td></tr>`;
+        <td class="num">${window.AVENGERS_ROSTER_PIGGY_PB_RANK.formatFinish(finishAsOf.get(canonicalPlayerName(x.name)))}</td>
+      </tr>`).join('') || `<tr><td colspan="6" class="empty">No returning-player line PBs in this race.</td></tr>`;
 
       const newRows=newM.map((x,i)=>`<tr>
         <td class="num">${i+1}</td>
         <td><div class="player-cell compact-player"><div class="avatar">${initials(x.name)}</div><button class="linkish" data-player="${escapeHtml(x.name)}">${escapeHtml(x.name)}</button></div></td>
         <td class="num">${fmtNum(x.score)}</td>
       </tr>`).join('') || `<tr><td colspan="3" class="empty">No first-time tracked players in this race.</td></tr>`;
+
+      const placeRows=displayedPlaceChanges.map((x,i)=>`<tr>
+        <td class="num">${i+1}</td>
+        <td><div class="player-cell compact-player"><div class="avatar">${initials(x.player)}</div><button class="linkish" data-player="${escapeHtml(x.player)}">${escapeHtml(x.player)}</button></div></td>
+        <td class="num">${window.AVENGERS_ROSTER_PIGGY_PB_RANK.formatFinish(x.previousRank)}</td>
+        <td class="num positive">${window.AVENGERS_ROSTER_PIGGY_PB_RANK.formatFinish(x.newRank)}</td>
+        <td>${x.firstQualified?'First qualifying race':'Improved finish'}</td>
+      </tr>`).join('') || `<tr><td colspan="5" class="empty">No new qualifying finish PBs in this race.</td></tr>`;
 
       el.innerHTML=`
         <div class="space-pb-toolbar">
@@ -1026,10 +1040,12 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
           </div>
         </div>
         <div class="callout-grid tabular-grid">
-          ${tableShell('Piggy Personal Bests',`${fmtDate(state.piggyPBEvent)} • ${pbs.length} returning-player PB${pbs.length===1?'':'s'}`,
-            [{label:'#',num:true},{label:'Member'},{label:'Previous PB',num:true},{label:'New PB',num:true},{label:'% Increase',num:true}],pbRows)}
+          ${tableShell('Piggy Personal Bests',`${fmtDate(state.piggyPBEvent)} • ${pbs.length} returning-player line PB${pbs.length===1?'':'s'} • Finish PB is the best eligible place through this race`,
+            [{label:'#',num:true},{label:'Member'},{label:'Previous PB',num:true},{label:'New PB',num:true},{label:'% Increase',num:true},{label:'Finish PB',num:true}],pbRows)}
           ${tableShell('First Tracked Event',`${newM.length} player${newM.length===1?'':'s'} with no earlier Piggy result in our data`,
             [{label:'#',num:true},{label:'Member'},{label:'Lines',num:true}],newRows)}
+          ${tableShell('Piggy Finishing-Place Personal Bests',`${fmtDate(state.piggyPBEvent)} • ${displayedPlaceChanges.length} first/new placement PB${displayedPlaceChanges.length===1?'':'s'} • Only races with 30+ AVENGERS in the SAME lobby; never AV-2 or small lobbies`,
+            [{label:'#',num:true},{label:'Member'},{label:'Previous Best Finish',num:true},{label:'New Best Finish',num:true},{label:'Type'}],placeRows)}
         </div>`;
       $('#piggyPBEventSelect',el)?.addEventListener('change',e=>{state.piggyPBEvent=e.target.value;renderPiggy();});
       $('#piggyPBSortSelect',el)?.addEventListener('change',e=>{state.piggyPBSort=e.target.value;renderPiggy();});

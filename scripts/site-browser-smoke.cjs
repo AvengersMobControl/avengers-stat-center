@@ -33,19 +33,28 @@ async function main(){
         assert.deepEqual(errors,[],name+' has no browser errors');
       }
     }
-    // Actual rendered clan rosters must expose a sortable, accurate PB ranking.
+    // The browser shows actual best finishing PLACES (not line-score rankings).
+    // This value is fixed by the qualifying historic race, not the current clan roster.
     await page.click('.nav-btn[data-page="rosters"]');
     await page.click('#rostersContent button[data-roster-sort="piggyPBRank"]');
+    let originalActiveRank=null, allMembersRank=null;
     for(const roster of ['active','av2','all']){
       await page.click('#rosterTabs button[data-roster="'+roster+'"]');
-      assert.equal(await page.locator('#rostersContent button[data-roster-sort="piggyPBRank"]').count(),1,'Piggy PB Rank is always visible for '+roster);
+      assert.equal(await page.locator('#rostersContent button[data-roster-sort="piggyPBRank"]').count(),1,'Piggy PB Rank is visible for '+roster);
       const textRanks=await page.locator('#rostersContent td.roster-piggy-pb-rank').allTextContents();
-      const ranks=textRanks.filter(t=>t.trim().startsWith('#')).map(t=>Number(t.trim().slice(1).replaceAll(',','')));
-      assert(ranks.length>0,roster+' has recorded Piggy personal bests');
-      assert.equal(ranks[0],1,roster+' highest personal best ranks #1');
-      assert(ranks.every((v,i)=>i===0||v>=ranks[i-1]),roster+' PB ranking sorts best first');
-      assert(textRanks.slice(ranks.length).every(t=>t.trim()==='—'),roster+' unknown PBs are unranked and last');
+      const isRank=t=>/^\d+(st|nd|rd|th)$/.test(t.trim());
+      const ranks=textRanks.filter(isRank).map(t=>Number.parseInt(t.trim(),10));
+      assert(ranks.every((v,i)=>i===0||v>=ranks[i-1]),roster+' sorts true finish ranks (not lines) best first');
+      assert(textRanks.slice(ranks.length).every(t=>t.trim()==='—'),roster+' missing qualifying finishes are not ranked');
+      if(roster!=='av2')assert(ranks.includes(1),roster+' includes an actual first-place finish');
+      const harry=page.locator('#rostersContent tbody tr').filter({has:page.locator('[data-player="AV-HarryBallsagna"]')}).first();
+      if(await harry.count()){
+        const rank=await harry.locator('.roster-piggy-pb-rank').innerText();
+        if(roster==='active') originalActiveRank=rank;
+        if(roster==='all') allMembersRank=rank;
+      }
     }
+    assert.equal(originalActiveRank,allMembersRank,'Player best race finish cannot change when roster view changes');
     await page.click('.nav-btn[data-page="eventTotals"]');
     const leagueFooter=page.locator('#page-eventTotals .league-rewards-footnote');
     assert(await leagueFooter.count(),'historical league coverage summary is visible');

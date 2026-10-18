@@ -49,6 +49,33 @@
     }
     return {byPlayer,qualifying};
   }
+  // Independent historical PB stream: *best finishing place*, never lines.
+  // First eligible finish and subsequent strictly better finishes are both
+  // preserved for the event's PB page and the reviewed PNG export.
+  function placementHistory(events){
+    const bestByPlayer=new Map(),byEvent=new Map();
+    const ordered=(Array.isArray(events)?events:[])
+      .filter(e=>e?.kind==='piggy'&&e.status!=='revoked')
+      .slice().sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))
+                         ||String(a.id||'').localeCompare(String(b.id||'')));
+    for(const event of ordered){
+      const placements=bestFinishes([event]).byPlayer;
+      const transitions=[];
+      for(const [player,finish] of placements){
+        const previousRank=bestByPlayer.get(player)??null;
+        // Ignore equal/worse finishes; first qualifying result is a PB baseline.
+        if(previousRank!==null&&finish>=previousRank)continue;
+        transitions.push({
+          player,eventId:event.id,date:event.date,previousRank,newRank:finish,
+          firstQualified:previousRank===null,improved:previousRank!==null
+        });
+        bestByPlayer.set(player,finish);
+      }
+      transitions.sort((a,b)=>a.newRank-b.newRank||a.player.localeCompare(b.player));
+      byEvent.set(event.id,transitions);
+    }
+    return {byPlayer:bestByPlayer,byEvent};
+  }
   function rankRows(rows,events,aliases={}){
     const best=bestFinishes(events).byPlayer;
     const resolve=raw=>{
@@ -69,7 +96,7 @@
     const suffix=n%100>=11&&n%100<=13?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th');
     return n+suffix;
   }
-  const api=Object.freeze({rankRows,bestFinishes,formatFinish,MIN_AVENGERS_IN_LOBBY});
+  const api=Object.freeze({rankRows,bestFinishes,placementHistory,formatFinish,MIN_AVENGERS_IN_LOBBY});
   if(root)root.AVENGERS_ROSTER_PIGGY_PB_RANK=api;
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window==='undefined'?null:window);

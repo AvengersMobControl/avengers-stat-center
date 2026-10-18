@@ -17,6 +17,18 @@ python3 scripts/render-event-summary.py reports/approved-summary-release.json re
 
 The exporter constructs the **canonical, approved** projection with `create()` and writes only under gitignored `reports/`. No Discord source, preliminary screenshots, or unapproved staging update can enter this pipeline. Rendering does not modify `data/approved-event-updates.json` or any canonical rewards. Each PNG has a sidecar `name.json` with source `projectionVersion`, `eventId`, event-time clan, image SHA-256 and explicit `readyToPost:false`/`discordPostingEnabled:false`.
 
+## Piggy finishing-place PBs for future revised PNG (October 18)
+
+The leader wants the separate **best finishing place** on Piggy Race → PBs & New and in the eventual Piggy graphic. This is the actual lowest numeric result placing in **one event-time AVENGERS lobby containing >=30 distinct recorded AVENGERS participants**, not a line-score rank; never join small lobbies, include Piggy Flashes or AV-2 lobbies, or discard valid history after player transfers. Derived from source with `roster-piggy-pb-rank.js` → `placementHistory(events)`; PB changes carry `{player,eventId,date,previousRank,newRank,firstQualified,improved}`. The read-only PNG export provides `piggyPlacementPBs` keyed by event and the renderer's model/sidecar includes only eligible event-time players.
+
+**NO change to pinned images by default.** A candidate Piggy rank PB panel, visually **unapproved**, can be rendered from an approved summary export:
+
+```bash
+python3 scripts/render-piggy-finish-pb-preview.py reports/approved-summary-release.json reports/piggy-finishing-place-PREVIEW.png
+```
+
+The preview panel lists up to three qualified placement PBs (previous → new) with `readyToPost:false`, `discordPostingEnabled:false` and `unapprovedPlacementDesignPreview:true`. Leader visual approval and a new pinned template version are required before adopting the artwork. **Nothing is automatically sent for either clan or any event type.**
+
 ## Immutable data/display rules
 
 - The requested event is selected from **accepted final or partial** event rows; a revoked/missing event is rejected. With no event ID supplied, choose the latest active event with at least one **event-time clan** row, never filter by current roster membership. AVENGERS and AV-2 are independent; transfers do not change historic entries.

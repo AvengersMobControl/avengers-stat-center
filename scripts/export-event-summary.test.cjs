@@ -8,6 +8,13 @@ test('PNG input comes from exactly the accepted canonical projection; never a dr
  assert.equal(exported.schemaVersion,1);
  assert.equal(exported.source,'approved-event-ledger');
  assert.equal(exported.projection.version,canonical.projection.version);
+ assert.equal(typeof exported.piggyPlacementPBs,'object');
+ assert(Array.isArray(exported.piggyPlacementPBs['piggy|2026-10-11']));
+ for(const rows of Object.values(exported.piggyPlacementPBs))for(const pb of rows){
+  assert(Number.isInteger(pb.newRank)&&pb.newRank>0);
+  assert(pb.previousRank===null||pb.newRank<pb.previousRank);
+  assert.equal(pb.eventId.startsWith('piggy|'),true);
+ }
  assert.deepEqual(exported.projection.events,canonical.projection.events);
  assert.equal(fs.readFileSync(approved,'utf8'),before);
  const kinds=new Set(exported.projection.events.filter(e=>e.status!=='revoked').map(e=>e.kind));

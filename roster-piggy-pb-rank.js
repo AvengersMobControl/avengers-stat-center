@@ -63,7 +63,13 @@
       piggyPBRank:best.get(resolve(row.profileName||row.name))??null
     }));
   }
-  const api=Object.freeze({rankRows,bestFinishes,MIN_AVENGERS_IN_LOBBY});
+  function formatFinish(place){
+    const n=validPlace(place);
+    if(n===null)return '—';
+    const suffix=n%100>=11&&n%100<=13?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th');
+    return n+suffix;
+  }
+  const api=Object.freeze({rankRows,bestFinishes,formatFinish,MIN_AVENGERS_IN_LOBBY});
   if(root)root.AVENGERS_ROSTER_PIGGY_PB_RANK=api;
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window==='undefined'?null:window);

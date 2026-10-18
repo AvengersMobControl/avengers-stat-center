@@ -127,19 +127,11 @@ def resolve_summary(release, kind, clan, event_id=None):
     if kind == "flash" and not flash_num:
         parsed = re.search(r"PF(\d+)", event["id"], re.IGNORECASE)
         flash_num = parsed.group(1) if parsed else None
-    # Finishing-place PBs are a separate verified stream from line PBs.
-    # Only source-qualified AVENGERS Piggy races can have one; exclude AV-2.
-    finish_pbs = (release.get("piggyPlacementPBs") or {}).get(event["id"], [])
-    if kind != "piggy" or clan != "AVENGERS":
-        finish_pbs = []
-    approved_players = {r.get("player") for r in source_rows}
-    finish_pbs = [dict(row) for row in finish_pbs if row.get("player") in approved_players]
     return {
         "eventId": event["id"], "date": event["date"], "kind": kind, "clan": clan,
         "flashNumber": str(flash_num) if flash_num else None,
         "status": event["status"], "unit": event["unit"], "projectionVersion": projection["version"],
         "rows": rank_rows, "pbs": pbs, "firstTracked": first,
-        "piggyPlacementPBs": finish_pbs,
         "participantRows": len(rank_rows), "knownScoreSum": total_score,
         "knownScoreCount": len(rank_rows) - missing_scores, "knownSparks": total_sparks,
         "knownStars": total_stars if kind != "kraken" else None,
@@ -165,14 +157,7 @@ def _fonts(size, bold=False):
     raise RuntimeError("Pillow DejaVuSans font unavailable; do not substitute an unreviewed graphic")
 
 
-def ordinal(place):
-    if place is None or not isinstance(place, int) or place < 1:
-        return "—"
-    suffix = "th" if 11 <= place % 100 <= 13 else {1: "st", 2: "nd", 3: "rd"}.get(place % 10, "th")
-    return str(place) + suffix
-
-
-def draw_png(model, dest, piggy_placement_preview=False):
+def draw_png(model, dest):
     from PIL import Image, ImageDraw
     w, h = 2400, 1500
     image = Image.new("RGB", (w, h), PALETTE["bg"])
@@ -305,27 +290,12 @@ def draw_png(model, dest, piggy_placement_preview=False):
     else:
         note(lx+30,1034,"First in our recorded history · not necessarily first-ever",980)
     box(lx,1091,1138,1376,"purple")
-    # Optional NEW Piggy preview only; pinned temporarily approved templates
-    # remain byte-for-byte untouched unless the user explicitly reviews art.
-    if kind=="piggy" and piggy_placement_preview:
-        txt(lx+30,1114,"BEST FINISHES · 30+ AVENGERS",32,"fg",True)
-        note(lx+30,1162,"Rank PBs tracked separately from Piggy lines",995)
-        for i, entry in enumerate(model["piggyPlacementPBs"][:3]):
-            y=1210+i*45
-            fit(lx+30,y,display_name(entry["player"]),410,25,"fg",True)
-            txt(780,y,ordinal(entry.get("previousRank")),25,"muted",False,"ra")
-            txt(845,y,"→",23,"cyan")
-            txt(1085,y,ordinal(entry["newRank"]),29,"green",True,"ra")
-        if not model["piggyPlacementPBs"]:
-            note(lx+30,1240,"No first/new qualified finishing-place PBs in this event",1030)
-        note(lx+30,1342,"PREVIEW ONLY · new template approval required",1030)
-    else:
-        txt(lx+30,1114,"EFFORT & REWARDS",34,"fg",True)
+    txt(lx+30,1114,"EFFORT & REWARDS",34,"fg",True)
     if kind=="kraken":
         note(lx+30,1170,"Damage and Sparks use separately sourced values",1000)
         note(lx+30,1220,"Estimated or missing payouts stay labeled as such",1000)
         note(lx+30,1270,"No Kraken Stars or mixed-unit Sparks/Effort",1000)
-    elif not (kind=="piggy" and piggy_placement_preview):
+    else:
         threshold=3500 if kind=="piggy" else 1
         note(lx+30,1170,"Lowest known Sparks per line · "+("at least 3,500 lines" if kind=="piggy" else "positive Flash results"),1000)
         shouts=sorted((r for r in model["rows"] if r["sparks"] is not None
@@ -362,23 +332,18 @@ def draw_png(model, dest, piggy_placement_preview=False):
     image.save(dest, format="PNG", optimize=False)
 
 
-def render(release, kind, clan, event_id, output, piggy_placement_preview=False):
+def render(release, kind, clan, event_id, output):
     model=resolve_summary(release,kind,clan,event_id)
     dest=Path(output)
     if dest.suffix.lower()!=".png":raise ValueError("Output path must end with .png")
     if not dest.parent.exists():raise ValueError("Output folder must already exist")
-    if piggy_placement_preview and kind != 'piggy':
-        raise ValueError('Finishing-place PB artwork preview is for Piggy only')
-    draw_png(model,dest,piggy_placement_preview=piggy_placement_preview)
+    draw_png(model,dest)
     result={
         "eventId":model["eventId"],"clan":clan,"kind":kind,
         "projectionVersion":model["projectionVersion"],
         "imageSHA256":hashlib.sha256(dest.read_bytes()).hexdigest(),
         "participants":model["participantRows"],"pbs":len(model["pbs"]),
         "firstTracked":len(model["firstTracked"]),
-        "piggyPlacementPBs":model["piggyPlacementPBs"],
-        "piggyPlacementPBCount":len(model["piggyPlacementPBs"]),
-        "unapprovedPlacementDesignPreview":bool(piggy_placement_preview),
         "unknownSparkRows":model["unknownSparkRows"],
         "unknownStarRows":model["unknownStarRows"],
         "eventStatus":model["status"],
@@ -398,12 +363,9 @@ def main():
     parser.add_argument("--kind",choices=tuple(KINDS),required=True)
     parser.add_argument("--clan",choices=("AVENGERS","AV-2"),default="AVENGERS")
     parser.add_argument("--event-id",default=None)
-    parser.add_argument("--piggy-placement-preview",action="store_true",
-                        help="Preview proposed rank-PB panel without changing approved defaults")
     args=parser.parse_args()
     release=json.loads(Path(args.release).read_text(encoding="utf-8"))
-    print(json.dumps(render(release,args.kind,args.clan,args.event_id,args.output,
-                            piggy_placement_preview=args.piggy_placement_preview),sort_keys=True))
+    print(json.dumps(render(release,args.kind,args.clan,args.event_id,args.output),sort_keys=True))
 
 
 if __name__=="__main__":

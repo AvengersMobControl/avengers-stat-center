@@ -2,7 +2,10 @@
 
 **Purpose:** persistent handoff for ANY new ChatGPT session, independent of a conversation's length. **This GitHub document and [DECISION_LOG.md](DECISION_LOG.md) are the living reference**; no repeated upload of a fresh ChatGPT Project file should be required when the GitHub connector is available. **Only AVENGERS/AV-2. Never mix with SAC/Lock It In.**
 
-**Last reconciled:** 2026-10-16 UTC. **Validated main before this documentation PR:** `7c66e643351aa00ee748f8c8a1a392707fc23f6d`. The commit SHA is a dated baseline, not a permanent latest revision. Fetch live `main` before making code changes.
+**Last reconciled:** 2026-10-18 UTC. **Validated main before this documentation PR:** `7c66e643351aa00ee748f8c8a1a392707fc23f6d`. The commit SHA is a dated baseline, not a permanent latest revision. Fetch live `main` before making code changes.
+
+## October 18 — Piggy PB roster rank
+The leader asked for an always-visible, sortable **Piggy PB Rank** column on both main clan rosters (AVENGERS and AV-2) and All Members. PB = personal best Piggy lines, not event finish position. Rank 1 is highest PB in the *selected roster*; equal PBs tie, and unknown/zero PB is unranked. Rankings must be recomputed from the same projected PB values as the records/profile and must not be a separately maintained number. See `roster-piggy-pb-rank.js` and the October 18 DECISION_LOG entry. This UI work does not authorize automatic event imports or event-summary PNG sending.
 
 ## Start here in a fresh chat
 1. Read this file, [the live roadmap](../ROADMAP.md), [the dated decision log](DECISION_LOG.md), and [master issue #13](https://github.com/AvengersMobControl/avengers-stat-center/issues/13). Then inspect the issue and scripts relevant to the current request.

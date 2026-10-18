@@ -1,3 +1,10 @@
+## 2026-10-18 — Piggy personal-best rank added to both roster ledgers
+
+- **Leader request:** Add a visible **Piggy PB Rank** column to AVENGERS and AV-2 rosters. PB means **personal best** (highest recorded Piggy Race line result), NOT event placement or Sparks.
+- **Semantics:** Rank members by their best positive recorded Piggy lines within the currently displayed roster. AVENGERS, AV-2 and All Members each have independent rank scopes; ties share competition rank (1, 1, 3); missing/unrecorded PB is an em dash, never scored as last place. Recompute when the view or projected Piggy PBs change and keep rank stable when sorting by other columns.
+- **Implementation:** Shared browser/Node rank function in `roster-piggy-pb-rank.js`; visible sortable column in `index.html`; synthetic cases for ties, missing values, clan switching, and markup in `scripts/roster-piggy-pb-rank.test.cjs`; wired into CI. No manual rank snapshot to become stale.
+- **Release status:** Feature branch and review/CI initially pending; verify merge SHA and exact GitHub Pages release before calling deployed. No new event ingestion, stat correction or Discord messages; automated PNG sending remains disabled pending explicit leader authorization.
+
 ## 2026-10-17 — #8 defensive runtime access preflight; publishing still disabled
 
 - **Decision:** while Sunday final-source acquisition is deferred, advance safe summary-publishing infrastructure without sending anything or applying the blocked Neon role migration.

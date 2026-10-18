@@ -6,6 +6,9 @@
 - **Canonical work tracker:** [master issue #13](https://github.com/AvengersMobControl/avengers-stat-center/issues/13), with individual GitHub issues for acceptance criteria.
 - **Main site:** https://avengersmobcontrol.github.io/avengers-stat-center/.
 
+## October 18 roster display addition
+A leader-requested sortable Piggy personal-best rank is computed from the PB recorded in the currently selected AVENGERS, AV-2 or All Members roster. See October 18 decision log and feature PR for merge/deployment verification. Automatic PNG sending for **all events and both clans** remains OFF pending Piggy template approval and separate explicit activation.
+
 ## Priority and accurate current state
 
 | Order | Workstream | Status / next action |

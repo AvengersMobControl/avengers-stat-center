@@ -77,6 +77,8 @@ jobs:
               python3 scripts/render-event-summary.py reports/approved-summary-release.json "reports/event-summary-preview-${kind}-${clan}.png" --kind "$kind" --clan "$clan"
             done
           done
+          # Separate unapproved new Piggy artwork for leader visual review only.
+          python3 scripts/render-piggy-finish-pb-preview.py reports/approved-summary-release.json reports/event-summary-preview-piggy-finish-ranks-AVENGERS.png
       - uses: actions/upload-artifact@v4
         if: always()
         with:

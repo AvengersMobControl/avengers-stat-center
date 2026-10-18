@@ -1561,7 +1561,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   }).join('');
   const emptyCols=4+colGroups.reduce((sum,g)=>sum+g.visible.length,0);
   return `<div class="table-card roster-grouped-card"><div class="table-titlebar"><div><h2>${escapeHtml(label)} Sparks Ledger</h2><div class="small-muted">${rows.length} members • sorted by ${escapeHtml(sortDef.label)} ${sortDir==='asc'?'ascending':'descending'} • select a category to expand/collapse</div></div></div>
-    <div class="table-wrap"><table class="roster-grouped-table"><thead><tr class="roster-group-head"><th rowspan="2" scope="col" class="num">#</th><th rowspan="2" scope="col">${sortHeader('Member','name').label}</th><th rowspan="2" scope="col">${sortHeader('Status','status').label}</th><th rowspan="2" scope="col" class="num" title="Rank by personal best Piggy Race lines among members in this roster view">${sortHeader('Piggy PB Rank','piggyPBRank',true).label}</th>${groupHeader}</tr><tr class="roster-group-subhead">${subHeader}</tr></thead><tbody>${body||`<tr><td colspan="${emptyCols}" class="empty">No roster members found.</td></tr>`}</tbody></table></div></div>`;
+    <div class="table-wrap"><table class="roster-grouped-table"><thead><tr class="roster-group-head"><th rowspan="2" scope="col" class="num">#</th><th rowspan="2" scope="col">${sortHeader('Member','name').label}</th><th rowspan="2" scope="col">${sortHeader('Status','status').label}</th><th rowspan="2" scope="col" class="num" title="Best recorded finish among Piggy Race lobbies with 30+ AVENGERS; AV-2 and small lobbies excluded">${sortHeader('Piggy PB Rank','piggyPBRank',true).label}</th>${groupHeader}</tr><tr class="roster-group-subhead">${subHeader}</tr></thead><tbody>${body||`<tr><td colspan="${emptyCols}" class="empty">No roster members found.</td></tr>`}</tbody></table></div></div>`;
 }
 
   function renderRosters(){
@@ -1682,9 +1682,10 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       label='All Members';
       rows=[...allNames].map(materialize);
     }
-    // Ranks are evaluated across this displayed roster, before its sort is applied.
-    // A PB of zero/unknown is unranked, not last place; ties share a rank.
-    rows=window.AVENGERS_ROSTER_PIGGY_PB_RANK.rankRows(rows);
+    // PB Rank = player's BEST FINISH in a single qualifying Piggy lobby with
+    // 30+ observed AVENGERS. Never rank line totals across this roster, and
+    // never combine independent small lobbies or use AV-2 race results.
+    rows=window.AVENGERS_ROSTER_PIGGY_PB_RANK.rankRows(rows,window.AVENGERS_EVENT_PROJECTION?.events||[],D.aliasMap||{});
     const rosterSortDefs={
       krakenRank:{label:'In-game Rank',type:'number',get:r=>r.krakenRank},
       krakenRosterSparks:{label:'In-game Sparks',type:'number',get:r=>r.krakenRosterSparks},
@@ -1820,7 +1821,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       </div>
       <div class="records-note"><strong>Star totals:</strong> For screenshot members, Total Stars comes from Oct 15 in-game all-time totals. DrDetroit and Starred were added to AV-2 separately by the clan leader; their new all-time Sparks and Stars are not available, so any displayed total is only a tracked minimum (≥). Logged Stars include recorded Piggy, Space and Flash rewards (Kraken Stars are not recorded); Unlogged Stars is the nonnegative difference from screenshot totals. Event counts represent recorded Piggy, Space, Flash and Kraken participation.
       </div>
-      <div class="records-note"><strong>Piggy PB Rank:</strong> Best recorded Piggy Race lines ranked within the displayed roster (AVENGERS, AV-2, or All Members). Highest PB is #1; tied PBs share a rank; no recorded PB displays —. Sort this column to compare ranks.</div>
+      <div class="records-note"><strong>Piggy PB Rank:</strong> Best recorded finishing place (1st, 2nd, etc.) in a Piggy Race lobby with at least 30 recorded AVENGERS competitors. Line totals do not determine this number. AV-2 lobbies and smaller/solo lobbies are excluded; an unknown qualifying finish displays —. The same player's personal-best finish is shown across roster views (including after clan transfers).</div>
       <div class="records-note"><strong>Sparks/Effort:</strong> weighted Sparks per line (Piggy/Flash) or per billion lightyears (Space), using paired known records. Expand the group to see each event type. * excludes unknown reward/effort rows; compare within the same event type.</div>
       <div class="records-note"><strong>Sparks totals:</strong>
         Logged Sparks = Piggy + Space + Flash + Kraken. Screenshot Gap is the nonnegative difference when the recorded all-time screenshot exceeds logged Sparks.

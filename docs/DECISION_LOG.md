@@ -1,3 +1,12 @@
+## 2026-10-17 — #8 restricted Neon role migration and credentials now ACTIVE, sender remains OFF
+
+- Explicit user authorization: apply the prepared production role migration, initialize/rotate strong credentials privately, verify actual login/least-privilege and replace production-only encrypted Vercel variable.
+- Neon reviewed migration `7ae71335-068f-48cb-abf8-73bee07abad8` applied successfully to production; prepared temporary branch removed. `avengers_dispatch_runtime` is now present on production, no admin role memberships and no dangerous DELETE/audit/safety grants.
+- Password initialized inside Postgres using server-side cryptographic UUID randomness, then reset by Neon's managed API. Neither bootstrap nor final password nor full URI was exposed to docs/logs/chat. Authenticated **actual restricted role** completed all 36 read-only preflight checks from `scripts/private-dispatch-readiness.cjs`.
+- Production-only encrypted Vercel `AVENGERS_DISPATCH_DATABASE_URL` replaced with a validated restricted-role TLS connection string; metadata confirmed stored target and type. A new deployment is needed to guarantee production runtimes take new environment values.
+- Safety checks: only production Neon branch, zero publication slots/intents/Discord receipts, three hard-off switches FALSE. No Discord sends/deletes, no runtime/public endpoint, no stat/source/Sparks/Stars/approved PNG/UTC #3/SAC changes. Continue #8 backend/receipt validation and obtain **separate** send/delete approval.
+- Full audit and future operation rules: `docs/PRIVATE_DISPATCH_DATABASE.md`. Supersedes prior 'role migration not applied' checkpoints.
+
 ## 2026-10-17 — #8 defensive runtime access preflight; publishing still disabled
 
 - **Decision:** while Sunday final-source acquisition is deferred, advance safe summary-publishing infrastructure without sending anything or applying the blocked Neon role migration.

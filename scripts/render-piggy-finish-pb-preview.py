@@ -59,7 +59,11 @@ def preview(release, output, event_id=None):
         while dr.textlength(name, font=renderer._fonts(25, True)) > 420 and name:
             name = name[:-1]
         writing(75, y, name, 25, "fg", True)
-        writing(800, y, renderer.format_number(pb.get("previousRank")), 25, "muted", anchor="ra")
+        previous = pb.get('previousRank')
+        previous_text = ('—' if previous is None else str(previous) +
+                         ('th' if 11 <= previous % 100 <= 13 else
+                          {1:'st',2:'nd',3:'rd'}.get(previous % 10,'th')))
+        writing(800, y, previous_text, 25, "muted", anchor="ra")
         writing(860, y, "→", 26, "cyan")
         # Ordinal places: 1st / 2nd / 3rd etc, not highest number of lines.
         place = pb["newRank"]

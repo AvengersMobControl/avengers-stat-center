@@ -21,6 +21,8 @@ on:
       - 'scripts/private-dispatch-schema.test.cjs'
       - 'scripts/render-event-summary.py'
       - 'scripts/test_render_event_summary.py'
+      - 'scripts/render-piggy-finish-pb-preview.py'
+      - 'scripts/test_render_piggy_finish_pb_preview.py'
       - 'scripts/export-event-summary*.cjs'
       - 'scripts/*site*.cjs'
       - 'scripts/export-event-summary*.cjs'
@@ -68,6 +70,7 @@ jobs:
         run: |
           python3 -m pip install --disable-pip-version-check Pillow==11.3.0
           python3 -m unittest discover -s scripts -p test_render_event_summary.py -v
+          python3 -m unittest discover -s scripts -p test_render_piggy_finish_pb_preview.py -v
           node scripts/export-event-summary.cjs approved-summary-release.json
           for kind in piggy flash kraken; do
             for clan in AVENGERS AV-2; do

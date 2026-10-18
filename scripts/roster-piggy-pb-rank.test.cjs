@@ -3,7 +3,7 @@ const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const {readFileSync}=require('node:fs');
 const {join}=require('node:path');
-const {rankRows,bestFinishes,formatFinish,MIN_AVENGERS_IN_LOBBY}=require('../roster-piggy-pb-rank.js');
+const {rankRows,bestFinishes,placementHistory,formatFinish,MIN_AVENGERS_IN_LOBBY}=require('../roster-piggy-pb-rank.js');
 function race(id,clan='AVENGERS',size=30,opts={}){
   const rows=Array.from({length:size},(_,i)=>({
     player:i===0?(opts.first||'Hero'):'Player '+i,
@@ -69,4 +69,30 @@ test('Rosters use approved event results and display sortable ordinal placement,
   assert.match(html,/sortHeader\('Piggy PB Rank','piggyPBRank',true\)/);
   assert.match(html,/r\.piggyPBRank==null\?missing:window\.AVENGERS_ROSTER_PIGGY_PB_RANK\.formatFinish\(r\.piggyPBRank\)/);
   assert.match(html,/Line totals do not determine this number/);
+});
+
+test('rank PB improvements are recorded by event even without a higher line PB',()=>{
+  const early=race('piggy|2026-09-01','AVENGERS',30,{first:'Hero',firstLines:30000});
+  early.date='2026-09-01';early.rows[0].metadata.rank=5;
+  const later=race('piggy|2026-10-01','AVENGERS',35,{first:'Hero',firstLines:10000});
+  later.date='2026-10-01';later.rows[0].metadata.rank=1;
+  const ignored=race('piggy|2026-10-08','AVENGERS',29,{first:'SoloWinner'});
+  ignored.date='2026-10-08';
+  const history=placementHistory([ignored,later,early]);
+  assert.deepEqual(history.byEvent.get(early.id).filter(x=>x.player==='Hero').map(x=>[x.previousRank,x.newRank,x.firstQualified]),[[null,5,true]]);
+  assert.deepEqual(history.byEvent.get(later.id).filter(x=>x.player==='Hero').map(x=>[x.previousRank,x.newRank,x.improved]),[[5,1,true]]);
+  assert.equal(history.byPlayer.get('Hero'),1);
+  assert.equal(history.byEvent.get(ignored.id).length,0);
+  assert.equal(rankRows([{name:'Hero',piggyPB:30000}],[early,later])[0].piggyPBRank,1);
+});
+test('rank PB event history excludes AV-2 and individual lobby winners',()=>{
+  const main=race('piggy|2026-10-11','AVENGERS',30,{first:'Main',lobby:'main'});
+  main.date='2026-10-11';
+  main.rows.push({player:'Solo',clan:'AVENGERS',score:500,metadata:{rank:1,lobby:'separate'}});
+  main.rows.push(...race('x','AV-2',34,{first:'AV2Winner',lobby:'av2'}).rows);
+  const history=placementHistory([main]);
+  assert.equal(history.byPlayer.get('Main'),1);
+  assert.equal(history.byPlayer.get('Solo'),undefined);
+  assert.equal(history.byPlayer.get('AV2Winner'),undefined);
+  assert(!history.byEvent.get(main.id).some(x=>x.player==='Solo'||x.player==='AV2Winner'));
 });

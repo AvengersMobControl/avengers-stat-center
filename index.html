@@ -1557,7 +1557,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       const css=`${numeric.has(key)?'num ':''}roster-data-cell roster-cell-${g.id}${key===g.summary?' roster-group-total':''}${key==='unloggedSparks'?' roster-unlogged':''}${key==='totalCombinedSparks'?' roster-sparks':''}`;
       return `<td class="${css}">${cell(r,key)}</td>`;
     }).join('')).join('');
-    return `<tr><td class="num">${i+1}</td><td><div class="player-cell"><div class="avatar">${initials(r.name)}</div>${playerNameCell(r)}</div></td><td>${statusBadge(r.status,r.profileName||r.name)}</td><td class="num roster-piggy-pb-rank">${r.piggyPBRank==null?missing:`#${fmtNum(r.piggyPBRank)}`}</td>${cols}</tr>`;
+    return `<tr><td class="num">${i+1}</td><td><div class="player-cell"><div class="avatar">${initials(r.name)}</div>${playerNameCell(r)}</div></td><td>${statusBadge(r.status,r.profileName||r.name)}</td><td class="num roster-piggy-pb-rank">${r.piggyPBRank==null?missing:window.AVENGERS_ROSTER_PIGGY_PB_RANK.formatFinish(r.piggyPBRank)}</td>${cols}</tr>`;
   }).join('');
   const emptyCols=4+colGroups.reduce((sum,g)=>sum+g.visible.length,0);
   return `<div class="table-card roster-grouped-card"><div class="table-titlebar"><div><h2>${escapeHtml(label)} Sparks Ledger</h2><div class="small-muted">${rows.length} members • sorted by ${escapeHtml(sortDef.label)} ${sortDir==='asc'?'ascending':'descending'} • select a category to expand/collapse</div></div></div>

@@ -33,27 +33,34 @@
         const prior=group.get(row.player);
         if(prior){
           // Conflicting duplicate placements cannot be used as PB evidence.
-          if(prior.length>0&&prior.length!==validPlace(row.metadata?.rank??row.rank))group.set(row.player,{invalid:true});
-        }else group.set(row.player,{length:validPlace(row.metadata?.rank??row.rank),invalid:false});
+          if(prior.rank!==validPlace(row.metadata?.rank??row.rank))group.set(row.player,{invalid:true});
+        }else group.set(row.player,{rank:validPlace(row.metadata?.rank??row.rank),invalid:false});
         groups.set(key,group);
       }
       for(const [key,group] of groups){
         if(group.size<MIN_AVENGERS_IN_LOBBY)continue;
         qualifying.set(event.id+'|'+key,group.size);
         for(const [player,record] of group){
-          if(record.invalid||record.length===null)continue;
+          if(record.invalid||record.rank===null)continue;
           const prior=byPlayer.get(player);
-          if(prior===undefined||record.length<prior)byPlayer.set(player,record.length);
+          if(prior===undefined||record.rank<prior)byPlayer.set(player,record.rank);
         }
       }
     }
     return {byPlayer,qualifying};
   }
-  function rankRows(rows,events){
+  function rankRows(rows,events,aliases={}){
     const best=bestFinishes(events).byPlayer;
+    const resolve=raw=>{
+      let name=String(raw||''),seen=new Set();
+      while(aliases[name]&&!seen.has(name)){
+        seen.add(name);name=aliases[name];
+      }
+      return name;
+    };
     return (Array.isArray(rows)?rows:[]).map(row=>({
       ...row,
-      piggyPBRank:best.get(row.profileName||row.name)??null
+      piggyPBRank:best.get(resolve(row.profileName||row.name))??null
     }));
   }
   const api=Object.freeze({rankRows,bestFinishes,MIN_AVENGERS_IN_LOBBY});

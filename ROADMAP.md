@@ -1,3 +1,10 @@
+## October 19 — Post-#105 sitewide release proof and Clan League accuracy presentation
+
+- **#42 backend/release verification DONE:** PR [#105](https://github.com/AvengersMobControl/avengers-stat-center/pull/105) merged `a16332882cfc8be69b08ce36c2f14773a0353670`, Pages [39343265792](https://github.com/AvengersMobControl/avengers-stat-center/actions/runs/39343265792) SUCCESS pre/post verified browser, exact published source+exports; Vercel SUCCESS. Four event types insert / correct / revoke, member category/roster/ratings/league, immutable site version and exports regression. Dependency map `docs/EVENT_TO_SITE_DEPENDENCIES.md` in PR #106.
+- **#6 source/coverage display:** PR [#106](https://github.com/AvengersMobControl/avengers-stat-center/pull/106) STAGED. Remove mistakenly widespread ratio from six-league table/CSV; disclose known-only source, partial screenshots/unknown rewards, estimated Kraken beside league KPIs; source score/Sparks/Stars unchanged. Independently audit six periods on every PR. Historical 165M/171M scope needs original external leader report confirmation, not synthetic repair.
+- **#4 ingestion still source-gated:** retrieved final-vs-unrelated attachments require actual original-byte SHA/private source binding, reviewer final classification and explicit approval of individual new rows; no unattended import. Existing KNAVEN Oct16 matching row is no-op. No automatic PNG publishing.
+- **#7 council intentionally excluded.** Weekly PNG design parked pending user inspection; AV-2 Oct18 held; UTC #3 disabled; SAC separate.
+
 ## October 19 — Current execution checkpoint (Council #7 excluded)
 
 | Workstream | Current verified state / remaining work |

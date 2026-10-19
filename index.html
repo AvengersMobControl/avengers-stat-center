@@ -461,6 +461,12 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     rosterSort: 'totalCombinedSparks',
     rosterSortDir: 'desc',
     rosterGroups: {location:false,sparks:true,stars:false,rating:false,piggyAchievements:false,events:false},
+    rosterColumnWidths: (()=>{
+      try {
+        const saved=JSON.parse(localStorage.getItem('avengers-roster-column-widths-v1')||'{}');
+        return Object.fromEntries(Object.entries(saved).filter(([key,width])=>/^[A-Za-z]+$/.test(key)&&Number.isFinite(width)&&width>=72&&width<=420));
+      } catch { return {}; }
+    })(),
     playerSearch: ''
   };
 
@@ -1599,10 +1605,19 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   };
   const numeric=new Set(['piggyWins','piggyPodiums','piggyPBRank','utcOffset','piggySparks','spaceSparks','flashSparks','krakenSparks','loggedSparks','unloggedSparks','totalCombinedSparks','piggyStars','spaceStars','flashStars','loggedStars','unloggedStars','knownStars','ratingTotal','piggyPB','spacePB','krakenPB','piggyEvents','spaceEvents','flashEvents','krakenEvents','totalEvents']);
   const colGroups=groups.map(group=>({...group,visible:expanded[group.id]?group.keys:[group.summary]}));
+  const colKeys=['rank','name','status',...colGroups.flatMap(g=>g.visible)];
+  const defaultWidths={rank:54,name:220,status:100,country:120,timeZoneGroup:88,state:110,piggyPBRank:108,totalCombinedSparks:146,knownStars:135,unloggedSparks:148};
+  const colWidth=key=>{
+    const saved=Number(state.rosterColumnWidths[key]);
+    return saved>=72&&saved<=420?saved:(defaultWidths[key]||114);
+  };
+  const totalColumnWidth=colKeys.reduce((sum,key)=>sum+colWidth(key),0);
+  const colMarkup=colKeys.map(key=>`<col data-roster-column="${key}" style="width:${colWidth(key)}px">`).join('');
+  const resizeHandle=(key,label)=>`<button type="button" class="roster-column-grip" data-roster-resize="${key}" aria-label="Resize ${escapeHtml(label)} column" title="Drag to resize • arrow keys on this handle adjust width">⋮</button>`;
   const groupHeaderFor=parts=>parts.map(g=>`<th scope="colgroup" colspan="${g.visible.length}" class="roster-group-heading roster-group-${g.id}"><button type="button" class="roster-group-toggle" data-roster-group="${g.id}" aria-expanded="${!!expanded[g.id]}" title="${expanded[g.id]?'Collapse':'Expand'} ${g.name} columns"><span aria-hidden="true">${expanded[g.id]?'▾':'▸'}</span> ${g.name}<span class="roster-group-count">${g.visible.length}/${g.keys.length}</span></button></th>`).join('');
   const groupHeader=groupHeaderFor(colGroups.slice(0,-1));
   const eventGroupHeader=groupHeaderFor(colGroups.slice(-1));
-  const subHeader=colGroups.map(g=>g.visible.map(key=>`<th scope="col" class="${numeric.has(key)?'num':''} roster-subhead roster-head-${g.id}">${sortHeader(labels[key],key,numeric.has(key)).label}</th>`).join('')).join('');
+  const subHeader=colGroups.map(g=>g.visible.map(key=>`<th scope="col" class="${numeric.has(key)?'num':''} roster-subhead roster-head-${g.id}" data-roster-col-head="${key}">${sortHeader(labels[key],key,numeric.has(key)).label}${resizeHandle(key,labels[key])}</th>`).join('')).join('');
   const missing='<span class="small-muted" title="Not yet available">—</span>';
   const cell=(r,key)=>{
     switch(key){
@@ -1635,7 +1650,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   }).join('');
   const emptyCols=3+colGroups.reduce((sum,g)=>sum+g.visible.length,0);
   return `<div class="table-card roster-grouped-card"><div class="table-titlebar"><div><h2>${escapeHtml(label)} Sparks Ledger</h2><div class="small-muted">${rows.length} members • sorted by ${escapeHtml(sortDef.label)} ${sortDir==='asc'?'ascending':'descending'} • select a category to expand/collapse</div></div></div>
-    <div class="table-wrap"><table class="roster-grouped-table"><thead><tr class="roster-group-head"><th rowspan="2" scope="col" class="num">#</th><th rowspan="2" scope="col">${sortHeader('Member','name').label}</th><th rowspan="2" scope="col">${sortHeader('Status','status').label}</th>${groupHeader}${eventGroupHeader}</tr><tr class="roster-group-subhead">${subHeader}</tr></thead><tbody>${body||`<tr><td colspan="${emptyCols}" class="empty">No roster members found.</td></tr>`}</tbody></table></div></div>`;
+    <div class="table-wrap"><table class="roster-grouped-table" style="width:${totalColumnWidth}px;min-width:100%"><colgroup>${colMarkup}</colgroup><thead><tr class="roster-group-head"><th rowspan="2" scope="col" class="num">#</th><th rowspan="2" scope="col" class="roster-fixed-head">${sortHeader('Member','name').label}${resizeHandle('name','Member')}</th><th rowspan="2" scope="col" class="roster-fixed-head">${sortHeader('Status','status').label}${resizeHandle('status','Status')}</th>${groupHeader}${eventGroupHeader}</tr><tr class="roster-group-subhead">${subHeader}</tr></thead><tbody>${body||`<tr><td colspan="${emptyCols}" class="empty">No roster members found.</td></tr>`}</tbody></table></div></div>`;
 }
 
   function renderRosters(){
@@ -1922,6 +1937,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     // stacking another listener. Stacked handlers caused one click to toggle
     // the direction multiple times, making ascending/descending appear broken.
     root.onclick=e=>{
+      if(e.target.closest('[data-roster-resize]'))return;
       const groupButton=e.target.closest('button[data-roster-group]');
       if(groupButton){
         const id=groupButton.dataset.rosterGroup;
@@ -1952,6 +1968,40 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         state.rosterSortDir=['name','status','state','location','country','piggyPBRank'].includes(key)?'asc':'desc';
       }
       renderRosters();
+    };
+    // Widths survive roster tab/group changes and reload; resizing never changes sorting.
+    let drag=null;
+    const resizeColumn=(key,width)=>{
+      const table=root.querySelector('.roster-grouped-table');
+      const col=table?.querySelector('col[data-roster-column="'+key+'"]');
+      if(!col)return;
+      const size=Math.max(72,Math.min(420,Math.round(width)));
+      state.rosterColumnWidths[key]=size;
+      col.style.width=size+'px';
+      const sum=[...table.querySelectorAll('col[data-roster-column]')].reduce((n,c)=>n+(parseFloat(c.style.width)||0),0);
+      table.style.width=sum+'px';
+      try {localStorage.setItem('avengers-roster-column-widths-v1',JSON.stringify(state.rosterColumnWidths));} catch {}
+    };
+    root.onpointerdown=e=>{
+      const grip=e.target.closest('button[data-roster-resize]');
+      if(!grip)return;
+      const col=root.querySelector('.roster-grouped-table col[data-roster-column="'+grip.dataset.rosterResize+'"]');
+      if(!col)return;
+      e.preventDefault();
+      drag={id:e.pointerId,key:grip.dataset.rosterResize,x:e.clientX,width:parseFloat(col.style.width)};
+      grip.setPointerCapture?.(e.pointerId);
+    };
+    root.onpointermove=e=>{
+      if(drag&&e.pointerId===drag.id)resizeColumn(drag.key,drag.width+e.clientX-drag.x);
+    };
+    root.onpointerup=root.onpointercancel=()=>{drag=null;};
+    root.onkeydown=e=>{
+      const grip=e.target.closest('button[data-roster-resize]');
+      if(!grip||!['ArrowLeft','ArrowRight'].includes(e.key))return;
+      e.preventDefault();
+      const key=grip.dataset.rosterResize;
+      const col=root.querySelector('.roster-grouped-table col[data-roster-column="'+key+'"]');
+      if(col)resizeColumn(key,(parseFloat(col.style.width)||114)+(e.key==='ArrowRight'?16:-16));
     };
     bindPlayerButtons(root);
   }
@@ -2289,10 +2339,18 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       .roster-unlogged{font-weight:850;color:#ffd779}
       .roster-grouped-table{width:100%;border-collapse:separate;border-spacing:0}
       .roster-grouped-table th,.roster-grouped-table td{white-space:nowrap}
+       /* Wrapped headers and pointer/keyboard adjustable widths. */
+       #page-rosters .roster-grouped-table{table-layout:fixed}
+       #page-rosters .roster-grouped-table thead th{white-space:normal;overflow-wrap:break-word;vertical-align:middle;position:relative;padding-right:18px;line-height:1.25}
+       #page-rosters .roster-grouped-table .roster-sort-btn{white-space:normal;text-align:center;justify-content:center;overflow-wrap:anywhere;max-width:100%;line-height:1.25}
+       #page-rosters .roster-grouped-table .roster-group-toggle{white-space:normal;overflow-wrap:break-word;line-height:1.25}
+       #page-rosters .roster-grouped-table td{overflow:hidden;text-overflow:ellipsis}
+       #page-rosters .roster-grouped-table .roster-column-grip{position:absolute;right:0;top:0;bottom:0;width:16px;border:0;border-left:1px solid #34516d;background:rgba(44,80,110,.16);color:#a7cae1;cursor:col-resize;touch-action:none;user-select:none;font:700 14px/1 sans-serif}
+       #page-rosters .roster-grouped-table .roster-column-grip:hover,#page-rosters .roster-grouped-table .roster-column-grip:focus-visible{background:#346a8c;color:#fff;outline:2px solid #79daff;outline-offset:-2px}
       /* Keep both tiers of the grouped header together while vertical scrolling.
          Sticky individual TH elements previously overlapped the second header row. */
       #page-rosters .roster-grouped-table thead{position:sticky;top:0;z-index:8;background:#11213a}
-      #page-rosters .roster-grouped-table thead th{position:static;top:auto}
+      #page-rosters .roster-grouped-table thead th{position:relative;top:auto}
       .roster-group-head th{background:#152c48;color:#d8efff;border-bottom:1px solid #34516d}
       .roster-group-head .roster-group-heading{padding:0;border-left:1px solid #34516d}
       .roster-group-toggle{border:0;background:transparent;color:#bde6ff;display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 10px;width:100%;font-weight:850;letter-spacing:.02em;cursor:pointer}

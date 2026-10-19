@@ -51,6 +51,17 @@ async function main(){
     const achievementsColumn=topHeaders.findIndex(t=>t.includes('Piggy Achievements'));
     const eventsColumn=topHeaders.findIndex(t=>t.includes('Events'));
     assert(achievementsColumn>0&&eventsColumn>achievementsColumn,'grouped Piggy Achievements immediately precede Events');
+    // Resizable roster columns keep their sizes when grouped headings re-render.
+    const memberGrip=page.locator('#rostersContent button[data-roster-resize="name"]');
+    assert.equal(await memberGrip.count(),1,'Member column offers an accessible resize handle');
+    const memberWidth=await page.locator('#rostersContent col[data-roster-column="name"]').evaluate(el=>Number.parseFloat(el.style.width));
+    await memberGrip.focus();
+    await page.keyboard.press('ArrowRight');
+    assert.equal(await page.locator('#rostersContent col[data-roster-column="name"]').evaluate(el=>Number.parseFloat(el.style.width)),memberWidth+16,'keyboard resize increases Member width');
+    assert.equal(await page.locator('#rostersContent .roster-grouped-table').evaluate(el=>getComputedStyle(el).tableLayout),'fixed','roster columns follow explicit widths');
+    await page.click('#rostersContent button[data-roster-group="piggyAchievements"]');
+    assert.equal(await page.locator('#rostersContent col[data-roster-column="name"]').evaluate(el=>Number.parseFloat(el.style.width)),memberWidth+16,'roster layout persists across a group collapse');
+    await page.click('#rostersContent button[data-roster-group="piggyAchievements"]');
     await page.click('#rostersContent button[data-roster-sort="piggyPBRank"]');
     let originalActiveRank=null, allMembersRank=null;
     for(const roster of ['active','av2','all']){

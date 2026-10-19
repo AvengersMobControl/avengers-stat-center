@@ -152,7 +152,7 @@ test('current roster and every materialized PB/reward agree with independent can
   const events=BASE.ledger.events.filter(e=>e.status!=='revoked');
   for(const m of D.members){
     // Approved overlays may retain their original source alias; compare canonically.
-    const rows=events.flatMap(e=>e.rows.filter(r=>r.player&&D.resolvePlayerName(r.player)===m.name).map(r=>({...r,kind:e.kind})));
+    const rows=events.flatMap(e=>e.rows.filter(r=>r.player&&BASEW.AVENGERS_DATA.resolvePlayerName(r.player)===m.name).map(r=>({...r,kind:e.kind})));
     for(const kind of ['piggy','space','kraken']){
       const scores=rows.filter(r=>r.kind===kind&&r.score!==null).map(r=>r.score);
       assert.equal(m[kind+'PB'],scores.length?Math.max(...scores):0,m.name+' '+kind);

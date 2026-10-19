@@ -459,6 +459,10 @@
     var piggyPB=Number(m.piggyPB)||0,spacePB=Number(m.spacePB)||0,krakenPB=kp?(Number(kp.pb)||0):(Number(m.krakenPB)||0);
     var piggyAvg=Number(m.piggyAvg)||0,spaceAvg=Number(m.spaceAvg)||0,krakenL3=kp?(Number(kp.last3)||0):(Number(m.krakenAvgL3)||0);
     var rating=Number(m.ratingTotal)||0;
+    var spaceRanking=window.AVENGERS_SPACE_RANKS?.analyze(window.AVENGERS_EVENT_PROJECTION?.events||[],D.aliasMap||{})||null;
+    var lobbyBest=spaceRanking?.lobbyBestByPlayer.get(canonicalNameFor(name))?.rank??null;
+    var verifiedBest=spaceRanking?.verifiedClanBestByPlayer.get(canonicalNameFor(name))?.rank??null;
+    var place=n=>window.AVENGERS_SPACE_RANKS?.ordinal(n)||'—';
     root.innerHTML=
       '<div class="p2-profile">'+
         '<div class="p2-profile-head"><div class="p2-avatar">'+esc(name.replace(/^AV[-.#<]*/i,'').slice(0,2).toUpperCase())+'</div><div><div class="p2-profile-name">'+esc(name)+'</div><div class="profile-status"><span class="status '+(String(m.status||'inactive').toLowerCase()==='active'?'active':(String(m.status||'').toLowerCase()==='av2'?'av2':'inactive'))+'">'+esc(String(name).toLowerCase()==='av-lucky'?'inactive-cheater':(m.status||'Historical'))+'</span></div></div><div class="p2-profile-actions"><button class="p2-secondary-btn" id="p2ComparePlayer">Compare in Trends</button></div></div>'+
@@ -468,6 +472,8 @@
           '<div class="p2-profile-kpi"><span>Piggy Last 3</span><strong>'+num(s.piggyL3,0)+'</strong>'+profileRankNote(name,'piggyL3')+'</div>'+
           '<div class="p2-profile-kpi"><span>L3 vs Prior 3</span><strong>'+changeText(s.piggyDelta)+'</strong>'+profileRankNote(name,'piggyDelta')+'</div>'+
           '<div class="p2-profile-kpi"><span>Space PB</span><strong>'+num(spacePB,1)+'</strong>'+profileRankNote(name,'spacePB')+'</div>'+
+          '<div class="p2-profile-kpi"><span>Best Space Lobby Finish</span><strong>'+place(lobbyBest)+'</strong><small>Original reported rank</small></div>'+
+          '<div class="p2-profile-kpi"><span>Verified Space Clan PB Rank</span><strong>'+place(verifiedBest)+'</strong><small>Requires complete all-lobby proof</small></div>'+
           '<div class="p2-profile-kpi"><span>Space Arena Avg</span><strong>'+num(spaceAvg,1)+'</strong>'+profileRankNote(name,'spaceAvg')+'</div>'+
           '<div class="p2-profile-kpi"><span>Kraken PB</span><strong>'+num(krakenPB,0)+'</strong>'+profileRankNote(name,'krakenPB')+'</div>'+
           '<div class="p2-profile-kpi"><span>Kraken Avg L3</span><strong>'+num(krakenL3,0)+'</strong>'+profileRankNote(name,'krakenL3')+'</div>'+

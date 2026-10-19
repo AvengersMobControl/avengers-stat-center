@@ -215,7 +215,7 @@ async function main(){
     assert.equal(pbRankIntegrity.partialAllUnverified,true);
     assert(pbRankIntegrity.profilePB>=1,'rank PB sourced from real original lobby finish');
     await page.click('#spaceTabs [data-view="overall"]');
-    assert((await page.locator('#spaceContent thead').innerText()).includes('Best Lobby Finish'),'overall Space lobby PB integrated');
+    assert((await page.locator('#spaceContent thead th').allTextContents()).some(t=>t.replace(/\s+/g,' ').includes('Best Lobby Finish')),'overall Space lobby PB integrated');
     await page.click('.nav-btn[data-page="piggy"]');
     await page.selectOption('#piggyEventSelect','2026-10-11');
     assert(!(await page.locator('#piggyContent').innerText()).toLowerCase().includes('sparks/effort (per line)'),'Piggy has no per-line rewards ratio');

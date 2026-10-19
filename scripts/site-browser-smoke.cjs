@@ -188,11 +188,34 @@ async function main(){
     await page.selectOption('#spaceEventSelect','2026-10-16');
     assert((await page.locator('#spaceContent').innerText()).toLowerCase().includes('sparks/effort (per b)'),'efficiency ONLY in Space Event');
     assert.equal(await page.locator('#spaceContent tbody tr').count(),44,'AV event-time rows include all approved racers');
+    const rankHeaders=await page.locator('#spaceContent thead th').allTextContents();
+    for(const title of ['List #','Lobby Finish','Recorded Clan #','Verified Clan #'])
+      assert(rankHeaders.includes(title),'Space rank scope labeled: '+title);
+    const zolikaSpace=page.locator('#spaceContent tbody tr').filter({has:page.locator('[data-player="AV-Zolika.x.TheBoss"]')});
+    assert.equal(await zolikaSpace.count(),1,'Zolika canonical name is the source-ranked Oct 16 row');
+    assert((await zolikaSpace.innerText()).includes('1st'),'original source lobby finish shown');
+    assert((await zolikaSpace.innerText()).includes('—'),'Oct 16 has no verified full-clan placement');
+    assert((await page.locator('#spaceContent .space-rank-provenance').innerText()).includes('not every contestant'),'partial rank key is explicit');
     await page.selectOption('#globalStatusFilter','av2');
     assert.equal(await page.locator('#spaceContent tbody tr').count(),22,'AV-2 event-time rows remain separate');
     await page.selectOption('#globalStatusFilter','active');
     await page.selectOption('#spaceEventSelect','2026-10-09');
     assert((await page.locator('#spaceContent').innerText()).toLowerCase().includes('sparks/effort (per b)'));
+    await page.click('#spaceTabs [data-view="pbs"]');
+    assert((await page.locator('#spaceContent').innerText()).includes('Space Lobby Finish PBs'),'historical rank PBs independently shown');
+    const pbRankIntegrity=await page.evaluate(()=>{
+      const source=window.AVENGERS_EVENT_PROJECTION.events;
+      const all=window.AVENGERS_SPACE_RANKS.analyze(source,window.AVENGERS_DATA.aliasMap);
+      const partial=all.byEvent.get('space|2026-10-16');
+      return {partialAllUnverified:[...partial.values()].every(v=>v.verifiedClanFinish===null),
+        firstLobby:partial.get('AVENGERS|AV-Zolika.x.TheBoss')?.lobbyFinish,
+        profilePB:all.lobbyBestByPlayer.get('AV-Zolika.x.TheBoss')?.rank};
+    });
+    assert.equal(pbRankIntegrity.firstLobby,1);
+    assert.equal(pbRankIntegrity.partialAllUnverified,true);
+    assert(pbRankIntegrity.profilePB>=1,'rank PB sourced from real original lobby finish');
+    await page.click('#spaceTabs [data-view="overall"]');
+    assert((await page.locator('#spaceContent thead').innerText()).includes('Best Lobby Finish'),'overall Space lobby PB integrated');
     await page.click('.nav-btn[data-page="piggy"]');
     await page.selectOption('#piggyEventSelect','2026-10-11');
     assert(!(await page.locator('#piggyContent').innerText()).toLowerCase().includes('sparks/effort (per line)'),'Piggy has no per-line rewards ratio');
@@ -209,6 +232,10 @@ async function main(){
     });
     const profileText=await page.locator('#playerModalContent').innerText();
     assert(profileText.includes('Space Event Results'),'Space event history is retained');
+    assert(profileText.includes('Best Space Lobby Finish'),'player modal shows real Space lobby PB');
+    assert(profileText.includes('Verified Space Clan PB Rank'),'player modal separates unverified full-clan finishes');
+    assert((await page.locator('#playerModalContent table thead').allTextContents()).some(t=>t.includes('Recorded Clan #')),
+      'Space profile history exposes captured rank scope');
     assert(!profileText.includes('Sparks/Effort'),'no efficiency in any player-profile event history');
     assert(profileText.includes('Piggy Event Results'),'Piggy event history');
     assert(profileText.includes('Piggy Flash Event Results'),'Flash event history');

@@ -70,7 +70,25 @@
   // baseline. Existing screenshot and council-provided status always wins.
   const fixedIds=new Set(rosterEntries.map(x=>x.profileName));
   if(fixedIds.size!==100)
-    throw new Error('Current clan roster identities overlap');
+    throw new Error('October 15 screenshot and Council roster identities overlap');
+
+  // October 18 clan-leader membership update. Keep the October 15 Sparks/Stars
+  // captures intact as historical evidence, even for members since transferred.
+  // Jeff's previous screenshot spelling is an alias; AV-JeffKintz05 is the
+  // current canonical/display name and retains ALL historical results.
+  const activeCorrections=['AV-Lin','AV-JeffKintz05','AV-SiFra'];
+  for(const correctName of activeCorrections){
+    const profileName=canonical(correctName);
+    const existing=rosterEntries.find(row=>row.profileName===profileName);
+    if(existing){
+      existing.status='Active';
+      if(profileName==='AV-JeffKintz05')existing.name='AV-JeffKintz05';
+    }else{
+      rosterEntries.push({name:correctName,profileName,status:'Active'});
+    }
+  }
+  if(new Set(rosterEntries.map(row=>row.profileName)).size!==101)
+    throw new Error('October 18 roster membership identity overlap');
   const discordMembers=window.AVENGERS_DISCORD_UTC_ROSTER?.members||[];
   for(const member of discordMembers){
     const name=String(member.name||'').trim();
@@ -124,8 +142,8 @@
   delete D.aliasMap['AV-Frenchie2'];
   byName['AV-Frenchie2']=fromRow(currentRows.find(r=>r.name==='AV-Frenchie2'));
   R.byName=byName;
-  R.source='AVENGERS and AV-2 screenshot rosters (Oct 15) + leader AV-2 corrections for DrDetroit and Starred';
-  R.precedence='48 AVENGERS; 50 screenshot AV-2 + DrDetroit and Starred added by clan leader. Existing UTC/TZG/country preserved where known.';
+  R.source='October 15 AVENGERS/AV-2 snapshots + October 18 leader membership corrections';
+  R.precedence='October 15 screenshot rosters preserved; October 18 transfers/activation of Lin, JeffKintz05 and SiFra yield 51 Active and 50 AV-2. Existing UTC/TZG/country retained.';
 
   // Only current member status changes. Event history, clan attribution,
   // personal records, event totals, and rating math remain unchanged.

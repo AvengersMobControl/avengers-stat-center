@@ -46,8 +46,8 @@ const B=w.AVENGERS_ROSTER_EVENT_BREAKDOWN;
 assert(D && R && S && L && B, 'Missing loaded roster/ledger data scripts');
 const currentAv=(R.rows||[]).filter(r=>r.status==='Active');
 const currentAv2=(R.rows||[]).filter(r=>r.status==='AV2');
-assert.equal(currentAv.length, 48, 'Expected 48 October 15 AVENGERS players');
-assert.equal(currentAv2.length, 52, 'Expected 50 screenshot + 2 leader-confirmed AV-2 players');
+assert.equal(currentAv.length, 51, 'Expected 51 current AVENGERS including Lin, JeffKintz05 and SiFra');
+assert.equal(currentAv2.length, 50, 'Expected 50 current AV-2 after two transfers and Lin activation');
 assert.equal(S.currentAvengersStars.length, 48);
 assert.equal(S.currentAv2.length, 50);
 assert(currentAv2.some(r=>r.name==='AV-DrDetroit'));
@@ -66,7 +66,8 @@ const canonical=raw=>{
 assert.notEqual(canonical('AV-Frenchie2'),canonical('AV-Frenchie(-4)'));
 const current=[...currentAv,...currentAv2];
 const identityKeys=current.map(r=>canonical(r.name));
-assert.equal(new Set(identityKeys).size, 100, 'Duplicate canonical identities in current rosters');
+assert.equal(current.length, 101, 'Expected 101 current roster members after October 18 leader changes');
+assert.equal(new Set(identityKeys).size, current.length, 'Duplicate canonical identities in current rosters');
 const starRows=[...(S.currentAvengersStars||[]),...(S.currentAv2||[])];
 const stars=new Map();
 for(const x of starRows){

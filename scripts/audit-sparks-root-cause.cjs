@@ -35,7 +35,7 @@ for(const kind of ['piggy','space']){
 function total(kind,n){let sum=0;raw[kind].forEach(r=>{if(r.name===n)sum+=r.sparks});return sum;}
 // Council-provided recent Sparks comparisons. Zolika explicitly excluded as a
 // validation benchmark: they participated before the currently covered history.
-// All 100 current players, including Zolika, remain in the systemic audit.
+// Every current player, including Zolika, remains in the systemic audit.
 const targets=[['Saber','AV.Saberkong',17620180],['Abu','AV-Abu//JPN',15902449],
  ['Animosity','AV-Animosity',12672420],['Finnie','AV-Finnie',14956807],['Bil','AV-8!l...Bil',13245089]];
 const targetMap=new Map(targets.map(([label,n,t])=>[canon(n),{label,expected:t}]));
@@ -83,7 +83,7 @@ for(const name of ['AV.Saberkong','AV-Abu//npjp','AV-Animosity','AV-Finnie','AV-
 }
 
 const report={notes:[
-  'All 100 current roster members are audited. Zolika is excluded ONLY as an external validation benchmark because some membership predates the available source history.',
+  'All '+current.length+' current roster members are audited. Zolika is excluded ONLY as an external validation benchmark because some membership predates the available source history.',
   'Four-category sum includes K.players.totalSparks, which already includes October when published; Kraken rewards estimated from historical damage and may use non-event time clans.',
   'Five user-provided comparison values are benchmarks, not source-of-truth replacements. Screenshot rounding, truncation and observation-time differences must be checked before calling small residuals arithmetic inflation.',
   'Animosity user reference corrected to 12,672,420; its earlier 126,722,420 value was a typo.',

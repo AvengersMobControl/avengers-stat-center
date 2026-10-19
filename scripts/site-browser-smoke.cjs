@@ -230,7 +230,7 @@ async function main(){
       const D=window.AVENGERS_DATA,m=D.members.find(m=>m.name==='AV-HarryBallsagna');return{pb:m.spacePB,achievement:window.AVENGERS_COMMUNITY.achievementProfile(m.name).categories.find(c=>c.id==='space').value,
         expected:Math.max(...D.space.history[m.name].map(r=>r.yearsB)),roster:window.AVENGERS_ROSTER_EVENT_BREAKDOWN.forMember(m.name).eventLoggedSparks};
     });
-    const profileText=await page.locator('#playerModalContent').innerText();
+    const profileText=await page.locator('#playerModalContent').textContent(); // wrapped UI labels can insert visual line breaks in innerText
     assert(profileText.includes('Space Event Results'),'Space event history is retained');
     assert(profileText.includes('Best Space Lobby Finish'),'player modal shows real Space lobby PB');
     assert(profileText.includes('Verified Space Clan PB Rank'),'player modal separates unverified full-clan finishes');

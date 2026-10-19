@@ -1,3 +1,18 @@
+## October 19 — Current execution checkpoint (Council #7 excluded)
+
+| Workstream | Current verified state / remaining work |
+|---|---|
+| PR #71 original Unlogged lock | **SUPERSEDED / CLOSED** by PR #103, 28 approved frozen entries = 32,404,095, Pages 39338783565 exact published browser+exports verified |
+| PR #74 Discord storage note | **CLOSED obsolete**, superseded by subsequent Neon production schema and safer runtime-role plan; sending remains OFF |
+| #102 no-Sparks post-Kraken | **DONE / CLOSED** via PR #104, nine reviewed source sets zero Sparks, existing Stars/scores/event clans retained; Pages 39339936686 exact source/browser verified |
+| #42 fullsite atomic propagation | PR #105 adds four-event source insert/correct/revoke, clan-transfer and immutable manifest/export release tests to existing projection; verify CI and Pages before marking DONE |
+| #4 Discord result ingestion | Read-only manual live proof: ignore non-result illustration, accepted Space Oct16 KNAVEN existing row matches; still blocked for any new source until original Discord bytes/hash + reviewed all finals + explicit approval; unattended import OFF |
+| #6 six league verification | Independent source/category/website/league audit all six periods passes; Oct11 174,170,820 and Sep6 169,303,416 known AV Sparks; excluding Flash 170,419,011/165,773,085 approximately matches 171M/165M (unconfirmed reference); historical Kraken estimates + partial coverage still need evidence |
+| #7 Council reporting | **EXCLUDED BY USER**; no feature or reporting work |
+| Weekly PNG | Aesthetics parked for visual review; automatic dispatch OFF |
+
+Boundaries: immutable Unlogged, no fake Space rank or incomplete leaderboard claims, held Oct18 AV-2 result import, paused UTC roster #3, no SAC crossover.
+
 ## October 19 — Six-event weekly recap review pipeline (PR #101)
 
 - **Staged, not yet deployed/approved art:** new approved-ledger weekly snapshot + deterministic 2400×1690 high-resolution PNG renderer requiring exact approved character originals + companion draft Discord message. Week Oct 12–18 includes Space, PF1/2/3/4, Piggy. Top-five **known** Sparks, per-event above-prior-average cohorts, website performance badge thresholds, returning PBs, Piggy qualifying place-PBs and original-lobby Space rank PBs, coverage disclaimers. No decorative “motivation” label.

@@ -4,6 +4,10 @@
 
 **Last reconciled:** 2026-10-18 UTC. **Validated main before this documentation PR:** `7c66e643351aa00ee748f8c8a1a392707fc23f6d`. The commit SHA is a dated baseline, not a permanent latest revision. Fetch live `main` before making code changes.
 
+## October 19 — Current roster activation of Lin, JeffKintz05 and SiFra
+
+Clan leader explicitly requests **AV-Lin, AV-JeffKintz05 and AV-SiFra Active** in AVENGERS. Jeff's current canonical/display name is **AV-JeffKintz05** as shown on the supplied game screenshot; historical `AV-JefhKintz05` must resolve to the same account and rewards, without creating a duplicate. AV-Lin is distinct from AV-2Lin. Current membership becomes 51 Active and 50 AV-2 (101 distinct current members). The original 48/50 October 15 screenshot totals and AV-2 Sparks/Stars remain *dated historical evidence*, not present membership; DrDetroit and Starred remain AV-2, and Bubba inactive. Only current membership/display changes; past event clan attribution, Sparks, Stars, original finishing places and frozen pre-logging Sparks stay untouched. See dated decision and roster issue #2. Automatic PNG/Discord sending remains OFF.
+
 ## October 18 — AVENGERS-only Piggy result source approval; AV-2 explicitly held
 Leader authorized publishing the October 18 AVENGERS 50-place final Piggy Race leaderboard only. Two actual original JPEG screenshot hashes are in the Oct 18 DECISION_LOG entry and approved source overlay. Event `piggy|2026-10-18` carries 50 verified AVENGERS main-lobby finish positions and exact Sparks with Stars provenance; no AV-2 rows, so the event is marked partial overall until AV-2 is separately approved. Source summary: 971,186 lines; 9,701,649 Sparks; 97,016,544 Stars (mixed observed-exact and leader-approved derived-10x). Winner SiFra (44,258), Chuck second (44,182), WolfLegend third (43,651). Inclusive thresholds 40K/30K/20K/10K/5K yield 3/11/23/38/48. The 97.01M game pot display is rounded, not an exact separate reward sum. Deployment and exact SHA verification tracked in the feature PR and issue #4. **No AV-2 import and no Discord/PNG sending authorization.**
 

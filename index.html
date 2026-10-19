@@ -225,6 +225,24 @@ tbody tr:last-child td{border-bottom:0}
   .topbar #siteLanguageSelect{flex:1;min-width:0;max-width:none;min-height:44px;margin:0;font-size:16px}
   .topbar .top-actions>#globalStatusFilter,.topbar .top-actions>#printBtn{display:none}
 }
+/* Oct 19: per-event Piggy benchmark history and grounded record badges. */
+.piggy-benchmark-card{min-width:0;align-self:start}
+.piggy-record-summary{padding:10px 12px;border-bottom:1px solid #233850}
+.piggy-record-heading{color:#d5e8ff;font-weight:850;font-size:12px;margin-bottom:9px}
+.piggy-record-heading small{font-weight:500;color:#91a9c4;margin-left:5px;line-height:1.4}
+.piggy-record-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.piggy-record-item{border:1px solid #7b6230;background:rgba(137,100,29,.12);padding:7px 5px;border-radius:7px;text-align:center;min-width:0}
+.piggy-record-item span{display:block;font-size:11px;color:#e5be67;font-weight:850}
+.piggy-record-item strong{display:block;color:#fff2c4;font-size:12px;font-weight:850;white-space:nowrap}
+.piggy-record-item small{display:block;color:#ccb98a;font-size:10px;white-space:nowrap}
+.piggy-benchmark-scroll{max-height:280px;overflow:auto}
+.piggy-benchmark-table{min-width:660px;font-variant-numeric:tabular-nums}
+.piggy-benchmark-table thead th{padding:9px 7px;font-size:10px}
+.piggy-benchmark-table tbody td{padding:8px 7px}
+.piggy-benchmark-table .piggy-week-date{white-space:nowrap;text-align:left}
+.piggy-benchmark-table td.piggy-record-tied{color:#ffd768;background:rgba(230,170,36,.14);font-weight:900}
+.piggy-benchmark-note{padding:9px 12px;font-size:10px;color:#96b0cb;line-height:1.5}
+@media(max-width:500px){.piggy-record-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.piggy-record-heading small{display:block;margin-left:0}}
 </style>
   <link rel="stylesheet" href="phase2.css" />
   <link rel="stylesheet" href="avengers-theme.css" />
@@ -421,6 +439,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
 <script src="roster-stars-snapshot-2026-10-15.js"></script>
 <script src="event-reward-metrics.js"></script>
 <script src="roster-piggy-pb-rank.js"></script>
+<script src="piggy-benchmarks.js"></script>
   <script>
 
 (() => {
@@ -887,6 +906,40 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     return {pbs,first};
   }
 
+  function renderPiggyBenchmarkHistory(){
+    const engine=window.AVENGERS_PIGGY_BENCHMARKS;
+    if(!engine)return '<div class="table-card"><div class="table-titlebar"><h2>Weekly Line Benchmarks</h2></div><div class="empty">Benchmark calculator unavailable.</div></div>';
+    const history=engine.compute(D.piggy.events,{clan:'AVENGERS',startDate:'2026-01-01'});
+    const labels=history.thresholds.map(n=>n>=1000?(n/1000)+'K+':String(n));
+    const records=history.records.map((r,i)=>`
+      <div class="piggy-record-item" title="${r.tiedDates.length>1?'Record tied '+r.tiedDates.length+' times':'First recorded maximum'}">
+        <span>${labels[i]}</span><strong>${r.count} players</strong>
+        <small>${r.firstDate?fmtDate(r.firstDate):'Not reached'}${r.tiedDates.length>1?' • '+r.tiedDates.length+' dates':''}</small>
+      </div>`).join('');
+    const rows=history.weekly.map(r=>`<tr>
+      <td class="num piggy-week-date">${fmtDate(r.date)}</td>
+      <td class="num">${r.players}</td>
+      ${r.counts.map((count,i)=>`<td class="num${count>0&&count===history.records[i].count?' piggy-record-tied':''}"
+       title="${count>0&&count===history.records[i].count?'Matched tracked 2026 record: '+count+' players':'Players at or above '+labels[i]}">${count||'—'}</td>`).join('')}
+    </tr>`).join('');
+    return `<div class="table-card piggy-benchmark-card">
+      <div class="table-titlebar"><div>
+        <h2>Weekly Line Benchmark Achievements</h2>
+        <div class="small-muted">AVENGERS event-time racers • ${history.weekly.length} recorded 2026 races • counts are inclusive (40K+ means 40,000 or more)</div>
+      </div></div>
+      <div class="piggy-record-summary">
+        <div class="piggy-record-heading">2026 tracked records <small>Gold values in the weekly table equal or tie a record</small></div>
+        <div class="piggy-record-grid">${records}</div>
+      </div>
+      <div class="table-wrap piggy-benchmark-scroll" role="region" aria-label="Weekly Piggy benchmark results, scroll horizontally for higher thresholds" tabindex="0">
+        <table class="piggy-benchmark-table"><thead><tr><th>Race date</th><th class="num">Players</th>
+          ${labels.map(label=>`<th class="num">${label}</th>`).join('')}
+        </tr></thead><tbody>${rows||'<tr><td colspan="10" class="empty">No recorded races in the selected timeframe.</td></tr>'}</tbody></table>
+      </div>
+      <div class="piggy-benchmark-note">Source: approved AVENGERS Piggy results; AV-2 and unidentified event rows excluded. Scroll the table to see 50K+, 60K+, and 70K+. Higher thresholds appear automatically if achieved.</div>
+    </div>`;
+  }
+
   function renderPiggy(){
     const el=$('#piggyContent');
     const view=state.piggyView;
@@ -1051,6 +1104,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
             [{label:'#',num:true},{label:'Member'},{label:'Lines',num:true}],newRows)}
           ${tableShell('Piggy Finishing-Place Personal Bests',`${fmtDate(state.piggyPBEvent)} • ${displayedPlaceChanges.length} first/new placement PB${displayedPlaceChanges.length===1?'':'s'} • Only races with 30+ AVENGERS in the SAME lobby; never AV-2 or small lobbies`,
             [{label:'#',num:true},{label:'Member'},{label:'Previous Best Finish',num:true},{label:'New Best Finish',num:true},{label:'Type'}],placeRows)}
+          ${renderPiggyBenchmarkHistory()}
         </div>`;
       $('#piggyPBEventSelect',el)?.addEventListener('change',e=>{state.piggyPBEvent=e.target.value;renderPiggy();});
       $('#piggyPBSortSelect',el)?.addEventListener('change',e=>{state.piggyPBSort=e.target.value;renderPiggy();});

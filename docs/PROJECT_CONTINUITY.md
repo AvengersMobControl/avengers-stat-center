@@ -4,6 +4,9 @@
 
 **Last reconciled:** 2026-10-18 UTC. **Validated main before this documentation PR:** `7c66e643351aa00ee748f8c8a1a392707fc23f6d`. The commit SHA is a dated baseline, not a permanent latest revision. Fetch live `main` before making code changes.
 
+## October 18 — AVENGERS-only Piggy result source approval; AV-2 explicitly held
+Leader authorized publishing the October 18 AVENGERS 50-place final Piggy Race leaderboard only. Two actual original JPEG screenshot hashes are in the Oct 18 DECISION_LOG entry and approved source overlay. Event `piggy|2026-10-18` carries 50 verified AVENGERS main-lobby finish positions and exact Sparks with Stars provenance; no AV-2 rows, so the event is marked partial overall until AV-2 is separately approved. Source summary: 971,186 lines; 9,701,649 Sparks; 97,016,544 Stars (mixed observed-exact and leader-approved derived-10x). Winner SiFra (44,258), Chuck second (44,182), WolfLegend third (43,651). Inclusive thresholds 40K/30K/20K/10K/5K yield 3/11/23/38/48. The 97.01M game pot display is rounded, not an exact separate reward sum. Deployment and exact SHA verification tracked in the feature PR and issue #4. **No AV-2 import and no Discord/PNG sending authorization.**
+
 ## October 18 — confirmed Frenchie account attribution and notification
 Leader confirmed that **all AV-2 Frenchie results belong to `AV-Frenchie2`**, while the AVENGERS Frenchie account (`AV-Frenchie(-4)`) is separate. The Oct 11 AV-2 Kraken source result (36.2M damage / 18,100 Sparks) previously treated as unassigned is attributed to Frenchie2 without changing AV-2 event/clan reward totals. The global identity-alert banner must be absent when the projection has zero unassigned results; real future unknowns still surface a notice. Verify tests and deployed build independently. This does not authorize automatic PNG/Discord posting.
 

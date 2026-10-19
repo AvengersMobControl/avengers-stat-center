@@ -1605,7 +1605,9 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   };
   const numeric=new Set(['piggyEffort','spaceEffort','flashEffort','utcOffset','piggySparks','spaceSparks','flashSparks','krakenSparks','loggedSparks','unloggedSparks','totalCombinedSparks','piggyStars','spaceStars','flashStars','loggedStars','unloggedStars','knownStars','ratingTotal','piggyPB','spacePB','krakenPB','piggyEvents','spaceEvents','flashEvents','krakenEvents','totalEvents']);
   const colGroups=groups.map(group=>({...group,visible:expanded[group.id]?group.keys:[group.summary]}));
-  const groupHeader=colGroups.map(g=>`<th scope="colgroup" colspan="${g.visible.length}" class="roster-group-heading roster-group-${g.id}"><button type="button" class="roster-group-toggle" data-roster-group="${g.id}" aria-expanded="${!!expanded[g.id]}" title="${expanded[g.id]?'Collapse':'Expand'} ${g.name} columns"><span aria-hidden="true">${expanded[g.id]?'▾':'▸'}</span> ${g.name}<span class="roster-group-count">${g.visible.length}/${g.keys.length}</span></button></th>`).join('');
+  const groupHeaderFor=parts=>parts.map(g=>`<th scope="colgroup" colspan="${g.visible.length}" class="roster-group-heading roster-group-${g.id}"><button type="button" class="roster-group-toggle" data-roster-group="${g.id}" aria-expanded="${!!expanded[g.id]}" title="${expanded[g.id]?'Collapse':'Expand'} ${g.name} columns"><span aria-hidden="true">${expanded[g.id]?'▾':'▸'}</span> ${g.name}<span class="roster-group-count">${g.visible.length}/${g.keys.length}</span></button></th>`).join('');
+  const groupHeader=groupHeaderFor(colGroups.slice(0,-1));
+  const eventGroupHeader=groupHeaderFor(colGroups.slice(-1));
   const subHeader=colGroups.map(g=>g.visible.map(key=>`<th scope="col" class="${numeric.has(key)?'num':''} roster-subhead roster-head-${g.id}">${sortHeader(labels[key],key,numeric.has(key)).label}</th>`).join('')).join('');
   const missing='<span class="small-muted" title="Not yet available">—</span>';
   const cell=(r,key)=>{
@@ -1628,15 +1630,18 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     }
   };
   const body=rows.map((r,i)=>{
-    const cols=colGroups.map(g=>g.visible.map(key=>{
+    const groupCells=colGroups.map(g=>g.visible.map(key=>{
       const css=`${numeric.has(key)?'num ':''}roster-data-cell roster-cell-${g.id}${key===g.summary?' roster-group-total':''}${key==='unloggedSparks'?' roster-unlogged':''}${key==='totalCombinedSparks'?' roster-sparks':''}`;
       return `<td class="${css}">${cell(r,key)}</td>`;
-    }).join('')).join('');
-    return `<tr><td class="num">${i+1}</td><td><div class="player-cell"><div class="avatar">${initials(r.name)}</div>${playerNameCell(r)}</div></td><td>${statusBadge(r.status,r.profileName||r.name)}</td><td class="num roster-piggy-pb-rank">${r.piggyPBRank==null?missing:window.AVENGERS_ROSTER_PIGGY_PB_RANK.formatFinish(r.piggyPBRank)}</td>${cols}</tr>`;
+    }).join(''));
+    const firstGroups=groupCells.slice(0,-1).join('');
+    const eventsGroup=groupCells.at(-1)||'';
+    const podiumTitle=`1st: ${r.piggyWins||0} • 2nd: ${r.piggySecondPlaces||0} • 3rd: ${r.piggyThirdPlaces||0}`;
+    return `<tr><td class="num">${i+1}</td><td><div class="player-cell"><div class="avatar">${initials(r.name)}</div>${playerNameCell(r)}</div></td><td>${statusBadge(r.status,r.profileName||r.name)}</td>${firstGroups}<td class="num roster-piggy-wins">${fmtNum(r.piggyWins||0)}</td><td class="num roster-piggy-podiums" title="${podiumTitle}">${fmtNum(r.piggyPodiums||0)}</td><td class="num roster-piggy-pb-rank">${r.piggyPBRank==null?missing:window.AVENGERS_ROSTER_PIGGY_PB_RANK.formatFinish(r.piggyPBRank)}</td>${eventsGroup}</tr>`;
   }).join('');
-  const emptyCols=4+colGroups.reduce((sum,g)=>sum+g.visible.length,0);
+  const emptyCols=6+colGroups.reduce((sum,g)=>sum+g.visible.length,0);
   return `<div class="table-card roster-grouped-card"><div class="table-titlebar"><div><h2>${escapeHtml(label)} Sparks Ledger</h2><div class="small-muted">${rows.length} members • sorted by ${escapeHtml(sortDef.label)} ${sortDir==='asc'?'ascending':'descending'} • select a category to expand/collapse</div></div></div>
-    <div class="table-wrap"><table class="roster-grouped-table"><thead><tr class="roster-group-head"><th rowspan="2" scope="col" class="num">#</th><th rowspan="2" scope="col">${sortHeader('Member','name').label}</th><th rowspan="2" scope="col">${sortHeader('Status','status').label}</th><th rowspan="2" scope="col" class="num" title="Best recorded finish among Piggy Race lobbies with 30+ AVENGERS; AV-2 and small lobbies excluded">${sortHeader('Piggy PB Rank','piggyPBRank',true).label}</th>${groupHeader}</tr><tr class="roster-group-subhead">${subHeader}</tr></thead><tbody>${body||`<tr><td colspan="${emptyCols}" class="empty">No roster members found.</td></tr>`}</tbody></table></div></div>`;
+    <div class="table-wrap"><table class="roster-grouped-table"><thead><tr class="roster-group-head"><th rowspan="2" scope="col" class="num">#</th><th rowspan="2" scope="col">${sortHeader('Member','name').label}</th><th rowspan="2" scope="col">${sortHeader('Status','status').label}</th>${groupHeader}<th rowspan="2" scope="col" class="num">${sortHeader('Piggy Wins','piggyWins',true).label}</th><th rowspan="2" scope="col" class="num" title="Cumulative 1st, 2nd, and 3rd place finishes in eligible AVENGERS Piggy races">${sortHeader('Piggy Podiums','piggyPodiums',true).label}</th><th rowspan="2" scope="col" class="num" title="Best finish in a verified qualifying AVENGERS Piggy lobby">${sortHeader('Piggy PB Rank','piggyPBRank',true).label}</th>${eventGroupHeader}</tr><tr class="roster-group-subhead">${subHeader}</tr></thead><tbody>${body||`<tr><td colspan="${emptyCols}" class="empty">No roster members found.</td></tr>`}</tbody></table></div></div>`;
 }
 
   function renderRosters(){
@@ -1793,6 +1798,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       ratingTotal:{label:'Rating',type:'number',get:r=>r.ratingTotal},
       piggyPB:{label:'Piggy PB',type:'number',get:r=>r.piggyPB},
       piggyPBRank:{label:'Piggy PB Rank',type:'number',get:r=>r.piggyPBRank},
+      piggyWins:{label:'Piggy Wins',type:'number',get:r=>r.piggyWins},
+      piggyPodiums:{label:'Piggy Podiums',type:'number',get:r=>r.piggyPodiums},
       spacePB:{label:'Space PB',type:'number',get:r=>r.spacePB},
       krakenPB:{label:'Kraken PB',type:'number',get:r=>r.krakenPB},
       eventsPlayed:{label:'Total Events',type:'number',get:r=>r.totalEvents}
@@ -2105,6 +2112,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const krakenLast3=kp?Number(kp.last3)||0:Number(m.krakenAvgL3)||0;
     const krakenPB=kp?Number(kp.pb)||0:Number(m.krakenPB)||0;
     const krakenPBMonth=kp?.pbMonth||m.krakenPBMonth||'';
+    const podium=window.AVENGERS_ROSTER_PIGGY_PB_RANK.careerPodiums(window.AVENGERS_EVENT_PROJECTION?.events||[]).byPlayer.get(name)||{wins:0,secondPlaces:0,thirdPlaces:0,podiums:0};
+    const piggyPlace=window.AVENGERS_ROSTER_PIGGY_PB_RANK.bestFinishes(window.AVENGERS_EVENT_PROJECTION?.events||[]).byPlayer.get(name)||null;
     const krakenRows=km.length?km.map(x=>`<tr>
       <td>${escapeHtml(x.label)} 2026</td>
       <td class="num">${fmtNum(x.value,1)}</td>
@@ -2118,6 +2127,9 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       <div class="profile-kpis">
         <div class="profile-kpi"><span>Player Rating</span><strong>${fmtNum(m.ratingTotal,2)}</strong></div>
         <div class="profile-kpi"><span>Piggy PB</span><strong>${fmtNum(m.piggyPB)}</strong></div>
+        <div class="profile-kpi"><span>Piggy Wins</span><strong>${podium.wins}</strong></div>
+        <div class="profile-kpi"><span>Piggy Podiums</span><strong>${podium.podiums}</strong></div>
+        <div class="profile-kpi"><span>Best Piggy Finish</span><strong>${window.AVENGERS_ROSTER_PIGGY_PB_RANK.formatFinish(piggyPlace)}</strong></div>
         <div class="profile-kpi"><span>Piggy Avg</span><strong>${fmtNum(m.piggyAvg)}</strong></div>
         <div class="profile-kpi"><span>Space PB</span><strong>${fmtB(m.spacePB)}</strong></div>
         <div class="profile-kpi"><span>Space Arena Avg</span><strong>${fmtB(m.spaceAvg)}</strong></div>

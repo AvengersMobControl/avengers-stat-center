@@ -3,7 +3,7 @@ const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const {readFileSync}=require('node:fs');
 const {join}=require('node:path');
-const {rankRows,bestFinishes,placementHistory,formatFinish,MIN_AVENGERS_IN_LOBBY}=require('../roster-piggy-pb-rank.js');
+const {rankRows,bestFinishes,placementHistory,careerPodiums,formatFinish,MIN_AVENGERS_IN_LOBBY}=require('../roster-piggy-pb-rank.js');
 function race(id,clan='AVENGERS',size=30,opts={}){
   const rows=Array.from({length:size},(_,i)=>({
     player:i===0?(opts.first||'Hero'):'Player '+i,
@@ -95,4 +95,37 @@ test('rank PB event history excludes AV-2 and individual lobby winners',()=>{
   assert.equal(history.byPlayer.get('Solo'),undefined);
   assert.equal(history.byPlayer.get('AV2Winner'),undefined);
   assert(!history.byEvent.get(main.id).some(x=>x.player==='Solo'||x.player==='AV2Winner'));
+});
+
+test('career podiums count only verified event-time Piggy finishes, independent of lines',()=>{
+  const e1=race('piggy|2026-09-01','AVENGERS',30,{first:'Hero'});e1.date='2026-09-01';
+  const e2=race('piggy|2026-09-08','AVENGERS',30,{first:'Hero'});e2.date='2026-09-08';
+  e2.rows[0].metadata.rank=2;
+  const e3=race('piggy|2026-09-15','AVENGERS',30,{first:'Hero'});e3.date='2026-09-15';
+  e3.rows[0].metadata.rank=3;
+  const small=race('piggy|small','AVENGERS',29,{first:'Hero'});
+  const other=race('piggy|av2','AV-2',40,{first:'Hero'});
+  const flash=race('flash|1','AVENGERS',40,{first:'Hero',kind:'flash'});
+  const revoked=race('piggy|revoked','AVENGERS',40,{first:'Hero',status:'revoked'});
+  const sum=careerPodiums([e3,e1,e2,small,other,flash,revoked]);
+  assert.deepEqual(sum.byPlayer.get('Hero'),{wins:1,secondPlaces:1,thirdPlaces:1,podiums:3});
+  assert.equal(sum.byEvent.get(e3.id).find(x=>x.player==='Hero').podiums,3);
+  assert.equal(sum.byEvent.get(e1.id).find(x=>x.player==='Hero').wins,1);
+  const row=rankRows([{name:'Old Hero'}],[e1,e2,e3,small,other,flash,revoked],{'Old Hero':'Hero'})[0];
+  assert.equal(row.piggyWins,1);assert.equal(row.piggyPodiums,3);
+  assert.equal(row.piggyPBRank,1);
+});
+test('October 18 leader spotlights are verified against complete event history',()=>{
+  const {create}=require('./create-site-release.cjs');
+  const {projection}=create();
+  const summary=careerPodiums(projection.events);
+  assert.deepEqual(summary.byPlayer.get('AV-SiFra'),{wins:1,secondPlaces:0,thirdPlaces:0,podiums:1});
+  assert.deepEqual(summary.byPlayer.get('AV-Chuck'),{wins:0,secondPlaces:1,thirdPlaces:0,podiums:1});
+  assert.deepEqual(summary.byPlayer.get('AV-WolfLegend'),{wins:0,secondPlaces:0,thirdPlaces:2,podiums:2});
+});
+test('roster and player profiles expose historical wins and podiums without re-ranking lines',()=>{
+  const html=readFileSync(join(__dirname,'../index.html'),'utf8');
+  assert.match(html,/sortHeader\('Piggy Wins','piggyWins',true\)/);
+  assert.match(html,/sortHeader\('Piggy Podiums','piggyPodiums',true\)/);
+  assert.match(html,/Piggy Podiums<\/span><strong>\$\{podium\.podiums\}/);
 });

@@ -76,8 +76,37 @@
     }
     return {byPlayer:bestByPlayer,byEvent};
   }
+  // Career podiums derived from literal finishing positions in qualifying
+  // AVENGERS Piggy lobbies. No score-based re-ranking or AV-2 bleed-through.
+  // Each event can contribute at most one placement per canonical account.
+  function careerPodiums(events){
+    const byPlayer=new Map(),byEvent=new Map();
+    const ordered=(Array.isArray(events)?events:[])
+      .filter(e=>e?.kind==='piggy'&&e.status!=='revoked')
+      .slice().sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))
+                         ||String(a.id||'').localeCompare(String(b.id||'')));
+    for(const event of ordered){
+      const valid=bestFinishes([event]).byPlayer;
+      const records=[];
+      for(const [player,place] of valid){
+        if(place>3)continue;
+        const tally=byPlayer.get(player)||{wins:0,secondPlaces:0,thirdPlaces:0,podiums:0};
+        const next={...tally};
+        if(place===1)next.wins++;
+        else if(place===2)next.secondPlaces++;
+        else if(place===3)next.thirdPlaces++;
+        next.podiums++;
+        byPlayer.set(player,next);
+        records.push({player,place,date:event.date,eventId:event.id,...next});
+      }
+      records.sort((a,b)=>a.place-b.place||a.player.localeCompare(b.player));
+      byEvent.set(event.id,records);
+    }
+    return {byPlayer,byEvent};
+  }
   function rankRows(rows,events,aliases={}){
     const best=bestFinishes(events).byPlayer;
+    const podiums=careerPodiums(events).byPlayer;
     const resolve=raw=>{
       let name=String(raw||''),seen=new Set();
       while(aliases[name]&&!seen.has(name)){
@@ -85,10 +114,13 @@
       }
       return name;
     };
-    return (Array.isArray(rows)?rows:[]).map(row=>({
-      ...row,
-      piggyPBRank:best.get(resolve(row.profileName||row.name))??null
-    }));
+    return (Array.isArray(rows)?rows:[]).map(row=>{
+      const name=resolve(row.profileName||row.name);
+      const tally=podiums.get(name)||{wins:0,secondPlaces:0,thirdPlaces:0,podiums:0};
+      return {...row,piggyPBRank:best.get(name)??null,
+        piggyWins:tally.wins,piggySecondPlaces:tally.secondPlaces,
+        piggyThirdPlaces:tally.thirdPlaces,piggyPodiums:tally.podiums};
+    });
   }
   function formatFinish(place){
     const n=validPlace(place);
@@ -96,7 +128,7 @@
     const suffix=n%100>=11&&n%100<=13?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th');
     return n+suffix;
   }
-  const api=Object.freeze({rankRows,bestFinishes,placementHistory,formatFinish,MIN_AVENGERS_IN_LOBBY});
+  const api=Object.freeze({rankRows,bestFinishes,placementHistory,careerPodiums,formatFinish,MIN_AVENGERS_IN_LOBBY});
   if(root)root.AVENGERS_ROSTER_PIGGY_PB_RANK=api;
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window==='undefined'?null:window);

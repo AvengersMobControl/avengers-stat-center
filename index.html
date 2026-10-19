@@ -440,10 +440,15 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
 <script src="event-reward-metrics.js"></script>
 <script src="roster-piggy-pb-rank.js"></script>
 <script src="piggy-benchmarks.js"></script>
+<script src="space-rank-history.js"></script>
   <script>
 
 (() => {
   const D = window.AVENGERS_DATA;
+  const SPACE_RANKS=window.AVENGERS_SPACE_RANKS;
+  const spaceRankHistory=SPACE_RANKS.analyze(window.AVENGERS_EVENT_PROJECTION?.events||[],D.aliasMap||{});
+  const spaceRankFor=(name,clan,date)=>spaceRankHistory.byEvent.get('space|'+date)?.get(clan+'|'+name)||null;
+  const rankText=n=>SPACE_RANKS.ordinal(n);
   const $ = (s, el=document) => el.querySelector(s);
   const $$ = (s, el=document) => [...el.querySelectorAll(s)];
   const state = {

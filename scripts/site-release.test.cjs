@@ -86,38 +86,50 @@ test('complete staged site uses one projection bundle, immutable script/CSS refe
 
   }finally{fs.rmSync(dest,{recursive:true,force:true});}
 });
-test('leader-updated active roster and Jeff current canonical name preserve all history',()=>{
-  const R=BASE.globals.AVENGERS_MEMBER_TIMEZONES;
-  const D=BASE.globals.AVENGERS_DATA;
+test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy are published once',()=>{
+  const R=BASE.globals.AVENGERS_MEMBER_TIMEZONES,D=BASE.globals.AVENGERS_DATA;
   const people=BASE.projection.people;
   const active=R.rows.filter(r=>r.status==='Active'),av2=R.rows.filter(r=>r.status==='AV2');
-  assert.equal(active.length,51);assert.equal(av2.length,50);
-  for(const name of ['AV-Lin','AV-JeffKintz05','AV-SiFra']){
+  assert.equal(active.length,49);assert.equal(av2.length,50);
+  for(const name of ['AV-Lin','AV-JefhKintz05','AV-SiFra']){
     assert.equal(R.byName[name]?.status,'Active',name+' roster');
-    assert.equal(D.members.filter(m=>m.name===name&&m.status==='Active').length,1,name+' unique member profile');
+    assert.equal(D.members.filter(m=>m.name===name&&m.status==='Active').length,1,name+' unique profile');
     assert.equal(people.find(p=>p.name===name)?.status,'Active',name+' projection');
-    assert(!av2.some(r=>r.name===name),name+' cannot remain in current AV-2 roster');
+    assert(!av2.some(r=>r.name===name),name+' no current AV-2 listing');
   }
-  assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV-JefhKintz05'),'AV-JeffKintz05');
-  assert.equal(R.byName['AV-JefhKintz05'].canonicalName,'AV-JeffKintz05');
-  assert.equal(R.byName['AV-JeffKintz05'].canonicalName,'AV-JeffKintz05');
-  assert.equal(D.members.filter(m=>m.name==='AV-JefhKintz05').length,0,'no duplicate old-name profile');
-  assert.equal(people.find(p=>p.name==='AV-2Lin')?.status,'AV2','AV-2Lin is distinct from AV-Lin');
+  assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV-JeffKintz05'),'AV-JefhKintz05');
+  assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV-2Lin'),'AV-Lin');
+  assert.equal(R.byName['AV-JeffKintz05'].canonicalName,'AV-JefhKintz05');
+  assert.equal(R.byName['AV-2Lin'].canonicalName,'AV-Lin');
+  assert(!people.some(p=>['AV-JeffKintz05','AV-2Lin','LT'].includes(p.name)),'obsolete duplicate/shell profiles excluded');
+  assert(!D.members.some(m=>['AV-JeffKintz05','AV-2Lin','LT'].includes(m.name)));
+  assert.equal(people.find(p=>p.name==='AV-ZIBBY').status,'AV2');
+  assert.equal(R.byName['AV-ZIBBY'].status,'AV2');
   const race=BASE.ledger.events.find(e=>e.id==='piggy|2026-10-18');
-  for(const [name,score]of [['AV-Lin',31749],['AV-JeffKintz05',15420],['AV-SiFra',44258]]){
+  for(const [name,score]of [['AV-Lin',31749],['AV-JefhKintz05',15420],['AV-SiFra',44258]]){
     const r=race.rows.find(x=>x.player===name);
-    assert(r&&r.score===score&&r.clan==='AVENGERS',name+' historical result retained');
+    assert(r&&r.score===score&&r.clan==='AVENGERS',name+' event-time result unchanged');
   }
-  const jeff=people.find(p=>p.name==='AV-JeffKintz05');
-  assert(jeff.snapshotBreakdown.some(s=>s.clan==='AV-2'&&s.sourceName==='AV-JefhKintz05'));
-  assert(jeff.snapshotBreakdown.some(s=>s.clan==='AVENGERS'));
-  assert(people.find(p=>p.name==='AV-SiFra').snapshotBreakdown.some(s=>s.clan==='AV-2'));
-  assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAv2.length,50,'Oct 15 raw snapshot preserved');
-  assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAvengersStars.length,48,'Oct 15 raw snapshot preserved');
+  const lin=people.find(p=>p.name==='AV-Lin');
+  assert.equal(lin.history.length,11,'one player: ten earlier AV-2 events and one AVENGERS');
+  assert.equal(lin.history.filter(r=>r.clan==='AV-2').length,10);
+  assert.equal(lin.history.filter(r=>r.clan==='AVENGERS').length,1);
+  assert(lin.snapshotBreakdown.some(r=>r.sourceName==='AV-2Lin'&&r.clan==='AV-2'));
+  const linTransition=lin.kinds.piggy.pbs.find(p=>p.eventId==='piggy|2026-10-18');
+  assert.equal(linTransition.firstRecorded,false,'previous AV-2 result retained');
+  assert.equal(linTransition.firstClanRecorded,true,'AVENGERS first race still new member');
+  assert(D.piggy.latestNewMembers.some(r=>r.name==='AV-Lin'&&r.clan==='AVENGERS'));
+  const jeff=people.find(p=>p.name==='AV-JefhKintz05');
+  assert.equal(jeff.screenshotGap,17269,'frozen pre-logging gap survives canonical rename');
+  assert(jeff.snapshotBreakdown.some(r=>r.clan==='AV-2'&&r.sourceName==='AV-JefhKintz05'));
+  assert(jeff.snapshotBreakdown.some(r=>r.clan==='AVENGERS'&&r.sourceName==='AV-JeffKintz05'));
+  assert(people.find(p=>p.name==='AV-SiFra').snapshotBreakdown.some(r=>r.clan==='AV-2'));
+  assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAv2.length,50,'dated AV-2 raw snapshot intact');
+  assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAvengersStars.length,47,'removed LT not published');
 });
 test('current roster and every materialized PB/reward agree with independent canonical source sums',()=>{
   const D=BASE.globals.AVENGERS_DATA,R=BASE.globals.AVENGERS_MEMBER_TIMEZONES;
-  assert.equal(R.rows.filter(r=>r.status==='Active').length,51);assert.equal(R.rows.filter(r=>r.status==='AV2').length,50);
+  assert.equal(R.rows.filter(r=>r.status==='Active').length,49);assert.equal(R.rows.filter(r=>r.status==='AV2').length,50);
   const events=BASE.ledger.events.filter(e=>e.status!=='revoked');
   for(const m of D.members){
     const rows=events.flatMap(e=>e.rows.filter(r=>r.player===m.name).map(r=>({...r,kind:e.kind})));
@@ -173,8 +185,8 @@ test('Adigarian does not get artificial gap from a reset returning-clan counter'
 const {audit:transferAudit}=require('./audit-transfer-restorations.cjs');
 test('transfer restoration reconciles every current member, not only Hoops',()=>{
  const result=transferAudit(BASE);
- assert.equal(result.summary.roster,101);
- assert.equal(result.rows.length,101);
+ assert.equal(result.summary.roster,99);
+ assert.equal(result.rows.length,99);
  for(const r of result.rows){
   const player=BASE.projection.people.find(p=>p.name===r.name);
   assert(player,'Missing member '+r.name);

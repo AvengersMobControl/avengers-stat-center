@@ -1626,7 +1626,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   };
   const body=rows.map((r,i)=>{
     const groupCells=colGroups.map(g=>g.visible.map(key=>{
-      const css=`${numeric.has(key)?'num ':''}roster-data-cell roster-cell-${g.id}${key===g.summary?' roster-group-total':''}${key==='unloggedSparks'?' roster-unlogged':''}${key==='totalCombinedSparks'?' roster-sparks':''}`;
+      const css=`${numeric.has(key)?'num ':''}roster-data-cell roster-cell-${g.id}${key===g.summary?' roster-group-total':''}${key==='piggyPBRank'?' roster-piggy-pb-rank':''}${key==='piggyWins'?' roster-piggy-wins':''}${key==='piggyPodiums'?' roster-piggy-podiums':''}${key==='unloggedSparks'?' roster-unlogged':''}${key==='totalCombinedSparks'?' roster-sparks':''}`;
       return `<td class="${css}">${cell(r,key)}</td>`;
     }).join(''));
     const firstGroups=groupCells.slice(0,-1).join('');

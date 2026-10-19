@@ -6,6 +6,11 @@
 - **Canonical work tracker:** [master issue #13](https://github.com/AvengersMobControl/avengers-stat-center/issues/13), with individual GitHub issues for acceptance criteria.
 - **Main site:** https://avengersmobcontrol.github.io/avengers-stat-center/.
 
+
+## 2026-10-19 — Limit Space reward/effort metric to individual Event only; consolidate Piggy roster columns
+
+Leader scope correction: **ONLY Space Race → Event** should show per-player Sparks/Effort (Sparks per B lightyears, whole-number display) to support Space PNG shoutouts for unfairly low rewards. Remove it from Space Overall/Last 3/Pot Totals, total summaries, player modal, CSV, roster and notes. Keep all event rewards/effort raw data. Replace three standalone roster columns with collapsible Piggy Achievements (Wins, Podiums, PB Rank); default collapse to rank summary, open reveals all 3 sortable columns directly ahead of Events. Test and deploy with immutable published SHA. Previous broader Sparks/Effort adoption is superseded. No automated Discord sending.
+
 ## October 19 — Piggy weekly 5K–70K milestone history and approved character library
 
 Introduce a fourth Piggy PBs & New table in previously unused right-side space, giving every tracked AVENGERS Piggy week's 5K+, 10K+, 20K+, 30K+, 40K+, 50K+, 60K+, 70K+ counts with dynamic future thresholds and exact tracked record counts/dates. Gold ONLY for record/tied-record week/threshold. Derived live from event-time AVENGERS rows in approved 2026 ledger; no AV-2 mix, count distinct players and threshold equality. Verified 2026 maxima: [5K 48 Sep20 (tied Oct18), 10K 39 Sep20, 20K 23 Oct18, 30K 11 Oct18, 40K 6 Sep13, 50K 3 Sep20, 60K 1 Sep13, 70K 1 Sep13]. Include compact record cards and horizontally scrollable weekly table, test source data and rendered browser. User-uploaded 12 original character PNG files saved in persistent Library; authoritative alias/filename/hash list `docs/APPROVED_CHARACTER_ASSETS.md`. Do not invent characters or auto-send PNGs. Production release completion requires exact SHA verification.

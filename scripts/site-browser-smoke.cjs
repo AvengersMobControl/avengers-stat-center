@@ -175,7 +175,7 @@ async function main(){
     const missing=page.locator('#spaceContent tr').filter({hasText:'AV-Animosity'});
     assert((await missing.innerText()).includes('—'));
     await page.selectOption('#spaceEventSelect','2026-10-16');
-    assert((await page.locator('#spaceContent').innerText()).includes('Sparks/Effort (per B)'),'efficiency ONLY in Space Event');
+    assert((await page.locator('#spaceContent').innerText()).toLowerCase().includes('sparks/effort (per b)'),'efficiency ONLY in Space Event');
     assert.equal(await page.locator('#spaceContent tbody tr').count(),44,'AV event-time rows include all approved racers');
     await page.selectOption('#globalStatusFilter','av2');
     assert.equal(await page.locator('#spaceContent tbody tr').count(),22,'AV-2 event-time rows remain separate');

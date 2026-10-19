@@ -1229,6 +1229,15 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       };
       const pbs=[...hist.pbs].sort(pbsSorters[state.spacePBSort]||pbsSorters.newpb);
       const newM=[...hist.first].sort((a,b)=>(Number(b.score)||0)-(Number(a.score)||0));
+      const sourceRankChanges=(spaceRankHistory.lobbyTransitionsByEvent.get('space|'+state.spacePBEvent)||[])
+        .filter(x=>allowedEventMetricRow({name:x.player,clan:x.clan}));
+      const sourceRankRows=sourceRankChanges.map(x=>`<tr>
+        <td><button class="linkish" data-player="${escapeHtml(x.player)}">${escapeHtml(x.player)}</button></td>
+        <td>${escapeHtml(x.clan)}</td><td class="num">${rankText(x.previous)}</td>
+        <td class="num positive">${rankText(x.rank)}</td>
+        <td class="num">${escapeHtml(x.lobby)}</td>
+        <td>${x.first?'First ranked finish':'Improved'}</td>
+      </tr>`).join('')||'<tr><td colspan="6" class="empty">No newly recorded or improved lobby finishing-place PBs in this race.</td></tr>';
 
       const pbRows=pbs.map((x,i)=>`<tr>
         <td class="num">${i+1}</td>
@@ -1270,7 +1279,9 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
             [{label:'#',num:true},{label:'Member'},{label:'Previous PB',num:true},{label:'New PB',num:true},{label:'% Increase',num:true}],pbRows)}
           ${tableShell('First Tracked Event',`${newM.length} player${newM.length===1?'':'s'} with no earlier Space result for their event-time clan`,
             [{label:'#',num:true},{label:'Member'},{label:'Lightyears',num:true}],newRows)}
-        </div>`;
+        </div>
+        ${tableShell('Space Lobby Finish PBs',`${sourceRankChanges.length} source-ranked first or improved finishes • actual reported lobby place, independently tracked from distance PB • clan-at-event history stays separate`,
+          [{label:'Member'},{label:'Event Clan'},{label:'Prior Best',num:true},{label:'New Best',num:true},{label:'Lobby',num:true},{label:'Type'}],sourceRankRows)}`;
       $('#spacePBEventSelect',el)?.addEventListener('change',e=>{state.spacePBEvent=e.target.value;renderSpace();});
       $('#spacePBSortSelect',el)?.addEventListener('change',e=>{state.spacePBSort=e.target.value;renderSpace();});
     }

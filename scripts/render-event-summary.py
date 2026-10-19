@@ -104,7 +104,7 @@ def resolve_summary(release, kind, clan, event_id=None):
             match = next((t for t in transitions if t.get("eventId") == event["id"]), None)
             if match and score is not None and numeric(match.get("score")) == score:
                 item["transition"] = match
-                if match.get("firstRecorded"):
+                if match.get("firstClanRecorded", match.get("firstRecorded")):
                     first.append(item)
                 elif match.get("newPB") and numeric(match.get("previousPB")) is not None:
                     pbs.append(item)

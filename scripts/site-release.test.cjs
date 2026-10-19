@@ -122,7 +122,7 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
   const jeff=people.find(p=>p.name==='AV-JefhKintz05');
   assert.equal(jeff.screenshotGap,17269,'frozen pre-logging gap survives canonical rename');
   assert(jeff.snapshotBreakdown.some(r=>r.clan==='AV-2'&&r.sourceName==='AV-JefhKintz05'));
-  assert(jeff.snapshotBreakdown.some(r=>r.clan==='AVENGERS'&&r.sourceName==='AV-JeffKintz05'));
+  assert(jeff.snapshotBreakdown.some(r=>r.clan==='AVENGERS'&&r.amount===5307842),'historic AVENGERS screenshot total unchanged');
   assert(people.find(p=>p.name==='AV-SiFra').snapshotBreakdown.some(r=>r.clan==='AV-2'));
   assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAv2.length,50,'dated AV-2 raw snapshot intact');
   assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAvengersStars.length,47,'removed LT not published');

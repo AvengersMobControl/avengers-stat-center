@@ -36,6 +36,12 @@ async function main(){
     // The browser shows actual best finishing PLACES (not line-score rankings).
     // This value is fixed by the qualifying historic race, not the current clan roster.
     await page.click('.nav-btn[data-page="rosters"]');
+    assert.equal(await page.locator('#rostersContent button[data-roster-sort="piggyWins"]').count(),1,'verified Piggy Wins roster column');
+    assert.equal(await page.locator('#rostersContent button[data-roster-sort="piggyPodiums"]').count(),1,'verified Piggy Podiums roster column');
+    const topHeaders=await page.locator('#rostersContent .roster-group-head th').allTextContents();
+    const pbColumn=topHeaders.findIndex(t=>t.includes('Piggy PB Rank'));
+    const eventsColumn=topHeaders.findIndex(t=>t.includes('Events'));
+    assert(pbColumn>0&&eventsColumn>pbColumn,'Piggy PB Rank now immediately before event history group');
     await page.click('#rostersContent button[data-roster-sort="piggyPBRank"]');
     let originalActiveRank=null, allMembersRank=null;
     for(const roster of ['active','av2','all']){

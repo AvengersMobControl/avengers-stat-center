@@ -6,6 +6,10 @@
 - **Canonical work tracker:** [master issue #13](https://github.com/AvengersMobControl/avengers-stat-center/issues/13), with individual GitHub issues for acceptance criteria.
 - **Main site:** https://avengersmobcontrol.github.io/avengers-stat-center/.
 
+## October 19 — Approved current roster transfers / canonical name
+
+Activate `AV-Lin`, `AV-JeffKintz05`, `AV-SiFra` on the **current** AVENGERS roster, including the site/player projections. Keep old misspelling `AV-JefhKintz05` as alias to canonical `AV-JeffKintz05` (screenshot-confirmed), never an independent profile. Keep AV-2Lin separate. Current roster counts 51 AVENGERS and 50 AV-2; historical October 15 screenshots retain original clan attribution and amounts. Update old 100-member fixed assertions to reflect 101 current members, with full site/audit verification before deployment. No event edits or PNG dispatch.
+
 ## October 18 — new AVENGERS Piggy final result (AV-2 hold)
 Leader authorized importing the October 18 final AVENGERS Piggy leaderboard from two reviewed original JPEGs: 50 verified participants, event-only AVENGERS, no AV-2 rows. The recorded event remains **partial** until AV-2 has separately approved final screenshots. Sum 971,186 lines, 9,701,649 Sparks, 97,016,544 Stars with original/derived provenance; benchmark 40K+/30K+/20K+/10K+/5K+: 3/11/23/38/48. Cross-site release and test-gate verification required before marking production deployed; issue #4. Graphic work #8 is separate and all Discord PNG auto-dispatch remains OFF.
 

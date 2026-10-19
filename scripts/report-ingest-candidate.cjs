@@ -37,7 +37,7 @@ function make(current,update,{enforceUnapproved=true}={}){
  assert(before.size===oldRows.length&&after.size===newRows.length,'Ambiguous duplicate identities; refuse to produce approval sheet');
  const rows=[...new Set([...before.keys(),...after.keys()])].sort().map(k=>{
    const old=before.get(k),now=after.get(k);
-   const v=old&&now?(JSON.stringify([old.score,old.sparks,old.stars])===JSON.stringify([now.score,now.sparks,now.stars])?'unchanged':'corrected'):now?'added':'removed';
+   const v=old&&now?(JSON.stringify([old.score,old.sparks,old.stars,old.metadata?.rank,old.metadata?.lobby,old.metadata?.group])===JSON.stringify([now.score,now.sparks,now.stars,now.metadata?.rank,now.metadata?.lobby,now.metadata?.group])?'unchanged':'corrected'):now?'added':'removed';
    return {member:now?.player||old?.player||'Unassigned',eventClan:now?.clan||old?.clan||'Unknown',change:v,
      scoreBefore:old?.score??null,scoreAfter:now?.score??null,
      sparksBefore:old?.sparks??null,sparksAfter:now?.sparks??null,

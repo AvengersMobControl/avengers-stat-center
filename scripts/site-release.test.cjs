@@ -45,13 +45,32 @@ for(const kind of Object.keys(UNITS))for(const clan of ['AVENGERS','AV-2'])test(
 test('verified July 30 source corrections and actual October 2 values agree across profiles/achievements',()=>{
   const w=BASEW,D=w.AVENGERS_DATA;
   for(const [name,score]of Object.entries({'AV-INTEN':129.4,'AV-Abu//npjp':128.6,'AV-GNSK':62.4,'AV-no':38.2,'AV-jacko':73.8,'AV-J1M':55.7}))assert.equal(D.space.history[name].find(r=>r.date==='2026-07-30').yearsB,score);
-  assert.equal(D.space.events['2026-10-02'].find(r=>r.name==='AV-Zolika.x.Kira').yearsB,480.6);
+  assert.equal(D.space.events['2026-10-02'].find(r=>r.name==='AV-Zolika.x.TheBoss').yearsB,480.6);
   assert.equal(D.members.find(m=>m.name==='AV-HarryBallsagna').spacePB,549.9);
   assert.equal(w.AVENGERS_COMMUNITY.achievementProfile('AV-HarryBallsagna').categories.find(c=>c.id==='space').value,549.9);
   assert.equal(D.members.find(m=>m.name==='DedHed').piggyPB,111);
   assert.equal(D.members.find(m=>m.name==='Basecreature').spacePB,9.45);
   assert.equal(D.resolvePlayerName('AV-CHUCK'),D.resolvePlayerName('AV-Chuck'));
   assert.notEqual(D.resolvePlayerName('AV-Frenchie2'),D.resolvePlayerName('AV-Frenchie(-4)'));
+});
+test('Zolika TheBoss is one canonical profile with old Kira aliases and unmodified rewards',()=>{
+  const P=BASE.projection,D=BASEW.AVENGERS_DATA,R=BASE.globals.AVENGERS_MEMBER_TIMEZONES;
+  const boss='AV-Zolika.x.TheBoss';
+  for(const name of [boss,'AV-Zolika.x.Kira','AV-ZolikaLoveKira','AV-Zolika.x.The...'])
+    assert.equal(D.resolvePlayerName(name),boss,'old alias resolves: '+name);
+  assert.equal(P.people.filter(p=>p.name===boss).length,1,'one canonical account');
+  assert(!P.people.some(p=>p.name==='AV-Zolika.x.Kira'),'no obsolete second profile');
+  assert.equal(D.members.filter(m=>m.name===boss).length,1,'one displayed member');
+  assert.equal(R.rows.filter(r=>r.name===boss&&r.status==='Active').length,1,'current roster display name updated');
+  assert.equal(R.byName[boss].canonicalName,boss,'location lookup updated');
+  assert.equal(D.space.events['2026-10-02'].find(r=>r.name===boss).yearsB,480.6,'Oct 2 corrected distance retained');
+  const oct16=P.events.find(e=>e.id==='space|2026-10-16');
+  const reward=oct16.rows.find(r=>r.player===boss&&r.clan==='AVENGERS');
+  assert(reward,'Oct 16 event-time AVENGERS attribution preserved');
+  assert.equal(reward.score,555);assert.equal(reward.sparks,415318);assert.equal(reward.stars,4153180);
+  const person=P.people.find(p=>p.name===boss);
+  assert.equal(person.categories.space.sparks,person.history.filter(r=>r.kind==='space').reduce((v,r)=>v+(r.sparks||0),0),'no double-counted Space payout');
+  assert(P.people.some(p=>p.name==='AV-KiraLoveZolika'),'separate Kira account remains distinct');
 });
 test('AV-2 Kraken FrenchieUSA source belongs exclusively to Frenchie2; totals and banner reconcile',()=>{
   const p=BASE.projection;
@@ -132,7 +151,8 @@ test('current roster and every materialized PB/reward agree with independent can
   assert.equal(R.rows.filter(r=>r.status==='Active').length,49);assert.equal(R.rows.filter(r=>r.status==='AV2').length,50);
   const events=BASE.ledger.events.filter(e=>e.status!=='revoked');
   for(const m of D.members){
-    const rows=events.flatMap(e=>e.rows.filter(r=>r.player===m.name).map(r=>({...r,kind:e.kind})));
+    // Approved overlays may retain their original source alias; compare canonically.
+    const rows=events.flatMap(e=>e.rows.filter(r=>r.player&&BASEW.AVENGERS_DATA.resolvePlayerName(r.player)===m.name).map(r=>({...r,kind:e.kind})));
     for(const kind of ['piggy','space','kraken']){
       const scores=rows.filter(r=>r.kind===kind&&r.score!==null).map(r=>r.score);
       assert.equal(m[kind+'PB'],scores.length?Math.max(...scores):0,m.name+' '+kind);

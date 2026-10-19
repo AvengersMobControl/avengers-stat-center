@@ -50,6 +50,15 @@ test('aliases and roster transfers preserve historical clan and distinct Frenchi
   assert.equal(p.clans.AVENGERS.sparks,10);assert.equal(p.clans['AV-2'].sparks,10);
   assert.equal(p.people.filter(x=>x.name.startsWith('AV-Frenchie')).length,2);
 });
+test('Frenchie source identity is clan-specific for every normalized event kind',()=>{
+  for(const kind of Object.keys(UNITS)){
+    const id='frenchie-'+kind,when='2026-10-18';
+    const e=ev(kind,id,when,20,'AV-2',{rows:[{player:'AV-FrenchieUSA',clan:'AV-2',score:20,sparks:18100,stars:kind==='kraken'?null:181000}]});
+    const l=put(empty(),e);assert.equal(l.events[0].rows[0].player,'AV-Frenchie2');
+    const other=ev(kind,id,when,20,'AVENGERS',{rows:[{player:'AV-FrenchieUSA',clan:'AVENGERS',score:20,sparks:18100,stars:kind==='kraken'?null:181000}]});
+    const av=put(empty(),other);assert.notEqual(av.events[0].rows[0].player,'AV-Frenchie2');
+  }
+});
 test('partial events and unknown fields remain explicit; known zero is distinct',()=>{
   const l=put(empty(),ev('piggy','partial','2026-10-01',null,'AV-2',{status:'partial',rows:[{player:'A',clan:'AV-2',score:null,sparks:null,stars:0}]}));
   const p=project(l,options),a=person(p);

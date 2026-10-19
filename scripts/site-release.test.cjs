@@ -53,9 +53,18 @@ test('verified July 30 source corrections and actual October 2 values agree acro
   assert.equal(D.resolvePlayerName('AV-CHUCK'),D.resolvePlayerName('AV-Chuck'));
   assert.notEqual(D.resolvePlayerName('AV-Frenchie2'),D.resolvePlayerName('AV-Frenchie(-4)'));
 });
-test('unassigned October reward remains in historical clan totals and is not guessed onto a Frenchie account',()=>{
-  const p=BASE.projection,row=p.coverage.unassignedRows[0];assert.equal(row.clan,'AV-2');assert.equal(row.sparks,18100);assert.equal(row.player,null);
-  const total=p.people.reduce((s,p)=>s+p.earned.sparks,0)+row.sparks;
+test('AV-2 Kraken FrenchieUSA source belongs exclusively to Frenchie2; totals and banner reconcile',()=>{
+  const p=BASE.projection;
+  assert.equal(p.coverage.unassignedRows.length,0);
+  const event=p.events.find(e=>e.id==='kraken|oct');
+  const frenchie2=event.rows.find(r=>r.player==='AV-Frenchie2'&&r.clan==='AV-2');
+  assert(frenchie2);
+  assert.equal(frenchie2.score,36.2);
+  assert.equal(frenchie2.sparks,18100);
+  assert.equal(event.rows.filter(r=>r.player==='AV-Frenchie2'&&r.clan==='AV-2').length,1);
+  const person=p.people.find(x=>x.name==='AV-Frenchie2');
+  assert.equal(person.history.find(r=>r.eventId==='kraken|oct').sparks,18100);
+  const total=p.people.reduce((s,p)=>s+p.earned.sparks,0);
   const clan=p.clans.AVENGERS.sparks+p.clans['AV-2'].sparks+p.coverage.unknownClanRewards.sparks;
   assert(Math.abs(total-clan)<0.001);
   assert.equal(BASE.globals.AVENGERS_KRAKEN_DATA.octEventTotals['AV-2'].sparks,8197779.9);

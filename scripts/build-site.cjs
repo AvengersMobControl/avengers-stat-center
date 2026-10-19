@@ -41,7 +41,13 @@ function build({destination=path.join(root,'dist'),updates}={}){
   // Show the fixed historical attribution explicitly in production, not a mutable screenshot remainder.
   html=html.replaceAll('Screenshot Gap','Sparks Prior to Logging');
   html=html.slice(0,first)+`<script src="${bundle}"></script>\n<script src="community-highlights.js"></script>\n<script src="clan-league-rewards.js"></script>\n`+html.slice(boundary);
-  html=html.replace('<main class="main">','<main class="main"><div style="padding:8px 28px;color:#91a5bf;font-size:12px" data-release-version="'+P.version+'" data-release-commit="'+(sourceCommit||'unknown')+'">'+P.coverage.unassignedRows.length+' result awaiting account identification; its known rewards remain in clan totals. Historical coverage details are included in exports.</div>');
+  // Preserve an immutable release marker on every page, whether or not an
+  // unresolved-identity notice is necessary. Browser/Pages checks require it.
+  const releaseMain='<main class="main" data-release-version="'+P.version+'" data-release-commit="'+(sourceCommit||'unknown')+'">';
+  html=html.replace('<main class="main">',releaseMain);
+  if(P.coverage.unassignedRows.length){
+    html=html.replace(releaseMain,releaseMain+'<div style="padding:8px 28px;color:#91a5bf;font-size:12px">'+P.coverage.unassignedRows.length+' result awaiting account identification; its known rewards remain in clan totals. Historical coverage details are included in exports.</div>');
+  }
   const exportsDir=path.join(destination,'exports');fs.mkdirSync(exportsDir,{recursive:true});
   const exportFiles={};
   const metrics=require('../event-reward-metrics.js');

@@ -35,8 +35,18 @@ function audit(release){
   const committed=saved.amounts[id]||0;
   if(Math.abs(current-committed)>0.001)
    throw Error('Frozen historical Sparks changed for '+id);
-  if(maxObserved>=saved.roundingReviewThreshold
-     &&Math.abs(current-maxObserved)>0.500001)
+  // Oct 18 leader-confirmed correction credited the Oct 11 AV-2 Kraken
+  // 18,100 Sparks to Frenchie2, after the prior-to-logging figures were
+  // explicitly frozen. The later identity correction must not recalculate or
+  // reduce that historical baseline. Reconstruct the ORIGINAL evidence check
+  // while still requiring exact source event+clan+amount for this exception.
+  const frenchieCorrection=id==='AV-Frenchie2'
+   ?p.history.filter(x=>x.eventId==='kraken|oct'&&x.clan==='AV-2').reduce((n,x)=>n+(x.sparks||0),0):0;
+  if(id==='AV-Frenchie2'&&frenchieCorrection!==18100)
+   throw Error('Missing leader-confirmed Frenchie2 October Kraken correction');
+  const frozenEvidence=maxObserved+frenchieCorrection;
+  if(frozenEvidence>=saved.roundingReviewThreshold
+     &&Math.abs(current-frozenEvidence)>0.500001)
    throw Error('Pre-logging amount differs from rounded screenshot evidence for '+id);
   if(maxObserved>0&&maxObserved<saved.roundingReviewThreshold&&current!==0)
    throw Error('Small rounding candidate not held for '+id);

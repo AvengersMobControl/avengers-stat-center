@@ -4,6 +4,9 @@
 
 **Last reconciled:** 2026-10-18 UTC. **Validated main before this documentation PR:** `7c66e643351aa00ee748f8c8a1a392707fc23f6d`. The commit SHA is a dated baseline, not a permanent latest revision. Fetch live `main` before making code changes.
 
+## October 18 — confirmed Frenchie account attribution and notification
+Leader confirmed that **all AV-2 Frenchie results belong to `AV-Frenchie2`**, while the AVENGERS Frenchie account (`AV-Frenchie(-4)`) is separate. The Oct 11 AV-2 Kraken source result (36.2M damage / 18,100 Sparks) previously treated as unassigned is attributed to Frenchie2 without changing AV-2 event/clan reward totals. The global identity-alert banner must be absent when the projection has zero unassigned results; real future unknowns still surface a notice. Verify tests and deployed build independently. This does not authorize automatic PNG/Discord posting.
+
 ## October 18 — Piggy qualifying-place PBs on website and PNG export
 The leader additionally requires the Piggy Race **PBs & New** page to track finishing-place personal bests as a distinct historical series, with previous/new verified ordinal place per qualifying 30+ AVENGERS same-lobby race. A 1st at 10K lines improves a prior 5th even without breaking the player's 30K lines PB. The website shows an independent placement PB table and the best finish as of the selected race beside returning line PBs. The approved-ledger PNG export carries this placement history; separate `scripts/render-piggy-finish-pb-preview.py` can supply a new **review-only unapproved** Piggy rank panel and sidecar; pinned renderer stays byte-for-byte unchanged. Pinned default graphic versions remain unchanged and automated sending is OFF for every event in both clans, pending separately approved revised design and explicit activation.
 

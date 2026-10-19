@@ -71,7 +71,10 @@ function migrate(w){
     const rows=[];
     if(month.key==='oct'){
       for(const r of K.octEventRows||[]){
-        const player=resolve(r.name),stored=K.players.find(p=>resolve(p.name)===player);
+        // Leader-confirmed identity rule: an AV-2 Frenchie result belongs to Frenchie2.
+        // The separate AVENGERS Frenchie account is never merged into this identity.
+        const player=(r.clan==='AV-2'&&r.name==='AV-FrenchieUSA')?resolve('AV-Frenchie2'):resolve(r.name);
+        const stored=K.players.find(p=>resolve(p.name)===player);
         if(stored&&Number(stored.oct)!==Number(r.damage)){
           review.push({reason:'ambiguous-cross-clan-account',eventId:'kraken|oct',clan:r.clan,sourceRank:r.rank,sourceName:r.name,score:r.damage,sparks:r.sparks});
           rows.push({player:null,sourceIdentity:'oct|'+r.clan+'|rank:'+r.rank,clan:clan(r.clan),score:number(r.damage),sparks:number(r.sparks),stars:null,metadata:{monthKey:'oct',monthLabel:month.label,rank:r.rank,sourceName:r.name}});

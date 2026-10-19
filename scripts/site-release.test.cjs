@@ -86,6 +86,35 @@ test('complete staged site uses one projection bundle, immutable script/CSS refe
 
   }finally{fs.rmSync(dest,{recursive:true,force:true});}
 });
+test('leader-updated active roster and Jeff current canonical name preserve all history',()=>{
+  const R=BASE.globals.AVENGERS_MEMBER_TIMEZONES;
+  const D=BASE.globals.AVENGERS_DATA;
+  const people=BASE.projection.people;
+  const active=R.rows.filter(r=>r.status==='Active'),av2=R.rows.filter(r=>r.status==='AV2');
+  assert.equal(active.length,51);assert.equal(av2.length,50);
+  for(const name of ['AV-Lin','AV-JeffKintz05','AV-SiFra']){
+    assert.equal(R.byName[name]?.status,'Active',name+' roster');
+    assert.equal(D.members.filter(m=>m.name===name&&m.status==='Active').length,1,name+' unique member profile');
+    assert.equal(people.find(p=>p.name===name)?.status,'Active',name+' projection');
+    assert(!av2.some(r=>r.name===name),name+' cannot remain in current AV-2 roster');
+  }
+  assert.equal(D.resolvePlayerName('AV-JefhKintz05'),'AV-JeffKintz05');
+  assert.equal(R.byName['AV-JefhKintz05'].canonicalName,'AV-JeffKintz05');
+  assert.equal(R.byName['AV-JeffKintz05'].canonicalName,'AV-JeffKintz05');
+  assert.equal(D.members.filter(m=>m.name==='AV-JefhKintz05').length,0,'no duplicate old-name profile');
+  assert.equal(people.find(p=>p.name==='AV-2Lin')?.status,'AV2','AV-2Lin is distinct from AV-Lin');
+  const race=BASE.ledger.events.find(e=>e.id==='piggy|2026-10-18');
+  for(const [name,score]of [['AV-Lin',31749],['AV-JeffKintz05',15420],['AV-SiFra',44258]]){
+    const r=race.rows.find(x=>x.player===name);
+    assert(r&&r.score===score&&r.clan==='AVENGERS',name+' historical result retained');
+  }
+  const jeff=people.find(p=>p.name==='AV-JeffKintz05');
+  assert(jeff.snapshotBreakdown.some(s=>s.clan==='AV-2'&&s.sourceName==='AV-JefhKintz05'));
+  assert(jeff.snapshotBreakdown.some(s=>s.clan==='AVENGERS'));
+  assert(people.find(p=>p.name==='AV-SiFra').snapshotBreakdown.some(s=>s.clan==='AV-2'));
+  assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAv2.length,50,'Oct 15 raw snapshot preserved');
+  assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAvengersStars.length,48,'Oct 15 raw snapshot preserved');
+});
 test('current roster and every materialized PB/reward agree with independent canonical source sums',()=>{
   const D=BASE.globals.AVENGERS_DATA,R=BASE.globals.AVENGERS_MEMBER_TIMEZONES;
   assert.equal(R.rows.filter(r=>r.status==='Active').length,51);assert.equal(R.rows.filter(r=>r.status==='AV2').length,50);

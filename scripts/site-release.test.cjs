@@ -139,7 +139,7 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
   assert.equal(linTransition.firstClanRecorded,true,'AVENGERS first race still new member');
   assert(D.piggy.latestNewMembers.some(r=>r.name==='AV-Lin'&&r.clan==='AVENGERS'));
   const jeff=people.find(p=>p.name==='AV-JefhKintz05');
-  assert.equal(jeff.screenshotGap,17269,'frozen pre-logging gap survives canonical rename');
+  assert.equal(jeff.screenshotGap,0,'official sub-1% exclusion supersedes earlier frozen Jeff candidate; screenshot evidence survives rename');
   assert(jeff.snapshotBreakdown.some(r=>r.clan==='AV-2'&&r.sourceName==='AV-JefhKintz05'));
   assert(jeff.snapshotBreakdown.some(r=>r.clan==='AVENGERS'&&r.amount===5307842),'historic AVENGERS screenshot total unchanged');
   assert(people.find(p=>p.name==='AV-SiFra').snapshotBreakdown.some(r=>r.clan==='AV-2'));
@@ -247,7 +247,9 @@ test('official 28 Unlogged Sparks remain frozen after one-time 1% exclusion',()=
  }
  for(const [name,ev] of Object.entries(fixed.excludedBelowOnePercent)){
    const p=BASE.projection.people.find(x=>x.name===name);
-   assert(p&&p.screenshotGap===0,'excluded sub-1% candidate must be zero: '+name);
+   const canonical=BASE.globals.AVENGERS_DATA.aliasMap?.[name]||name;
+   const resolved=BASE.projection.people.find(x=>x.name===canonical)||p;
+   assert(resolved&&resolved.screenshotGap===0,'excluded sub-1% candidate must be zero: '+name);
    assert(ev.originalUnloggedSparks>0&&ev.sharePctAtApproval<1,'retained historical screenshot and cutoff evidence');
  }
  for(const name of Object.keys(fixed.excludedRoundingReview)){

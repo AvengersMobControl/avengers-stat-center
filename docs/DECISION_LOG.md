@@ -1,3 +1,9 @@
+## 2026-10-18 — Leader confirmed AV-2 Frenchie always means Frenchie2
+
+- **Decision:** The Frenchie who participates for AV-2 is `AV-Frenchie2` (not the distinct AVENGERS account `AV-Frenchie(-4)`). The October 11 Kraken AV-2 source had an inherited display name `AV-FrenchieUSA` and damage 36.2M / 18,100 Sparks. Treat that result as Frenchie2; do not invent a third identity or merge across clans.
+- **Implementation proposed in branch `fix/frenchie2-av2-kraken-identity-20261018`:** Correct reviewed legacy Kraken migration, preserve source rank/damage/Sparks, independently reconcile clan totals and member history, and render the global account-identification notice only if an unknown actually remains. New regression test checks assigned Frenchie2 rewards, distinct identities, unchanged clan totals and zero remaining unassigned records.
+- **Status:** exact PR/main-deployment and browser evidence must be recorded separately; no Piggy data or PNG dispatch touched by this attribution change.
+
 ## 2026-10-18 — Qualifying Piggy finishing-place PBs also on Piggy PB event page and PNG pipeline
 
 - **Additional user requirement:** Piggy finishing-place PB (best actual 1st/2nd/3rd in a **single 30+ AVENGERS-player lobby**) must be tracked alongside line PBs on the Piggy Race → PBs & New page and available for the eventual Piggy PNG. This is independent of line totals; 1st at 10K beats 5th at 30K. Small/solo AVENGERS and all AV-2 lobbies never qualify. A transferred player retains historical eligible finishes.

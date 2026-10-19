@@ -1,3 +1,10 @@
+## 2026-10-19 — Current roster corrections for Lin, JeffKintz05 and SiFra
+
+- **Leader order:** Mark **AV-Lin, AV-JeffKintz05 and AV-SiFra Active** on AVENGERS. The supplied current in-game name image spells Jeff **AV-JeffKintz05**; use this exact canonical/display name. Historical capture spelling `AV-JefhKintz05` remains an alias to the same canonical member, not a new player.
+- **Implementation:** October 15 screenshot membership and Sparks/Stars evidence remain immutable by source date, while a later leader correction overrides only the three members' **current** roster statuses and Jeff display label. Jeff and SiFra move from current AV-2 roster to Active. Lin joins Active as an additional canonical account, distinct from `AV-2Lin`, which remains AV-2. Updated membership is 51 Active, 50 AV-2 (101 current), versus the older snapshot's 48 AVENGERS + 50 AV-2 screenshot + 2 manual AV-2.
+- **Data safety:** historical event-time clan, finishing-place personal bests, line PBs, Sparks, Stars, 2026-10-18 Piggy source and static pre-logging gaps remain unchanged. Jeff's previously recorded AV-2 rewards remain attached to Jeff. Tests and audit assertions use the new current roster counts, while dated screenshot series stay at their original sizes. Automatic Discord/PNG dispatch remains OFF.
+- **Verification:** PR and the production GitHub Pages run must independently confirm merged commit and live browser projection; no release claim before passing.
+
 ## 2026-10-18 (America/Chicago) — AVENGERS October 18 Piggy results approved for site publication; AV-2 held
 
 - **User authorization:** "post the avengers results - wait on AV-2." This authorizes the reviewed 50-place AVENGERS Piggy result for the October 18 website event only. It **does not** authorize an AV-2 result import, Discord message or automatic event-summary PNG dispatch.

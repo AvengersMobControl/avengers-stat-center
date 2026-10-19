@@ -5,6 +5,11 @@ const copy=x=>JSON.parse(JSON.stringify(x));
 const number=x=>x===null||x===undefined||x===''||!Number.isFinite(Number(x))?null:Number(x);
 const clan=x=>{const n=String(x||'').toLowerCase().replace(/[^a-z0-9]/g,'');return n==='av2'?'AV-2':n==='avengers'||n==='av'?'AVENGERS':null;};
 const monthDates={feb02:'2026-02-02',feb23:'2026-02-23',march:'2026-03-15',april:'2026-04-19',may:'2026-05-24',june:'2026-06-28',aug:'2026-08-02',sept:'2026-09-06',oct:'2026-10-11'};
+const postKrakenFlashPolicy=require('../data/approved-post-kraken-no-spark-sets.json');
+const noSparkSets=new Map(postKrakenFlashPolicy.postKrakenFlashSets.map(x=>[x.setId,x]));
+if(postKrakenFlashPolicy.schemaVersion!==1||noSparkSets.size!==postKrakenFlashPolicy.postKrakenFlashSets.length)throw Error('Invalid reviewed post-Kraken Flash policy');
+const dateOffset=(date,days)=>{const d=new Date(date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+days);return d.toISOString().slice(0,10);};
+
 function migrate(w){
   const D=w.AVENGERS_DATA,K=w.AVENGERS_KRAKEN_DATA,F=w.AVENGERS_PIGGY_FLASH_DATA;
   const aliases=copy(D.aliasMap),resolve=n=>canonical(n,aliases),events=[],review=[];
@@ -58,14 +63,30 @@ function migrate(w){
     if(!r&&score>0)review.push({reason:'history-only',kind,date:h.date,player,score,source:'legacy workbook summary; no event result'});
     else if(r&&score!==r.score)review.push({reason:'stale-summary',kind,date:h.date,player,summaryScore:score,acceptedScore:r.score,source:'verified final-result event source'});
   }
+  const seenNoSparkSets=new Set();
   for(const ev of F.events||[]){
+    const postKraken=noSparkSets.get(ev.setId);
+    if(postKraken){
+      const validKraken=Object.values(monthDates).includes(postKraken.krakenDate);
+      if(!postKraken.approved||!validKraken||ev.date<=postKraken.krakenDate||
+         ev.date>dateOffset(postKraken.krakenDate,7)||!Number.isInteger(Number(ev.flash))||
+         Number(ev.flash)<1||Number(ev.flash)>4)
+        throw Error('Post-Kraken Flash source mismatch or unapproved set: '+ev.id);
+      seenNoSparkSets.add(ev.setId);
+    }
     const rows=(ev.entries||[]).filter(r=>r.name&&!['Total','#N/A'].includes(r.name)).map(r=>{
       const c=clan(r.clan||ev.clan||ev.rosterScope);
-      return {player:resolve(r.name),clan:c,...(!c?{clanAttribution:'unknown'}:{}),score:number(r.lines),sparks:number(r.sparks),stars:number(r.stars),metadata:rowMeta(r)};
+      const archivalDerivedSparks=number(r.sparks);
+      return {player:resolve(r.name),clan:c,...(!c?{clanAttribution:'unknown'}:{}),
+        score:number(r.lines),sparks:postKraken?0:archivalDerivedSparks,stars:number(r.stars),
+        metadata:{...rowMeta(r),...(postKraken?{awardPolicy:'first-post-kraken-no-sparks',
+            archivalDerivedSparksDiscarded:archivalDerivedSparks,sourceKrakenDate:postKraken.krakenDate}:{})}};
     });
     for(const r of rows)if(r.clan&&r.score>0){const ps=proof.get(r.player)||[];ps.push({date:ev.date,clan:r.clan});proof.set(r.player,ps);}
     add({id:'flash|'+ev.id,kind:'flash',date:ev.date,status:ev.complete===false?'partial':'final',unit:UNITS.flash,sources:['repository:flash:'+ev.id],metadata:Object.fromEntries(Object.entries(ev).filter(([k])=>k!=='entries'&&k!=='channelId')),rows});
   }
+  for(const setId of noSparkSets.keys())if(!seenNoSparkSets.has(setId))
+    throw Error('Approved no-Sparks Flash set missing from source archive: '+setId);
   for(const month of K.months){
     const date=month.date||monthDates[month.key];if(!date)throw Error('Unknown Kraken month date: '+month.key);
     const rows=[];

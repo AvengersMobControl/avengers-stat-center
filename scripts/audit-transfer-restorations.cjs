@@ -1,4 +1,13 @@
 'use strict';
+// Only for validating the originally approved source baseline after the
+// later removal of incorrectly inferred zero-award Flash Sparks.
+// Never use this function to update the user-frozen Unlogged Sparks value.
+function originallyObservedGap(player,snapshot){
+ const removed=player.history.filter(h=>h.kind==='flash'&&h.metadata?.awardPolicy==='first-post-kraken-no-sparks'&&
+   (!snapshot.beforeDate||h.date<snapshot.beforeDate))
+   .reduce((n,h)=>n+(Number(h.metadata.archivalDerivedSparksDiscarded)||0),0);
+ return Math.max(0,snapshot.gap-removed);
+}
 function audit(release){
  const S=release.globals.AVENGERS_SPARKS_SNAPSHOT,D=release.globals.AVENGERS_DATA;
  const R=release.globals.AVENGERS_MEMBER_TIMEZONES;
@@ -28,7 +37,8 @@ function audit(release){
   const tracked=before?p.history.filter(x=>x.date<before).reduce((n,x)=>n+(x.sparks||0),0):p.earned.sparks;
   const previous=last?Math.max(0,last.allTimeSparks-tracked):0;
   const current=p.screenshotGap||0;
-  const maxObserved=Math.max(0,...(p.snapshotBreakdown||[]).map(x=>x.gap));
+  const maxObserved=Math.max(0,...(p.snapshotBreakdown||[]).map(x=>originallyObservedGap(p,x)));
+  const currentDerivedGap=Math.max(0,...(p.snapshotBreakdown||[]).map(x=>x.gap));
   // The saved baseline is authoritative. Minor positive screenshot residuals
   // can be rounding, not actual unrecorded historical rewards.
   const saved=require('../data/sparks-prior-to-logging-2026-10-16.json');
@@ -63,6 +73,8 @@ function audit(release){
   return {name:id,roster:r.status,logged:p.earned.sparks,oldGap:previous,
    unlogged:current,total:p.totalSparks,recovered:current-previous,
    screenshots:p.snapshotBreakdown?.length||0,qualifyingScreenshots:(p.snapshotBreakdown||[]).filter(x=>x.gap>0).length,
+   derivedGapAfterAwardCorrection:currentDerivedGap,
+   originallyObservedGap:maxObserved,
    evidence:p.snapshotBreakdown};
  });
  const currentCount=(R.rows||[]).filter(r=>r.status==='Active'||r.status==='AV2').length;
@@ -77,4 +89,4 @@ function audit(release){
    totalUnlogged:rows.reduce((n,r)=>n+r.unlogged,0)},
   rows:rows.sort((a,b)=>b.recovered-a.recovered||a.name.localeCompare(b.name))};
 }
-module.exports={audit};
+module.exports={audit,originallyObservedGap};

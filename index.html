@@ -1610,7 +1610,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     {id:'location',name:'Location',keys:['utcOffset','timeZoneGroup','state','country'],summary:'country'},
     {id:'sparks',name:'Sparks',keys:['piggySparks','spaceSparks','flashSparks','krakenSparks','loggedSparks','unloggedSparks','totalCombinedSparks'],summary:'totalCombinedSparks'},
     {id:'stars',name:'Stars',keys:['piggyStars','spaceStars','flashStars','loggedStars','unloggedStars','knownStars'],summary:'knownStars'},
-    {id:'rating',name:'Rating',keys:['ratingTotal','piggyPB','spacePB','krakenPB'],summary:'ratingTotal'},
+    {id:'rating',name:'Rating',keys:['ratingTotal','piggyPB','spacePB','spaceLobbyPBRank','krakenPB'],summary:'ratingTotal'},
     {id:'piggyAchievements',name:'Piggy Achievements',keys:['piggyWins','piggyPodiums','piggyPBRank'],summary:'piggyPBRank'},
     {id:'events',name:'Events',keys:['piggyEvents','spaceEvents','flashEvents','krakenEvents','totalEvents'],summary:'totalEvents'}
   ];
@@ -1621,10 +1621,10 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     loggedSparks:'Logged Sparks',unloggedSparks:'Screenshot Gap',totalCombinedSparks:'Total Sparks',
     piggyStars:'Piggy',spaceStars:'Space',flashStars:'Flash',
     loggedStars:'Logged Stars',unloggedStars:'Unlogged Stars',knownStars:'Total Stars',
-    ratingTotal:'Rating',piggyPB:'Piggy PB',spacePB:'Space PB',krakenPB:'Kraken PB',
+    ratingTotal:'Rating',piggyPB:'Piggy PB',spacePB:'Space PB',spaceLobbyPBRank:'Space Lobby PB',krakenPB:'Kraken PB',
     piggyEvents:'Piggy',spaceEvents:'Space',flashEvents:'Flash',krakenEvents:'Kraken',totalEvents:'Total Events'
   };
-  const numeric=new Set(['piggyWins','piggyPodiums','piggyPBRank','utcOffset','piggySparks','spaceSparks','flashSparks','krakenSparks','loggedSparks','unloggedSparks','totalCombinedSparks','piggyStars','spaceStars','flashStars','loggedStars','unloggedStars','knownStars','ratingTotal','piggyPB','spacePB','krakenPB','piggyEvents','spaceEvents','flashEvents','krakenEvents','totalEvents']);
+  const numeric=new Set(['piggyWins','piggyPodiums','piggyPBRank','utcOffset','piggySparks','spaceSparks','flashSparks','krakenSparks','loggedSparks','unloggedSparks','totalCombinedSparks','piggyStars','spaceStars','flashStars','loggedStars','unloggedStars','knownStars','ratingTotal','piggyPB','spacePB','spaceLobbyPBRank','krakenPB','piggyEvents','spaceEvents','flashEvents','krakenEvents','totalEvents']);
   const colGroups=groups.map(group=>({...group,visible:expanded[group.id]?group.keys:[group.summary]}));
   const colKeys=['rank','name','status',...colGroups.flatMap(g=>g.visible)];
   const defaultWidths={rank:54,name:220,status:100,country:120,timeZoneGroup:88,state:110,piggyPBRank:108,totalCombinedSparks:146,knownStars:135,unloggedSparks:148};
@@ -1650,6 +1650,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       case 'country':return r.country?escapeHtml(r.country):missing;
       case 'ratingTotal':return r.hasProfile?`<button type="button" class="roster-rating-link" data-roster-rating="${escapeHtml(r.profileName||r.name)}" title="View ${escapeHtml(r.name)} in Player Ratings">${fmtNum(r.ratingTotal,2)} <span aria-hidden="true">↗</span></button>`:fmtNum(r.ratingTotal,2);
       case 'spacePB':return fmtB(r.spacePB);
+      case 'spaceLobbyPBRank':return rankText(r.spaceLobbyPBRank);
       case 'krakenPB':return fmtNum(r.krakenPB,1);
       case 'loggedSparks':return fmtNum(r.loggedSparks);
       case 'unloggedStars':return r.unloggedStars==null?missing:fmtNum(r.unloggedStars);
@@ -1795,6 +1796,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     // 30+ observed AVENGERS. Never rank line totals across this roster, and
     // never combine independent small lobbies or use AV-2 race results.
     rows=window.AVENGERS_ROSTER_PIGGY_PB_RANK.rankRows(rows,window.AVENGERS_EVENT_PROJECTION?.events||[],D.aliasMap||{});
+    rows=rows.map(r=>({...r,spaceLobbyPBRank:spaceRankHistory.lobbyBestByPlayer.get(canonicalPlayerName(r.name))?.rank??null}));
     const rosterSortDefs={
       krakenRank:{label:'In-game Rank',type:'number',get:r=>r.krakenRank},
       krakenRosterSparks:{label:'In-game Sparks',type:'number',get:r=>r.krakenRosterSparks},
@@ -1829,6 +1831,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       piggyWins:{label:'Piggy Wins',type:'number',get:r=>r.piggyWins},
       piggyPodiums:{label:'Piggy Podiums',type:'number',get:r=>r.piggyPodiums},
       spacePB:{label:'Space PB',type:'number',get:r=>r.spacePB},
+      spaceLobbyPBRank:{label:'Space Lobby PB Rank',type:'number',get:r=>r.spaceLobbyPBRank},
       krakenPB:{label:'Kraken PB',type:'number',get:r=>r.krakenPB},
       eventsPlayed:{label:'Total Events',type:'number',get:r=>r.totalEvents}
     };
@@ -1986,7 +1989,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       if(state.rosterSort===key) state.rosterSortDir=state.rosterSortDir==='asc'?'desc':'asc';
       else{
         state.rosterSort=key;
-        state.rosterSortDir=['name','status','state','location','country','piggyPBRank'].includes(key)?'asc':'desc';
+        state.rosterSortDir=['name','status','state','location','country','piggyPBRank','spaceLobbyPBRank'].includes(key)?'asc':'desc';
       }
       renderRosters();
     };

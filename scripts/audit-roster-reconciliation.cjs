@@ -323,7 +323,18 @@ console.log('ROSTER_AUDIT_MISSING '+JSON.stringify({spark:report.missingSparkNam
 // Publish a separate release-version-matched roster audit, otherwise an audit
 // downloaded after deployment could misleadingly quote older Hoops totals.
 const publishedRelease=require('./create-site-release.cjs').create();
-const publishedRoster=new Set(current.map(r=>canonical(r.name)));
+// Projected display identities may have newer canonical names than the old
+// dated screenshot/source replay. Use the PUBLISHED alias map for this check.
+const publicAliases=publishedRelease.globals.AVENGERS_DATA.aliasMap||{};
+const publicCanonical=raw=>{
+  let n=String(raw||'').trim(),seen=new Set();
+  while(publicAliases[n]&&publicAliases[n]!==n){
+    assert(!seen.has(n),'Published alias cycle: '+n);
+    seen.add(n);n=publicAliases[n];
+  }
+  return n;
+};
+const publishedRoster=new Set(current.map(r=>publicCanonical(r.name)));
 const publishedPeople=publishedRelease.projection.people
   .filter(p=>publishedRoster.has(p.name))
   .map(p=>({

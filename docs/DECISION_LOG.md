@@ -1,3 +1,9 @@
+## 2026-10-19 — Corrected approved character aliases (supersedes prior Kaboom ambiguity)
+
+- Leader corrected the approved character map: **Spider, Explodon** = `AV_ExplodonSpider.png` (NOT Kaboom); **Pirate, Starlord, Kaboom** = `AV_KaboomStar(1).png`. The name **Kaboom now identifies only Pirate** and needs no disambiguation.
+- **Gamora, Sirion** = `AV_SirionGamora(1).png`. **Stone Pig, Drax, Big Blob** = `AV_BBDrax.png`.
+- These are name/lookup corrections only. All 12 original assets and SHA-256 hashes remain unchanged in the persistent Library folder `/AVENGERS Mob Control Approved Character PNGs/`. Definitive map: `docs/APPROVED_CHARACTER_ASSETS.md`. Never invent replacement characters. No PNG generated or automatically sent.
+
 ## 2026-10-19 — Piggy weekly benchmark table includes 50K, 60K, 70K and verified 2026 records; character whitelist archived
 
 - **Leader requirement:** Add a weekly historical table beside the Piggy PB sections covering inclusive thresholds `5K+, 10K+, 20K+, 30K+, 40K+, 50K+, 60K+, 70K+`; some weeks include 50K+, and Sep 13 includes both 60K+ and 70K+. Extend automatically above 70K when achieved. Show the number of distinct **AVENGERS event-time competitors**, not AV-2 or current-roster headcount. For players present more than once in an event, count one player at their highest score. A threshold is inclusive (e.g. exactly 20,000 counts as 20K+). Historic benchmark records and their dates are calculated from all recorded 2026 AVENGERS Piggy results, never manually assumed from an anecdote; record/tied record counts get gold styling.

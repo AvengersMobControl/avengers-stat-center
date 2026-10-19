@@ -70,11 +70,15 @@ const sum=xs=>xs.reduce((a,b)=>a+b,0);
 const avg=xs=>xs.length?sum(xs)/xs.length:null;
 function summary(rows,arenaStart){
   const known=rows.filter(r=>r.score!==null),scores=known.map(r=>r.score),positive=known.filter(r=>r.score>0);
-  let best=null,streak=0;const pbs=[];
+  let best=null,streak=0;const pbs=[],seenEventClans=new Set();
   for(const r of known){
     const previous=best,isPB=best!==null&&r.score>best;
+    // First result for this *event-time clan* is independent of a player's
+    // previous results with the other clan. Historical PBs stay all-clan.
+    const firstClanRecorded=!seenEventClans.has(r.clan);
+    if(r.clan)seenEventClans.add(r.clan);
     streak=isPB?streak+1:0;
-    pbs.push({eventId:r.eventId,date:r.date,score:r.score,previousPB:previous,firstRecorded:previous===null,newPB:isPB,
+    pbs.push({eventId:r.eventId,date:r.date,score:r.score,previousPB:previous,firstRecorded:previous===null,firstClanRecorded,newPB:isPB,
       improvement:isPB&&previous>0?(r.score/previous-1):null,pbStreak:streak});
     best=best===null?r.score:Math.max(best,r.score);
   }

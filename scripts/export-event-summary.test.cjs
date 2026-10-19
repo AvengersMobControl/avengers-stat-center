@@ -40,3 +40,16 @@ test('exporter writes only reports/ and refuses unexpected output names',()=>{
  }
  assert.equal(fs.readFileSync(approved,'utf8'),before);
 });
+
+test('Piggy PNG export classifies first AVENGERS event by clan, not first all-clan event',()=>{
+ const exported=exportRelease(),lin=exported.projection.people.find(p=>p.name==='AV-Lin');
+ assert(lin);
+ const firstMain=lin.kinds.piggy.pbs.find(p=>p.eventId==='piggy|2026-10-18');
+ assert(firstMain);
+ assert.equal(firstMain.firstRecorded,false);
+ assert.equal(firstMain.firstClanRecorded,true);
+ assert.equal(firstMain.score,31749);
+ assert(lin.history.some(e=>e.kind==='piggy'&&e.clan==='AV-2'&&e.date<'2026-10-18'));
+ assert.equal(exported.projection.people.filter(p=>['AV-2Lin','AV-JeffKintz05','LT'].includes(p.name)).length,0);
+ assert(exported.projection.people.some(p=>p.name==='AV-JefhKintz05'));
+});

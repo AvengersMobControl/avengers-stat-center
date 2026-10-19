@@ -138,6 +138,24 @@ async function main(){
       'Incomplete historical event source coverage must be visible');
     assert((await leagueFooter.innerText()).includes('unknown event-time clan'),
       'Missing event-time clan attribution must not be hidden');
+    assert.equal(await page.locator('#page-eventTotals .league-source-status').count(),1,
+      'league known vs partial/estimated source scope must be prominent');
+    const leagueText=await page.locator('#page-eventTotals').innerText();
+    assert(leagueText.includes('Tracked results, not a certified complete pot.'),
+      'league never claims missing source rows or unverified race pots');
+    assert(leagueText.includes('Tracked Sparks*')&&leagueText.includes('Tracked Stars*'),
+      'recorded sums are explicitly scoped');
+    assert(!leagueText.toLowerCase().includes('sparks/effort'),
+      'Sparks/Effort is allowed ONLY in individual Space Event, not Clan League pages');
+    const leagueHeaders=await page.locator('#page-eventTotals .league-rewards-table thead th').allTextContents();
+    assert.equal(leagueHeaders.length,9,'remove redundant efficiency columns from league leaderboard');
+    assert.equal(await page.locator('#page-eventTotals .league-rewards-table tbody tr:first-child td').count(),9,
+      'league data rows match header count');
+    await page.locator('#page-eventTotals button.league-period').nth(1).click();
+    assert((await page.locator('#page-eventTotals .league-source-status').innerText()).includes('estimated Kraken Sparks included'),
+      'older clan league numbers must be transparently marked as estimates');
+    assert.equal(await page.locator('#page-eventTotals .league-rewards-table thead th').count(),9,
+      'all six historical league tables use the same concise layout');
     await page.click('.nav-btn[data-page="records"]');
     const record=page.locator('#page-records .record-card').filter({hasText:'Space Records'}).locator('.record-row').filter({hasText:'AV-HarryBallsagna'});
     assert((await record.innerText()).includes('8/30/26'),'Space record date comes from PB event');

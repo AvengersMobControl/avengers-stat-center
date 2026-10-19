@@ -57,8 +57,9 @@ function audit(release){
    screenshots:p.snapshotBreakdown?.length||0,qualifyingScreenshots:(p.snapshotBreakdown||[]).filter(x=>x.gap>0).length,
    evidence:p.snapshotBreakdown};
  });
- if(rows.length!==100||new Set(rows.map(r=>r.name)).size!==100)
-  throw Error('Expected 100 distinct current clan members');
+ const currentCount=(R.rows||[]).filter(r=>r.status==='Active'||r.status==='AV2').length;
+ if(rows.length!==currentCount||new Set(rows.map(r=>r.name)).size!==currentCount)
+  throw Error('Current clan roster has missing or duplicate canonical members');
  const gained=rows.filter(r=>r.recovered>0.001),lowered=rows.filter(r=>r.recovered< -0.001);
  return {version:release.projection.version,
   summary:{roster:rows.length,withScreenshots:rows.filter(r=>r.screenshots).length,

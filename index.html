@@ -460,7 +460,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     rosterView: 'active',
     rosterSort: 'totalCombinedSparks',
     rosterSortDir: 'desc',
-    rosterGroups: {location:false,sparks:true,stars:false,rating:false,events:false},
+    rosterGroups: {location:false,sparks:true,stars:false,rating:false,piggyAchievements:false,events:false},
     playerSearch: ''
   };
 
@@ -1133,11 +1133,10 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <td class="num">${fmtB(r.pb)}</td>
         <td class="num">${fmtB(r.avgLast3)}</td>
         <td class="num">${fmtNum(r.avgStars)}</td>
-        <td class="num">${effortCell(effortSummary('space',r.name))}</td>
         <td class="num">${fmtNum(r.eventsPlayed)}</td>
       </tr>`).join('');
       el.innerHTML=tableShell('Overall Space Performance','Sorted by Arena-era average; full-2026 average shown separately',
-        [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Arena Avg'},{label:'2026 Avg',num:true},{label:'PB',num:true},{label:'Last 3',num:true},{label:'Avg Stars',num:true},{label:'Sparks/Effort (per B)',num:true},{label:'Events',num:true}],body);
+        [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Arena Avg'},{label:'2026 Avg',num:true},{label:'PB',num:true},{label:'Last 3',num:true},{label:'Avg Stars',num:true},{label:'Events',num:true}],body);
     } else if(view==='pot'){
       const av2Mode=state.status==='av2';
       const totals=Object.keys(D.space.events||{}).sort().reverse().map(date=>spaceRewardTotals(date,av2Mode?'AV-2':'AVENGERS')).filter(x=>x.participants>0);
@@ -1148,12 +1147,11 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <td class="num">${x.potSparks==null?'—':(x.potSparksEstimated?'≈':'')+fmtNum(x.potSparks)}</td>
         <td class="num">${x.stars==null?'—':fmtNum(x.stars)}${x.partial?' *':''}</td>
         <td class="num">${x.sparks==null?'—':fmtNum(x.sparks)}${x.partial?' *':''}</td>
-        <td class="num">${effortCell(window.AVENGERS_REWARD_METRICS.summarize((D.space.events[x.date]||[]).filter(r=>r.clan===(av2Mode?'AV-2':'AVENGERS')),'yearsB'))}</td>
         <td>${escapeHtml(x.partial||'Recorded final results')}${x.potStarsEstimated||x.potSparksEstimated?' Pot estimated from known reward/share in each represented lobby; rounded shares/rewards may affect precision.':''}</td>
       </tr>`).join('');
       el.innerHTML=tableShell(av2Mode?'AV-2 Space Race Pot Totals':'Space Race Pot Totals',av2Mode?'AV-2 event-time reward and lobby totals verified from the AV-2 Discord results channel':'AVENGERS event-time reward totals across all Space Race lobbies • current roster status does not affect historical totals • ≈ means a pot calculated from reward/share values • — means at least one represented lobby has no known pot • * means player-result coverage is partial',
-        [{label:'Race'},{label:'Groups',num:true},{label:'Pot Stars',num:true},{label:'Pot Sparks',num:true},{label:'Tracked Stars',num:true},{label:'Tracked Sparks',num:true},{label:'Sparks/Effort (per B)',num:true},{label:'Coverage'}],
-        body||`<tr><td colspan="8" class="empty">No Space Race totals recorded.</td></tr>`);
+        [{label:'Race'},{label:'Groups',num:true},{label:'Pot Stars',num:true},{label:'Pot Sparks',num:true},{label:'Tracked Stars',num:true},{label:'Tracked Sparks',num:true},{label:'Coverage'}],
+        body||`<tr><td colspan="7" class="empty">No Space Race totals recorded.</td></tr>`);
     } else if(view==='event'){
       const rows=(D.space.events[state.spaceEvent]||[]).filter(r=>r.name!=='Total'&&r.name!=='#N/A'&&allowedEventMetricRow(r)).sort((a,b)=>b.yearsB-a.yearsB);
       const max=Math.max(...rows.map(r=>Number(r.yearsB)||0),1);
@@ -1165,7 +1163,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <td class="num">${r.stars==null?'—':fmtNum(r.stars)}</td>
         <td class="num">${r.sparks==null?'—':fmtNum(r.sparks)}</td>
         <td class="num">${fmtPct(r.share)}</td>
-        <td class="num">${fmtNum(window.AVENGERS_REWARD_METRICS.efficiency(r.sparks,r.yearsB),2)}</td>
+        <td class="num">${fmtNum(window.AVENGERS_REWARD_METRICS.efficiency(r.sparks,r.yearsB),0)}</td>
         <td class="num">${r.group??'—'}</td>
       </tr>`).join('');
       const eventAll=(D.space.events[state.spaceEvent]||[]).filter(r=>r.name!=='Total'&&r.name!=='#N/A');
@@ -1200,11 +1198,10 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
           <td class="num">${fmtB(r.avg2026)}</td>
           <td class="num ${delta>=0?'positive':'negative'}">${delta>=0?'+':''}${fmtB(delta)}</td>
           <td class="num">${fmtB(r.pb)}</td>
-          <td class="num">${effortCell(effortSummary('space',r.name,{last:3}))}</td>
         </tr>`;
       }).join('');
       el.innerHTML=tableShell('Last Three Space Races','Recent form compared with both Arena-era and full-2026 averages',
-        [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Last 3 Avg'},{label:'Arena Avg',num:true},{label:'2026 Avg',num:true},{label:'Vs Arena',num:true},{label:'PB',num:true},{label:'Sparks/Effort (per B)',num:true}],body);
+        [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Last 3 Avg'},{label:'Arena Avg',num:true},{label:'2026 Avg',num:true},{label:'Vs Arena',num:true},{label:'PB',num:true}],body);
     } else {
       const dates=Object.keys(D.space.events||{}).sort().reverse();
       if(!D.space.events?.[state.spacePBEvent]) state.spacePBEvent=dates[0]||D.meta.latestSpace;
@@ -1586,12 +1583,12 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     {id:'location',name:'Location',keys:['utcOffset','timeZoneGroup','state','country'],summary:'country'},
     {id:'sparks',name:'Sparks',keys:['piggySparks','spaceSparks','flashSparks','krakenSparks','loggedSparks','unloggedSparks','totalCombinedSparks'],summary:'totalCombinedSparks'},
     {id:'stars',name:'Stars',keys:['piggyStars','spaceStars','flashStars','loggedStars','unloggedStars','knownStars'],summary:'knownStars'},
-    {id:'effort',name:'Space Sparks/Effort',keys:['spaceEffort'],summary:'spaceEffort'},
     {id:'rating',name:'Rating',keys:['ratingTotal','piggyPB','spacePB','krakenPB'],summary:'ratingTotal'},
+    {id:'piggyAchievements',name:'Piggy Achievements',keys:['piggyWins','piggyPodiums','piggyPBRank'],summary:'piggyPBRank'},
     {id:'events',name:'Events',keys:['piggyEvents','spaceEvents','flashEvents','krakenEvents','totalEvents'],summary:'totalEvents'}
   ];
   const labels={
-    piggyEffort:'Piggy / line',spaceEffort:'Space / B',flashEffort:'Flash / line',
+    piggyWins:'Wins',piggyPodiums:'Podiums',piggyPBRank:'PB Rank',
     utcOffset:'UTC',timeZoneGroup:'TZG',state:'State',country:'Country',
     piggySparks:'Piggy',spaceSparks:'Space',flashSparks:'Flash',krakenSparks:'Kraken',
     loggedSparks:'Logged Sparks',unloggedSparks:'Screenshot Gap',totalCombinedSparks:'Total Sparks',
@@ -1600,7 +1597,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     ratingTotal:'Rating',piggyPB:'Piggy PB',spacePB:'Space PB',krakenPB:'Kraken PB',
     piggyEvents:'Piggy',spaceEvents:'Space',flashEvents:'Flash',krakenEvents:'Kraken',totalEvents:'Total Events'
   };
-  const numeric=new Set(['piggyEffort','spaceEffort','flashEffort','utcOffset','piggySparks','spaceSparks','flashSparks','krakenSparks','loggedSparks','unloggedSparks','totalCombinedSparks','piggyStars','spaceStars','flashStars','loggedStars','unloggedStars','knownStars','ratingTotal','piggyPB','spacePB','krakenPB','piggyEvents','spaceEvents','flashEvents','krakenEvents','totalEvents']);
+  const numeric=new Set(['piggyWins','piggyPodiums','piggyPBRank','utcOffset','piggySparks','spaceSparks','flashSparks','krakenSparks','loggedSparks','unloggedSparks','totalCombinedSparks','piggyStars','spaceStars','flashStars','loggedStars','unloggedStars','knownStars','ratingTotal','piggyPB','spacePB','krakenPB','piggyEvents','spaceEvents','flashEvents','krakenEvents','totalEvents']);
   const colGroups=groups.map(group=>({...group,visible:expanded[group.id]?group.keys:[group.summary]}));
   const groupHeaderFor=parts=>parts.map(g=>`<th scope="colgroup" colspan="${g.visible.length}" class="roster-group-heading roster-group-${g.id}"><button type="button" class="roster-group-toggle" data-roster-group="${g.id}" aria-expanded="${!!expanded[g.id]}" title="${expanded[g.id]?'Collapse':'Expand'} ${g.name} columns"><span aria-hidden="true">${expanded[g.id]?'▾':'▸'}</span> ${g.name}<span class="roster-group-count">${g.visible.length}/${g.keys.length}</span></button></th>`).join('');
   const groupHeader=groupHeaderFor(colGroups.slice(0,-1));
@@ -1609,7 +1606,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   const missing='<span class="small-muted" title="Not yet available">—</span>';
   const cell=(r,key)=>{
     switch(key){
-      case 'piggyEffort':case 'spaceEffort':case 'flashEffort':return effortCell(r[key+'Summary']);
+      case 'piggyPBRank':return r.piggyPBRank==null?missing:window.AVENGERS_ROSTER_PIGGY_PB_RANK.formatFinish(r.piggyPBRank);
+      case 'piggyPodiums':return `<span title="1st: ${r.piggyWins||0} • 2nd: ${r.piggySecondPlaces||0} • 3rd: ${r.piggyThirdPlaces||0}">${fmtNum(r.piggyPodiums||0)}</span>`;
       case 'utcOffset':return r.utcOffset==null?missing:escapeHtml(String(r.utcOffset));
       case 'timeZoneGroup':return r.timeZoneGroup?`<span class="tz-pill">${escapeHtml(r.timeZoneGroup)}</span>`:missing;
       case 'state':return r.state?escapeHtml(r.state):missing;
@@ -1633,12 +1631,11 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     }).join(''));
     const firstGroups=groupCells.slice(0,-1).join('');
     const eventsGroup=groupCells.at(-1)||'';
-    const podiumTitle=`1st: ${r.piggyWins||0} • 2nd: ${r.piggySecondPlaces||0} • 3rd: ${r.piggyThirdPlaces||0}`;
-    return `<tr><td class="num">${i+1}</td><td><div class="player-cell"><div class="avatar">${initials(r.name)}</div>${playerNameCell(r)}</div></td><td>${statusBadge(r.status,r.profileName||r.name)}</td>${firstGroups}<td class="num roster-piggy-wins">${fmtNum(r.piggyWins||0)}</td><td class="num roster-piggy-podiums" title="${podiumTitle}">${fmtNum(r.piggyPodiums||0)}</td><td class="num roster-piggy-pb-rank">${r.piggyPBRank==null?missing:window.AVENGERS_ROSTER_PIGGY_PB_RANK.formatFinish(r.piggyPBRank)}</td>${eventsGroup}</tr>`;
+    return `<tr><td class="num">${i+1}</td><td><div class="player-cell"><div class="avatar">${initials(r.name)}</div>${playerNameCell(r)}</div></td><td>${statusBadge(r.status,r.profileName||r.name)}</td>${firstGroups}${eventsGroup}</tr>`;
   }).join('');
-  const emptyCols=6+colGroups.reduce((sum,g)=>sum+g.visible.length,0);
+  const emptyCols=3+colGroups.reduce((sum,g)=>sum+g.visible.length,0);
   return `<div class="table-card roster-grouped-card"><div class="table-titlebar"><div><h2>${escapeHtml(label)} Sparks Ledger</h2><div class="small-muted">${rows.length} members • sorted by ${escapeHtml(sortDef.label)} ${sortDir==='asc'?'ascending':'descending'} • select a category to expand/collapse</div></div></div>
-    <div class="table-wrap"><table class="roster-grouped-table"><thead><tr class="roster-group-head"><th rowspan="2" scope="col" class="num">#</th><th rowspan="2" scope="col">${sortHeader('Member','name').label}</th><th rowspan="2" scope="col">${sortHeader('Status','status').label}</th>${groupHeader}<th rowspan="2" scope="col" class="num">${sortHeader('Piggy Wins','piggyWins',true).label}</th><th rowspan="2" scope="col" class="num" title="Cumulative 1st, 2nd, and 3rd place finishes in eligible AVENGERS Piggy races">${sortHeader('Piggy Podiums','piggyPodiums',true).label}</th><th rowspan="2" scope="col" class="num" title="Best finish in a verified qualifying AVENGERS Piggy lobby">${sortHeader('Piggy PB Rank','piggyPBRank',true).label}</th>${eventGroupHeader}</tr><tr class="roster-group-subhead">${subHeader}</tr></thead><tbody>${body||`<tr><td colspan="${emptyCols}" class="empty">No roster members found.</td></tr>`}</tbody></table></div></div>`;
+    <div class="table-wrap"><table class="roster-grouped-table"><thead><tr class="roster-group-head"><th rowspan="2" scope="col" class="num">#</th><th rowspan="2" scope="col">${sortHeader('Member','name').label}</th><th rowspan="2" scope="col">${sortHeader('Status','status').label}</th>${groupHeader}${eventGroupHeader}</tr><tr class="roster-group-subhead">${subHeader}</tr></thead><tbody>${body||`<tr><td colspan="${emptyCols}" class="empty">No roster members found.</td></tr>`}</tbody></table></div></div>`;
 }
 
   function renderRosters(){
@@ -1721,8 +1718,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       const starUnlogged=starScreenshotTotal==null?null:Math.max(0,starScreenshotTotal-starLogged);
       const displayStatus=roster?.status||m.status||'Inactive';
       const tz=roster;
-      const effort=Object.fromEntries(['piggy','space','flash'].flatMap(kind=>{const summary=effortSummary(kind,canonical);return [[kind+'Effort',summary.value],[kind+'EffortSummary',summary]];}));
-      return {...m,...effort,name,status:displayStatus,hasProfile:!!stored,
+      return {...m,name,status:displayStatus,hasProfile:!!stored,
         loggedSparks:logged,flashSparks:extraSparks.flashSparks,latestKrakenSparks:extraSparks.octKrakenSparks,
         reconstructedJuneKrakenSparks:extraSparks.juneKrakenSparks||0,
         unloggedSparks:unlogged,totalCombinedSparks:logged+unlogged,snapshotTotal,
@@ -1773,7 +1769,6 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       state:{label:'State',type:'text',get:r=>r.state},
       location:{label:'Country',type:'text',get:r=>r.country},
       country:{label:'Country',type:'text',get:r=>r.country},
-      ...Object.fromEntries(['piggy','space','flash'].map(kind=>[kind+'Effort',{label:kind+' Sparks/Effort',type:'number',get:r=>r[kind+'Effort']}])),
       piggySparks:{label:'Piggy Sparks',type:'number',get:r=>r.piggySparks},
       flashSparks:{label:'Flash Sparks',type:'number',get:r=>r.flashSparks},
       spaceSparks:{label:'Space Sparks',type:'number',get:r=>r.spaceSparks},
@@ -1901,7 +1896,6 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       <div class="records-note"><strong>Star totals:</strong> For screenshot members, Total Stars comes from Oct 15 in-game all-time totals. DrDetroit and Starred were added to AV-2 separately by the clan leader; their new all-time Sparks and Stars are not available, so any displayed total is only a tracked minimum (≥). Logged Stars include recorded Piggy, Space and Flash rewards (Kraken Stars are not recorded); Unlogged Stars is the nonnegative difference from screenshot totals. Event counts represent recorded Piggy, Space, Flash and Kraken participation.
       </div>
       <div class="records-note"><strong>Piggy PB Rank:</strong> Best recorded finishing place (1st, 2nd, etc.) in a Piggy Race lobby with at least 30 recorded AVENGERS competitors. Line totals do not determine this number. AV-2 lobbies and smaller/solo lobbies are excluded; an unknown qualifying finish displays —. The same player's personal-best finish is shown across roster views (including after clan transfers).</div>
-      <div class="records-note"><strong>Space Sparks/Effort:</strong> rounded Sparks per billion lightyears for paired Space records. Piggy/Flash efficiency ratios are intentionally not displayed.</div>
       <div class="records-note"><strong>Sparks totals:</strong>
         Logged Sparks = Piggy + Space + Flash + Kraken. Screenshot Gap is the nonnegative difference when the recorded all-time screenshot exceeds logged Sparks.
         Total Sparks = Logged Sparks + Screenshot Gap. The historical gap compares an all-time screenshot with the rewards already tracked at that time; later rewards add to Logged without erasing the earlier gap.
@@ -1993,7 +1987,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     }).filter(x=>x.participants);
 
     const pigRows=pig.map(x=>`<tr><td>${fmtDate(x.date)}</td><td class="num">${fmtNum(x.participants)}</td><td class="num">${fmtNum(x.primary)}</td><td class="num event-total-highlight">${fmtNum(x.stars)}</td><td class="num">${fmtNum(x.sparks)}</td></tr>`).join('');
-    const spRows=sp.map(x=>`<tr><td>${fmtDate(x.date)}</td><td class="num">${fmtNum(x.participants)}</td><td class="num">${fmtB(x.primary)}</td><td class="num event-total-highlight">${x.stars==null?'—':fmtNum(x.stars)}</td><td class="num">${x.sparks==null?'—':fmtNum(x.sparks)}</td><td class="num">${effortCell(window.AVENGERS_REWARD_METRICS.summarize((D.space.events[x.date]||[]).filter(r=>r.clan==='AVENGERS'),'yearsB'))}</td></tr>`).join('');
+    const spRows=sp.map(x=>`<tr><td>${fmtDate(x.date)}</td><td class="num">${fmtNum(x.participants)}</td><td class="num">${fmtB(x.primary)}</td><td class="num event-total-highlight">${x.stars==null?'—':fmtNum(x.stars)}</td><td class="num">${x.sparks==null?'—':fmtNum(x.sparks)}</td></tr>`).join('');
     const krRows=kr.map(x=>`<tr><td>${escapeHtml(x.label)} 2026</td><td class="num">${fmtNum(x.participants)}</td><td class="num event-total-highlight">${fmtNum(x.total,1)}</td><td class="num">${fmtNum(x.avg,1)}</td></tr>`).join('');
 
     root.innerHTML=`
@@ -2006,7 +2000,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         ${tableShell('Piggy Race Totals','Historical AVENGERS participants with workbook-derived pot totals',
           [{label:'Event'},{label:'Players',num:true},{label:'Total Lines',num:true},{label:'Pot Stars',num:true},{label:'Total Sparks',num:true}],pigRows)}
         ${tableShell('Space Race Totals','All tracked Space events • — means reward data was not captured in the historical source',
-          [{label:'Event'},{label:'Players',num:true},{label:'Total Lightyears',num:true},{label:'Total Stars',num:true},{label:'Total Sparks',num:true},{label:'Sparks/Effort (per B)',num:true}],spRows)}
+          [{label:'Event'},{label:'Players',num:true},{label:'Total Lightyears',num:true},{label:'Total Stars',num:true},{label:'Total Sparks',num:true}],spRows)}
         ${tableShell('Kraken Totals','Sum of recorded monthly player damage scores in the Kraken dataset',
           [{label:'Event'},{label:'Players',num:true},{label:'Total Damage',num:true},{label:'Avg / Player',num:true}],krRows)}
       </div>`;
@@ -2125,15 +2119,15 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         const eventMap=new Map(events.map(e=>[e.id,e]));
         const rows=(window.AVENGERS_EVENT_PROJECTION?.people.find(p=>p.name===name)?.history||[]).filter(r=>r.kind===kind).sort((a,b)=>b.date.localeCompare(a.date));
         const isSpace=kind==='space',unit=isSpace?'B lightyears':'lines';
-        const headers=[{label:'Event'},{label:'Clan'},{label:unit,num:true},{label:'Stars',num:true},{label:'Sparks',num:true},...(isSpace?[{label:'Sparks/Effort',num:true}]:[{label:'Finish',num:true}])];
-        return tableShell(isSpace?'Space Reward / Effort':kind==='piggy'?'Piggy Event Results':'Piggy Flash Event Results',
-          isSpace?'Space Sparks/Effort per billion lightyears (rounded)':'Original event finishing position; — means source rank not recorded',
+        const headers=[{label:'Event'},{label:'Clan'},{label:unit,num:true},{label:'Stars',num:true},{label:'Sparks',num:true},...(!isSpace?[{label:'Finish',num:true}]:[])];
+        return tableShell(isSpace?'Space Event Results':kind==='piggy'?'Piggy Event Results':'Piggy Flash Event Results',
+          isSpace?'Historical Space Race scores and recorded rewards':'Original event finishing position; — means source rank not recorded',
           headers,rows.map(r=>{
             const event=eventMap.get(r.eventId);
             const eventRow=event?.rows?.find(x=>x.player===name&&x.clan===r.clan);
             const sourceRank=eventRow?.metadata?.rank??eventRow?.rank;
             const placement=Number.isSafeInteger(Number(sourceRank))&&Number(sourceRank)>0?window.AVENGERS_ROSTER_PIGGY_PB_RANK.formatFinish(sourceRank):'—';
-            return `<tr><td>${fmtDate(r.date)}${kind==='flash'?' PF'+(event?.metadata?.flash||''):''}</td><td>${escapeHtml(r.clan||'Unknown')}</td><td class="num">${fmtNum(r.score,isSpace?4:0)}</td><td class="num">${fmtNum(r.stars)}</td><td class="num">${fmtNum(r.sparks)}</td><td class="num">${isSpace?fmtNum(window.AVENGERS_REWARD_METRICS.efficiency(r.sparks,r.score),0):placement}</td></tr>`;
+            return `<tr><td>${fmtDate(r.date)}${kind==='flash'?' PF'+(event?.metadata?.flash||''):''}</td><td>${escapeHtml(r.clan||'Unknown')}</td><td class="num">${fmtNum(r.score,isSpace?4:0)}</td><td class="num">${fmtNum(r.stars)}</td><td class="num">${fmtNum(r.sparks)}</td>${isSpace?'':`<td class="num">${placement}</td>`}</tr>`;
           }).join(''));
       }).join('')}
       <div class="profile-kpis">
@@ -2216,12 +2210,12 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
           .filter(x=>x.participants>0).map(x=>[x.date,x.groups||'',x.potStars??'',x.potSparks??'',x.stars??'',x.sparks??'',x.potStarsEstimated,x.potSparksEstimated,x.partial]);
       }else if(state.spaceView==='event'){
         rows=(D.space.events[state.spaceEvent]||[]).filter(allowedEventMetricRow);
-        headers=['Rank','Username','Lightyears','Stars','Sparks','Share','Group','Sparks/Effort (per B)'];
-        rows=rows.map((r,i)=>[i+1,r.name,Math.round((Number(r.yearsB)||0)*1e9),r.stars,r.sparks,r.share,r.group??'',window.AVENGERS_REWARD_METRICS.efficiency(r.sparks,r.yearsB)]);
+        headers=['Rank','Username','Lightyears','Stars','Sparks','Share','Group'];
+        rows=rows.map((r,i)=>[i+1,r.name,Math.round((Number(r.yearsB)||0)*1e9),r.stars,r.sparks,r.share,r.group??'']);
       }else{
         rows=spaceRowsForStatus().sort((a,b)=>b.avgYears-a.avgYears);
-        headers=['Rank','Username','Avg Lightyears (B)','PB (B)','Last 3 Avg (B)','Avg Stars','Avg Sparks','Events','Sparks/Effort (per B)'];
-        rows=rows.map((r,i)=>[i+1,r.name,r.avgYears,r.pb,r.avgLast3,r.avgStars,r.avgSparks,r.eventsPlayed,effortSummary('space',r.name).value]);
+        headers=['Rank','Username','Avg Lightyears (B)','PB (B)','Last 3 Avg (B)','Avg Stars','Avg Sparks','Events'];
+        rows=rows.map((r,i)=>[i+1,r.name,r.avgYears,r.pb,r.avgLast3,r.avgStars,r.avgSparks,r.eventsPlayed]);
       }
     }
     const csv=[headers,...rows].map(row=>row.map(v=>{

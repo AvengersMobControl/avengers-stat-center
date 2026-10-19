@@ -1,3 +1,9 @@
+## 2026-10-19 — Leader display-scope correction: Space Event ratio only + Piggy Achievements collapse
+
+User explicitly instructed to **remove Sparks/Effort everywhere on the website except the Space Race individual Event leaderboard**. Its sole purpose is to recognize strong distance effort with weaker rewards in a weekly Space screenshot. Use rounded whole-number Sparks per billion lightyears there only; no summary/roster/player-profile/Event Totals/CSV display and no Piggy/Flash ratios. Underlying approved Sparks/Stars/distance/lines data and the existing metric calculation are not deleted.
+
+Rosters: Wins, Podiums and Piggy PB Rank form one collapsible **Piggy Achievements** group immediately before Events. Default collapsed showing Piggy PB Rank; expanded shows all three separately sortable. Maintain historical 30+ same-lobby AVENGERS rank/podium eligibility, including cross-clan member transitions. This supersedes old broad reward-effort and standalone Piggy columns guidelines. Changes belong to reviewed PR/deployment; do not claim live until Pages exact SHA + browser verified.
+
 # AVENGERS Mob Control — live project continuity
 
 **Purpose:** persistent handoff for ANY new ChatGPT session, independent of a conversation's length. **This GitHub document and [DECISION_LOG.md](DECISION_LOG.md) are the living reference**; no repeated upload of a fresh ChatGPT Project file should be required when the GitHub connector is available. **Only AVENGERS/AV-2. Never mix with SAC/Lock It In.**

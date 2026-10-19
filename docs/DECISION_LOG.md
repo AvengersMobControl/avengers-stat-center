@@ -1,3 +1,9 @@
+## 2026-10-19 — Narrow Space Sparks/Effort to the event table; group Piggy achievements
+
+- **Leader clarification supersedes all prior broad Sparks/Effort reporting:** Show the reward-effort ratio **ONLY** in **Space Race → Event** as a per-player, per-race indicator of unfortunate reward versus effort, supporting the weekly Space screenshot. Preserve it as Sparks per **billion** lightyears, rounded to whole numbers on display; no ratio anywhere else on the website: **not** in Space Overall, Last 3, Pot Totals, Event Totals, roster, roster notes, player profile, Piggy or Flash views, or website CSV exports. Keep raw underlying rewards, scores and computations intact.
+- **Leader additional requirement:** make one collapsible roster **Piggy Achievements** group (default collapsed) containing **Wins**, **Podiums**, and **PB Rank**. When collapsed show **PB Rank** as the group summary; when expanded show all three as separate sortable columns. Group is immediately before Events; qualified historical Piggy data logic unchanged.
+- This corrects scope creep from the earlier Sparks/Effort rollout. Tests must verify both the collapsed/expanded roster behavior and the ratio's exclusive Space Event placement. Automatic PNG/Discord sending remains OFF. AV-2 source data and SAC remain untouched.
+
 ## 2026-10-19 — Corrected approved character aliases (supersedes prior Kaboom ambiguity)
 
 - Leader corrected the approved character map: **Spider, Explodon** = `AV_ExplodonSpider.png` (NOT Kaboom); **Pirate, Starlord, Kaboom** = `AV_KaboomStar(1).png`. The name **Kaboom now identifies only Pirate** and needs no disambiguation.

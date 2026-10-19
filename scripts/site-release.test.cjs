@@ -98,7 +98,7 @@ test('leader-updated active roster and Jeff current canonical name preserve all 
     assert.equal(people.find(p=>p.name===name)?.status,'Active',name+' projection');
     assert(!av2.some(r=>r.name===name),name+' cannot remain in current AV-2 roster');
   }
-  assert.equal(D.resolvePlayerName('AV-JefhKintz05'),'AV-JeffKintz05');
+  assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV-JefhKintz05'),'AV-JeffKintz05');
   assert.equal(R.byName['AV-JefhKintz05'].canonicalName,'AV-JeffKintz05');
   assert.equal(R.byName['AV-JeffKintz05'].canonicalName,'AV-JeffKintz05');
   assert.equal(D.members.filter(m=>m.name==='AV-JefhKintz05').length,0,'no duplicate old-name profile');

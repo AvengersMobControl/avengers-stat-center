@@ -186,7 +186,17 @@ async function main(){
     assert(profileText.includes('Space Reward / Effort'),'retain Space efficiency');
     assert(profileText.includes('Piggy Event Results'),'Piggy event history');
     assert(profileText.includes('Piggy Flash Event Results'),'Flash event history');
-    assert(profileText.includes('Finish'),'Piggy/Flash original event rank');
+    const profileColumnHeaders=await page.locator('#playerModalContent table thead th').allTextContents();
+    assert(profileColumnHeaders.filter(t=>t.trim()==='Finish').length>=2,'Piggy and Flash event tables each have original finish column');
+    const eventRankVerification=await page.evaluate(()=>{
+      const name='AV-HarryBallsagna';
+      const events=window.AVENGERS_EVENT_PROJECTION.events.filter(e=>e.kind==='piggy'||e.kind==='flash');
+      const known=events.flatMap(e=>(e.rows||[]).filter(r=>r.player===name&&r.clan==='AVENGERS'&&r.metadata?.rank>0).map(r=>({date:e.date,rank:r.metadata.rank,kind:e.kind})));
+      const ordinal=n=>window.AVENGERS_ROSTER_PIGGY_PB_RANK.formatFinish(n);
+      const text=document.querySelector('#playerModalContent')?.textContent||'';
+      return {known:known.length,matched:known.some(r=>text.includes(ordinal(r.rank)))};
+    });
+    assert(eventRankVerification.known>0&&eventRankVerification.matched,'recorded event placement is shown in profile');
     assert(!profileText.includes('Piggy Reward / Effort')&&!profileText.includes('Flash Reward / Effort'),'no Piggy/Flash ratios');
     assert.equal(checks.pb,549.9);assert.equal(checks.pb,checks.achievement);assert.equal(checks.pb,checks.expected);
     await page.keyboard.press('Escape');

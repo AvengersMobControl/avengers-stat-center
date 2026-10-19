@@ -88,7 +88,7 @@ test('complete staged site uses one projection bundle, immutable script/CSS refe
 });
 test('current roster and every materialized PB/reward agree with independent canonical source sums',()=>{
   const D=BASE.globals.AVENGERS_DATA,R=BASE.globals.AVENGERS_MEMBER_TIMEZONES;
-  assert.equal(R.rows.filter(r=>r.status==='Active').length,48);assert.equal(R.rows.filter(r=>r.status==='AV2').length,52);
+  assert.equal(R.rows.filter(r=>r.status==='Active').length,51);assert.equal(R.rows.filter(r=>r.status==='AV2').length,50);
   const events=BASE.ledger.events.filter(e=>e.status!=='revoked');
   for(const m of D.members){
     const rows=events.flatMap(e=>e.rows.filter(r=>r.player===m.name).map(r=>({...r,kind:e.kind})));
@@ -144,8 +144,8 @@ test('Adigarian does not get artificial gap from a reset returning-clan counter'
 const {audit:transferAudit}=require('./audit-transfer-restorations.cjs');
 test('transfer restoration reconciles every current member, not only Hoops',()=>{
  const result=transferAudit(BASE);
- assert.equal(result.summary.roster,100);
- assert.equal(result.rows.length,100);
+ assert.equal(result.summary.roster,101);
+ assert.equal(result.rows.length,101);
  for(const r of result.rows){
   const player=BASE.projection.people.find(p=>p.name===r.name);
   assert(player,'Missing member '+r.name);

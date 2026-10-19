@@ -76,6 +76,9 @@ jobs:
           python3 -m unittest discover -s scripts -p test_render_piggy_finish_pb_preview.py -v
           python3 -m unittest discover -s scripts -p test_render_weekly_event_review.py -v
           node scripts/export-weekly-review.cjs weekly-AVENGERS-2026-10-12.json 2026-10-12 AVENGERS
+          # Approved public-view recap model for leader-side compositing with
+          # exact user Library character files; never expose private Discord IDs.
+          node -e "const fs=require('fs'),z=require('zlib');const b=fs.readFileSync('reports/weekly-AVENGERS-2026-10-12.json');console.log('WEEKLY_REVIEW_GZIP_BASE64='+z.gzipSync(b).toString('base64'))"
           node scripts/export-event-summary.cjs approved-summary-release.json
           for kind in piggy flash kraken; do
             for clan in AVENGERS AV-2; do

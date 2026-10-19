@@ -178,7 +178,9 @@ test('real Hoops Sept 29 AVENGERS Sparks survive transfer to AV-2 on published r
  const avBase=hoop.snapshotBreakdown.find(s=>s.clan==='AVENGERS'&&s.amount===12416538);
  assert(avBase.gap>0,'Hoops needs documented historical unlogged Sparks');
  const post=hoop.history.filter(r=>r.date>='2026-09-30').reduce((t,r)=>t+(r.sparks||0),0);
- assert(hoop.totalSparks>=12416538+post-0.001);
+ // Snapshot evidence predates Spark-reward policy correction. The approved
+ // historic Unlogged balance stays static rather than re-tuned to a new gap.
+ assert.equal(hoop.totalSparks,hoop.earned.sparks+hoop.screenshotGap);
  assert.equal(BASE.breakdowns[hoop.name].screenshotGap,hoop.screenshotGap);
  assert.equal(BASE.breakdowns[hoop.name].eventLoggedSparks,hoop.earned.sparks);
  const trackedAfterSep29=post;
@@ -198,7 +200,8 @@ test('Adigarian does not get artificial gap from a reset returning-clan counter'
  assert(earlier&&later);
  assert.equal(earlier.beforeDate,'2026-09-30');
  assert.equal(later.beforeDate,'2026-10-16');
- assert(Math.abs(p.screenshotGap-Math.max(0,...p.snapshotBreakdown.map(s=>s.gap)))<=0.5);
+ const {originallyObservedGap}=require('./audit-transfer-restorations.cjs');
+ assert(Math.abs(p.screenshotGap-Math.max(0,...p.snapshotBreakdown.map(s=>originallyObservedGap(p,s))))<=0.5);
  assert.equal(p.totalSparks,p.earned.sparks+p.screenshotGap);
 });
 
@@ -221,8 +224,8 @@ test('transfer restoration reconciles every current member, not only Hoops',()=>
  assert(hoops&&hoops.unlogged>0);
  const after=BASE.projection.people.find(p=>p.name==='AV-Hoops').history
   .filter(r=>r.date>='2026-09-30').reduce((n,r)=>n+(r.sparks||0),0);
- assert(hoops.total>=12416538+after-0.001,
-  'Hoops preserves screenshot plus every approved later reward');
+ assert.equal(hoops.total,hoops.logged+hoops.unlogged,'cannot dynamically recalculate frozen Unlogged Spark balances');
+ assert.equal(hoops.unlogged,require('../data/sparks-prior-to-logging-2026-10-16.json').amounts['AV-Hoops']);
  assert(result.rows.find(r=>r.name==='AV-Adigarian').screenshots>=2);
 });
 
@@ -265,6 +268,7 @@ test('near-one-million AV gaps appear in both dated photos and are not additive'
   assert.equal(e[1].beforeDate,'2026-10-16');
   assert(e[0].gap>900000&&e[1].gap>900000,name+' original gaps');
   assert(Math.abs(e[0].gap-e[1].gap)<30000,name+' stable over time');
-  assert(Math.abs(p.screenshotGap-Math.max(e[0].gap,e[1].gap))<=0.5);
+  const {originallyObservedGap}=require('./audit-transfer-restorations.cjs');
+  assert(Math.abs(p.screenshotGap-Math.max(...e.map(s=>originallyObservedGap(p,s))))<=0.5);
  }
 });

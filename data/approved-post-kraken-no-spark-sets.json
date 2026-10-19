@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "approvedBy": "AVENGERS clan leader",
+  "approvedOn": "2026-10-19",
+  "policy": "Only the first four Piggy Flash events immediately after each five-week Clan League Kraken award zero Sparks. This one-time source reconciliation applies to explicitly identified first Flash sets; preserve Stars, scores, event-time clan, and fixed historical Unlogged Sparks. Other Flashes are unaffected.",
+  "postKrakenFlashSets": [
+    {
+      "krakenDate": "2026-02-02",
+      "setId": "2026-02-05-A",
+      "approved": true
+    },
+    {
+      "krakenDate": "2026-02-23",
+      "setId": "2026-02-26-A",
+      "approved": true
+    },
+    {
+      "krakenDate": "2026-03-15",
+      "setId": "2026-03-19-A",
+      "approved": true
+    },
+    {
+      "krakenDate": "2026-04-19",
+      "setId": "2026-04-23-A",
+      "approved": true
+    },
+    {
+      "krakenDate": "2026-05-24",
+      "setId": "2026-05-28-A",
+      "approved": true
+    },
+    {
+      "krakenDate": "2026-06-28",
+      "setId": "2026-07-02-A",
+      "approved": true
+    },
+    {
+      "krakenDate": "2026-08-02",
+      "setId": "2026-08-04-A",
+      "approved": true
+    },
+    {
+      "krakenDate": "2026-09-06",
+      "setId": "2026-09-08-A",
+      "approved": true
+    },
+    {
+      "krakenDate": "2026-10-11",
+      "setId": "2026-10-13-A",
+      "approved": true
+    }
+  ]
+}

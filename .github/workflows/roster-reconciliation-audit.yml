@@ -17,6 +17,7 @@ on:
       - 'scripts/audit-six-clan-leagues*.cjs'
       - 'scripts/report-prior-logging-sparks.cjs'
       - 'data/sparks-prior-to-logging-2026-10-16.json'
+      - 'data/approved-post-kraken-no-spark-sets.json'
       - 'scripts/audit-transfer-restorations.cjs'
       - 'scripts/roster-event-breakdown.test.cjs'
       - 'scripts/roster-piggy-pb-rank.test.cjs'

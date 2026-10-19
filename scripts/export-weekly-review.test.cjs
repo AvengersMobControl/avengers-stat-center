@@ -83,8 +83,10 @@ test('October 12-18 real projection includes six slots and known 2026 final-resu
  assert(m.events.filter(x=>x.kind==='flash').every(x=>x.noSparkAward),'first PF after Kraken have no Sparks');
  assert.equal(m.totalKnownSparks,m.events.filter(x=>['space','piggy'].includes(x.kind)).reduce((s,x)=>s+x.knownSparks,0));
  assert.equal(m.top5Sparks.length,5);
- assert(m.warnings.some(x=>x.startsWith('SOURCE RECONCILIATION')),'legacy flash spark discrepancy explicitly review-blocked');
+ assert.equal(m.sourceFlashSparkConflict,false,'all reviewed first-after-Kraken Flash payouts now zero in canonical ledger');
+ assert(m.events.filter(x=>x.kind==='flash').every(x=>x.knownSparks===0),'four Flashes report zero without requiring temporary override');
  assert.equal(m.readyToPost,false);assert.equal(m.discordChannelVerified,false);
+ assert.equal(m.warnings.filter(x=>x.startsWith('SOURCE RECONCILIATION')).length,0);
  const again=buildWeekly(r,{week:'2026-10-12',clan:'AVENGERS'});
  assert.equal(again.reviewDigest,m.reviewDigest);
  assert.equal(again.discordDraft,m.discordDraft);

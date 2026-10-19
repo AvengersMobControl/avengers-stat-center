@@ -36,7 +36,7 @@ test('first flashes after Sunday Kraken have ZERO weekly sparks even with stale 
  assert.equal(m.events.find(e=>e.kind==='space').aboveAverage,1);
  assert.equal(m.events.find(e=>e.kind==='space').benchmarkEligible,1);
  assert.equal(m.events.find(e=>e.kind==='piggy').aboveAverage,1);
- assert.equal(m.newMilestones,1,'one new 250B Space explorer badge for AV-A');
+ assert.equal(m.newMilestones,2,'first new 250B and 350B Space explorer badges for AV-A');
  assert.equal(m.scorePBs,2);assert.equal(m.piggyFinishRankImproved,1);
  assert.equal(m.top5Sparks[0].player,'AV-A');
  assert(m.discordDraft.includes('NO SPARKS'));

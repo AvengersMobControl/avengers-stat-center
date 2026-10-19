@@ -32,7 +32,10 @@ function normalize(event,aliases={}){
   const rows=new Map();
   for(const raw of event.rows){
     const unassigned=raw.player===null&&typeof raw.sourceIdentity==='string'&&raw.sourceIdentity.trim();
-    const r={player:unassigned?null:canonical(raw.player,aliases),...(unassigned?{sourceIdentity:raw.sourceIdentity}:{}),clan:raw.clan,score:amount(raw.score,'score'),sparks:amount(raw.sparks,'sparks'),stars:amount(raw.stars,'stars')};
+    // Clan-specific leader authority: AV-2 FrenchieUSA is Frenchie2, never the
+    // independently recorded AVENGERS Frenchie. Applies to every event type.
+    const clanName=raw.clan==='AV-2'&&raw.player==='AV-FrenchieUSA'?'AV-Frenchie2':raw.player;
+    const r={player:unassigned?null:canonical(clanName,aliases),...(unassigned?{sourceIdentity:raw.sourceIdentity}:{}),clan:raw.clan,score:amount(raw.score,'score'),sparks:amount(raw.sparks,'sparks'),stars:amount(raw.stars,'stars')};
     requireThat(['AVENGERS','AV-2'].includes(r.clan)||(r.clan===null&&raw.clanAttribution==='unknown'),'Explicit event-time clan or marked unknown required');
     if(r.clan===null)r.clanAttribution='unknown';
     if(raw.estimatedSparks===true)r.estimatedSparks=true;

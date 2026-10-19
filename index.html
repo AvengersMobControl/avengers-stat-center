@@ -2179,6 +2179,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const krakenPBMonth=kp?.pbMonth||m.krakenPBMonth||'';
     const podium=window.AVENGERS_ROSTER_PIGGY_PB_RANK.careerPodiums(window.AVENGERS_EVENT_PROJECTION?.events||[]).byPlayer.get(name)||{wins:0,secondPlaces:0,thirdPlaces:0,podiums:0};
     const piggyPlace=window.AVENGERS_ROSTER_PIGGY_PB_RANK.bestFinishes(window.AVENGERS_EVENT_PROJECTION?.events||[]).byPlayer.get(name)||null;
+    const spaceLobbyPB=spaceRankHistory.lobbyBestByPlayer.get(name)?.rank??null;
+    const verifiedSpaceClanPB=spaceRankHistory.verifiedClanBestByPlayer.get(name)?.rank??null;
     const krakenRows=km.length?km.map(x=>`<tr>
       <td>${escapeHtml(x.label)} 2026</td>
       <td class="num">${fmtNum(x.value,1)}</td>
@@ -2193,15 +2195,16 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         const eventMap=new Map(events.map(e=>[e.id,e]));
         const rows=(window.AVENGERS_EVENT_PROJECTION?.people.find(p=>p.name===name)?.history||[]).filter(r=>r.kind===kind).sort((a,b)=>b.date.localeCompare(a.date));
         const isSpace=kind==='space',unit=isSpace?'B lightyears':'lines';
-        const headers=[{label:'Event'},{label:'Clan'},{label:unit,num:true},{label:'Stars',num:true},{label:'Sparks',num:true},...(!isSpace?[{label:'Finish',num:true}]:[])];
+        const headers=[{label:'Event'},{label:'Clan'},{label:unit,num:true},{label:'Stars',num:true},{label:'Sparks',num:true},...(isSpace?[{label:'Lobby Finish',num:true},{label:'Recorded Clan #',num:true},{label:'Verified Clan #',num:true}]:[{label:'Finish',num:true}])];
         return tableShell(isSpace?'Space Event Results':kind==='piggy'?'Piggy Event Results':'Piggy Flash Event Results',
-          isSpace?'Historical Space Race scores and recorded rewards':'Original event finishing position; — means source rank not recorded',
+          isSpace?'Original lobby placement; Recorded Clan #* covers captured results only, not official clan rank; verified clan results require proven complete coverage':'Original event finishing position; — means source rank not recorded',
           headers,rows.map(r=>{
             const event=eventMap.get(r.eventId);
             const eventRow=event?.rows?.find(x=>x.player===name&&x.clan===r.clan);
+            const spacePlace=isSpace?spaceRankFor(name,r.clan,r.date):null;
             const sourceRank=eventRow?.metadata?.rank??eventRow?.rank;
             const placement=Number.isSafeInteger(Number(sourceRank))&&Number(sourceRank)>0?window.AVENGERS_ROSTER_PIGGY_PB_RANK.formatFinish(sourceRank):'—';
-            return `<tr><td>${fmtDate(r.date)}${kind==='flash'?' PF'+(event?.metadata?.flash||''):''}</td><td>${escapeHtml(r.clan||'Unknown')}</td><td class="num">${fmtNum(r.score,isSpace?4:0)}</td><td class="num">${fmtNum(r.stars)}</td><td class="num">${fmtNum(r.sparks)}</td>${isSpace?'':`<td class="num">${placement}</td>`}</tr>`;
+            return `<tr><td>${fmtDate(r.date)}${kind==='flash'?' PF'+(event?.metadata?.flash||''):''}</td><td>${escapeHtml(r.clan||'Unknown')}</td><td class="num">${fmtNum(r.score,isSpace?4:0)}</td><td class="num">${fmtNum(r.stars)}</td><td class="num">${fmtNum(r.sparks)}</td>${isSpace?`<td class="num">${rankText(spacePlace?.lobbyFinish)}</td><td class="num">${spacePlace?.recordedClanFinish==null?'—':rankText(spacePlace.recordedClanFinish)+'*'}</td><td class="num">${rankText(spacePlace?.verifiedClanFinish)}</td>`:`<td class="num">${placement}</td>`}</tr>`;
           }).join(''));
       }).join('')}
       <div class="profile-kpis">
@@ -2212,6 +2215,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <div class="profile-kpi"><span>Best Piggy Finish</span><strong>${window.AVENGERS_ROSTER_PIGGY_PB_RANK.formatFinish(piggyPlace)}</strong></div>
         <div class="profile-kpi"><span>Piggy Avg</span><strong>${fmtNum(m.piggyAvg)}</strong></div>
         <div class="profile-kpi"><span>Space PB</span><strong>${fmtB(m.spacePB)}</strong></div>
+        <div class="profile-kpi"><span>Best Space Lobby Finish</span><strong>${rankText(spaceLobbyPB)}</strong></div>
+        <div class="profile-kpi" title="Only results with approved full-clan lobby coverage; unverified remains unknown"><span>Verified Space Clan PB Rank</span><strong>${rankText(verifiedSpaceClanPB)}</strong></div>
         <div class="profile-kpi"><span>Space Arena Avg</span><strong>${fmtB(m.spaceAvg)}</strong></div>
         <div class="profile-kpi"><span>Kraken PB</span><strong>${krakenPB>0?fmtNum(krakenPB,1):'—'}</strong></div>
         <div class="profile-kpi"><span>Kraken Avg</span><strong>${krakenAvg>0?fmtNum(krakenAvg,1):'—'}</strong></div>

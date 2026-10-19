@@ -36,12 +36,21 @@ async function main(){
     // The browser shows actual best finishing PLACES (not line-score rankings).
     // This value is fixed by the qualifying historic race, not the current clan roster.
     await page.click('.nav-btn[data-page="rosters"]');
-    assert.equal(await page.locator('#rostersContent button[data-roster-sort="piggyWins"]').count(),1,'verified Piggy Wins roster column');
-    assert.equal(await page.locator('#rostersContent button[data-roster-sort="piggyPodiums"]').count(),1,'verified Piggy Podiums roster column');
+    const achievements=page.locator('#rostersContent button[data-roster-group="piggyAchievements"]');
+    assert.equal(await achievements.count(),1,'Piggy Achievements group available');
+    assert.equal(await achievements.getAttribute('aria-expanded'),'false','Piggy Achievements defaults collapsed');
+    assert.equal(await page.locator('#rostersContent button[data-roster-sort="piggyPBRank"]').count(),1,'PB Rank is collapsed summary');
+    assert.equal(await page.locator('#rostersContent button[data-roster-sort="piggyWins"]').count(),0,'Wins hidden by default');
+    assert.equal(await page.locator('#rostersContent [data-roster-group="effort"]').count(),0,'no roster efficiency group');
+    await achievements.click();
+    assert.equal(await page.locator('#rostersContent button[data-roster-group="piggyAchievements"]').getAttribute('aria-expanded'),'true');
+    assert.equal(await page.locator('#rostersContent button[data-roster-sort="piggyWins"]').count(),1,'Wins shown on expand');
+    assert.equal(await page.locator('#rostersContent button[data-roster-sort="piggyPodiums"]').count(),1,'Podiums shown on expand');
+    assert.equal(await page.locator('#rostersContent button[data-roster-sort="piggyPBRank"]').count(),1,'PB Rank shown on expand');
     const topHeaders=await page.locator('#rostersContent .roster-group-head th').allTextContents();
-    const pbColumn=topHeaders.findIndex(t=>t.includes('Piggy PB Rank'));
+    const achievementsColumn=topHeaders.findIndex(t=>t.includes('Piggy Achievements'));
     const eventsColumn=topHeaders.findIndex(t=>t.includes('Events'));
-    assert(pbColumn>0&&eventsColumn>pbColumn,'Piggy PB Rank now immediately before event history group');
+    assert(achievementsColumn>0&&eventsColumn>achievementsColumn,'grouped Piggy Achievements immediately precede Events');
     await page.click('#rostersContent button[data-roster-sort="piggyPBRank"]');
     let originalActiveRank=null, allMembersRank=null;
     for(const roster of ['active','av2','all']){
@@ -143,10 +152,14 @@ async function main(){
     assert(!(await record.innerText()).includes('AV-HarryBallsagna*'),'Aug 30 PB is not marked');
     assert((await record.innerText()).includes('549.9B'),'unaffected PB still shows normalized original');
     await page.click('.nav-btn[data-page="rosters"]');
-    await page.click('[data-roster-group="effort"]');
-    assert((await page.locator('#rostersContent').innerText()).includes('Sparks/Effort'));
+    assert(!(await page.locator('#rostersContent').innerText()).includes('Sparks/Effort'),'roster entirely free of efficiency metric');
     await page.click('.nav-btn[data-page="space"]');
+    await page.click('#spaceTabs [data-view="overall"]');
+    assert(!(await page.locator('#spaceContent').innerText()).includes('Sparks/Effort'),'no efficiency in Space Overall');
+    await page.click('#spaceTabs [data-view="last3"]');
+    assert(!(await page.locator('#spaceContent').innerText()).includes('Sparks/Effort'),'no efficiency in Space Last 3');
     await page.click('#spaceTabs [data-view="pot"]');
+    assert(!(await page.locator('#spaceContent').innerText()).includes('Sparks/Effort'),'no efficiency in Space Pot Totals');
     assert((await page.locator('#spaceContent').innerText()).includes('Oct 16, 2026'));
     await page.selectOption('#globalStatusFilter','active');
     const currentPot=page.locator('#spaceContent tbody tr').filter({hasText:'Oct 16, 2026'});
@@ -162,6 +175,7 @@ async function main(){
     const missing=page.locator('#spaceContent tr').filter({hasText:'AV-Animosity'});
     assert((await missing.innerText()).includes('—'));
     await page.selectOption('#spaceEventSelect','2026-10-16');
+    assert((await page.locator('#spaceContent').innerText()).includes('Sparks/Effort (per B)'),'efficiency ONLY in Space Event');
     assert.equal(await page.locator('#spaceContent tbody tr').count(),44,'AV event-time rows include all approved racers');
     await page.selectOption('#globalStatusFilter','av2');
     assert.equal(await page.locator('#spaceContent tbody tr').count(),22,'AV-2 event-time rows remain separate');
@@ -183,7 +197,8 @@ async function main(){
         expected:Math.max(...D.space.history[m.name].map(r=>r.yearsB)),roster:window.AVENGERS_ROSTER_EVENT_BREAKDOWN.forMember(m.name).eventLoggedSparks};
     });
     const profileText=await page.locator('#playerModalContent').innerText();
-    assert(profileText.includes('Space Reward / Effort'),'retain Space efficiency');
+    assert(profileText.includes('Space Event Results'),'Space event history is retained');
+    assert(!profileText.includes('Sparks/Effort'),'no efficiency in any player-profile event history');
     assert(profileText.includes('Piggy Event Results'),'Piggy event history');
     assert(profileText.includes('Piggy Flash Event Results'),'Flash event history');
     const profileColumnHeaders=await page.locator('#playerModalContent table thead th').allTextContents();

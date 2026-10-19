@@ -12,6 +12,9 @@
 .league-rewards-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
 .league-rewards-kpis>div{background:#101f36;border:1px solid #253b5c;border-radius:10px;padding:12px;min-width:0;display:flex;flex-direction:column;gap:6px}
 .league-rewards-kpis small{font-size:11px;color:#a5bcd6}.league-rewards-kpis strong{font-size:19px;color:#e7f7ff;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.league-source-status{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin:0 0 14px;padding:12px 14px;border-radius:10px;border:1px solid #73613e;background:#302617;color:#f3dfae;font-size:12px;line-height:1.4}
+.league-source-status strong{color:#ffe4a0;white-space:normal}
+.league-source-status span{border:1px solid #6c5b36;background:#3c321f;border-radius:16px;padding:4px 10px;color:#f2dbad}
 .league-rewards-toolbar{padding:8px 0 12px}.league-rewards-toolbar>div:first-child{display:flex;flex-direction:column;gap:4px}.league-rewards-toolbar strong{font-size:14px;color:#ebf5ff}.league-rewards-toolbar span{font-size:12px;color:#93afcf}
 .league-rewards-scroll{overflow:auto;border:1px solid #294160;border-radius:10px;max-height:580px}
 .league-rewards-table{width:100%;border-collapse:collapse;font-size:12px}

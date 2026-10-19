@@ -170,9 +170,9 @@ async function main(){
     assert((await page.locator('#spaceContent').innerText()).toLowerCase().includes('sparks/effort (per b)'));
     await page.click('.nav-btn[data-page="piggy"]');
     await page.selectOption('#piggyEventSelect','2026-10-11');
-    assert((await page.locator('#piggyContent').innerText()).toLowerCase().includes('sparks/effort (per line)'));
+    assert(!(await page.locator('#piggyContent').innerText()).toLowerCase().includes('sparks/effort (per line)'),'Piggy has no per-line rewards ratio');
     await page.click('.nav-btn[data-page="piggyFlashes"]');
-    assert((await page.locator('#page-piggyFlashes').innerText()).toLowerCase().includes('sparks/effort (per line)'));
+    assert(!(await page.locator('#page-piggyFlashes').innerText()).toLowerCase().includes('sparks/effort (per line)'),'Flash has no per-line rewards ratio');
     await page.selectOption('#globalStatusFilter','active');
     await page.click('.nav-btn[data-page="players"]');
     await page.fill('#playerSearch','HarryBallsagna');
@@ -182,7 +182,12 @@ async function main(){
       const D=window.AVENGERS_DATA,m=D.members.find(m=>m.name==='AV-HarryBallsagna');return{pb:m.spacePB,achievement:window.AVENGERS_COMMUNITY.achievementProfile(m.name).categories.find(c=>c.id==='space').value,
         expected:Math.max(...D.space.history[m.name].map(r=>r.yearsB)),roster:window.AVENGERS_ROSTER_EVENT_BREAKDOWN.forMember(m.name).eventLoggedSparks};
     });
-    assert((await page.locator('#playerModalContent').innerText()).includes('Sparks/Effort'));
+    const profileText=await page.locator('#playerModalContent').innerText();
+    assert(profileText.includes('Space Reward / Effort'),'retain Space efficiency');
+    assert(profileText.includes('Piggy Event Results'),'Piggy event history');
+    assert(profileText.includes('Piggy Flash Event Results'),'Flash event history');
+    assert(profileText.includes('Finish'),'Piggy/Flash original event rank');
+    assert(!profileText.includes('Piggy Reward / Effort')&&!profileText.includes('Flash Reward / Effort'),'no Piggy/Flash ratios');
     assert.equal(checks.pb,549.9);assert.equal(checks.pb,checks.achievement);assert.equal(checks.pb,checks.expected);
     await page.keyboard.press('Escape');
     await page.click('.nav-btn[data-page="weeklyRecap"]');

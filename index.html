@@ -959,11 +959,10 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <td class="num">${fmtNum(r.pb)}</td>
         <td class="num">${fmtNum(r.avgLast3)}</td>
         <td class="num">${fmtNum(r.avgStarsArena)}</td>
-        <td class="num">${effortCell(effortSummary('piggy',r.name,{start:D.meta.arenaStart}))}</td>
         <td class="num">${fmtNum(r.eventsPlayed)}</td>
       </tr>`).join('');
       el.innerHTML=tableShell('Overall Piggy Performance','Sorted by Arena-era average; full-2026 average shown separately',
-        [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Arena Avg'},{label:'2026 Avg',num:true},{label:'PB',num:true},{label:'Last 3',num:true},{label:'Arena Avg Stars',num:true},{label:'Sparks/Effort (per line)',num:true},{label:'Events',num:true}],body);
+        [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Arena Avg'},{label:'2026 Avg',num:true},{label:'PB',num:true},{label:'Last 3',num:true},{label:'Arena Avg Stars',num:true},{label:'Events',num:true}],body);
     } else if(view==='pot'){
       const av2Mode=state.status==='av2';
       const dates=(av2Mode?Object.keys(D.piggy.av2PotTotals||{}):Object.keys(D.piggy.events||{})).sort().reverse();
@@ -990,7 +989,6 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
           <td class="num">${rewardsKnown||Number(r.stars)?fmtNum(r.stars):'—'}</td>
           <td class="num">${rewardsKnown||Number(r.sparks)?fmtNum(r.sparks):'—'}</td>
           <td class="num">${rewardsKnown||Number(r.share)?fmtPct(r.share):'—'}</td>
-          <td class="num">${fmtNum(window.AVENGERS_REWARD_METRICS.efficiency(r.sparks,r.lines),2)}</td>
         </tr>`).join('');
       };
 
@@ -1006,12 +1004,12 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <div class="split-stat av2"><span>AV-2 — separate race</span><strong>${eventAV2.length?fmtNum(av2Avg):'—'}</strong><small>${eventAV2.length} players${av2Pot?' • '+fmtMillions2(av2Pot)+' pot':''} • excluded from AVENGERS totals</small></div>
       </div>`;
 
-      const headers=[{label:'Rank',num:true},{label:'Member'},{label:'Current Status'},{label:'Lines'},{label:'Stars',num:true},{label:'Sparks',num:true},{label:'Share',num:true},{label:'Sparks/Effort (per line)',num:true}];
+      const headers=[{label:'Rank',num:true},{label:'Member'},{label:'Current Status'},{label:'Lines'},{label:'Stars',num:true},{label:'Sparks',num:true},{label:'Share',num:true}];
       el.innerHTML=split+`<div class="event-result-grid">
         ${tableShell(`AVENGERS — ${fmtDate(state.piggyEvent)}`,`${eventAV.length} workbook participants • current status is shown only for reference`,headers,
-          makeRows(eventAV,true)||`<tr><td colspan="8" class="empty">No AVENGERS event data.</td></tr>`)}
+          makeRows(eventAV,true)||`<tr><td colspan="7" class="empty">No AVENGERS event data.</td></tr>`)}
         ${tableShell(`AV-2 — separate — ${fmtDate(state.piggyEvent)}`,`${eventAV2.length} separately logged AV-2 participants • not included in the AVENGERS pot or star total`,headers,
-          makeRows(eventAV2,false)||`<tr><td colspan="8" class="empty">No separate AV-2 race rows for this event.</td></tr>`)}
+          makeRows(eventAV2,false)||`<tr><td colspan="7" class="empty">No separate AV-2 race rows for this event.</td></tr>`)}
       </div>`;
     } else if(view==='last3'){
       const rows=(D.piggy.overall||[]).filter(r=>allowedStatus(r.status)&&Number(r.avgLast3)>0).map(r=>({
@@ -1031,11 +1029,10 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
           <td class="num">${fmtNum(r.avg2026)}</td>
           <td class="num ${delta>=0?'positive':'negative'}">${delta>=0?'+':''}${fmtNum(delta)}</td>
           <td class="num">${fmtNum(r.pb)}</td>
-          <td class="num">${effortCell(effortSummary('piggy',r.name,{last:3}))}</td>
         </tr>`;
       }).join('');
       el.innerHTML=tableShell('Last Three Big Pigs','Recent form compared with both Arena-era and full-2026 averages',
-        [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Last 3 Avg'},{label:'Arena Avg',num:true},{label:'2026 Avg',num:true},{label:'Vs Arena',num:true},{label:'PB',num:true},{label:'Sparks/Effort (per line)',num:true}],body);
+        [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Last 3 Avg'},{label:'Arena Avg',num:true},{label:'2026 Avg',num:true},{label:'Vs Arena',num:true},{label:'PB',num:true}],body);
     } else {
       const dates=Object.keys(D.piggy.events||{}).sort().reverse();
       if(!D.piggy.events?.[state.piggyPBEvent]) state.piggyPBEvent=dates[0]||D.meta.latestPiggy;
@@ -1589,7 +1586,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     {id:'location',name:'Location',keys:['utcOffset','timeZoneGroup','state','country'],summary:'country'},
     {id:'sparks',name:'Sparks',keys:['piggySparks','spaceSparks','flashSparks','krakenSparks','loggedSparks','unloggedSparks','totalCombinedSparks'],summary:'totalCombinedSparks'},
     {id:'stars',name:'Stars',keys:['piggyStars','spaceStars','flashStars','loggedStars','unloggedStars','knownStars'],summary:'knownStars'},
-    {id:'effort',name:'Sparks/Effort',keys:['piggyEffort','spaceEffort','flashEffort'],summary:'spaceEffort'},
+    {id:'effort',name:'Space Sparks/Effort',keys:['spaceEffort'],summary:'spaceEffort'},
     {id:'rating',name:'Rating',keys:['ratingTotal','piggyPB','spacePB','krakenPB'],summary:'ratingTotal'},
     {id:'events',name:'Events',keys:['piggyEvents','spaceEvents','flashEvents','krakenEvents','totalEvents'],summary:'totalEvents'}
   ];
@@ -1904,7 +1901,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       <div class="records-note"><strong>Star totals:</strong> For screenshot members, Total Stars comes from Oct 15 in-game all-time totals. DrDetroit and Starred were added to AV-2 separately by the clan leader; their new all-time Sparks and Stars are not available, so any displayed total is only a tracked minimum (≥). Logged Stars include recorded Piggy, Space and Flash rewards (Kraken Stars are not recorded); Unlogged Stars is the nonnegative difference from screenshot totals. Event counts represent recorded Piggy, Space, Flash and Kraken participation.
       </div>
       <div class="records-note"><strong>Piggy PB Rank:</strong> Best recorded finishing place (1st, 2nd, etc.) in a Piggy Race lobby with at least 30 recorded AVENGERS competitors. Line totals do not determine this number. AV-2 lobbies and smaller/solo lobbies are excluded; an unknown qualifying finish displays —. The same player's personal-best finish is shown across roster views (including after clan transfers).</div>
-      <div class="records-note"><strong>Sparks/Effort:</strong> weighted Sparks per line (Piggy/Flash) or per billion lightyears (Space), using paired known records. Expand the group to see each event type. * excludes unknown reward/effort rows; compare within the same event type.</div>
+      <div class="records-note"><strong>Space Sparks/Effort:</strong> rounded Sparks per billion lightyears for paired Space records. Piggy/Flash efficiency ratios are intentionally not displayed.</div>
       <div class="records-note"><strong>Sparks totals:</strong>
         Logged Sparks = Piggy + Space + Flash + Kraken. Screenshot Gap is the nonnegative difference when the recorded all-time screenshot exceeds logged Sparks.
         Total Sparks = Logged Sparks + Screenshot Gap. The historical gap compares an all-time screenshot with the rewards already tracked at that time; later rewards add to Logged without erasing the earlier gap.
@@ -1995,7 +1992,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       return {label:m.label,participants:vals.length,total:vals.reduce((s,v)=>s+v,0),avg:vals.length?vals.reduce((s,v)=>s+v,0)/vals.length:0};
     }).filter(x=>x.participants);
 
-    const pigRows=pig.map(x=>`<tr><td>${fmtDate(x.date)}</td><td class="num">${fmtNum(x.participants)}</td><td class="num">${fmtNum(x.primary)}</td><td class="num event-total-highlight">${fmtNum(x.stars)}</td><td class="num">${fmtNum(x.sparks)}</td><td class="num">${effortCell(window.AVENGERS_REWARD_METRICS.summarize((D.piggy.events[x.date]||[]).filter(r=>r.clan==='AVENGERS'),'lines'))}</td></tr>`).join('');
+    const pigRows=pig.map(x=>`<tr><td>${fmtDate(x.date)}</td><td class="num">${fmtNum(x.participants)}</td><td class="num">${fmtNum(x.primary)}</td><td class="num event-total-highlight">${fmtNum(x.stars)}</td><td class="num">${fmtNum(x.sparks)}</td></tr>`).join('');
     const spRows=sp.map(x=>`<tr><td>${fmtDate(x.date)}</td><td class="num">${fmtNum(x.participants)}</td><td class="num">${fmtB(x.primary)}</td><td class="num event-total-highlight">${x.stars==null?'—':fmtNum(x.stars)}</td><td class="num">${x.sparks==null?'—':fmtNum(x.sparks)}</td><td class="num">${effortCell(window.AVENGERS_REWARD_METRICS.summarize((D.space.events[x.date]||[]).filter(r=>r.clan==='AVENGERS'),'yearsB'))}</td></tr>`).join('');
     const krRows=kr.map(x=>`<tr><td>${escapeHtml(x.label)} 2026</td><td class="num">${fmtNum(x.participants)}</td><td class="num event-total-highlight">${fmtNum(x.total,1)}</td><td class="num">${fmtNum(x.avg,1)}</td></tr>`).join('');
 
@@ -2007,7 +2004,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       <div id="clanLeagueRewards"></div>
       <div class="event-totals-grid">
         ${tableShell('Piggy Race Totals','Historical AVENGERS participants with workbook-derived pot totals',
-          [{label:'Event'},{label:'Players',num:true},{label:'Total Lines',num:true},{label:'Pot Stars',num:true},{label:'Total Sparks',num:true},{label:'Sparks/Effort (per line)',num:true}],pigRows)}
+          [{label:'Event'},{label:'Players',num:true},{label:'Total Lines',num:true},{label:'Pot Stars',num:true},{label:'Total Sparks',num:true}],pigRows)}
         ${tableShell('Space Race Totals','All tracked Space events • — means reward data was not captured in the historical source',
           [{label:'Event'},{label:'Players',num:true},{label:'Total Lightyears',num:true},{label:'Total Stars',num:true},{label:'Total Sparks',num:true},{label:'Sparks/Effort (per B)',num:true}],spRows)}
         ${tableShell('Kraken Totals','Sum of recorded monthly player damage scores in the Kraken dataset',
@@ -2123,7 +2120,22 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     $('#playerModalContent').innerHTML=`
       <div class="profile-head"><div class="avatar">${initials(name)}</div><div><div class="profile-name">${escapeHtml(name)}</div><div class="profile-status">${statusBadge(m.status,name)}</div></div></div>
       ${window.AVENGERS_COMMUNITY?.profileHtml(name)||''}
-      ${['space','piggy','flash'].map(kind=>{const rows=(window.AVENGERS_EVENT_PROJECTION?.people.find(p=>p.name===name)?.history||[]).filter(r=>r.kind===kind).sort((a,b)=>b.date.localeCompare(a.date));const unit=kind==='space'?'B lightyears':'lines';return tableShell(kind[0].toUpperCase()+kind.slice(1)+' Reward / Effort',`Sparks/Effort per ${unit} • ${effortCell(effortSummary(kind,name))} across paired records`,[{label:'Event'},{label:'Clan'},{label:unit,num:true},{label:'Stars',num:true},{label:'Sparks',num:true},{label:'Sparks/Effort',num:true}],rows.map(r=>`<tr><td>${fmtDate(r.date)}${kind==='flash'?' PF'+(window.AVENGERS_EVENT_PROJECTION.events.find(e=>e.id===r.eventId)?.metadata?.flash||''):''}</td><td>${escapeHtml(r.clan||'Unknown')}</td><td class="num">${fmtNum(r.score,kind==='space'?4:0)}</td><td class="num">${fmtNum(r.stars)}</td><td class="num">${fmtNum(r.sparks)}</td><td class="num">${fmtNum(window.AVENGERS_REWARD_METRICS.efficiency(r.sparks,r.score),2)}</td></tr>`).join(''));}).join('')}
+      ${['space','piggy','flash'].map(kind=>{
+        const events=window.AVENGERS_EVENT_PROJECTION?.events||[];
+        const eventMap=new Map(events.map(e=>[e.id,e]));
+        const rows=(window.AVENGERS_EVENT_PROJECTION?.people.find(p=>p.name===name)?.history||[]).filter(r=>r.kind===kind).sort((a,b)=>b.date.localeCompare(a.date));
+        const isSpace=kind==='space',unit=isSpace?'B lightyears':'lines';
+        const headers=[{label:'Event'},{label:'Clan'},{label:unit,num:true},{label:'Stars',num:true},{label:'Sparks',num:true},...(isSpace?[{label:'Sparks/Effort',num:true}]:[{label:'Finish',num:true}])];
+        return tableShell(isSpace?'Space Reward / Effort':kind==='piggy'?'Piggy Event Results':'Piggy Flash Event Results',
+          isSpace?'Space Sparks/Effort per billion lightyears (rounded)':'Original event finishing position; — means source rank not recorded',
+          headers,rows.map(r=>{
+            const event=eventMap.get(r.eventId);
+            const eventRow=event?.rows?.find(x=>x.player===name&&x.clan===r.clan);
+            const sourceRank=eventRow?.metadata?.rank??eventRow?.rank;
+            const placement=Number.isSafeInteger(Number(sourceRank))&&Number(sourceRank)>0?window.AVENGERS_ROSTER_PIGGY_PB_RANK.formatFinish(sourceRank):'—';
+            return `<tr><td>${fmtDate(r.date)}${kind==='flash'?' PF'+(event?.metadata?.flash||''):''}</td><td>${escapeHtml(r.clan||'Unknown')}</td><td class="num">${fmtNum(r.score,isSpace?4:0)}</td><td class="num">${fmtNum(r.stars)}</td><td class="num">${fmtNum(r.sparks)}</td><td class="num">${isSpace?fmtNum(window.AVENGERS_REWARD_METRICS.efficiency(r.sparks,r.score),0):placement}</td></tr>`;
+          }).join(''));
+      }).join('')}
       <div class="profile-kpis">
         <div class="profile-kpi"><span>Player Rating</span><strong>${fmtNum(m.ratingTotal,2)}</strong></div>
         <div class="profile-kpi"><span>Piggy PB</span><strong>${fmtNum(m.piggyPB)}</strong></div>
@@ -2190,12 +2202,12 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     if(kind==='piggy'){
       if(state.piggyView==='event'){
         rows=piggyRowsForSelectedEventRoster(state.piggyEvent);
-        headers=['Rank','Username','Lines','Stars','Sparks','Share','Sparks/Effort (per line)'];
-        rows=rows.map(r=>[r.rank,r.name,r.lines,r.stars,r.sparks,r.share,window.AVENGERS_REWARD_METRICS.efficiency(r.sparks,r.lines)]);
+        headers=['Rank','Username','Lines','Stars','Sparks','Share'];
+        rows=rows.map(r=>[r.rank,r.name,r.lines,r.stars,r.sparks,r.share]);
       }else{
         rows=piggyRowsForStatus().sort((a,b)=>b.avgArena-a.avgArena);
-        headers=['Rank','Username','Avg Lines Arena','PB','Last 3 Avg','Avg Stars Arena','Avg Sparks Arena','Events','Sparks/Effort (per line)'];
-        rows=rows.map((r,i)=>[i+1,r.name,r.avgArena,r.pb,r.avgLast3,r.avgStarsArena,r.avgSparksArena,r.eventsPlayed,effortSummary('piggy',r.name,{start:D.meta.arenaStart}).value]);
+        headers=['Rank','Username','Avg Lines Arena','PB','Last 3 Avg','Avg Stars Arena','Avg Sparks Arena','Events'];
+        rows=rows.map((r,i)=>[i+1,r.name,r.avgArena,r.pb,r.avgLast3,r.avgStarsArena,r.avgSparksArena,r.eventsPlayed]);
       }
     }else{
       if(state.spaceView==='pot'){

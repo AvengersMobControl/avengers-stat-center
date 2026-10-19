@@ -82,6 +82,20 @@ async function main(){
       'Lin remains first AVENGERS Piggy participant after merging AV-2Lin history');
     assert((await page.locator('#piggyContent').innerText()).includes('event-time clan'),
       'PB tab explains new-member classification is per event-time clan');
+    const benchmark=page.locator('#piggyContent .piggy-benchmark-card');
+    assert.equal(await benchmark.count(),1,'one weekly benchmark panel in Piggy PB view');
+    assert((await benchmark.innerText()).includes('Weekly Line Benchmark Achievements'));
+    const headers=await benchmark.locator('thead th').allTextContents();
+    for(const threshold of ['5K+','10K+','20K+','30K+','40K+','50K+','60K+','70K+'])
+      assert(headers.some(h=>h.includes(threshold)),'benchmark header '+threshold);
+    const oct18=benchmark.locator('tbody tr').filter({hasText:'Oct 18, 2026'});
+    const oct18Values=(await oct18.locator('td').allTextContents()).map(t=>t.trim());
+    assert.deepEqual(oct18Values,['Oct 18, 2026','50','48','38','23','11','3','—','—','—']);
+    const octGold=await oct18.locator('td.piggy-record-tied').allTextContents();
+    assert.deepEqual(octGold.map(t=>t.trim()),['48','23','11'],'only 5K tie and 20K/30K records are gold on Oct 18');
+    const sept13=benchmark.locator('tbody tr').filter({hasText:'Sep 13, 2026'});
+    const sept13Values=(await sept13.locator('td').allTextContents()).map(t=>t.trim());
+    assert.deepEqual(sept13Values.slice(-4),['6','2','1','1'],'Sept 13 includes a 70K+ and a 60K+ racer');
     const currentRoster=await page.evaluate(()=>{
       const D=window.AVENGERS_DATA;
       return {names:D.members.map(m=>m.name),jeff:D.resolvePlayerName('AV-JeffKintz05'),

@@ -34,7 +34,7 @@ function audit(release){
   const saved=require('../data/sparks-prior-to-logging-2026-10-16.json');
   const committed=saved.amounts[id]||0;
   if(Math.abs(current-committed)>0.001)
-   throw Error('Frozen historical Sparks changed for '+id);
+   throw Error('Frozen official Unlogged Sparks changed for '+id);
   // Oct 18 leader-confirmed correction credited the Oct 11 AV-2 Kraken
   // 18,100 Sparks to Frenchie2, after the prior-to-logging figures were
   // explicitly frozen. The later identity correction must not recalculate or
@@ -45,11 +45,19 @@ function audit(release){
   if(id==='AV-Frenchie2'&&frenchieCorrection!==18100)
    throw Error('Missing leader-confirmed Frenchie2 October Kraken correction');
   const frozenEvidence=maxObserved+frenchieCorrection;
-  if(frozenEvidence>=saved.roundingReviewThreshold
-     &&Math.abs(current-frozenEvidence)>0.500001)
-   throw Error('Pre-logging amount differs from rounded screenshot evidence for '+id);
-  if(maxObserved>0&&maxObserved<saved.roundingReviewThreshold&&current!==0)
-   throw Error('Small rounding candidate not held for '+id);
+  // The 1% exclusion was a one-time, leader-approved action. Later balance
+  // changes (including all new event payouts) must NEVER rerun that cutoff.
+  if(committed>0&&Math.abs(committed-frozenEvidence)>0.500001)
+   throw Error('Official historical Sparks do not match source evidence for '+id);
+  if(saved.excludedBelowOnePercent?.[id]){
+   const removed=saved.excludedBelowOnePercent[id];
+   if(current!==0||removed.sharePctAtApproval>=1||
+      Math.abs(removed.originalUnloggedSparks-frozenEvidence)>0.500001)
+    throw Error('Excluded historical sub-1% evidence not retained for '+id);
+  }else if(saved.excludedRoundingReview?.[id]){
+   if(current!==0||maxObserved>=1000)
+    throw Error('Excluded small rounded residual was included for '+id);
+  }
   if(Math.abs(p.totalSparks-p.earned.sparks-current)>0.001)
    throw Error('Sparks reconciliation failed for '+id);
   return {name:id,roster:r.status,logged:p.earned.sparks,oldGap:previous,

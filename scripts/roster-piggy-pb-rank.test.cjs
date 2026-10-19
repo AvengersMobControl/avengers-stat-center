@@ -66,7 +66,7 @@ test('Rosters use approved event results and display sortable ordinal placement,
   assert.match(html,/<script src="roster-piggy-pb-rank\.js"><\/script>/);
   assert.match(html,/rows=window\.AVENGERS_ROSTER_PIGGY_PB_RANK\.rankRows\(rows,window\.AVENGERS_EVENT_PROJECTION\?\.events\|\|\[\],D\.aliasMap\|\|\{\}\);/);
   assert.match(html,/piggyPBRank:\{label:'Piggy PB Rank',type:'number',get:r=>r\.piggyPBRank\}/);
-  assert.match(html,/sortHeader\('Piggy PB Rank','piggyPBRank',true\)/);
+  assert.match(html,/id:'piggyAchievements',name:'Piggy Achievements',keys:\['piggyWins','piggyPodiums','piggyPBRank'\],summary:'piggyPBRank'/);
   assert.match(html,/r\.piggyPBRank==null\?missing:window\.AVENGERS_ROSTER_PIGGY_PB_RANK\.formatFinish\(r\.piggyPBRank\)/);
   assert.match(html,/Line totals do not determine this number/);
 });
@@ -125,8 +125,8 @@ test('October 18 leader spotlights are verified against complete event history',
 });
 test('roster and player profiles expose historical wins and podiums without re-ranking lines',()=>{
   const html=readFileSync(join(__dirname,'../index.html'),'utf8');
-  assert.match(html,/sortHeader\('Piggy Wins','piggyWins',true\)/);
-  assert.match(html,/sortHeader\('Piggy Podiums','piggyPodiums',true\)/);
+  assert.match(html,/id:'piggyAchievements',name:'Piggy Achievements'/);
+  assert.match(html,/piggyPodiums:'Podiums'/);
   assert.match(html,/Piggy Podiums<\/span><strong>\$\{podium\.podiums\}/);
 });
 
@@ -140,4 +140,30 @@ test('Piggy and Flash display actual original ranks, not Sparks/Lines efficiency
   assert.match(html,/Piggy Flash Event Results/);
   assert.match(html,/Space Reward \/ Effort/);
   assert(!flash.includes("efficiency(r.sparks,r.lines)"));
+});
+
+test('Space Sparks/Effort is displayed only in Space Race Event, never in other tables',()=>{
+  const html=readFileSync(join(__dirname,'../index.html'),'utf8');
+  const eventStart=html.indexOf("} else if(view==='event'){",html.indexOf("function renderSpace(){"));
+  const last3=html.indexOf("} else if(view==='last3'){",eventStart);
+  const spaceEvent=html.slice(eventStart,last3);
+  const roster=html.slice(html.indexOf("function rosterGroupedTable("),html.indexOf("function renderEventTotals(){"));
+  const spaceOverall=html.slice(html.indexOf("function renderSpace(){"),eventStart);
+  const allTotals=html.slice(html.indexOf("function renderEventTotals(){"),html.indexOf("function renderRecords(){"));
+  const playerModal=html.slice(html.indexOf("function openPlayer("),html.indexOf("function closeModal(){"));
+  assert.match(spaceEvent,/Sparks\/Effort \(per B\)/);
+  for(const [area,source] of [['other Space tabs',spaceOverall],['roster',roster],['event totals',allTotals],['player details',playerModal]]){
+    assert(!source.includes('Sparks/Effort'),area+' must not show reward-per-effort');
+  }
+  assert.equal((html.match(/Sparks\/Effort \(per B\)/g)||[]).length,1,'only the Space Event column has the header');
+  assert.match(html,/fmtNum\(window\.AVENGERS_REWARD_METRICS\.efficiency\(r\.sparks,r\.yearsB\),0\)/);
+});
+test('Piggy achievement group defaults collapsed with wins/podiums/PB rank under its expanded header',()=>{
+  const html=readFileSync(join(__dirname,'../index.html'),'utf8');
+  assert.match(html,/piggyAchievements:false/);
+  assert.match(html,/id:'piggyAchievements',name:'Piggy Achievements',keys:\['piggyWins','piggyPodiums','piggyPBRank'\],summary:'piggyPBRank'/);
+  assert.match(html,/piggyWins:'Wins',piggyPodiums:'Podiums',piggyPBRank:'PB Rank'/);
+  assert.match(html,/case 'piggyPBRank':return/);
+  assert.match(html,/case 'piggyPodiums':return/);
+  assert(!html.includes("{id:'effort',name:'Space Sparks/Effort'"));
 });

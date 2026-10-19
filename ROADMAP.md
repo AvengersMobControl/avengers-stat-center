@@ -1,3 +1,10 @@
+## October 19 — Roster layout released; identity correction and rank provenance next
+
+- **DONE and live:** [PR #98](https://github.com/AvengersMobControl/avengers-stat-center/pull/98), wrapped/resizable roster columns with keyboard/drag and retained preferences. Production source SHA `72485933eaaedf2adca1468330fe4087467a5d03`, Pages run 39302238101 **SUCCESS** with post-deploy exact commit/browser/export verification; main projection run 39302238188 **SUCCESS**, Vercel SUCCESS.
+- **STAGED / do not claim live:** [PR #99](https://github.com/AvengersMobControl/avengers-stat-center/pull/99) updates site identity to `AV-Zolika.x.TheBoss` while maintaining `AV-Zolika.x.Kira`/`AV-ZolikaLoveKira` aliases and a distinct `AV-KiraLoveZolika`; preserved frozen Sparks and all historical event-time rewards/attribution. Fix and pass all reconciliation and browser CI gates, then merge and verify Pages SHA.
+- **NEXT:** Space event rank provenance: saved original rank is **per individual lobby**; displaying table order as in-game/overall clan rank is not justified. Only verified complete all-lobby evidence can establish overall clan event standing or true Space clan-rank PB. Otherwise show explicit lobby rank and/or labeled tracked-result placement with limitations. Then reusable approved-character data-first PNG and Discord-message **preview**, no auto-send.
+- **HOLDS unchanged:** UTC #3 disabled, Oct18 AV-2 Piggy held, Discord PNG auto sending OFF both clans, SAC strictly separate.
+
 # AVENGERS / AV-2 Mob Control — living development roadmap
 
 **Updated:** 2026-10-18 UTC. **AVENGERS ONLY — never mix with SAC / Lock It In.**

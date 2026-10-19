@@ -6,6 +6,10 @@
 - **Canonical work tracker:** [master issue #13](https://github.com/AvengersMobControl/avengers-stat-center/issues/13), with individual GitHub issues for acceptance criteria.
 - **Main site:** https://avengersmobcontrol.github.io/avengers-stat-center/.
 
+## October 19 — Superseding identity + PB newcomer rule
+
+Correction to prior Oct 19: `AV-2Lin` aliases `AV-Lin` (same player, ten historical AV-2 events). October 18 first AVENGERS Piggy should appear **New Members / First Tracked Event** on website and in new PNG preview, despite earlier AV-2 Piggy results. First-in-clan classification is by event kind and **event-time clan**, not whole-account first result. Jeff canonical is **AV-JefhKintz05** (JeffKintz05 alias); rekey frozen 17,269 prior Sparks with no amount change. **Remove LT sitewide** (no logged events) and make Zibby **AV-2** current, retaining historical event-time AVENGERS rewards. New membership **49 Active + 50 AV-2 = 99**. Prior 51/50/101 and separate AV-2Lin assumptions below are superseded. Approved default PNG renderer stays frozen; only unapproved preview/new PNG data changes. AV-2 Oct 18 race and automatic Discord PNG posting remain on hold.
+
 ## October 19 — Approved current roster transfers / canonical name
 
 Activate `AV-Lin`, `AV-JeffKintz05`, `AV-SiFra` on the **current** AVENGERS roster, including the site/player projections. Keep old misspelling `AV-JefhKintz05` as alias to canonical `AV-JeffKintz05` (screenshot-confirmed), never an independent profile. Keep AV-2Lin separate. Current roster counts 51 AVENGERS and 50 AV-2; historical October 15 screenshots retain original clan attribution and amounts. Update old 100-member fixed assertions to reflect 101 current members, with full site/audit verification before deployment. No event edits or PNG dispatch.

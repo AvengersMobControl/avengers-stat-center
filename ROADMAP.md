@@ -1,3 +1,10 @@
+## October 19 — Six-event weekly recap review pipeline (PR #101)
+
+- **Staged, not yet deployed/approved art:** new approved-ledger weekly snapshot + deterministic 2400×1690 high-resolution PNG renderer requiring exact approved character originals + companion draft Discord message. Week Oct 12–18 includes Space, PF1/2/3/4, Piggy. Top-five **known** Sparks, per-event above-prior-average cohorts, website performance badge thresholds, returning PBs, Piggy qualifying place-PBs and original-lobby Space rank PBs, coverage disclaimers. No decorative “motivation” label.
+- **Review blocker:** first Flash set after Oct11 Kraken does **not** earn Sparks. Current legacy Flash rows have nonzero Sparks; zero those for weekly preview and explicitly flag source discrepancy, **do not mutate old approved ledger or frozen prior-to-logging data** without a separate approved correction. Match site accounting before publication. The October 13 PF1 AVENGERS main lobby coverage is incomplete; do not call it a full-event outcome.
+- **Manual originals:** source PNGs only in persistent Library, SHA-checked per four aliases Spider, Terrorist, Kaboom, Raccoon; new art not yet approved. CI can validate data/render tests and upload JSON/Discord draft artifact but cannot substitute GitHub-reduced character files for user originals. User review first; Discord sending stays OFF across both clans. Oct23 Piggy supervisor approval separately.
+- **NEXT after CI:** Review real weekly PNG and Discord draft together, reconcile after-Kraken Flash Spark source discrepancy at canonical import (with user approval), and follow the separate explicit send permission/channel-verification gate.
+
 ## October 19 — Space source-lobby ranks, verified clan standings and PBs (PR #100)
 
 - **PR #99 DONE + production-verified:** user-approved `AV-Zolika.x.TheBoss` name and historic aliases; merge `e0b991673b5c8a662dd5bd232b1ffab01d2f5490`, Pages 39304105841 **SUCCESS** with exact published commit/browser/exports, Vercel **SUCCESS**. Supersedes the earlier 'staged' Oct 19 status below.

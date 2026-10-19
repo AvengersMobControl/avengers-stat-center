@@ -869,7 +869,12 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         .filter(x=>(Number(x[valueKey])||0)>0)
         .sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
       const prior=hist.filter(x=>String(x.date||'')<date);
-      if(!prior.length){
+      // First race is defined within the *event-time clan*. Previous AV-2
+      // results stay on the combined player profile without excluding the
+      // player's first AVENGERS appearance from New Members/PB review.
+      const raceClan=r.clan||r.eventClan||null;
+      const priorInClan=prior.filter(x=>(x.clan||x.eventClan||null)===raceClan);
+      if(!priorInClan.length){
         first.push({name,score:rawScore,status});
         return;
       }
@@ -1042,7 +1047,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <div class="callout-grid tabular-grid">
           ${tableShell('Piggy Personal Bests',`${fmtDate(state.piggyPBEvent)} • ${pbs.length} returning-player line PB${pbs.length===1?'':'s'} • Finish PB is the best eligible place through this race`,
             [{label:'#',num:true},{label:'Member'},{label:'Previous PB',num:true},{label:'New PB',num:true},{label:'% Increase',num:true},{label:'Finish PB',num:true}],pbRows)}
-          ${tableShell('First Tracked Event',`${newM.length} player${newM.length===1?'':'s'} with no earlier Piggy result in our data`,
+          ${tableShell('First Tracked Event',`${newM.length} player${newM.length===1?'':'s'} with no earlier Piggy result for their event-time clan`,
             [{label:'#',num:true},{label:'Member'},{label:'Lines',num:true}],newRows)}
           ${tableShell('Piggy Finishing-Place Personal Bests',`${fmtDate(state.piggyPBEvent)} • ${displayedPlaceChanges.length} first/new placement PB${displayedPlaceChanges.length===1?'':'s'} • Only races with 30+ AVENGERS in the SAME lobby; never AV-2 or small lobbies`,
             [{label:'#',num:true},{label:'Member'},{label:'Previous Best Finish',num:true},{label:'New Best Finish',num:true},{label:'Type'}],placeRows)}
@@ -1199,7 +1204,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <div class="callout-grid tabular-grid">
           ${tableShell('Space Personal Bests',`${fmtDate(state.spacePBEvent)} • ${pbs.length} returning-player PB${pbs.length===1?'':'s'}`,
             [{label:'#',num:true},{label:'Member'},{label:'Previous PB',num:true},{label:'New PB',num:true},{label:'% Increase',num:true}],pbRows)}
-          ${tableShell('First Tracked Event',`${newM.length} player${newM.length===1?'':'s'} with no earlier Space result in our data`,
+          ${tableShell('First Tracked Event',`${newM.length} player${newM.length===1?'':'s'} with no earlier Space result for their event-time clan`,
             [{label:'#',num:true},{label:'Member'},{label:'Lightyears',num:true}],newRows)}
         </div>`;
       $('#spacePBEventSelect',el)?.addEventListener('change',e=>{state.spacePBEvent=e.target.value;renderSpace();});

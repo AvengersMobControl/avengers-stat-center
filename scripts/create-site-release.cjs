@@ -22,7 +22,13 @@ function refreshHistoricalPayouts(ledger){
   }
 }
 function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approved-event-updates.json'),'utf8')).updates}={}){
-  const legacy=load(),migration=migrate(legacy),aliases=migration.aliases,resolve=n=>canonical(n,aliases);
+  const legacy=load(),migration=migrate(legacy);
+  // Leader-confirmed identity: TheBoss; Kira and LoveKira are historical aliases.
+  const aliases={...migration.aliases};
+  delete aliases['AV-Zolika.x.TheBoss']; // remove reverse mapping to avoid cycles
+  aliases['AV-Zolika.x.Kira']='AV-Zolika.x.TheBoss';
+  aliases['AV-ZolikaLoveKira']='AV-Zolika.x.TheBoss';
+  const resolve=n=>canonical(n,aliases);
   let ledger=migration.ledger;
   for(const update of updates){
     if(update.approved!==true)throw Error('Unreviewed event update cannot be published');
@@ -30,6 +36,17 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
   }
   refreshHistoricalPayouts(ledger);
   const D=copy(legacy.AVENGERS_DATA),K=copy(legacy.AVENGERS_KRAKEN_DATA),S=copy(legacy.AVENGERS_SPARKS_SNAPSHOT),R=copy(legacy.AVENGERS_MEMBER_TIMEZONES);
+  // Update today's roster label, but retain historical source-name evidence.
+  const boss='AV-Zolika.x.TheBoss';
+  for(const row of R.rows||[]){
+    if(resolve(row.name)!==boss)continue;
+    row.sourceName=row.sourceName||row.name;
+    row.name=boss;row.profileName=boss;row.canonicalName=boss;
+  }
+  if(R.byName){
+    const source=R.byName['AV-ZolikaLoveKira']||R.byName['AV-Zolika.x.Kira'];
+    if(source)R.byName[boss]={...source,name:boss,canonicalName:boss,profileName:boss};
+  }
   const memberMap=new Map();for(const m of D.members){const name=resolve(m.name);if(!memberMap.has(name))memberMap.set(name,{...m,name});}
   // Current roster authority is applied only to current status, not past events.
   for(const r of R.rows||[]){const name=resolve(r.profileName||r.name);if(memberMap.has(name))memberMap.get(name).status=r.status;}
@@ -54,7 +71,13 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
     });
   }
   const fixed=JSON.parse(fs.readFileSync(path.join(root,'data/sparks-prior-to-logging-2026-10-16.json'),'utf8'));
-  const priorToLogging=fixed.amounts;
+  const priorToLogging={...fixed.amounts};
+  // Re-key existing frozen Sparks if present. Never change the amount.
+  if(Object.hasOwn(priorToLogging,'AV-Zolika.x.Kira')){
+    assert(!Object.hasOwn(priorToLogging,boss)||priorToLogging[boss]===priorToLogging['AV-Zolika.x.Kira'],'Conflicting frozen Sparks aliases for Zolika');
+    priorToLogging[boss]=priorToLogging['AV-Zolika.x.Kira'];
+    delete priorToLogging['AV-Zolika.x.Kira'];
+  }
   // Screenshots remain provenance only. Historical Sparks are frozen on
   // approval and are never recalculated after new events or clan transfers.
   const p=project(ledger,{aliases,members:[...memberMap.values()].map(m=>({name:m.name,status:m.status})),snapshots,priorToLogging,arenaStart:D.meta.arenaStart});

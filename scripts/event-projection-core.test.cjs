@@ -178,3 +178,22 @@ test('approved prior-to-logging Sparks never change when newer events are logged
  assert.equal(changed.screenshotGap,490);
  assert.equal(changed.totalSparks,510);
 });
+
+test('every event kind records first participation separately by historical clan',()=>{
+  for(const kind of Object.keys(UNITS)){
+    let ledger=put(empty(),ev(kind,kind+'-av2','2026-10-01',200,'AV-2'));
+    ledger=put(ledger,ev(kind,kind+'-avengers','2026-10-08',150,'AVENGERS'));
+    ledger=put(ledger,ev(kind,kind+'-return','2026-10-15',250,'AVENGERS'));
+    const p=project(ledger,options),member=person(p),events=member.kinds[kind].pbs;
+    assert.equal(events.length,3);
+    assert.equal(events[0].firstRecorded,true);
+    assert.equal(events[0].firstClanRecorded,true);
+    assert.equal(events[1].firstRecorded,false,'prior AV-2 score still counts in history');
+    assert.equal(events[1].firstClanRecorded,true,'first AVENGERS appearance is new');
+    assert.equal(events[1].newPB,false,'lower first AVENGERS score is not invented all-time PB');
+    assert.equal(events[2].firstClanRecorded,false,'second AVENGERS appearance is not new');
+    assert.equal(events[2].newPB,true,'all-clan line PB remains independent');
+    assert.equal(p.clans.AVENGERS.sparks,20);
+    assert.equal(p.clans['AV-2'].sparks,10);
+  }
+});

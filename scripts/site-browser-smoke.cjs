@@ -74,6 +74,23 @@ async function main(){
     if(placementExpected.length){
       for(const pb of placementExpected)assert(placeText.includes(pb.player),pb.player+' has website placement PB');
     }else assert(placeText.includes('No new qualifying finish PBs'));
+    // A transferred player's first AVENGERS Piggy is a new-member appearance,
+    // even when their combined history already contains AV-2 races.
+    await page.selectOption('#piggyPBEventSelect','2026-10-18');
+    const firstClanCard=page.locator('#piggyContent .table-card').filter({hasText:'First Tracked Event'});
+    assert((await firstClanCard.innerText()).includes('AV-Lin'),
+      'Lin remains first AVENGERS Piggy participant after merging AV-2Lin history');
+    assert((await page.locator('#piggyContent').innerText()).includes('event-time clan'),
+      'PB tab explains new-member classification is per event-time clan');
+    const currentRoster=await page.evaluate(()=>{
+      const D=window.AVENGERS_DATA;
+      return {names:D.members.map(m=>m.name),jeff:D.resolvePlayerName('AV-JeffKintz05'),
+        lin:D.resolvePlayerName('AV-2Lin')};
+    });
+    assert.equal(currentRoster.jeff,'AV-JefhKintz05');
+    assert.equal(currentRoster.lin,'AV-Lin');
+    for(const old of ['LT','AV-2Lin','AV-JeffKintz05'])
+      assert(!currentRoster.names.includes(old),'obsolete canonical roster shell: '+old);
     await page.click('.nav-btn[data-page="eventTotals"]');
     const leagueFooter=page.locator('#page-eventTotals .league-rewards-footnote');
     assert(await leagueFooter.count(),'historical league coverage summary is visible');

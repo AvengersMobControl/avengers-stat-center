@@ -27,6 +27,17 @@ def load_approved_renderer():
 def preview(release, output, event_id=None):
     renderer = load_approved_renderer()
     model = renderer.resolve_summary(release, "piggy", "AVENGERS", event_id)
+    # The pinned default renderer is deliberately immutable. Only the
+    # unapproved Piggy preview reclassifies a first result for AVENGERS as
+    # NEW, even if that same canonical player has earlier AV-2 results.
+    # All-clan historical line PBs and per-event rewards remain unchanged.
+    first_clan = [row for row in model["rows"]
+                  if row.get("transition", {}).get(
+                      "firstClanRecorded", row.get("transition", {}).get("firstRecorded"))]
+    model["firstTracked"] = first_clan
+    newcomer_ids = {r["player"] for r in first_clan}
+    model["pbs"] = [row for row in model["pbs"]
+                    if row["player"] not in newcomer_ids]
     dest = Path(output)
     if dest.suffix.lower() != ".png" or not dest.parent.exists():
         raise ValueError("Output must be PNG under an existing review folder")
@@ -78,6 +89,8 @@ def preview(release, output, event_id=None):
         "projectionVersion": model["projectionVersion"],
         "imageSHA256": hashlib.sha256(dest.read_bytes()).hexdigest(),
         "piggyPlacementPBs": rank_pbs, "piggyPlacementPBCount": len(rank_pbs),
+        "firstAVENGERSParticipants": [r["player"] for r in first_clan],
+        "firstAVENGERSParticipantCount": len(first_clan),
         "templateVersion": "piggy-finish-pb-proposal-unapproved-v1",
         "unapprovedPlacementDesignPreview": True,
         "readyToPost": False, "discordPostingEnabled": False,

@@ -35,6 +35,20 @@ class ReviewOnlyPiggyPlacementPNG(unittest.TestCase):
             self.assertFalse(art["discordPostingEnabled"])
             self.assertTrue(art["unapprovedPlacementDesignPreview"])
 
+    def test_previous_av2_record_does_not_block_first_avengers_new_member(self):
+        data = baseline.fixture()
+        data["projection"]["events"][0]["rows"][0]["clan"] = "AV-2"
+        person = next(p for p in data["projection"]["people"] if p["name"] == "AV-A")
+        transition = person["kinds"]["piggy"]["pbs"][1]
+        transition["firstRecorded"] = False
+        transition["firstClanRecorded"] = True
+        with tempfile.TemporaryDirectory() as td:
+            result = preview_mod.preview(data, str(pathlib.Path(td) / "preview.png"))
+            self.assertIn("AV-A", result["firstAVENGERSParticipants"])
+            self.assertEqual(result["firstAVENGERSParticipantCount"], 2)
+            self.assertFalse(result["readyToPost"])
+            self.assertFalse(result["discordPostingEnabled"])
+
     def test_missing_rank_pb_data_is_safe_and_no_send(self):
         from PIL import Image
         data = baseline.fixture()

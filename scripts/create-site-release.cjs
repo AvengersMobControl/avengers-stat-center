@@ -86,7 +86,7 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
       else Object.assign(base,{totalYears:sum(rows,'yearsB'),avgYears:s.average||0,avgStars:average(rows.map(r=>r.stars||0)),avgSparks:average(rows.map(r=>r.sparks||0)),pbYears:s.pb});
       X.overall.push(base);
       const transition=s.pbs.find(r=>r.date===latest),current=rows.find(r=>r.date===latest);
-      if(current&&transition?.firstRecorded)X.latestNewMembers.push({name:person.name,score:current[field],clan:current.clan,status:person.status});
+      if(current&&transition?.firstClanRecorded)X.latestNewMembers.push({name:person.name,score:current[field],clan:current.clan,status:person.status});
       else if(current&&transition?.newPB)X.latestPBs.push({name:person.name,score:current[field],previous:transition.previousPB,improvement:transition.improvement,clan:current.clan,status:person.status});
     }
     X.overall.sort((a,b)=>b.pb-a.pb).forEach((r,i)=>r.pbRank=i+1);

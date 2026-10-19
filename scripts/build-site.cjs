@@ -39,7 +39,8 @@ function build({destination=path.join(root,'dist'),updates}={}){
   const first=html.indexOf('<script>'),boundary=html.indexOf('<script src="roster-stars-snapshot-2026-10-15.js"></script>')+'<script src="roster-stars-snapshot-2026-10-15.js"></script>'.length;
   if(first<0||boundary<first)throw Error('Missing source data boundary');
   // Show the fixed historical attribution explicitly in production, not a mutable screenshot remainder.
-  html=html.replaceAll('Screenshot Gap','Sparks Prior to Logging');
+  html=html.replaceAll('Screenshot Gap','Unlogged Sparks')
+    .replaceAll('Sparks Prior to Logging','Unlogged Sparks');
   html=html.slice(0,first)+`<script src="${bundle}"></script>\n<script src="community-highlights.js"></script>\n<script src="clan-league-rewards.js"></script>\n`+html.slice(boundary);
   // Preserve an immutable release marker on every page, whether or not an
   // unresolved-identity notice is necessary. Browser/Pages checks require it.

@@ -139,7 +139,7 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
   assert.equal(linTransition.firstClanRecorded,true,'AVENGERS first race still new member');
   assert(D.piggy.latestNewMembers.some(r=>r.name==='AV-Lin'&&r.clan==='AVENGERS'));
   const jeff=people.find(p=>p.name==='AV-JefhKintz05');
-  assert.equal(jeff.screenshotGap,17269,'frozen pre-logging gap survives canonical rename');
+  assert.equal(jeff.screenshotGap,0,'official sub-1% exclusion supersedes earlier frozen Jeff candidate; screenshot evidence survives rename');
   assert(jeff.snapshotBreakdown.some(r=>r.clan==='AV-2'&&r.sourceName==='AV-JefhKintz05'));
   assert(jeff.snapshotBreakdown.some(r=>r.clan==='AVENGERS'&&r.amount===5307842),'historic AVENGERS screenshot total unchanged');
   assert(people.find(p=>p.name==='AV-SiFra').snapshotBreakdown.some(r=>r.clan==='AV-2'));
@@ -226,10 +226,14 @@ test('transfer restoration reconciles every current member, not only Hoops',()=>
  assert(result.rows.find(r=>r.name==='AV-Adigarian').screenshots>=2);
 });
 
-test('frozen historical Sparks are whole numbers, while event rewards retain original precision',()=>{
+test('official 28 Unlogged Sparks remain frozen after one-time 1% exclusion',()=>{
  const fixed=require('../data/sparks-prior-to-logging-2026-10-16.json');
  const amounts=fixed.amounts;
- assert.equal(Object.keys(amounts).length,41);
+ assert.equal(Object.keys(amounts).length,28);
+ assert.equal(Object.keys(fixed.excludedBelowOnePercent).length,13);
+ assert.equal(Object.keys(fixed.excludedRoundingReview).length,6);
+ assert.equal(Object.values(amounts).reduce((s,n)=>s+n,0),32404095);
+ assert.equal(fixed.approvedTotalSparks,32404095);
  for(const [name,prior] of Object.entries(amounts)){
    assert(Number.isSafeInteger(prior)&&prior>=1000,'not a rounded historical amount: '+name);
    const p=BASE.projection.people.find(x=>x.name===name);
@@ -238,9 +242,17 @@ test('frozen historical Sparks are whole numbers, while event rewards retain ori
    assert.equal(p.totalSparks,p.earned.sparks+prior);
  }
  for(const [name,raw] of Object.entries(fixed.originalFractionalGaps)){
-   assert.equal(amounts[name],Math.round(raw),'rounded source must match screenshot evidence '+name);
+   if(Object.hasOwn(amounts,name))assert.equal(amounts[name],Math.round(raw),'rounded retained source must match evidence '+name);
+   else assert(Object.hasOwn(fixed.excludedBelowOnePercent,name),'excluded original fractional evidence retained: '+name);
  }
- for(const name of Object.keys(fixed.roundingReview)){
+ for(const [name,ev] of Object.entries(fixed.excludedBelowOnePercent)){
+   const p=BASE.projection.people.find(x=>x.name===name);
+   const canonical=BASE.globals.AVENGERS_DATA.aliasMap?.[name]||name;
+   const resolved=BASE.projection.people.find(x=>x.name===canonical)||p;
+   assert(resolved&&resolved.screenshotGap===0,'excluded sub-1% candidate must be zero: '+name);
+   assert(ev.originalUnloggedSparks>0&&ev.sharePctAtApproval<1,'retained historical screenshot and cutoff evidence');
+ }
+ for(const name of Object.keys(fixed.excludedRoundingReview)){
    const p=BASE.projection.people.find(x=>x.name===name);
    assert(p&&p.screenshotGap===0,'excluded small discrepancy should remain zero: '+name);
  }

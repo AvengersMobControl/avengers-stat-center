@@ -1,8 +1,7 @@
 {
   "sourceDate": "2026-10-16",
   "capturePolicy": "Pre-Oct16 Space rewards are EXCLUDED from Oct16 screenshots. Every screenshot compared to cumulative four-event Logged prior to that screenshot, without summing clan transfer counters.",
-  "description": "One immutable, whole-number Sparks Prior to Logging value per canonical player; use the greatest eligible positive snapshot-date gap, rounded to the nearest whole Spark; threshold >= 1,000. Smaller residuals are excluded pending review.",
-  "roundingReviewThreshold": 1000,
+  "description": "Official whole-number Unlogged Sparks baseline per canonical member. Leader approved one-time exclusion of historical amounts below 1% of then-current Total Sparks. Approved amounts never change unless the leader explicitly authorizes a correction. The screenshot provenance may refer to excluded historic candidates; exclusions do not add to Logged or Total Sparks.",
   "amounts": {
     "AV-J1M": 9751209,
     "AV-UANGELES": 4626938,
@@ -19,13 +18,7 @@
     "AV-MONSTER": 137742,
     "AV-ColdCreeps": 104490,
     "AV2-MayyaZ": 83398,
-    "AV-Nicefellow": 75493,
-    "AV-Animosity": 61772,
-    "AV-Supreeth": 43989,
-    "AV-MotherboardBeans": 36897,
-    "AV-Deviantdan": 26528,
     "Basecreature": 25817,
-    "AV.Saberkong": 23604,
     "AV-Frenchie2": 21123,
     "AV-Keyler": 18658,
     "AV-KiraLoveZolika": 18594,
@@ -34,25 +27,10 @@
     "AV-fueravini": 14637,
     "uLTRaSLaN": 14158,
     "AV-braa": 14030,
-    "AV-DaG": 13692,
-    "AV-Abu//npjp": 13529,
     "Ibrahim": 12824,
     "AV-KO": 11201,
     "DedHed": 9771,
-    "AV-HN": 7443,
-    "GANESH": 5487,
-    "AV-Brisket": 4044,
-    "AV-TheOli": 3282,
-    "AV-BigPapi": 3118,
-    "AV-JefhKintz05": 17269
-  },
-  "roundingReview": {
-    "AV-no": 181.5,
-    "AV-Addicted": 124,
-    "GirlsOnly": 43,
-    "AV-Megalodon": 38,
-    "AV-JAMO": 22,
-    "Punchy": 14
+    "GANESH": 5487
   },
   "rounding": "nearest whole Spark (0.5 rounds upward); does not change four-event Logged rewards",
   "originalFractionalGaps": {
@@ -70,5 +48,99 @@
     "AV-Deviantdan": 26527.5,
     "AV-braa": 14030.1,
     "AV-DaG": 13691.5
-  }
+  },
+  "excludedBelowOnePercent": {
+    "AV-Nicefellow": {
+      "originalUnloggedSparks": 75493,
+      "sharePctAtApproval": 0.62,
+      "totalSparksAtApproval": 12239968,
+      "decision": "rounding error, excluded from official Unlogged Sparks"
+    },
+    "AV-Animosity": {
+      "originalUnloggedSparks": 61772,
+      "sharePctAtApproval": 0.48,
+      "totalSparksAtApproval": 12737851,
+      "decision": "rounding error, excluded from official Unlogged Sparks"
+    },
+    "AV-Supreeth": {
+      "originalUnloggedSparks": 43989,
+      "sharePctAtApproval": 0.21,
+      "totalSparksAtApproval": 20668704,
+      "decision": "rounding error, excluded from official Unlogged Sparks"
+    },
+    "AV-MotherboardBeans": {
+      "originalUnloggedSparks": 36897,
+      "sharePctAtApproval": 0.44,
+      "totalSparksAtApproval": 8300757,
+      "decision": "rounding error, excluded from official Unlogged Sparks"
+    },
+    "AV-Deviantdan": {
+      "originalUnloggedSparks": 26528,
+      "sharePctAtApproval": 0.22,
+      "totalSparksAtApproval": 11884750,
+      "decision": "rounding error, excluded from official Unlogged Sparks"
+    },
+    "AV.Saberkong": {
+      "originalUnloggedSparks": 23604,
+      "sharePctAtApproval": 0.13,
+      "totalSparksAtApproval": 17653489,
+      "decision": "rounding error, excluded from official Unlogged Sparks"
+    },
+    "AV-JeffKintz05": {
+      "originalUnloggedSparks": 17269,
+      "sharePctAtApproval": 0.27,
+      "totalSparksAtApproval": 6338632,
+      "decision": "rounding error, excluded from official Unlogged Sparks"
+    },
+    "AV-DaG": {
+      "originalUnloggedSparks": 13692,
+      "sharePctAtApproval": 0.18,
+      "totalSparksAtApproval": 7682171,
+      "decision": "rounding error, excluded from official Unlogged Sparks"
+    },
+    "AV-Abu//npjp": {
+      "originalUnloggedSparks": 13529,
+      "sharePctAtApproval": 0.08,
+      "totalSparksAtApproval": 16128643,
+      "decision": "rounding error, excluded from official Unlogged Sparks"
+    },
+    "AV-HN": {
+      "originalUnloggedSparks": 7443,
+      "sharePctAtApproval": 0.23,
+      "totalSparksAtApproval": 3294106,
+      "decision": "rounding error, excluded from official Unlogged Sparks"
+    },
+    "AV-Brisket": {
+      "originalUnloggedSparks": 4044,
+      "sharePctAtApproval": 0.58,
+      "totalSparksAtApproval": 698196,
+      "decision": "rounding error, excluded from official Unlogged Sparks"
+    },
+    "AV-TheOli": {
+      "originalUnloggedSparks": 3282,
+      "sharePctAtApproval": 0.17,
+      "totalSparksAtApproval": 1980429,
+      "decision": "rounding error, excluded from official Unlogged Sparks"
+    },
+    "AV-BigPapi": {
+      "originalUnloggedSparks": 3118,
+      "sharePctAtApproval": 0.1,
+      "totalSparksAtApproval": 3214394,
+      "decision": "rounding error, excluded from official Unlogged Sparks"
+    }
+  },
+  "officialFieldName": "Unlogged Sparks",
+  "approvalPolicy": "One-time 1% cutoff evaluated 2026-10-16 against the then-current Total Sparks, NOT an ongoing dynamic filter. Approved amounts must be frozen forever unless the leader expressly directs a change.",
+  "approvalThresholdPct": 1,
+  "excludedRoundingReview": {
+    "AV-no": 181.5,
+    "AV-Addicted": 124,
+    "GirlsOnly": 43,
+    "AV-Megalodon": 38,
+    "AV-JAMO": 22,
+    "Punchy": 14
+  },
+  "approvedCount": 28,
+  "approvedTotalSparks": 32404095,
+  "approvalDate": "2026-10-16"
 }

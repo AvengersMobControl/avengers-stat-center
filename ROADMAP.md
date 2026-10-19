@@ -6,6 +6,9 @@
 - **Canonical work tracker:** [master issue #13](https://github.com/AvengersMobControl/avengers-stat-center/issues/13), with individual GitHub issues for acceptance criteria.
 - **Main site:** https://avengersmobcontrol.github.io/avengers-stat-center/.
 
+## October 18 — Frenchie2 account attribution correction
+Leader confirmed AV-2 Frenchie is always `AV-Frenchie2`; Oct 11 AV-2 Kraken 36.2M damage / 18,100 Sparks should be credited to that distinct account, with clan totals unchanged. Suppress the global unresolved-identity banner when none remain. See `docs/DECISION_LOG.md`; branch/PR and exact published SHA still require verification.
+
 ## October 18 — Piggy PB event history and revised graphic input
 Track first/new qualifying **finishing-place personal bests** per event in Piggy Race → PBs & New alongside the independent existing line PB table; carry event-indexed original-place transitions in approved data passed to Piggy PNG generation. Optional new Piggy PB-panel preview is **unapproved art**, while temporarily approved pinned PNGs remain unchanged and ALL automatic event sends in both clans remain OFF.
 

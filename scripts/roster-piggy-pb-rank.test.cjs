@@ -129,3 +129,15 @@ test('roster and player profiles expose historical wins and podiums without re-r
   assert.match(html,/sortHeader\('Piggy Podiums','piggyPodiums',true\)/);
   assert.match(html,/Piggy Podiums<\/span><strong>\$\{podium\.podiums\}/);
 });
+
+test('Piggy and Flash display actual original ranks, not Sparks/Lines efficiency',()=>{
+  const html=readFileSync(join(__dirname,'../index.html'),'utf8');
+  const flash=readFileSync(join(__dirname,'../piggy-flashes.js'),'utf8');
+  assert(!html.includes("Sparks/Effort (per line)"));
+  assert(!flash.includes("Sparks/Effort (per line)"));
+  assert.match(html,/Original event finishing position; — means source rank not recorded/);
+  assert.match(html,/eventRow\?\.metadata\?\.rank\?\?eventRow\?\.rank/);
+  assert.match(html,/Piggy Flash Event Results/);
+  assert.match(html,/Space Reward \/ Effort/);
+  assert(!flash.includes("efficiency(r.sparks,r.lines)"));
+});

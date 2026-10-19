@@ -32,7 +32,8 @@ def preview(release, output, event_id=None):
     # NEW, even if that same canonical player has earlier AV-2 results.
     # All-clan historical line PBs and per-event rewards remain unchanged.
     first_clan = [row for row in model["rows"]
-                  if row.get("transition", {}).get("firstClanRecorded")]
+                  if row.get("transition", {}).get(
+                      "firstClanRecorded", row.get("transition", {}).get("firstRecorded"))]
     model["firstTracked"] = first_clan
     newcomer_ids = {r["player"] for r in first_clan}
     model["pbs"] = [row for row in model["pbs"]

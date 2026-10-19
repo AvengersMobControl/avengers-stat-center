@@ -6,6 +6,9 @@
 - **Canonical work tracker:** [master issue #13](https://github.com/AvengersMobControl/avengers-stat-center/issues/13), with individual GitHub issues for acceptance criteria.
 - **Main site:** https://avengersmobcontrol.github.io/avengers-stat-center/.
 
+## October 18 — new AVENGERS Piggy final result (AV-2 hold)
+Leader authorized importing the October 18 final AVENGERS Piggy leaderboard from two reviewed original JPEGs: 50 verified participants, event-only AVENGERS, no AV-2 rows. The recorded event remains **partial** until AV-2 has separately approved final screenshots. Sum 971,186 lines, 9,701,649 Sparks, 97,016,544 Stars with original/derived provenance; benchmark 40K+/30K+/20K+/10K+/5K+: 3/11/23/38/48. Cross-site release and test-gate verification required before marking production deployed; issue #4. Graphic work #8 is separate and all Discord PNG auto-dispatch remains OFF.
+
 ## October 18 — Frenchie2 account attribution correction
 Leader confirmed AV-2 Frenchie is always `AV-Frenchie2`; Oct 11 AV-2 Kraken 36.2M damage / 18,100 Sparks should be credited to that distinct account, with clan totals unchanged. Suppress the global unresolved-identity banner when none remain. See `docs/DECISION_LOG.md`; branch/PR and exact published SHA still require verification.
 

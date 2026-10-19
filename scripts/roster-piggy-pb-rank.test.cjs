@@ -138,7 +138,7 @@ test('Piggy and Flash display actual original ranks, not Sparks/Lines efficiency
   assert.match(html,/Original event finishing position; — means source rank not recorded/);
   assert.match(html,/eventRow\?\.metadata\?\.rank\?\?eventRow\?\.rank/);
   assert.match(html,/Piggy Flash Event Results/);
-  assert.match(html,/Space Reward \/ Effort/);
+  assert.match(html,/Space Event Results/);
   assert(!flash.includes("efficiency(r.sparks,r.lines)"));
 });
 

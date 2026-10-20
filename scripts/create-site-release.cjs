@@ -25,6 +25,9 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
   const legacy=load(),migration=migrate(legacy);
   // Leader-confirmed identity: TheBoss; Kira and LoveKira are historical aliases.
   const aliases={...migration.aliases};
+  // Leader explicitly states AV-Frenchie(-4) and AV-Frenchie2 are distinct accounts.
+  // Drop legacy display-name alias for new source rows; preserve AV-FrenchieUSA historical records.
+  delete aliases['AV-Frenchie(-4)'];
   delete aliases['AV-Zolika.x.TheBoss']; // remove reverse mapping to avoid cycles
   aliases['AV-Zolika.x.Kira']='AV-Zolika.x.TheBoss';
   aliases['AV-ZolikaLoveKira']='AV-Zolika.x.TheBoss';

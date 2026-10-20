@@ -160,6 +160,26 @@ tbody tr:last-child td{border-bottom:0}
 .profile-kpi{background:#111f36;border:1px solid #203754;border-radius:10px;padding:10px}
 .profile-kpi span{display:block;color:#7e94af;font-size:9px;text-transform:uppercase}
 .profile-kpi strong{display:block;margin-top:5px;font-size:15px}
+.profile-league-overview{margin:18px 0;background:linear-gradient(140deg,#142441,#0d2030);border:1px solid #375a80;border-radius:14px;padding:17px}
+.profile-league-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:13px}
+.profile-league-head h3{font-size:17px;margin:0 0 4px;color:#f3f6ff}
+.profile-league-head p{font-size:11px;color:#b3c9dd;line-height:1.5;margin:0}
+.profile-league-range{display:inline-flex;border:1px solid #426184;background:#1c3450;border-radius:9px;padding:7px 10px;font-size:11px;font-weight:800;white-space:nowrap}
+.profile-league-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.profile-league-kpi{min-width:0;background:#0a182b;border:1px solid #314664;border-radius:10px;padding:11px}
+.profile-league-kpi span{color:#9eb8d3;font-size:10px;text-transform:uppercase;letter-spacing:.07em}
+.profile-league-kpi strong{display:block;font-size:20px;margin-top:4px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.profile-league-kpi small{display:block;color:#a2b2c8;font-size:10px;margin-top:4px}
+.profile-league-kinds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.profile-league-kind{min-width:0;background:#11263b;border:1px solid #2d4a69;border-radius:10px;padding:12px}
+.profile-league-kind h4{margin:0 0 10px;font-size:12px;color:#e9f1fb}
+.profile-league-kind-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.profile-league-kind-stats span{display:block;font-size:10px;color:#9eb2ca}
+.profile-league-kind-stats strong{display:block;font-size:15px;margin-top:3px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.profile-league-kind-footer{border-top:1px solid #29455f;margin-top:9px;padding-top:8px;font-size:10px;color:#aec5dc;line-height:1.6}
+.profile-league-warning{margin:12px 0 0;border-top:1px solid #365270;padding-top:10px;color:#a7bdce;font-size:11px;line-height:1.55}
+.profile-league-warning strong{color:#dceaff}
+@media(max-width:600px){.profile-league-overview{padding:12px}.profile-league-head{flex-direction:column}.profile-league-range{white-space:normal}.profile-league-kpis{gap:6px}.profile-league-kpi{padding:8px}.profile-league-kpi strong{font-size:17px}.profile-league-kinds{grid-template-columns:1fr}.profile-league-kind-stats strong{font-size:14px}}
 .profile-clan-history{margin:14px 0;background:#101d32;border:1px solid #294261;border-radius:12px;padding:13px}
 .profile-clan-history h3{font-size:14px;margin:0 0 4px}
 .profile-clan-note{color:#9cb2cd;font-size:11px;line-height:1.5;margin-bottom:11px}
@@ -438,6 +458,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   <script src="piggy-2026-10-11.js"></script>
   <script src="space-2026-10-09.js"></script>
   <script src="community-highlights.js"></script>
+  <script src="member-profile-insights.js"></script>
   <script src="clan-league-rewards.js"></script>
   <script src="roster-sparks-event-ledger.js"></script>
   <script src="roster-event-breakdown.js"></script>
@@ -2179,6 +2200,48 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     return `<section class="profile-clan-history" aria-label="Recorded clan participation"><h3>Recorded Clan Participation</h3><div class="profile-clan-note">Original event-time clan results only. First/last tracked dates are NOT join, departure or transfer dates; current roster status is shown above.</div><div class="profile-clan-grid">${cards||'<div class="empty">No clan-attributed results tracked yet.</div>'}</div></section>`;
   }
 
+  // Live local-date league window, rolled in 35-day steps from the last recorded Kraken.
+  // A profile is an earned-result history, NOT certification of on-time clan credit.
+  function profileLeagueInsightsHtml(name){
+    const projection=window.AVENGERS_EVENT_PROJECTION;
+    const person=projection?.people.find(p=>p.name===name);
+    const insights=window.AVENGERS_MEMBER_PROFILE_INSIGHTS;
+    if(!person||!insights)return '';
+    const today=new Date(),asOf=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+    const result=insights.summarize(person.history||[],asOf);
+    const unitFmt=(kind,v)=>v===null?'—':kind==='space'?fmtB(v):fmtNum(v,kind==='kraken'?1:0);
+    const scoped=(name,prop)=>{
+      const l=result.league,c=result.career;
+      const value=(n)=>fmtNum(n[prop])+(prop!=='events'&&n['missing'+(prop==='sparks'?'Sparks':'Stars')]>0?'*':'');
+      return '<div class="profile-league-kpi" data-league-stat="'+prop+'"><span>'+name+'</span><strong>'+value(l)+'</strong><small>This league · Career '+value(c)+'</small></div>';
+    };
+    const labels={piggy:'Piggy · lines',space:'Space · B lightyears',flash:'Flash · lines',kraken:'Kraken · damage'};
+    const cards=result.kinds.map(k=>{
+      const trend=k.recentVersusPrior===null?'—':(k.recentVersusPrior>0?'+':'')+fmtNum(k.recentVersusPrior*100,1)+'%';
+      const consistency=k.consistency?k.consistency.atOrAbove+'/5':'—';
+      return '<div class="profile-league-kind" data-profile-kind="'+k.kind+'">'+
+        '<h4>'+labels[k.kind]+'</h4>'+
+        '<div class="profile-league-kind-stats">'+
+          '<div><span>This league · '+k.leagueEvents+' recorded</span><strong>'+unitFmt(k.kind,k.leagueAverage)+'</strong></div>'+
+          '<div><span>Career · '+k.careerEvents+' recorded</span><strong>'+unitFmt(k.kind,k.careerAverage)+'</strong></div>'+
+        '</div><div class="profile-league-kind-footer">Last 3 vs prior 3: <strong>'+trend+'</strong> · Last 5 at/above career avg: <strong>'+consistency+'</strong></div></div>';
+    }).join('');
+    const l=result.league,c=result.career;
+    const warning=[];
+    if(l.missingSparks||l.missingStars||c.missingSparks||c.missingStars)
+      warning.push('Asterisk means at least one recorded reward is unknown; shown totals are known awards only.');
+    if(l.partial||c.partial)warning.push('Includes '+c.partial+' row(s) from partially captured events.');
+    if(c.estimatedKraken)warning.push('Career includes '+fmtNum(c.estimatedKraken)+' estimated Kraken Sparks.');
+    const clanNote=result.leagueClans.length?result.leagueClans.join(' + '):'No event-time clan results recorded this league';
+    return '<section class="profile-league-overview" aria-label="Clan League and career performance" data-league-start="'+result.period.start+'" data-league-end="'+result.period.end+'">'+
+      '<div class="profile-league-head"><div><h3>This Clan League vs Career</h3>'+
+      '<p>Recorded member performance · '+escapeHtml(clanNote)+' · as of '+fmtDate(asOf)+'</p></div>'+
+      '<span class="profile-league-range">'+fmtDate(result.period.start)+' – '+fmtDate(result.period.end)+'</span></div>'+
+      '<div class="profile-league-kpis">'+scoped('Recorded events','events')+scoped('Earned Sparks','sparks')+scoped('Earned Stars','stars')+'</div>'+
+      '<div class="profile-league-kinds">'+cards+'</div>'+
+      '<p class="profile-league-warning"><strong>Recorded results, not official counted-on-time clan Sparks.</strong> League windows roll every 35 days after Kraken; transfers stay with the original event-time clan. Averages use only recorded scores; a dash means insufficient history (six scored events for a 3-vs-3 trend, five for consistency). '+warning.join(' ')+'</p></section>';
+  }
+
   function openPlayer(name){
     const canonicalName=canonicalPlayerName(name);
     const m=MEMBERS.get(canonicalName) || MEMBERS.get(name) || D.members.find(x=>x.name===canonicalName||x.name===name);
@@ -2215,6 +2278,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
 
     $('#playerModalContent').innerHTML=`
       <div class="profile-head"><div class="avatar">${initials(name)}</div><div><div class="profile-name">${escapeHtml(name)}</div><div class="profile-status">${statusBadge(m.status,name)}</div></div></div>
+      ${profileLeagueInsightsHtml(name)}
       ${window.AVENGERS_COMMUNITY?.profileHtml(name)||''}
       ${profileClanEvidenceHtml(name)}
       ${['space','piggy','flash'].map(kind=>{

@@ -2385,7 +2385,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     }
   }
   function bindPlayerButtons(el=document){
-    $('[data-player]',el).forEach(btn=>btn.onclick=()=>openPlayer(btn.dataset.player));
+    $$('[data-player]',el).forEach(btn=>btn.onclick=()=>openPlayer(btn.dataset.player));
   }
   // Shared canonical modal entrypoint for independent Kraken, Trends and
   // Achievements modules. Keep identity and the clean ?player= route identical.

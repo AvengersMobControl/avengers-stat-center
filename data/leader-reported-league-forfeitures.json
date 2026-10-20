@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "scope": "AVENGERS clan-league score forfeiture only; never rewrite earned member rewards",
+  "leaderReportedOn": "2026-10-19",
+  "entries": [
+    {
+      "leagueEnd": "2026-09-06",
+      "clan": "AVENGERS",
+      "name": "AV-jacko",
+      "leaderLabel": "Jacko",
+      "action": "remove_entire_tracked_member_league_sparks",
+      "source": "leader-confirmed cheating penalty; amount to be independently audited"
+    },
+    {
+      "leagueEnd": "2026-10-11",
+      "clan": "AVENGERS",
+      "name": "AV-jacko-mini",
+      "leaderLabel": "Scout",
+      "action": "remove_entire_tracked_member_league_sparks",
+      "source": "leader-confirmed cheating penalty; AV-Scout is alias of AV-jacko-mini"
+    },
+    {
+      "leagueEnd": "2026-10-11",
+      "clan": "AVENGERS",
+      "name": "AV-LuckY",
+      "leaderLabel": "Lucky",
+      "action": "remove_entire_tracked_member_league_sparks",
+      "source": "leader-confirmed cheating penalty; amount to be independently audited"
+    }
+  ]
+}

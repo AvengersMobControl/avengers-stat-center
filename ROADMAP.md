@@ -1,3 +1,7 @@
+## October 19 — Correction to pre-no-Spark six-league reference numbers
+
+Current accepted audit **after PR #104**: AVENGERS Sep6 ending **169,039,623** (Flash **3,266,538**), Oct11 ending **173,905,886** (Flash **3,486,875**). Previous 169,303,416 / 174,170,820 figures are superseded pre-correction snapshots; compare non-Flash **165,773,085 / 170,419,011** ONLY as unverified sensitivity, never as instruction to discard correct Flash rewards. Verified counts from accepted source still do not independently certify the leader's approximate 165M /171M headline. #6 remains open for missing original reference. #4 hard event source hold and manual review digest in PR #108 stage, #7 excluded, Discord PNG sending OFF.
+
 ## October 19 — Continue outstanding #4 and #6 with evidence-first safeguards
 
 - **#4 staged:** hard AV-2 Oct18 Piggy ingestion hold under canonical `apply()` even with approved flag; AVENGERS-only corrections unaffected. Source write CLI now requires a fresh exact review-packet digest, **in addition** to external authenticated original image, reviewed row data and leader's explicit authorization. Tests prove fail-closed and no mutation of rejected updates. No actual new final screenshot was imported; issue remains open.

@@ -1,3 +1,7 @@
+## 2026-10-19 — Correct stale six-league comparator after first post-Kraken no-Sparks fix
+
+The six-league audit now shows **prior 169,039,623** and **latest 173,905,886 AVENGERS known Sparks (including only valid Flash payouts)**; **3,266,538** and **3,486,875 Flash Sparks**. Dated older summaries (169,303,416 / 174,170,820; Flash 3,530,331 / 3,751,809) are **pre-no-Spark-correction observations, NOT current totals**, exceeding current by 263,793 and 264,934. Non-Flash 165,773,085 / 170,419,011 is unaffected. Neither scope proves what the user's rough 165M/171M screenshot/report included. No extra ledger adjustment; only audit expectations and provenance notes corrected. Issue #7 Council still excluded.
+
 ## 2026-10-19 — Hard source-level result hold and approximate league headline interpretation
 
 - User-held AV-2 Oct18 Piggy results are blocked at canonical event revision apply even if supplied as `approved:true`. Exact event/clan scoped to avoid blocking AVENGERS accepted Oct18 results. No screenshot or previously received Discord image lifts that hold. Explicit leader release and reviewed policy change required.

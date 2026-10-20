@@ -1,3 +1,12 @@
+## October 19 — #12 atomic guest-pass redemption after mocked Discord audit (STAGED)
+
+- [x] AVENGERS Neon PRIVATE schema and dedicated runtime credentials (no SAC connection, no dispatch schema access); production Vercel sensitive guest DB URL configured.
+- [x] SQL controlled database test: 8 concurrent requests for 2-use synthetic fixture => **2 reserved, 6 rejected**, no Discord DM/link issued.
+- [x] Stage read-only source-preserving code: new temp signed `counterVersion:2` + register-before-issue + atomic UPDATE reservation; signed legacy pass behavior unchanged until expiry, permanent pass unchanged. Fail-closed on outage or notification failure.
+- [ ] PR tests, review, merge, exact GitHub Pages/browser + Vercel production readiness verification. **Do not** claim live until complete.
+- [ ] Separate authenticated real guest issuance and DM e2e requires explicit controlled approval/recipient; existing synthetic tests do NOT send messages. Pending true roster arrival/departure/name-change evidence remains separate #12 work.
+- All other holds: #6 deferred; #7 excluded; AV-2 October18 source held; PNG automatic Discord posts OFF both clans; UTC paused; SAC strictly separate.
+
 ## 2026-10-19 — VERIFIED LIVE #12 follow-on PR #113 (canonical links & guest audit)
 [PR #113](https://github.com/AvengersMobControl/avengers-stat-center/pull/113) merged `cd06ffe783bb3cb5afce714d1fe5436148c99c87`. [Pages run 39369239739](https://github.com/AvengersMobControl/avengers-stat-center/actions/runs/39369239739) **SUCCESS** including exact public SHA+exports/post-deploy browser verification; [main source regression run 39369239788](https://github.com/AvengersMobControl/avengers-stat-center/actions/runs/39369239788) SUCCESS; Vercel production READY matching source SHA. Cross-sectional player modal opens from a clean `?player=<canonical>` URL; alias AV-2Lin resolves AV-Lin; copy action omits unrelated query parameters and browser back works; invalid profile name safely ignored. Guest API mock tests verify correct creator/tagged DM attribution, expiry cutoff, no consumption by link previews, paginated >100 DM uses and fail-closed uncertain history. **Not a claim of real guest-pass end-to-end test or strict concurrent click cap**: DM count+write still races on simultaneous opens. Need transactional per-pass use reservation as separate guest-workflow follow-up. All holds remain (#6 deferred; #7 excluded; auto Discord PNG posting OFF both clans; AV-2 Oct18 result held; UTC paused; SAC separate).
 

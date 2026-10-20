@@ -1,3 +1,8 @@
+## October 19 — Forfeiture reconciliation source audit: important remaining 2.37M gap
+
+- Independent [audit CI 39361108984](https://github.com/AvengersMobControl/avengers-stat-center/actions/runs/39361108984) validated three historic accounts: Sep6 Jacko 1,670,309; Oct11 Scout 485,993 + Lucky 2,140,195 = 2,626,188. No unknown Spark fields on those recorded contributions. After clan-only deductions: Sep6 adjusted **167,369,314** (not the approximate ~165M, **2,369,314** remains); Oct11 adjusted **171,279,698** (near approximate ~171M, only **279,698** difference). These are *adjusted tracked member Sparks*, not certified official full clan totals. Do not force missing 2.37M, do not drop Flash, and do not rewrite personal event rewards.
+- PR #111 provides read-only comparison, review artefact and tests; website should eventually show earned gross, leader-confirmed forfeiture total and adjusted tracked clan score separately, but not certify complete official totals without source proof. The September residual and potential additional user-confirmed penalty remain evidence work; #6 not closed yet. Issue #7 excluded.
+
 ## October 19 — Root cause identified for league #6 gross vs official score difference
 
 - **Leader-confirmed:** When game players are flagged for cheating, their Sparks are removed **from the clan's five-week league score**. This explains why the previous unadjusted individual reward ledger differs from the ~165M (Sep 6) and ~171M (Oct 11) quoted official clan scores. September 6 disqualification: Jacko; October 11: Scout and Lucky. **Normal Flash Sparks still count**; previous no-Flash comparison is a superseded coincidence/hypothesis.

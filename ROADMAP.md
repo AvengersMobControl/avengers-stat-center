@@ -1,7 +1,13 @@
-## October 19 — Member profiles: explicit historical clan participation (issue #12, staged)
+## October 19 — Source-faithful player profile clan participation (#12, PR #109 staged)
 
-- Show each player’s tracked AVENGERS and/or AV-2 event history on their canonical profile, deduplicated by source event and event-time clan. Display first/last **recorded event dates** and tracked-event count, explicitly NOT claimed actual join/departure/transfer dates. A cross-clan AV-Lin browser test guards source attribution; historic event rows, current roster status, frozen Unlogged and all Sparks/Stars untouched. Code is staged and must pass browser CI, reviewed PR, merge and exact Pages verified release before considered live.
-- PR #108 merged after green PR checks: AV-2 Oct18 canonical ingestion source hold and read-only six-league headline sensitivity. Vercel exact source SHA READY; Pages release verification pending at time of this entry. Both #4 and #6 remain open pending *external* original proof/approval; #7 explicitly excluded, PNG auto dispatch OFF.
+- Compact per-member history panel derives AVENGERS/AV-2 event counts and first/last TRACKED event dates from the approved event-time clan source. It explicitly warns these are **not** actual membership join/departure/transfer dates. Regression uses AV-Lin's reviewed AV-2 and AVENGERS results. Site/source ledger and current membership untouched. PR #109 requires tests, merge and exact live published-source browser verification before claiming deployment. Council #7 excluded, screenshot and Discord send holds unchanged.
+
+## October 19 — Production-verified continuation of incomplete work (#4, #6), #7 excluded
+
+- **DONE / LIVE PR #108**: source SHA `fb287d8d6d26fece4d41130a723a39fbae2dc5b7`, [Pages 39357702384](https://github.com/AvengersMobControl/avengers-stat-center/actions/runs/39357702384) SUCCESS exact published SHA/exports/browser, Vercel/CI SUCCESS. Canonical AV-2 Oct18 Piggy ingestion **hard blocked**; exact current review-digest required for manual source application. No actual new results imported; original image proof/explicit member-row approval still needed to close #4.
+- **DONE / LIVE #6 analysis/report**: read-only source-backed JSON+Markdown comparison; proper post-no-Spark known AVENGERS values Sep6 169,039,623 / Oct11 173,905,886 (Flash 3,266,538 / 3,486,875), no-Flash 165,773,085 / 170,419,011 remains hypothetical scope only. Actual earlier user headline “165M → 171M” is approximate with unavailable original inclusion method. Source reconciliation does **not** certify the original headline; #6 OPEN.
+- **NEXT externally dependent**: a genuinely NEW non-held final result from AVENGERS/AV-2 with private original-CDN-byte hash, independently verified rows, event-time clans, user explicit approval and fullsite release; original 165M/171M supporting screenshot/method if recoverable. The system cannot fabricate those prerequisites.
+- **#7 Council explicitly excluded**, no further changes there. Weekly PNG redesign parked; PNG Discord automatic sending OFF both clans/all events, UTC #3 paused, held AV-2 October18 kept out, SAC separate.
 
 ## October 19 — Correction to pre-no-Spark six-league reference numbers
 

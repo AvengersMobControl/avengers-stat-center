@@ -1,7 +1,14 @@
-## 2026-10-19 — Evidence-scoped member profile clan history, not guessed transfer timing
+## 2026-10-19 — Website member profile provenance without invented transfers
 
-- Issue #12 usability improvement: show per-person recorded AVENGERS and AV-2 event-time history with distinct source-backed count and earliest/latest recorded result dates. Historical dates must be explicitly marked **not verified join/departure/transfer dates**; canonical AV-Lin exhibits both histories while current roster remains separately authoritative. No inferred dates, rewards, classifications or Sparks ledger changes. Added real browser regression for cross-clan presentation. New website code **STAGED**, CI/Pages gates required before live claim.
-- PR #108 source-level AV-2 Piggy Oct18 hold and source-corrected six-league report merged as `fb287d8d6d26fece4d41130a723a39fbae2dc5b7`; PR CI passed, Vercel production READY for exact SHA. GitHub Pages publication/browser verified status must be checked separately before labeling Pages live. Issue #4 and #6 external evidence gaps remain open. PNG auto-post remains disabled, Council #7 excluded, UTC #3 paused, SAC untouched.
+- Feature PR #109 shows canonical player AVENGERS and AV-2 results as separately tracked event-time clan histories, with explicit first/last recorded-result dates and unique event counts. Never infer actual join/departure/transfer dates from incomplete event screenshots. Cross-clan AV-Lin browser regression included; current roster status, scores, alias mapping and frozen Unlogged Sparks unchanged. **Staged**, pending reviewed CI, merge, exact Pages/browser release.
+- PR #108 already has completed independent Pages/browser Vercel verification; hold AV-2 Oct18 Piggy rows, issue #4 and #6 source evidence pending, #7 excluded, all auto Discord PNG posting disabled, UTC #3 paused, SAC separate.
+
+## 2026-10-19 — Final release verification for held AV-2 import guard / original league comparison
+
+- PR [#108](https://github.com/AvengersMobControl/avengers-stat-center/pull/108) is **MERGED and production verified** at `fb287d8d6d26fece4d41130a723a39fbae2dc5b7`, [Pages run 39357702384](https://github.com/AvengersMobControl/avengers-stat-center/actions/runs/39357702384) exact source/browser/export SUCCESS; Vercel and main CI SUCCESS. Earlier staged references superseded.
+- A manually set `approved:true` cannot override exact leader-held `piggy|2026-10-18` / AV-2 ingestion. Source apply fails; AVENGERS same-day corrections remain possible. Digest-gated manual local application is **not a replacement for original-byte image review nor actual leader item approval**.
+- Current league-known Sparks **Sep6 169,039,623 including Flash 3,266,538; Oct11 173,905,886 including Flash 3,486,875**; prior inflated source references superseded. Approx leader 165M→171M still missing original calculation/coverage and is **NOT** grounds to change valid Flash awards or historic estimated Kraken without source.
+- Issue #4 remains open for independently approved new actual final results; #6 open for external original historical headline evidence. User excluded Council #7 entirely. No Discord messages/automated PNG publication, UTC sync or held AV-2 results enabled; SAC never touched.
 
 ## 2026-10-19 — Correct stale six-league comparator after first post-Kraken no-Sparks fix
 

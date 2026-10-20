@@ -10,4 +10,9 @@ CREATE TABLE IF NOT EXISTS avengers_guest_private.passes (
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 -- PostgreSQL UPDATE ... RETURNING serializes concurrent reservations.
--- Restrict schema/table privileges to a dedicated app role in deployment.
+REVOKE ALL ON SCHEMA avengers_guest_private FROM PUBLIC;
+REVOKE ALL ON avengers_guest_private.passes FROM PUBLIC;
+GRANT USAGE ON SCHEMA avengers_guest_private TO avengers_guest_runtime;
+GRANT SELECT, INSERT, UPDATE ON avengers_guest_private.passes TO avengers_guest_runtime;
+-- Runtime role MUST be created without neon_superuser membership and
+-- must not have access to avengers_dispatch_private or any SAC resources.

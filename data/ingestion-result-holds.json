@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "holds": [
+    {
+      "eventId": "piggy|2026-10-18",
+      "clan": "AV-2",
+      "status": "held",
+      "reason": "Explicit leader release hold on all Oct 18, 2026 AV-2 Piggy result rows. Seeing an actual screenshot does not lift it.",
+      "releaseRequires": "New explicit user authorization for exact held event/clan rows; update hold policy only in separately reviewed PR."
+    }
+  ],
+  "lastReviewed": "2026-10-19"
+}

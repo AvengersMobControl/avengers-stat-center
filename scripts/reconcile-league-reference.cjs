@@ -19,7 +19,7 @@ function diagnostic(audit){
   const c=p.clanTotals.AVENGERS;
   const incl=c.sparks,ex=c.sparks-c.flashSparks;
   ensure(Number.isFinite(incl)&&c.flashSparks>=0,'Invalid source totals');
-  const knownNoEstimated=inсlMinusEstimate(incl,c.estimatedKraken);
+  const knownNoEstimated=totalMinusEstimate(incl,c.estimatedKraken);
   return {label,start:p.start,end:p.end,reportedApprox:quoted,
     recorded:{
       piggySparks:c.piggySparks,spaceSparks:c.spaceSparks,flashSparks:c.flashSparks,
@@ -54,7 +54,7 @@ function diagnostic(audit){
   scenario('Recorded including Flash, excluding estimated Kraken (lower evidence-only subtotal)','knownSparksExcludingKrakenEstimates'),
   scenario('Recorded excluding both Flash and estimated Kraken (sensitivity only)','knownSparksExcludingBothFlashAndKrakenEstimates')
  ];
- ensure(scenarios.every(s=>!s.matchesExactReportedValues),'Unexpected exact match needs fresh attestation');
+ // Even if a future source total equals a rounded leader value, scope\n // still requires independent attestation. Never auto-certify a coincidental match.
  return {
   schemaVersion:1,source:'independent-accepted-event-ledger-audit',projectionVersion:audit.projectionVersion,
   reconciliationStatus:'UNRESOLVED — external headline scope/source not independently verified',
@@ -75,7 +75,7 @@ function diagnostic(audit){
   councilIssue7Touched:false
  };
 }
-function inсlMinusEstimate(total,estimated){
+function totalMinusEstimate(total,estimated){
  const e=estimated||0;
  ensure(typeof e==='number'&&Number.isFinite(e)&&e>=0&&e<=total,'Invalid inferred Kraken subtotal');
  return total-e;

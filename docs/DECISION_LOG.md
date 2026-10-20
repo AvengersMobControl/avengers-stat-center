@@ -1,3 +1,14 @@
+## 2026-10-19 — Correct stale six-league comparator after first post-Kraken no-Sparks fix
+
+The six-league audit now shows **prior 169,039,623** and **latest 173,905,886 AVENGERS known Sparks (including only valid Flash payouts)**; **3,266,538** and **3,486,875 Flash Sparks**. Dated older summaries (169,303,416 / 174,170,820; Flash 3,530,331 / 3,751,809) are **pre-no-Spark-correction observations, NOT current totals**, exceeding current by 263,793 and 264,934. Non-Flash 165,773,085 / 170,419,011 is unaffected. Neither scope proves what the user's rough 165M/171M screenshot/report included. No extra ledger adjustment; only audit expectations and provenance notes corrected. Issue #7 Council still excluded.
+
+## 2026-10-19 — Hard source-level result hold and approximate league headline interpretation
+
+- User-held AV-2 Oct18 Piggy results are blocked at canonical event revision apply even if supplied as `approved:true`. Exact event/clan scoped to avoid blocking AVENGERS accepted Oct18 results. No screenshot or previously received Discord image lifts that hold. Explicit leader release and reviewed policy change required.
+- A manually applied new accepted-result update must carry the exact `reviewDigest` derived from current approved data and the reviewed candidate; recomputed digest rejects stale or modified source rows. This is content/revision integrity, **NOT** actual user approval or original-photo verification. Private original CDN bytes + independent final-image review remain mandatory and separate. No unattended reads/sends enabled.
+- Original 171M vs 165M statement was approximate (“171m sparks this clan league vs the 165m we earned last league”), source method and screenshot not available. Source-ledger sums INCLUDING Flash remain authoritative for tracked player awards; removing Flash is only comparative sensitivity, never a new game/accounting rule. Kraken inferred rewards and incomplete screenshots disclosed. New read-only audit report shows several hypotheses, does not change data.
+- Work staged for PR CI, no Council #7 work; all frozen historical Unlogged, AV-2 Oct18 hold, UTC #3 pause, PNG send OFF, SAC separation unchanged.
+
 ## 2026-10-19 — Verified League scope UI + fail-closed import-impact reviews
 
 - [PR #106](https://github.com/AvengersMobControl/avengers-stat-center/pull/106) merged `5fb5eb123e225e85a493dfce0a55ef342b20b8b0` with [Pages 39344382226](https://github.com/AvengersMobControl/avengers-stat-center/actions/runs/39344382226) SUCCESS exact public SHA/export/browser and Vercel SUCCESS. Remove leaked Sparks/Effort per-member ratio columns from Clan League table and CSV; user specifically limits Space ratio to individual Space Event tables. State source scope first: tracked awards **not certified full race-pot totals**, partial/unknown/event-time-clan and historical Kraken estimates disclosed. All source ledger values unchanged.

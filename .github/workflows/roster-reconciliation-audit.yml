@@ -18,6 +18,8 @@ on:
       - 'scripts/report-prior-logging-sparks.cjs'
       - 'data/sparks-prior-to-logging-2026-10-16.json'
       - 'data/approved-post-kraken-no-spark-sets.json'
+      - 'data/ingestion-result-holds.json'
+      - 'scripts/reconcile-league-reference*.cjs'
       - 'scripts/audit-transfer-restorations.cjs'
       - 'scripts/roster-event-breakdown.test.cjs'
       - 'scripts/roster-piggy-pb-rank.test.cjs'
@@ -56,6 +58,8 @@ jobs:
         run: |
           node --test scripts/audit-six-clan-leagues.test.cjs
           node scripts/audit-six-clan-leagues.cjs
+          node --test scripts/reconcile-league-reference.test.cjs
+          node scripts/reconcile-league-reference.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -64,6 +68,7 @@ jobs:
             reports/roster-reconciliation-audit.*
             reports/clan-league-audit.*
             reports/clan-league-ledger-audit.*
+            reports/clan-league-reference-review.*
             reports/council-minimums-audit.*
             reports/sparks-root-cause-diagnostic.*
             reports/sparks-transfer-restorations.*

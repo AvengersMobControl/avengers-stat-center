@@ -156,6 +156,10 @@ tbody tr:last-child td{border-bottom:0}
 .profile-head .avatar{width:50px;height:50px;font-size:17px}
 .profile-name{font-size:24px;font-weight:900}
 .profile-status{margin-top:4px}
+.profile-share{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:11px 0 0}
+.profile-share-button{border:1px solid #41678b;background:#173454;color:#d3f4ff;border-radius:8px;padding:8px 11px;font-size:12px;font-weight:800;cursor:pointer}
+.profile-share-button:hover,.profile-share-button:focus-visible{border-color:#66cffa;background:#235177}
+.profile-share-feedback{font-size:11px;color:#a4d8bf;min-height:16px}
 .profile-kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:18px 0}
 .profile-kpi{background:#111f36;border:1px solid #203754;border-radius:10px;padding:10px}
 .profile-kpi span{display:block;color:#7e94af;font-size:9px;text-transform:uppercase}
@@ -2242,11 +2246,19 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       '<p class="profile-league-warning"><strong>Recorded results, not official counted-on-time clan Sparks.</strong> League windows roll every 35 days after Kraken; transfers stay with the original event-time clan. Averages use only recorded scores; a dash means insufficient history (six scored events for a 3-vs-3 trend, five for consistency). '+warning.join(' ')+'</p></section>';
   }
 
-  function openPlayer(name){
+  // One canonical player per shareable URL. No unrelated query strings (OAuth,
+  // temporary guest tokens, etc.) are ever copied into profile links.
+  function playerProfileUrl(name){
+    return window.location.origin+window.location.pathname+'?player='+encodeURIComponent(name);
+  }
+  function openPlayer(name,{syncHistory=true}={}){
     const canonicalName=canonicalPlayerName(name);
     const m=MEMBERS.get(canonicalName) || MEMBERS.get(name) || D.members.find(x=>x.name===canonicalName||x.name===name);
     if(!m) return;
     name=canonicalName;
+    if(syncHistory&&new URLSearchParams(window.location.search).get('player')!==name){
+      window.history.pushState({avengersPlayer:name},'',playerProfileUrl(name));
+    }
     const ph=D.piggy.history[name]||[];
     const sh=D.space.history[name]||[];
     const pigLast=ph.at(-1), spLast=sh.at(-1);
@@ -2278,6 +2290,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
 
     $('#playerModalContent').innerHTML=`
       <div class="profile-head"><div class="avatar">${initials(name)}</div><div><div class="profile-name">${escapeHtml(name)}</div><div class="profile-status">${statusBadge(m.status,name)}</div></div></div>
+      <div class="profile-share"><button type="button" class="profile-share-button" data-copy-profile-link data-profile-url="${escapeHtml(playerProfileUrl(name))}">Copy profile link</button><span class="profile-share-feedback" aria-live="polite"></span></div>
       ${profileLeagueInsightsHtml(name)}
       ${window.AVENGERS_COMMUNITY?.profileHtml(name)||''}
       ${profileClanEvidenceHtml(name)}
@@ -2350,12 +2363,26 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
           </div>
         </div>
       </div>`;
+    const copyButton=$('#playerModalContent [data-copy-profile-link]');
+    copyButton.addEventListener('click',async()=>{
+      const feedback=$('#playerModalContent .profile-share-feedback');
+      try{
+        if(!navigator.clipboard?.writeText)throw Error('Clipboard access unavailable');
+        await navigator.clipboard.writeText(playerProfileUrl(name));
+        feedback.textContent='Profile link copied';
+      }catch{
+        feedback.textContent='Copy unavailable in this browser; use the address bar link.';
+      }
+    });
     $('#playerModal').classList.add('open');
     $('#playerModal').setAttribute('aria-hidden','false');
   }
-  function closeModal(){
+  function closeModal({syncHistory=true}={}){
     $('#playerModal').classList.remove('open');
     $('#playerModal').setAttribute('aria-hidden','true');
+    if(syncHistory&&new URLSearchParams(window.location.search).has('player')){
+      window.history.replaceState({},'',window.location.pathname+window.location.hash);
+    }
   }
   function bindPlayerButtons(el=document){
     $$('[data-player]',el).forEach(btn=>btn.onclick=()=>openPlayer(btn.dataset.player));
@@ -2523,6 +2550,13 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   fillEventSelects();
   $('#generatedAt').textContent=D.meta.latestResult?`Results through ${fmtDate(D.meta.latestResult)}`:`Generated ${new Date(D.meta.generated).toLocaleString()}`;
   renderPage();
+  const routePlayer=()=>new URLSearchParams(window.location.search).get('player');
+  if(routePlayer())openPlayer(routePlayer(),{syncHistory:false});
+  window.addEventListener('popstate',()=>{
+    const linked=routePlayer();
+    if(linked)openPlayer(linked,{syncHistory:false});
+    else closeModal({syncHistory:false});
+  });
 })();
 
   </script>

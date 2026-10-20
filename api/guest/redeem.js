@@ -16,7 +16,7 @@ function verify(token,secret){
     const p=JSON.parse(Buffer.from(body,'base64url').toString('utf8'));
     if(p.typ!=='avengers-guest-invite')return null;
     if(p.permanent===true)return p;
-    if(!p.exp||p.exp<Math.floor(Date.now()/1000))return null;
+    if(!p.exp||p.exp<=Math.floor(Date.now()/1000))return null;
     p.maxUses=Math.max(1,Math.min(Number(p.maxUses)||1,10));
     return p;
   }catch{return null;}
@@ -56,11 +56,33 @@ async function openDm(userId,botToken){
   if(!r.ok)throw new Error('Could not open creator DM ('+r.status+')');
   return r.json();
 }
-async function recentMessages(channelId,botToken){
-  const r=await discordApi('/channels/'+channelId+'/messages?limit=100',botToken);
-  if(!r.ok)throw new Error('Could not inspect guest-link log ('+r.status+')');
-  const x=await r.json();
-  return Array.isArray(x)?x:[];
+// Discord returns only the most recent 100 messages per request. Count every
+// use since issuance using pagination; never reset a guest's click limit just
+// because newer alerts pushed earlier redemptions out of the first page.
+// Exhausted or malformed history fails closed, NOT as a fresh zero count.
+// NOTE: concurrent serverless redeems still need an atomic reservation store
+// to provide a strict last-click guarantee; see issue #12.
+async function countSuccessfulUses(channelId,botToken,useMarker,issuedAt){
+  if(!Number.isSafeInteger(issuedAt)||issuedAt<=0)throw Error('Missing issuance time');
+  let before=null,count=0;
+  for(let page=0;page<30;page++){
+    const suffix=before?'&before='+encodeURIComponent(before):'';
+    const r=await discordApi('/channels/'+channelId+'/messages?limit=100'+suffix,botToken);
+    if(!r.ok)throw new Error('Could not inspect guest-link log ('+r.status+')');
+    const rows=await r.json();
+    if(!Array.isArray(rows))throw Error('Malformed guest redemption log');
+    let beforeIssue=false;
+    for(const m of rows){
+      const ts=Date.parse(m.timestamp);
+      if(!Number.isFinite(ts)||!m.id)throw Error('Guest redemption history lacks timestamp or id');
+      if(ts<issuedAt*1000){beforeIssue=true;continue;}
+      // Match the complete token, not a prefix of another invite's marker.
+      if(String(m.content||'').includes(useMarker+' '))count++;
+    }
+    if(rows.length<100||beforeIssue)return count;
+    before=String(rows.at(-1).id);
+  }
+  throw Error('Guest redemption history exceeds safe scan limit');
 }
 async function sendDm(channelId,botToken,content){
   const r=await discordApi('/channels/'+channelId+'/messages',botToken,{
@@ -119,8 +141,7 @@ module.exports=async function handler(req,res){
         '||'+useMarker+' '+marker+'||'
       );
     }else{
-      const messages=await recentMessages(dm.id,botToken);
-      const successfulUses=messages.filter(m=>String(m.content||'').includes(useMarker)).length;
+      const successfulUses=await countSuccessfulUses(dm.id,botToken,useMarker,Number(invite.iat));
       const maxUses=Number(invite.maxUses)||3;
 
       if(successfulUses>=maxUses){
@@ -137,6 +158,11 @@ module.exports=async function handler(req,res){
         return;
       }
 
+      if(Number(invite.exp)<=Math.floor(Date.now()/1000)){
+        res.setHeader('Cache-Control','no-store');
+        res.status(410).send('This guest link expired before it could be opened.');
+        return;
+      }
       const useNumber=successfulUses+1;
       // Record a successful use before issuing the session. Discord DM history acts
       // as the durable redemption ledger across serverless instances.

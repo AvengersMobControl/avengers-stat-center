@@ -117,8 +117,21 @@ module.exports=async function handler(req,res){
     creatorName:String(session.username||'AVENGERS member'),
     iat:now,
     ...(label?{label}:{}),
-    ...(permanent?{permanent:true}:{exp:now+ttl,maxUses})
+    ...(permanent?{permanent:true}:{exp:now+ttl,maxUses,counterVersion:2})
   };
+  // All newly issued *temporary* invites are registered before a link is
+  // displayed. Existing v1 links remain on legacy DM counting until expiry.
+  // Unavailable database fails closed; never hand out an unmetered v2 token.
+  if(!permanent){
+    try{
+      await require('./atomic-counter').productionStore().register(payload);
+    }catch(e){
+      console.error('guest-create private counter registration failed',e.message);
+      res.setHeader('Cache-Control','no-store');
+      res.status(503).send('Guest passes are temporarily unavailable. No link was issued.');
+      return;
+    }
+  }
   const token=sign(payload,secret);
   const url=origin(req)+'/api/guest/redeem?t='+encodeURIComponent(token);
   const expires=permanent?'Never':new Date(payload.exp*1000).toLocaleString('en-US',{

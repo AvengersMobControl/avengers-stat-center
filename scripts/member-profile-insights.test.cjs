@@ -27,9 +27,9 @@ test('career spans event-time clans; new league only includes its actual accepte
 });
 test('missing amounts stay missing, Kraken never has stars, and estimated rewards are disclosed',()=>{
  const s=I.summarize([
-  row('kraken|x','2026-10-12','kraken',123,null,null,'AVENGERS',{partial:true}),
+  row('kraken|x','2026-10-12','kraken',123,300,null,'AVENGERS',{partial:true,estimatedSparks:true}),
   row('piggy|x','2026-10-13','piggy',100,null,null),
-  row('space|x','2026-10-14','space',50,300,3000,'AVENGERS',{estimatedSparks:true})
+  row('space|x','2026-10-14','space',50,null,3000)
  ],'2026-10-19');
  assert.deepEqual([s.league.events,s.league.sparks,s.league.stars],[3,300,3000]);
  assert.equal(s.league.missingSparks,2);

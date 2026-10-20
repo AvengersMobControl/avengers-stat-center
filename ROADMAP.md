@@ -1,3 +1,9 @@
+## October 19 — #12 follow-up staged: shareable player profiles and tested guest-pass behavior
+
+- Profile: add copy-link control, canonical `?player=` deep links that open on load, browser back/history restoration, safe invalid/alias handling; no token leakage in copied link. Cross-clan AV-Lin remains a single identity. Browser regression added.
+- Guest-pass synthetic tests: expiry boundary and tamper rejection, link-preview bot non-consumption, creator/tagged DM attribution, limited successful uses, >100 Discord DM history pagination, bounded failure rather than log-reset, permanent access tracking. Fix the single-page log weakness in redemption handler. **Outstanding caveat:** Discord DMs cannot atomically reserve slots under concurrent requests; strict advertised max-click guarantee still requires a transactional pass ledger. No live Discord sends tested, no unapproved messaging.
+- Staged CI/merge/Pages browser and Vercel checks required before live completion; no changes to approved result ledger, frozen Sparks, PNG Discord dispatch OFF, UTC #3 paused, #6 deferred, Council #7 excluded, SAC separate.
+
 ## October 19 — #12 first player profile delivery: source-scoped current Clan League vs career
 
 - **STAGED PR (not yet production-verified):** new `member-profile-insights.js` read-only member profile comparison from canonical approved `AVENGERS_EVENT_PROJECTION.people[].history`, auto-dating 35-day five-week windows anchored after 2026-10-11 Kraken (first Oct 12–Nov 15), rolling by actual local calendar date. Shows current vs career *recorded events*, *earned known Sparks*, *known Stars*, Piggy/Space/Flash/Kraken current-versus-career recorded-score averages, last-3 vs preceding-3 trend (only ≥6 known scores), recent 5 at/above career average (only ≥5 known scores). Missing payouts are explicitly *unknown*, not zero; historical estimated Kraken flagged; source partiality visible.

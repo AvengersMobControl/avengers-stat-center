@@ -1,13 +1,17 @@
 {
   "schemaVersion": 1,
-  "holds": [
+  "holds": [],
+  "lastReviewed": "2026-10-20",
+  "releases": [
     {
       "eventId": "piggy|2026-10-18",
       "clan": "AV-2",
-      "status": "held",
-      "reason": "Explicit leader release hold on all Oct 18, 2026 AV-2 Piggy result rows. Seeing an actual screenshot does not lift it.",
-      "releaseRequires": "New explicit user authorization for exact held event/clan rows; update hold policy only in separately reviewed PR."
+      "status": "released",
+      "authorizedBy": "leader-explicit-chat-instruction-2026-10-20",
+      "authorizedAction": "enable and send held AV-2 results",
+      "releasedAt": "2026-10-20",
+      "sourceEvidence": "six leader-supplied original Oct18 result screenshots with known SHA256; 19 AV-2 participants; 56,925 lines; 4,178,040 Stars; 417,799 Sparks; summed displayed share 71.0%",
+      "previousReason": "Explicit leader release hold on all Oct 18, 2026 AV-2 Piggy result rows. Seeing an actual screenshot does not lift it."
     }
-  ],
-  "lastReviewed": "2026-10-19"
+  ]
 }

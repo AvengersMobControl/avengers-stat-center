@@ -1,3 +1,10 @@
+## October 19 — Continue outstanding #4 and #6 with evidence-first safeguards
+
+- **#4 staged:** hard AV-2 Oct18 Piggy ingestion hold under canonical `apply()` even with approved flag; AVENGERS-only corrections unaffected. Source write CLI now requires a fresh exact review-packet digest, **in addition** to external authenticated original image, reviewed row data and leader's explicit authorization. Tests prove fail-closed and no mutation of rejected updates. No actual new final screenshot was imported; issue remains open.
+- **#6 staged:** exact independently audited 169,303,416 and 174,170,820 known AVENGERS category sums versus approximate prior user 165M/171M. Potential Flash-excluded proximity is NOT evidence the original report excluded valid Flash; compare estimate/coverage source scopes without changing rewards. Read-only JSON/Markdown dossier and tests. Original headline definition remains unverified; #6 open.
+- **Next:** CI/merge/Pages browser exact source gate, retain hold until explicit release; then real individually approved new screenshot end-to-end; independently source-verify historical Clan League headline definition.
+- **#7 excluded by user**; weekly PNG design remains for later review; all Discord PNG auto posting disabled; UTC #3 paused; SAC unaffected.
+
 ## October 19 — Latest completed live release and guarded remaining source proof
 
 - **DONE/LIVE #42:** PR #105 and Pages 39343265792 exact SHA/browser; same accepted event ledger version rebuilds all site sections and immutable exports, graph in `docs/EVENT_TO_SITE_DEPENDENCIES.md`. Issue #42 **closed**. This does not imply unattended Discord image ingestion.

@@ -1,3 +1,16 @@
+## Oct 19 — Exact approval review digest and source hold
+
+After independently verifying ORIGINAL Discord CDN screenshot bytes, reviewing the *final* event and obtaining the leader's explicit approval of each result, use a fresh report's `reviewDigest` to guard a local source application. Mark only the actually reviewed candidate `approved:true` and run:
+
+```bash
+node scripts/stage-event-update.cjs reports/reviewed-candidate.json \
+  --apply --approved-review-digest=<reviewDigest_from_matching_fresh_review_packet>
+```
+
+The fingerprint binds to the exact proposed member/clan/score/payout/rank change and the latest accepted projection; a stale/wrong/missing digest rejects before any source write. **A matching digest alone is NOT proof of actual leader consent or original image validity.**
+
+`piggy|2026-10-18` **AV-2** rows are under an explicit hard leader hold. The canonical revision code refuses changes EVEN when a caller sets `approved:true` or bypasses the staging CLI. Do not modify the hold policy without the leader's separate explicit release permission. Same-day accepted AVENGERS-only Piggy results remain unaffected. All Discord automatic PNG publishing remains disabled.
+
 # Unapproved result candidate — exact impact review packet (issue #4)
 
 **Status:** manual, read-only data simulation; NO Discord writes, NO import approval.

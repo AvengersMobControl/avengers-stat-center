@@ -1,3 +1,11 @@
+## 2026-10-20 — #12 unify player identity navigation across event sections (STAGED)
+
+- Added one exported canonical profile-modal entrypoint shared by Kraken, Trends, and the Player Explorer / Overview quick finder. Existing roster, ratings, records, Piggy, and Space already use that same modal. All successfully mapped names open **one** member identity and shareable `?player=<canonical>` URL; no redirect to the duplicate explorer when clicking a Kraken or Trends result.
+- Achievement board now opens the full canonical player profile on name click; independent "Badges" preview remains available, and the member selector gains **Open full profile**.
+- Existing detailed Player Explorer retained as supplemental preview with **Open full profile**; alias search such as `AV-2Lin` normalizes via the existing canonical alias map. Missing/unknown historic identities do **not** create new member records or imply join, departure or transfer dates.
+- Playwright browser smoke covers unified identities from Kraken event, Trends, achievement board/selector, quick finder and explorer, including `AV-2Lin` → `AV-Lin`, current section preservation, modal share query and badge-preview separation.
+- All changes are frontend navigation only; no score, roster, Stars, Spark ledger, fixed prior logging amount, PB, or event-time clan mutations. Guest-pass real Discord test still requires explicit controlled recipient. #6 deferred; #7 excluded; automatic Discord summary PNG posting OFF both clans/all events; AV-2 10/18 held; UTC #3 paused; SAC separate. **STAGED until CI, merge and exact Pages/browser verification**.
+
 ## 2026-10-19 — VERIFIED LIVE: #12 new guest-pass atomic redemption rollout
 
 - [PR #115](https://github.com/AvengersMobControl/avengers-stat-center/pull/115) MERGED, code SHA `03e6dcccdd3c2dcf3f61afea4e271713529b357f`. [Pages run 39371956499](https://github.com/AvengersMobControl/avengers-stat-center/actions/runs/39371956499) **SUCCESS** including exact published SHA, exports and real browser before+after deployment. [main projection CI 39371956681](https://github.com/AvengersMobControl/avengers-stat-center/actions/runs/39371956681) **SUCCESS**. Vercel **production READY** matching this code SHA. Prior "STAGED" record is historical and superseded.

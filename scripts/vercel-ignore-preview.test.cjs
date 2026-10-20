@@ -11,7 +11,7 @@ function gitStub(files, message = 'docs: update status') {
       case 'rev-parse HEAD': return SHA + '\n';
       case 'rev-parse HEAD^': return BASE + '\n';
       case 'log -1': return message;
-      case 'diff --name-only': return files.join('\\0') + '\\0';
+      case 'diff --name-only': return files.join('\0') + '\0';
       default: throw new Error('Unexpected git command: ' + args.join(' '));
     }
   };

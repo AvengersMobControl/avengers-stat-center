@@ -1,6 +1,15 @@
 # AVENGERS automatic Discord summary PNGs — staged setup
 
-**State: 2026-10-20 — NOT ENABLED.** This document tracks leader's request to correct AV-2 Piggy graphics first, then set up automatic Discord PNG posting. It is AVENGERS-only; never touch SAC/Lock It In.
+## 2026-10-20 — Leader-confirmed SINGLE Discord destination: Performance Statistics (configuration staged; sending OFF)
+
+Leader supplied Discord channel **Performance Statistics** ID `1470175579058999386` as the **one destination for ALL AVENGERS and AV-2 PNG reports and their accompanying messages**. This includes Piggy, Space, all four Piggy Flashes, Kraken and weekly/multi-event recap graphics. One clan/event report is one combined Discord post containing its written commentary and PNG, NOT a text-only message in one channel and image elsewhere. Do not post to the screenshot-intake channels or other clan channels. Use event-time clan for attribution. On corrections, preserve idempotence and safe replacement receipt workflow.
+
+**Production-only Vercel environment configured:** `AVENGERS_DISCORD_SUMMARY_CHANNEL_ID` (encrypted) set to that exact channel ID on verified AVENGERS Vercel project `prj_PzjXH4bwYW8z6ysOljvjcQ4t4KWm`, team `team_kcGh7wavcZrPD47Lc27MUVQM`. This is ROUTING ONLY and does not send or turn on automatic dispatch. Proposed server-only helper `server/discord-summary-destination.cjs` accepts both event-time clans, kinds `piggy`, `space`, `flash`, `kraken`, `weekly`, refuses caller-selected alternate channels, and fails closed without valid production env. This module must not enter public Pages/site bundles. Existing ledger `kind` constraint only supports the first four: implement separately reviewed weekly recap schema/identity semantics before weekly autoposting, no unreviewed mutation.
+
+**Still pending:** check bot's actual guild and permissions in Performance Statistics (View, Send, Attach, Read History); verify credentials and external message/image readback; approved source+original-art production renderer; single supervised canary with receipt; crash/duplicate/429/correction tests; reviewed migration replacing hard-OFF dispatch check constraints; explicit final activation. Prior AV-2 10/18 source-ingestion hold not lifted by this channel setting. Automatic Discord sends/deletes remain **OFF** for both clans; no Discord post has occurred. All SAC work remains separate.
+
+
+**State: 2026-10-20 — destination configured, NOT ENABLED.** This document tracks leader's request to correct AV-2 Piggy graphics first, then set up automatic Discord PNG posting. It is AVENGERS-only; never touch SAC/Lock It In.
 
 ## Corrected manual AV-2 Piggy preview
 - Source event: `piggy|2026-10-18`, event-time clan `AV-2`; **19** screenshots-confirmed competitors. Missing lobby ranks 34–43 contain no AV-2 members, per leader clarification. Do not infer unknown rows.
@@ -25,4 +34,4 @@ Vercel production has `DISCORD_BOT_TOKEN` and an encrypted `AVENGERS_DISPATCH_DA
 6. **Tests and supervised canary:** test no-preview/partial/unapproved source, missing channel/permissions, wrong artwork digest, 2+ concurrent workers, crashes before/after send, Discord 429/5xx, race-stage replay, correction, manual reconciliations, scoped AV-2/AVENGERS separation; then manually approve a **single** canary post with exact channel and verify receipt.
 7. **Activation:** only after successful verified canary, scoped leader approval and production verification, enable automatic PNG dispatch for approved, final, complete events on defined schedule. Leave all unrelated events and both Discord delete/UTC automation OFF unless separately approved.
 
-**Blockers right now:** exact destination channel is unknown; source accepted ledger does not include held Oct18 AV-2 rows; corrected design is in-chat/manual not durable production template; outbound adapter not yet wired or tested; database guards are hard OFF. Do not claim automation is live or send any message until resolved.
+**Active blockers after channel configuration:** bot guild/permission checks, accepted source event and hold release where required, durable approved production art/renderer, missing outbound adapter/readback tests, hard-OFF DB guardrails and unverified canary. The channel is NOW KNOWN and stored in production encrypted configuration. Do not claim automation live or send any message until resolved.

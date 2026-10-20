@@ -250,6 +250,20 @@ async function main(){
     });
     const profileText=await page.locator('#playerModalContent').textContent(); // wrapped UI labels can insert visual line breaks in innerText
     assert(profileText.includes('Space Event Results'),'Space event history is retained');
+    assert(profileText.includes('This Clan League vs Career'),'current league comparison is prominent above event details');
+    assert.equal(await page.locator('#playerModalContent .profile-league-kpi').count(),3,'event / earned Spark / earned Star comparison');
+    assert.equal(await page.locator('#playerModalContent .profile-league-kind').count(),4,'all four categories have career comparisons');
+    const harryLeague=await page.evaluate(()=>{
+      const name='AV-HarryBallsagna',person=window.AVENGERS_EVENT_PROJECTION.people.find(p=>p.name===name);
+      const el=document.querySelector('#playerModalContent .profile-league-overview');
+      const model=window.AVENGERS_MEMBER_PROFILE_INSIGHTS.summarize(person.history,
+        new Date().getFullYear()+'-'+String(new Date().getMonth()+1).padStart(2,'0')+'-'+String(new Date().getDate()).padStart(2,'0'));
+      const actual=Number(el.querySelector('[data-league-stat="events"] strong').textContent.replaceAll(',',''));
+      return {expected:model.league.events,actual,dated:el.dataset.leagueStart===model.period.start&&el.dataset.leagueEnd===model.period.end};
+    });
+    assert.equal(harryLeague.actual,harryLeague.expected,'rendered current league count from event-time source');
+    assert(harryLeague.dated,'browser labels the correct 35-day Kraken cycle');
+    assert(profileText.includes('not official counted-on-time clan Sparks'),'no implied certified clan score');
     assert(profileText.includes('Best Space Lobby Finish'),'player modal shows real Space lobby PB');
     assert(profileText.includes('Verified Space Clan PB Rank'),'player modal separates unverified full-clan finishes');
     assert((await page.locator('#playerModalContent table thead').allTextContents()).some(t=>t.includes('Recorded Clan #')),
@@ -284,6 +298,17 @@ async function main(){
     assert(linInfo.includes('NOT join, departure or transfer dates'), 'historical event dates must not imply official transfer dates');
     const sourceClans=await page.evaluate(()=>[...new Set((window.AVENGERS_EVENT_PROJECTION.people.find(p=>p.name==='AV-Lin')?.history||[]).map(r=>r.clan).filter(Boolean))]);
     assert(sourceClans.includes('AV-2')&&sourceClans.includes('AVENGERS'),'cross-clan timeline matches canonical source');
+    assert.equal(await page.locator('#playerModalContent .profile-league-overview').count(),1,'cross-clan player receives one consolidated career view');
+    const linScopes=await page.evaluate(()=>{
+      const el=document.querySelector('#playerModalContent'),val=key=>el.querySelector('[data-league-stat="'+key+'"] strong').textContent;
+      const person=window.AVENGERS_EVENT_PROJECTION.people.find(p=>p.name==='AV-Lin');
+      const now=new Date(),iso=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');
+      const p=window.AVENGERS_MEMBER_PROFILE_INSIGHTS.summarize(person.history,iso);
+      return {leagueEvents:p.league.events,careerEvents:p.career.events,rendered:val('events'),includesAv2:p.career.events>p.league.events};
+    });
+    assert(linScopes.includesAv2,'prior AV-2 history is counted in career, not miscredited to current league');
+    assert.equal(Number(linScopes.rendered.replaceAll(',','')),linScopes.leagueEvents);
+
     assert(!linInfo.includes('Sparks/Effort'),'the scope-restricted ratio must never enter profiles');
     await page.keyboard.press('Escape');
     await page.click('.nav-btn[data-page="weeklyRecap"]');
@@ -297,6 +322,18 @@ async function main(){
     assert.deepEqual(errors,[]);
     fs.mkdirSync(path.join(__dirname,'../reports'),{recursive:true});
     await page.screenshot({path:path.join(__dirname,'../reports/site-browser-roster-mobile.png'),fullPage:false,animations:'disabled'});
+    await page.click('#menuBtn');await page.click('.nav-btn[data-page="players"]');
+    await page.fill('#playerSearch','AV-Lin');
+    await page.locator('#page-players [data-player="AV-Lin"]').first().click();
+    const mobileLeague=page.locator('#playerModalContent .profile-league-overview');
+    assert(await mobileLeague.isVisible(),'league profile is visible at 390px viewport');
+    const mobileSize=await mobileLeague.evaluate(el=>({
+      overflow:el.scrollWidth-el.clientWidth,
+      columns:getComputedStyle(el.querySelector('.profile-league-kinds')).gridTemplateColumns.split(' ').length
+    }));
+    assert(mobileSize.overflow<=2,'no profile-league horizontal overflow on narrow mobile');
+    assert.equal(mobileSize.columns,1,'category metrics stack for phone width');
+    await page.keyboard.press('Escape');
     let fixtureCases=0;
     if(!process.env.AVENGERS_SMOKE_URL){
       const {UNITS}=require('./event-projection-core.cjs');

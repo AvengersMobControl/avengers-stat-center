@@ -1,0 +1,29 @@
+name: Discord canary guard tests
+on:
+  pull_request:
+    paths:
+      - api/discord-canary.js
+      - server/discord-canary-image.cjs
+      - server/discord-summary-destination.cjs
+      - scripts/test-discord-canary-image.cjs
+      - scripts/test-discord-summary-destination.cjs
+      - .github/workflows/discord-canary-guards.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline-canary-guards:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --check api/discord-canary.js
+      - run: node --check server/discord-canary-image.cjs
+      - run: node --test scripts/test-discord-canary-image.cjs scripts/test-discord-summary-destination.cjs
+      - name: Prove no production send flag or Discord network request in CI
+        run: |
+          test -z "${DISCORD_BOT_TOKEN:-}"
+          test -z "${AVENGERS_DISPATCH_DATABASE_URL:-}"

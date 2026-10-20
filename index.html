@@ -160,6 +160,13 @@ tbody tr:last-child td{border-bottom:0}
 .profile-kpi{background:#111f36;border:1px solid #203754;border-radius:10px;padding:10px}
 .profile-kpi span{display:block;color:#7e94af;font-size:9px;text-transform:uppercase}
 .profile-kpi strong{display:block;margin-top:5px;font-size:15px}
+.profile-clan-history{margin:14px 0;background:#101d32;border:1px solid #294261;border-radius:12px;padding:13px}
+.profile-clan-history h3{font-size:14px;margin:0 0 4px}
+.profile-clan-note{color:#9cb2cd;font-size:11px;line-height:1.5;margin-bottom:11px}
+.profile-clan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:10px}
+.profile-clan-entry{background:#172940;border:1px solid #334a67;padding:11px;border-radius:9px}
+.profile-clan-entry strong{display:block;font-size:13px;margin-bottom:5px}
+.profile-clan-entry span{display:block;color:#b5c7dc;font-size:11px;line-height:1.6}
 .profile-charts{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .profile-chart{background:#0a1728;border:1px solid #1e344f;border-radius:11px;padding:12px}
 .profile-chart h3{font-size:13px;margin:0 0 8px}
@@ -2153,6 +2160,25 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     return lineChart(data,'avg',fmt);
   }
 
+  // Clan labels/dates come from original event-time results, NOT inferred membership moves.
+  function profileClanEvidenceHtml(name){
+    const history=window.AVENGERS_EVENT_PROJECTION?.people.find(p=>p.name===name)?.history||[];
+    const perClan=new Map(),seen=new Set();
+    for(const row of history){
+      if(!['AVENGERS','AV-2'].includes(row.clan)||!/^20\d{2}-\d{2}-\d{2}$/.test(row.date||'')) continue;
+      const key=String(row.eventId||row.kind+'|'+row.date)+'|'+row.clan;
+      if(seen.has(key)) continue;
+      seen.add(key);
+      if(!perClan.has(row.clan)) perClan.set(row.clan,{count:0,dates:[]});
+      const item=perClan.get(row.clan);item.count++;item.dates.push(row.date);
+    }
+    const cards=['AVENGERS','AV-2'].filter(clan=>perClan.has(clan)).map(clan=>{
+      const p=perClan.get(clan),dates=p.dates.sort();
+      return `<div class="profile-clan-entry" data-tracked-clan="${clan}"><strong>${clan} · ${p.count} tracked event${p.count===1?'':'s'}</strong><span>First tracked: ${fmtDate(dates[0])}</span><span>Last tracked: ${fmtDate(dates.at(-1))}</span></div>`;
+    }).join('');
+    return `<section class="profile-clan-history" aria-label="Recorded clan participation"><h3>Recorded Clan Participation</h3><div class="profile-clan-note">Original event-time clan results only. First/last tracked dates are NOT join, departure or transfer dates; current roster status is shown above.</div><div class="profile-clan-grid">${cards||'<div class="empty">No clan-attributed results tracked yet.</div>'}</div></section>`;
+  }
+
   function openPlayer(name){
     const canonicalName=canonicalPlayerName(name);
     const m=MEMBERS.get(canonicalName) || MEMBERS.get(name) || D.members.find(x=>x.name===canonicalName||x.name===name);
@@ -2190,6 +2216,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     $('#playerModalContent').innerHTML=`
       <div class="profile-head"><div class="avatar">${initials(name)}</div><div><div class="profile-name">${escapeHtml(name)}</div><div class="profile-status">${statusBadge(m.status,name)}</div></div></div>
       ${window.AVENGERS_COMMUNITY?.profileHtml(name)||''}
+      ${profileClanEvidenceHtml(name)}
       ${['space','piggy','flash'].map(kind=>{
         const events=window.AVENGERS_EVENT_PROJECTION?.events||[];
         const eventMap=new Map(events.map(e=>[e.id,e]));

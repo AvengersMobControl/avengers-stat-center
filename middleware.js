@@ -50,6 +50,7 @@ export default async function middleware(request){
     // verified restricted runtime role, channel allowlist and send-once ledger.
     // Do NOT use a generic /api/discord prefix: only the exact one-off path.
     p==='/api/discord-canary' ||
+    p==='/api/discord-publish-av2' ||
     p.startsWith('/api/guest/') ||
     p==='/mcp' ||
     p.startsWith('/.well-known/') ||

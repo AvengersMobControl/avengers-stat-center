@@ -337,12 +337,12 @@
 
   function bindPlayers(root){
     root.querySelectorAll('[data-kr-player]').forEach(b=>b.onclick=()=>{
-      const n=b.dataset.krPlayer;
-      document.querySelector('.nav-btn[data-page="players"]')?.click();
-      setTimeout(()=>{
-        const input=document.getElementById('p2ExplorerInput');
-        if(input){input.value=n;input.dispatchEvent(new Event('change',{bubbles:true}));}
-      },50);
+      const name=b.dataset.krPlayer;
+      // Show the same canonical player modal as roster, ratings and records.
+      // Event-time clan attribution is still retained on the Kraken table.
+      if(window.AVENGERS_OPEN_PLAYER_PROFILE?.(name))return;
+      // Historical participant without a current mapped profile: no phantom
+      // account or fabricated roster membership is created by this click.
     });
   }
 

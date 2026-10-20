@@ -15,12 +15,12 @@ test('original leader approximation is NOT an instruction to exclude Flash or fo
  const [a,b]=m.periods;
  assert.equal(a.end,'2026-09-06');
  assert.equal(b.end,'2026-10-11');
- assert.equal(a.recorded.knownSparksIncludingFlash,169303416);
- assert.equal(b.recorded.knownSparksIncludingFlash,174170820);
+ assert.equal(a.recorded.knownSparksIncludingFlash,169039623);
+ assert.equal(b.recorded.knownSparksIncludingFlash,173905886);
  assert.equal(a.recorded.knownSparksExcludingFlash,165773085);
  assert.equal(b.recorded.knownSparksExcludingFlash,170419011);
- assert.equal(a.recorded.flashSparks,3530331);
- assert.equal(b.recorded.flashSparks,3751809);
+ assert.equal(a.recorded.flashSparks,3266538);
+ assert.equal(b.recorded.flashSparks,3486875);
  assert.equal(m.scenarios.length,4);
  for(const s of m.scenarios){
   assert.equal(s.sourceScopeCertified,false);

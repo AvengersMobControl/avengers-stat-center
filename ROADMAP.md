@@ -1,3 +1,10 @@
+## October 19 — Latest completed live release and guarded remaining source proof
+
+- **DONE/LIVE #42:** PR #105 and Pages 39343265792 exact SHA/browser; same accepted event ledger version rebuilds all site sections and immutable exports, graph in `docs/EVENT_TO_SITE_DEPENDENCIES.md`. Issue #42 **closed**. This does not imply unattended Discord image ingestion.
+- **DONE/LIVE #6 source-presentation cleanup:** PR #106 merged `5fb5eb123e225e85a493dfce0a55ef342b20b8b0`, Pages 39344382226 success exact exported source/browser, Vercel success. Removed ratio leakage from all six-league tables and CSV; named/dated tracked known-only amount + source-coverage strip per selected league. Historical reference 165M/171M original basis still needs source confirmation; older Kraken estimates and partial images require proof; #6 open.
+- **STAGED #4 manual result change review:** PR #107 new `scripts/report-ingest-candidate.cjs` computes source/row/member/clan/league before-vs-proposed changes including null payouts and frozen Unlogged; emits JSON/CSV to local reports only with `readyToImport:false`. Source/review chain in `docs/INGEST_REVIEW_PACKET.md`. Needs CI, merge, Pages verification before deployed claim. Still no actual newly approved final screenshot import: Oct18 AV-2 Piggy held, Sacred Tier off-topic screenshot rejected.
+- **NO work on Council #7**, user's explicit exclusion; PNG template aesthetics deferred; all Discord automatic PNG posting OFF, UTC #3 paused, SAC untouched.
+
 ## October 19 — Post-#105 sitewide release proof and Clan League accuracy presentation
 
 - **#42 backend/release verification DONE:** PR [#105](https://github.com/AvengersMobControl/avengers-stat-center/pull/105) merged `a16332882cfc8be69b08ce36c2f14773a0353670`, Pages [39343265792](https://github.com/AvengersMobControl/avengers-stat-center/actions/runs/39343265792) SUCCESS pre/post verified browser, exact published source+exports; Vercel SUCCESS. Four event types insert / correct / revoke, member category/roster/ratings/league, immutable site version and exports regression. Dependency map `docs/EVENT_TO_SITE_DEPENDENCIES.md` in PR #106.

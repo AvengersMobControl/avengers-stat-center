@@ -1,3 +1,7 @@
+## 2026-10-20 — #12 navigation is canonical, supplemental previews not independent identities (STAGED)
+
+Decision: clickable member names throughout the site should open the **same** canonical player profile modal used by rosters, ratings, records, and source-backed event histories. Old Player Explorer remains a secondary stats preview but must not be confused with the full canonical profile. Achievement name clicks open full modal; separately named Badges preview actions retain curated milestone browsing. Every link resolves existing aliases; no new accounts, fabricated join dates, or reattribution. Add full browser regression for Kraken, Trends, Achievements, Explorer, Overview alias Quick Search. Source records, guest-pass authorization controls and Discord dispatch holds unchanged; **not LIVE until merge and exact production browser gate**.
+
 ## 2026-10-19 — VERIFIED LIVE: #12 new guest-pass atomic redemption rollout
 
 - [PR #115](https://github.com/AvengersMobControl/avengers-stat-center/pull/115) MERGED, code SHA `03e6dcccdd3c2dcf3f61afea4e271713529b357f`. [Pages run 39371956499](https://github.com/AvengersMobControl/avengers-stat-center/actions/runs/39371956499) **SUCCESS** including exact published SHA, exports and real browser before+after deployment. [main projection CI 39371956681](https://github.com/AvengersMobControl/avengers-stat-center/actions/runs/39371956681) **SUCCESS**. Vercel **production READY** matching this code SHA. Prior "STAGED" record is historical and superseded.

@@ -2387,6 +2387,14 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   function bindPlayerButtons(el=document){
     $$('[data-player]',el).forEach(btn=>btn.onclick=()=>openPlayer(btn.dataset.player));
   }
+  // Shared canonical modal entrypoint for independent Kraken, Trends and
+  // Achievements modules. Keep identity and the clean ?player= route identical.
+  window.AVENGERS_OPEN_PLAYER_PROFILE=function(rawName){
+    const resolved=canonicalPlayerName(rawName);
+    if(!MEMBERS.has(resolved))return false;
+    openPlayer(resolved);
+    return true;
+  };
 
   function exportCSV(kind){
     let rows=[], headers=[];

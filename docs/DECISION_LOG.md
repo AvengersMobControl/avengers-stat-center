@@ -1,3 +1,10 @@
+## 2026-10-19 — Final release verification for held AV-2 import guard / original league comparison
+
+- PR [#108](https://github.com/AvengersMobControl/avengers-stat-center/pull/108) is **MERGED and production verified** at `fb287d8d6d26fece4d41130a723a39fbae2dc5b7`, [Pages run 39357702384](https://github.com/AvengersMobControl/avengers-stat-center/actions/runs/39357702384) exact source/browser/export SUCCESS; Vercel and main CI SUCCESS. Earlier staged references superseded.
+- A manually set `approved:true` cannot override exact leader-held `piggy|2026-10-18` / AV-2 ingestion. Source apply fails; AVENGERS same-day corrections remain possible. Digest-gated manual local application is **not a replacement for original-byte image review nor actual leader item approval**.
+- Current league-known Sparks **Sep6 169,039,623 including Flash 3,266,538; Oct11 173,905,886 including Flash 3,486,875**; prior inflated source references superseded. Approx leader 165M→171M still missing original calculation/coverage and is **NOT** grounds to change valid Flash awards or historic estimated Kraken without source.
+- Issue #4 remains open for independently approved new actual final results; #6 open for external original historical headline evidence. User excluded Council #7 entirely. No Discord messages/automated PNG publication, UTC sync or held AV-2 results enabled; SAC never touched.
+
 ## 2026-10-19 — Correct stale six-league comparator after first post-Kraken no-Sparks fix
 
 The six-league audit now shows **prior 169,039,623** and **latest 173,905,886 AVENGERS known Sparks (including only valid Flash payouts)**; **3,266,538** and **3,486,875 Flash Sparks**. Dated older summaries (169,303,416 / 174,170,820; Flash 3,530,331 / 3,751,809) are **pre-no-Spark-correction observations, NOT current totals**, exceeding current by 263,793 and 264,934. Non-Flash 165,773,085 / 170,419,011 is unaffected. Neither scope proves what the user's rough 165M/171M screenshot/report included. No extra ledger adjustment; only audit expectations and provenance notes corrected. Issue #7 Council still excluded.

@@ -61,6 +61,9 @@ function apply(ledger,event,{approved=false,expectedRevision=0,aliases={}}={}){
   if(old&&stable(normalize(old,aliases))===stable(incoming))return {ledger:clone(ledger),action:'unchanged'};
   requireThat((old?.revision||0)===expectedRevision,'Revision conflict');
   if(old)requireThat(old.kind===incoming.kind&&old.unit===incoming.unit,'Event kind/unit cannot change');
+  // Hard source invariant, even when a caller sets approved:true directly.
+  // This lazy import avoids a module cycle with stable() used by hold checks.
+  require('./ingestion-source-holds.cjs').assertNotHeld(old,incoming);
   const next=clone(ledger),revision=(old?.revision||0)+1;
   next.events=next.events.filter(e=>e.id!==incoming.id).concat({...incoming,revision}).sort((a,b)=>a.id.localeCompare(b.id));
   next.changes.push({id:incoming.id,revision,before:old?clone(old):null,after:{...incoming,revision}});

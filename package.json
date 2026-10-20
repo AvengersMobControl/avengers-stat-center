@@ -1,0 +1,7 @@
+{
+  "name": "avengers-stat-center",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {"build": "node scripts/build-site.cjs"},
+  "dependencies": {"@neondatabase/serverless": "1.2.0"}
+}

@@ -140,7 +140,36 @@ module.exports=async function handler(req,res){
         'Browser: '+fp.ua+'\n'+
         '||'+useMarker+' '+marker+'||'
       );
+    }else if(invite.counterVersion===2){
+      // Atomic conditional UPDATE in private AVENGERS Neon; concurrent opens
+      // cannot both take the final slot. Failure to reach Neon fails closed.
+      const useNumber=await require('./atomic-counter').productionStore().reserve(invite);
+      const maxUses=Number(invite.maxUses);
+      if(useNumber===null){
+        await sendDm(dm.id,botToken,
+          '🚫 **AVENGERS guest pass blocked**\n'+
+          '**Pass:** '+passLabel+' · `'+passId+'`\n'+
+          '**Reason:** All '+maxUses+' uses taken, expired, or no registered pass found\n'+
+          '||'+marker+'||'
+        );
+        res.setHeader('Cache-Control','no-store');
+        res.status(410).send('This temporary guest link has expired or reached its allowed number of uses.');
+        return;
+      }
+      // A reserved slot counts even if Discord notification delivery fails.
+      // Notification is sent before granting a browser session; failure
+      // therefore cannot result in unlogged guest access.
+      await sendDm(dm.id,botToken,
+        '✅ **AVENGERS guest pass opened**\n'+
+        '**Pass:** '+passLabel+' · `'+passId+'`\n'+
+        '**Use:** '+useNumber+'/'+maxUses+' · **Expires:** '+inviteExpiry(invite)+'\n'+
+        'Client fingerprint: `'+fp.ipHash+'`\n'+
+        'Browser: '+fp.ua+'\n'+
+        '||'+useMarker+' '+marker+'||'
+      );
     }else{
+      // Legacy v1 signed invites keep counting Discord DM history until
+      // their existing expiry; registering them now would reset past uses.
       const successfulUses=await countSuccessfulUses(dm.id,botToken,useMarker,Number(invite.iat));
       const maxUses=Number(invite.maxUses)||3;
 

@@ -290,7 +290,7 @@
     function addPlayer(){
       if(!input)return;
       var raw=input.value.trim();
-      var name=allNames.find(function(n){return n.toLowerCase()===raw.toLowerCase();});
+      var name=matchedPlayerName(raw);
       if(!name)return;
       if(trendState.selected.indexOf(name)<0 && trendState.selected.length<6) trendState.selected.push(name);
       input.value='';
@@ -302,7 +302,7 @@
       b.onclick=function(){var n=this.getAttribute('data-remove-trend');trendState.selected=trendState.selected.filter(function(x){return x!==n;});renderTrends();};
     });
     document.querySelectorAll('#trendsContent [data-p2-player]').forEach(function(b){
-      b.onclick=function(){openExplorer(this.getAttribute('data-p2-player'));};
+      b.onclick=function(){openUnifiedProfile(this.getAttribute('data-p2-player'));};
     });
   }
 
@@ -381,6 +381,20 @@
       x=D.aliasMap[x];
     }
     return x;
+  }
+
+  function matchedPlayerName(raw){
+    // Normalize historical aliases before searching the one canonical roster.
+    // No name or membership record is ever created from a search string.
+    var canonical=canonicalNameFor(String(raw||'').trim());
+    return allNames.find(function(n){return n.toLowerCase()===canonical.toLowerCase();})||null;
+  }
+  function openUnifiedProfile(raw){
+    var canonical=matchedPlayerName(raw);
+    if(!canonical)return false;
+    if(window.AVENGERS_OPEN_PLAYER_PROFILE)return window.AVENGERS_OPEN_PLAYER_PROFILE(canonical);
+    openExplorer(canonical);
+    return true;
   }
 
   function combinedSparksFor(name){
@@ -509,7 +523,8 @@
     panel.innerHTML=
       '<div class="p2-explorer-head">'+
         '<div class="p2-field"><label>Individual Player Search</label><input id="p2ExplorerInput" list="p2ExplorerList" placeholder="Type a player name…"><datalist id="p2ExplorerList">'+dl+'</datalist></div>'+
-        '<button class="p2-primary-btn" id="p2ExplorerGo">View player</button>'+
+        '<button class="p2-primary-btn" id="p2ExplorerGo">Preview stats</button>'+
+        '<button class="p2-primary-btn" id="p2ExplorerOpenProfile">Open full profile</button>'+
       '</div>'+
       '<div id="p2ExplorerProfile"></div>';
     var before=page.querySelector('.players-toolbar');
@@ -519,10 +534,13 @@
     var go=document.getElementById('p2ExplorerGo');
     function pick(){
       var raw=(input&&input.value||'').trim();
-      var name=allNames.find(function(n){return n.toLowerCase()===raw.toLowerCase();});
+      var name=matchedPlayerName(raw);
       if(name){renderExplorer(name);input.value=name;}
     }
     if(go)go.onclick=pick;
+    document.getElementById('p2ExplorerOpenProfile')?.addEventListener('click',function(){
+      var name=matchedPlayerName(input&&input.value);if(name)openUnifiedProfile(name);
+    });
     if(input){
       input.onkeydown=function(e){if(e.key==='Enter'){e.preventDefault();pick();}};
       input.onchange=pick;
@@ -554,8 +572,8 @@
     function go(){
       var inp=document.getElementById('p2QuickPlayer');
       var raw=(inp&&inp.value||'').trim();
-      var name=allNames.find(function(n){return n.toLowerCase()===raw.toLowerCase();});
-      if(name)openExplorer(name);
+      var name=matchedPlayerName(raw);
+      if(name)openUnifiedProfile(name);
     }
     document.getElementById('p2QuickGo').onclick=go;
     document.getElementById('p2QuickPlayer').onkeydown=function(e){if(e.key==='Enter'){e.preventDefault();go();}};

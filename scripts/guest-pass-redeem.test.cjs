@@ -119,3 +119,32 @@ test('permanent links are still attributed and DM logged, but not capped',async(
     assert(notice.includes('AV_GUEST_USE:'+inv.p.jti));
   });
 });
+
+test('v2 atomic reservations cap successful sessions without scanning Discord history',async()=>{
+  const atomic=require('../api/guest/atomic-counter'),old=atomic.productionStore;
+  let used=0;
+  atomic.productionStore=()=>({reserve:async()=>used<2?++used:null});
+  try{
+    const invite=token({counterVersion:2,maxUses:2});
+    await withDiscord({list:()=>{throw Error('v2 must not scan legacy DM history')}},async calls=>{
+      const got=[];
+      for(let i=0;i<4;i++){const res=response();await redeem(req(invite.t),res);got.push(res);}
+      assert.deepEqual(got.map(x=>x.statusCode),[302,302,410,410]);
+      assert.equal(got.filter(x=>!!x.headers['Set-Cookie']).length,2);
+      assert.equal(calls.filter(c=>c.url.includes('/messages?')).length,0);
+      const messages=calls.filter(c=>c.opts.method==='POST'&&c.url.endsWith('/messages')).map(c=>JSON.parse(c.opts.body).content);
+      assert(messages.some(s=>s.includes('**Use:** 2/2')));
+      assert(messages.some(s=>s.includes('All 2 uses taken')));
+    });
+  }finally{atomic.productionStore=old}
+});
+test('unavailable v2 database never grants a cookie',async()=>{
+  const atomic=require('../api/guest/atomic-counter'),old=atomic.productionStore;
+  atomic.productionStore=()=>{throw Error('database offline')};
+  try{
+    await withDiscord({list:()=>[]},async()=>{
+      const res=response();await redeem(req(token({counterVersion:2}).t),res);
+      assert.equal(res.statusCode,503);assert.equal(res.headers['Set-Cookie'],undefined);
+    });
+  }finally{atomic.productionStore=old}
+});

@@ -1,3 +1,10 @@
+## 2026-10-20 — P0 SECURITY PREREQUISITE FOR #10: Kraken strategy member-only, NEVER guests
+
+- User explicitly prohibits Kraken strategy access through **any guest pass**, including permanent passes. Keep existing public Kraken event results/stats as they are. Only authenticated, authorized Discord OAuth **non-guest** AVENGERS server members may retrieve strategy-specific routes/maps/ticket allocations/optimization/exports.
+- The repository and GitHub Pages site are public: **not safe** to ship proprietary strategy rules, private inputs, optimizer source, or outputs in this repository, static JS, release bundles or exports; UI-only hiding fails security. Prior to #10 launch, design a private computation/data backend outside the public repo with *server-side* signed-session and membership verification, explicit guest/permanentGuest rejection, no-store responses, and denial on direct URLs.
+- **Release blockers:** negative API/browser tests for anonymous, temporary and permanent guest, invalid/expired sessions, direct links, and static artifact/source leaks; positive real Discord OAuth non-guest authorized member access. Do not launch until all pass. Full policy `docs/security/kraken-strategy-access.md`, issue #10.
+- No gameplay strategy code/data is published or changed by this policy work. Automatic Discord PNG posting OFF both clans/all events, #6 deferred, #7 excluded, UTC #3 paused, AV-2 Oct18 held, SAC separate.
+
 ## 2026-10-20 — VERIFIED LIVE: #12 identity navigation across all website sections
 
 - [PR #117](https://github.com/AvengersMobControl/avengers-stat-center/pull/117) **MERGED** frontend source SHA `72e1d79c56f65e956cbb3968639321326faccc4c`. [GitHub Pages run 39374742728](https://github.com/AvengersMobControl/avengers-stat-center/actions/runs/39374742728) **SUCCESS** including prepublish Playwright, deployed exact commit SHA, release exports, and postdeploy browser; [main projection CI run 39374742738](https://github.com/AvengersMobControl/avengers-stat-center/actions/runs/39374742738) **SUCCESS**; Vercel production **READY** exact same SHA.

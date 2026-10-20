@@ -250,6 +250,13 @@ async function main(){
     });
     const profileText=await page.locator('#playerModalContent').textContent(); // wrapped UI labels can insert visual line breaks in innerText
     assert(profileText.includes('Space Event Results'),'Space event history is retained');
+    const shareButton=page.locator('#playerModalContent [data-copy-profile-link]');
+    assert.equal(await shareButton.count(),1,'canonical player share action is visible');
+    const canonicalShare=await shareButton.getAttribute('data-profile-url');
+    assert.equal(new URL(canonicalShare).searchParams.get('player'),'AV-HarryBallsagna');
+    assert.equal(new URL(canonicalShare).searchParams.size,1,'copied link excludes unrelated auth/query data');
+    assert.equal(new URL(page.url()).searchParams.get('player'),'AV-HarryBallsagna');
+
     assert(profileText.includes('This Clan League vs Career'),'current league comparison is prominent above event details');
     assert.equal(await page.locator('#playerModalContent .profile-league-kpi').count(),3,'event / earned Spark / earned Star comparison');
     assert.equal(await page.locator('#playerModalContent .profile-league-kind').count(),4,'all four categories have career comparisons');
@@ -311,6 +318,19 @@ async function main(){
 
     assert(!linInfo.includes('Sparks/Effort'),'the scope-restricted ratio must never enter profiles');
     await page.keyboard.press('Escape');
+    assert.equal(new URL(page.url()).searchParams.has('player'),false,'closing profile cleans share query');
+    // Deep-link / alias restore across clans never creates a phantom player.
+    await page.goto(origin+'?player='+encodeURIComponent('AV-2Lin'),{waitUntil:'networkidle'});
+    assert(await page.locator('#playerModal').isVisible(),'player deep link opens profile after page load');
+    assert((await page.locator('#playerModalContent .profile-name').innerText()).includes('AV-Lin'),
+      'historic AV-2Lin alias resolves to one canonical AV-Lin profile');
+    assert.equal(new URL(await page.locator('[data-copy-profile-link]').getAttribute('data-profile-url')).searchParams.get('player'),'AV-Lin');
+    await page.keyboard.press('Escape');
+    assert(!new URL(page.url()).searchParams.has('player'),'closing deep-linked profile restores the clean URL');
+    await page.goto(origin+'?player='+encodeURIComponent('not-a-real-member'),{waitUntil:'networkidle'});
+    assert.equal(await page.locator('#playerModal').getAttribute('aria-hidden'),'true',
+      'unrecognized deep link is rejected without injecting a profile');
+    await page.goto(origin,{waitUntil:'networkidle'});
     await page.click('.nav-btn[data-page="weeklyRecap"]');
     await page.selectOption('#recapWeek','2026-10-05');
     const download=page.waitForEvent('download');await page.click('#downloadWeeklyRecap');const image=await download;

@@ -2,31 +2,37 @@
 const test=require('node:test'),assert=require('node:assert/strict');
 const {create}=require('./create-site-release.cjs');
 const updates=require('../data/approved-event-updates.json').updates;
-test('October 18 AVENGERS-only Piggy approved source remains complete, distinct and AV-2 held',()=>{
-  const matches=updates.filter(x=>x.event?.id==='piggy|2026-10-18');
-  assert.equal(matches.length,1,'No duplicate or partial duplicate import');
-  const u=matches[0],event=u.event;
-  assert.equal(u.approved,true);
-  assert.equal(event.status,'partial','AV-2 held; overall event cannot be marked complete');
-  assert.deepEqual([...new Set(event.rows.map(r=>r.clan))],['AVENGERS']);
-  assert.equal(event.rows.length,50);
-  assert.equal(event.sources.length,2);
-  assert.ok(event.sources.every(s=>/^discord-original-jpeg-sha256:[0-9a-f]{64}$/.test(s)));
-  const rows=[...event.rows].sort((a,b)=>a.metadata.rank-b.metadata.rank);
-  assert.deepEqual(rows.map(r=>r.metadata.rank),Array.from({length:50},(_,i)=>i+1));
-  assert.deepEqual(rows.slice(0,3).map(r=>[r.player,r.score]),[
-    ['AV-SiFra',44258],['AV-Chuck',44182],['AV-WolfLegend',43651]
-  ]);
-  assert.equal(rows.reduce((s,r)=>s+r.score,0),971186);
-  assert.equal(rows.reduce((s,r)=>s+r.sparks,0),9701649);
-  assert.equal(rows.reduce((s,r)=>s+r.stars,0),97016544);
-  for(const [threshold,count] of [[40000,3],[30000,11],[20000,23],[10000,38],[5000,48]]){
-    assert.equal(rows.filter(r=>r.score>=threshold).length,count,threshold+'+ recorded places');
-  }
-  assert.equal(rows.filter(r=>r.metadata.starsDerived).length,29);
-  const release=create(),published=release.projection.events.find(e=>e.id==='piggy|2026-10-18');
-  assert.ok(published);
-  assert.equal(published.rows.filter(r=>r.clan==='AVENGERS').length,50);
-  assert.equal(published.rows.filter(r=>r.clan==='AV-2').length,0);
-  assert.equal(release.projection.coverage.unassignedRows.length,0);
+const holds=require('../data/ingestion-result-holds.json');
+
+test('Oct18 original AVENGERS 50 retained and leader-released AV-2 19 appended exactly once',()=>{
+ const matches=updates.filter(x=>x.event?.id==='piggy|2026-10-18');
+ assert.equal(matches.length,2,'Original approval and separate authorized correction retained');
+ assert.deepEqual(matches.map(u=>u.expectedRevision),[0,1]);
+ assert.equal(matches[0].event.rows.length,50);
+ assert.deepEqual([...new Set(matches[0].event.rows.map(r=>r.clan))],['AVENGERS']);
+ const original=matches[0].event.rows;
+ assert.equal(original.reduce((s,r)=>s+r.score,0),971186);
+ assert.equal(original.reduce((s,r)=>s+r.sparks,0),9701649);
+ assert.equal(original.reduce((s,r)=>s+r.stars,0),97016544);
+ const event=matches[1].event;
+ assert.equal(event.status,'final');
+ assert.equal(matches[1].approved,true);
+ assert.equal(event.rows.length,69);
+ assert.deepEqual(event.rows.slice(0,50),original,'Existing AVENGERS history remains byte-equivalent');
+ const av2=event.rows.filter(r=>r.clan==='AV-2');
+ assert.equal(av2.length,19);
+ assert.equal(av2.reduce((s,r)=>s+r.score,0),56925);
+ assert.equal(av2.reduce((s,r)=>s+(r.stars||0),0),4178040);
+ assert.equal(av2.reduce((s,r)=>s+(r.sparks||0),0),417799);
+ assert.equal(Math.round(av2.reduce((s,r)=>s+(r.metadata?.share||0),0)*1000)/10,71);
+ assert.equal(new Set(av2.map(r=>r.player)).size,19);
+ assert.deepEqual(av2.map(r=>r.metadata.rank),[1,2,3,4,5,6,7,8,9,10,12,13,14,18,19,21,27,49,50]);
+ assert.ok(av2.every(r=>r.metadata.lobby==='AV-2-main'));
+ assert.ok(av2.filter(r=>[49,50].includes(r.metadata.rank)).every(r=>r.stars===null&&r.sparks===null));
+ assert.ok(event.sources.filter(s=>s.startsWith('leader-supplied-original-png-sha256:')).length===6);
+ assert.ok(holds.releases.some(h=>h.eventId===event.id&&h.clan==='AV-2'&&h.status==='released'));
+ assert.ok(!holds.holds.some(h=>h.eventId===event.id&&h.clan==='AV-2'));
+ const published=create().projection.events.find(e=>e.id===event.id);
+ assert.ok(published);assert.equal(published.rows.filter(r=>r.clan==='AVENGERS').length,50);
+ assert.equal(published.rows.filter(r=>r.clan==='AV-2').length,19);
 });

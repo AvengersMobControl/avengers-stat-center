@@ -1,3 +1,8 @@
+## October 19 — Member profiles: explicit historical clan participation (issue #12, staged)
+
+- Show each player’s tracked AVENGERS and/or AV-2 event history on their canonical profile, deduplicated by source event and event-time clan. Display first/last **recorded event dates** and tracked-event count, explicitly NOT claimed actual join/departure/transfer dates. A cross-clan AV-Lin browser test guards source attribution; historic event rows, current roster status, frozen Unlogged and all Sparks/Stars untouched. Code is staged and must pass browser CI, reviewed PR, merge and exact Pages verified release before considered live.
+- PR #108 merged after green PR checks: AV-2 Oct18 canonical ingestion source hold and read-only six-league headline sensitivity. Vercel exact source SHA READY; Pages release verification pending at time of this entry. Both #4 and #6 remain open pending *external* original proof/approval; #7 explicitly excluded, PNG auto dispatch OFF.
+
 ## October 19 — Correction to pre-no-Spark six-league reference numbers
 
 Current accepted audit **after PR #104**: AVENGERS Sep6 ending **169,039,623** (Flash **3,266,538**), Oct11 ending **173,905,886** (Flash **3,486,875**). Previous 169,303,416 / 174,170,820 figures are superseded pre-correction snapshots; compare non-Flash **165,773,085 / 170,419,011** ONLY as unverified sensitivity, never as instruction to discard correct Flash rewards. Verified counts from accepted source still do not independently certify the leader's approximate 165M /171M headline. #6 remains open for missing original reference. #4 hard event source hold and manual review digest in PR #108 stage, #7 excluded, Discord PNG sending OFF.

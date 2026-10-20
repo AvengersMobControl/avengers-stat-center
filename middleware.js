@@ -46,6 +46,10 @@ export default async function middleware(request){
   if(
     p.startsWith('/api/auth/') ||
     p.startsWith('/api/discord/') ||
+    // Single-purpose CANARY endpoint enforces its own strong, expiring token,
+    // verified restricted runtime role, channel allowlist and send-once ledger.
+    // Do NOT use a generic /api/discord prefix: only the exact one-off path.
+    p==='/api/discord-canary' ||
     p.startsWith('/api/guest/') ||
     p==='/mcp' ||
     p.startsWith('/.well-known/') ||

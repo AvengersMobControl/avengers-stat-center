@@ -1,3 +1,7 @@
+## 2026-10-19 — New profile clan history PR #109 (staged, user source protected)
+
+Issue #12 UX: canonical player profiles now show tracked AVENGERS/AV-2 participation from original **event-time** approved results: distinct event counts and first/last recorded results, **NOT** membership arrival, departure or transfer dates. AV-Lin cross-clan regression verifies both historical clans; current membership status remains separate. This UI code is staged until CI+merge+exact Pages/browser verification; no scores, historical clan attribution, prior-logging Sparks or Discord posting permissions changed. PR #108 source guard is already independently production verified (Pages 39357702384); #4/#6 original-evidence blockers remain open. Council #7 excluded; SAC separate.
+
 ## 2026-10-19 — VERIFIED LIVE: held-result intake guard + current six-league evidence
 
 [PR #108](https://github.com/AvengersMobControl/avengers-stat-center/pull/108) merged to main SHA `fb287d8d6d26fece4d41130a723a39fbae2dc5b7`; [GitHub Pages run 39357702384](https://github.com/AvengersMobControl/avengers-stat-center/actions/runs/39357702384) SUCCESS for prepublish browser, Pages deploy and **EXACT published source commit/exports/post-deploy browser verification**; Vercel SUCCESS, main projection CI SUCCESS. Supersedes the earlier **STAGED** checkpoint below.

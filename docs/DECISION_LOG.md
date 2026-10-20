@@ -1,3 +1,8 @@
+## 2026-10-19 — Website member profile provenance without invented transfers
+
+- Feature PR #109 shows canonical player AVENGERS and AV-2 results as separately tracked event-time clan histories, with explicit first/last recorded-result dates and unique event counts. Never infer actual join/departure/transfer dates from incomplete event screenshots. Cross-clan AV-Lin browser regression included; current roster status, scores, alias mapping and frozen Unlogged Sparks unchanged. **Staged**, pending reviewed CI, merge, exact Pages/browser release.
+- PR #108 already has completed independent Pages/browser Vercel verification; hold AV-2 Oct18 Piggy rows, issue #4 and #6 source evidence pending, #7 excluded, all auto Discord PNG posting disabled, UTC #3 paused, SAC separate.
+
 ## 2026-10-19 — Final release verification for held AV-2 import guard / original league comparison
 
 - PR [#108](https://github.com/AvengersMobControl/avengers-stat-center/pull/108) is **MERGED and production verified** at `fb287d8d6d26fece4d41130a723a39fbae2dc5b7`, [Pages run 39357702384](https://github.com/AvengersMobControl/avengers-stat-center/actions/runs/39357702384) exact source/browser/export SUCCESS; Vercel and main CI SUCCESS. Earlier staged references superseded.

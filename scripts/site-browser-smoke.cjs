@@ -271,6 +271,21 @@ async function main(){
     assert(!profileText.includes('Piggy Reward / Effort')&&!profileText.includes('Flash Reward / Effort'),'no Piggy/Flash ratios');
     assert.equal(checks.pb,549.9);assert.equal(checks.pb,checks.achievement);assert.equal(checks.pb,checks.expected);
     await page.keyboard.press('Escape');
+    // Verified cross-clan account: source event dates are NOT fabricated roster transfer dates.
+    await page.fill('#playerSearch','AV-Lin');
+    const linProfile=page.locator('#page-players [data-player="AV-Lin"]').first();
+    assert(await linProfile.count(),'Lin canonical profile is available after consolidation');
+    await linProfile.click();
+    const linCards=page.locator('#playerModalContent .profile-clan-entry');
+    assert.equal(await linCards.count(),2,'Lin has distinct source-attributed AVENGERS and AV-2 histories');
+    assert.equal(await page.locator('#playerModalContent [data-tracked-clan="AVENGERS"]').count(),1);
+    assert.equal(await page.locator('#playerModalContent [data-tracked-clan="AV-2"]').count(),1);
+    const linInfo=await page.locator('#playerModalContent .profile-clan-history').textContent();
+    assert(linInfo.includes('NOT join, departure or transfer dates'), 'historical event dates must not imply official transfer dates');
+    const sourceClans=await page.evaluate(()=>[...new Set((window.AVENGERS_EVENT_PROJECTION.people.find(p=>p.name==='AV-Lin')?.history||[]).map(r=>r.clan).filter(Boolean))]);
+    assert(sourceClans.includes('AV-2')&&sourceClans.includes('AVENGERS'),'cross-clan timeline matches canonical source');
+    assert(!linInfo.includes('Sparks/Effort'),'the scope-restricted ratio must never enter profiles');
+    await page.keyboard.press('Escape');
     await page.click('.nav-btn[data-page="weeklyRecap"]');
     await page.selectOption('#recapWeek','2026-10-05');
     const download=page.waitForEvent('download');await page.click('#downloadWeeklyRecap');const image=await download;

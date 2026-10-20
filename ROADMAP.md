@@ -1,3 +1,7 @@
+## October 19 — Source-faithful player profile clan participation (#12, PR #109 staged)
+
+- Compact per-member history panel derives AVENGERS/AV-2 event counts and first/last TRACKED event dates from the approved event-time clan source. It explicitly warns these are **not** actual membership join/departure/transfer dates. Regression uses AV-Lin's reviewed AV-2 and AVENGERS results. Site/source ledger and current membership untouched. PR #109 requires tests, merge and exact live published-source browser verification before claiming deployment. Council #7 excluded, screenshot and Discord send holds unchanged.
+
 ## October 19 — Production-verified continuation of incomplete work (#4, #6), #7 excluded
 
 - **DONE / LIVE PR #108**: source SHA `fb287d8d6d26fece4d41130a723a39fbae2dc5b7`, [Pages 39357702384](https://github.com/AvengersMobControl/avengers-stat-center/actions/runs/39357702384) SUCCESS exact published SHA/exports/browser, Vercel/CI SUCCESS. Canonical AV-2 Oct18 Piggy ingestion **hard blocked**; exact current review-digest required for manual source application. No actual new results imported; original image proof/explicit member-row approval still needed to close #4.

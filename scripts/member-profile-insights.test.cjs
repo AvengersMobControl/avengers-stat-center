@@ -39,7 +39,7 @@ test('missing amounts stay missing, Kraken never has stars, and estimated reward
 });
 test('recent trend compares latest three known scores with prior three, not zeros for missing',()=>{
  const scored=[100,100,100,150,150,150].map((n,i)=>row('piggy|'+i,'2026-09-'+String(i+10).padStart(2,'0'),'piggy',n,100,1000));
- const s=I.summarize(scored,'2026-10-19');
+ const s=I.summarize(scored,'2026-11-16');
  const k=s.kinds.find(x=>x.kind==='piggy');
  assert.equal(k.careerKnownScores,6);
  assert.equal(k.recentVersusPrior,0.5);

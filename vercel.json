@@ -37,5 +37,6 @@
     }
   ],
   "buildCommand": "node scripts/build-site.cjs",
-  "outputDirectory": "dist"
+  "outputDirectory": "dist",
+  "ignoreCommand": "node scripts/vercel-ignore-preview.cjs"
 }

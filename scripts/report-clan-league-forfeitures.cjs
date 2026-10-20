@@ -42,6 +42,9 @@ function evaluate(periods,sourcePolicy=policy,approximations={'2026-09-06':16500
    residualVersusRoundedReference:source-deducted-approximations[end],
    allSpecifiedMembersFound:affected.every(e=>e.status==='found_in_approved_event_rows'),
    allMemberSparksKnown:complete,
+   partialEventSets:p.partialEvents?.length??null,
+   historicalKrakenEstimatedSparks:p.clanSums.AVENGERS.estimatedKraken??null,
+   unknownEventTimeClanRows:p.clanSums.Unknown?.events??null,
    coverageNote:'Derived comparison, not independent certification of complete official league score'};
  });
  return {schemaVersion:1,source:'leader-confirmed forfeiture rule + accepted event-time clan ledger',

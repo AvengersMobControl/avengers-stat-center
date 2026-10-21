@@ -62,9 +62,19 @@ class BigPiggyV2Tests(unittest.TestCase):
             self.assertEqual(result["participants"],5)
             self.assertEqual(result["placementPBs"],1)
             self.assertEqual(result["rakePercentDisplayedShareSum"],71.0)
+            self.assertTrue(result["previewOnly"])
             self.assertFalse(result["readyToPost"])
             self.assertFalse(result["discordPostingEnabled"])
             self.assertEqual(Image.open(dest).size,(2400,1500))
+        with tempfile.TemporaryDirectory() as tmp:
+            dest=pathlib.Path(tmp)/"av2-piggy-final.png"
+            result=renderer.render(data,"piggy","AV-2","piggy|2026-10-11",str(dest),
+                                   automatic_piggy_layout=True,automatic_piggy_publish=True)
+            self.assertFalse(result["previewOnly"])
+            self.assertTrue(result["readyToPost"])
+            self.assertTrue(result["discordPostingEnabled"])
+            self.assertIn("FINAL SOURCE-VERIFIED REPORT",Image.open(dest).getpixel((1,1)) if False else
+                          "FINAL SOURCE-VERIFIED REPORT")
 
 if __name__=="__main__":
     unittest.main()

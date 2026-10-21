@@ -81,17 +81,19 @@
     }
     return {byPlayer:bestByPlayer,byEvent};
   }
-  // Career podiums derived from literal finishing positions in qualifying
-  // AVENGERS Piggy lobbies. No score-based re-ranking or AV-2 bleed-through.
-  // Each event can contribute at most one placement per canonical account.
-  function careerPodiums(events){
+  // Career podiums derived from literal finishing positions in qualifying,
+  // event-time clan-specific Piggy lobbies. Each event contributes at most one
+  // placement per canonical account; AVENGERS and AV-2 remain independent.
+  function careerPodiums(events,clan='AVENGERS'){
+    if(!['AVENGERS','AV-2'].includes(clan))throw Error('Unsupported event-time clan');
+    const minParticipants=clan==='AV-2'?MIN_AV2_IN_LOBBY:MIN_AVENGERS_IN_LOBBY;
     const byPlayer=new Map(),byEvent=new Map();
     const ordered=(Array.isArray(events)?events:[])
       .filter(e=>e?.kind==='piggy'&&e.status!=='revoked')
       .slice().sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))
                          ||String(a.id||'').localeCompare(String(b.id||'')));
     for(const event of ordered){
-      const valid=bestFinishes([event]).byPlayer;
+      const valid=bestFinishes([event],{clan,minParticipants}).byPlayer;
       const records=[];
       for(const [player,place] of valid){
         if(place>3)continue;

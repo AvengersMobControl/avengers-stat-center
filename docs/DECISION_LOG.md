@@ -1,3 +1,5 @@
+**Visual asset gate:** current v2 preview is data/layout-only and contains no character artwork. The twelve approved original PNGs remain Library-only; no copies have been published into the repository. Do not mark the template approved or enable PNG dispatch until a safe, deterministic asset delivery path is approved or the leader explicitly accepts a text-only design. No unapproved characters were generated or substituted.
+
 ## 2026-10-21 — Big Piggy automatic posting: guarded implementation, activation held
 
 Leader explicitly requested automatic Big Piggy results posting. PR [#138](https://github.com/AvengersMobControl/avengers-stat-center/pull/138) stages an hourly GitHub Actions workflow and OIDC-authenticated Vercel publisher. It sends only source-derived final reports from the exact current main revision, verifies original PNG bytes and message text, reserves a durable event+clan slot before send, and records exact Discord message/attachment readback. Corrections, deletes, source screenshot OCR/import, and unapproved results are never automatic. Existing 2026-10-18 final data is a baseline, not an automatic backfill.

@@ -73,7 +73,10 @@ test('wrong guild or unapproved channel never reads messages or saves',async()=>
   const r=await backfillPage(channel,env,store(),outside);
   assert.equal(r.status,403);
   assert.equal(outside.called.length,1);
-  const no=await backfillPage(other,env,store(),fakeFetch([]));
+  const foreign=(url)=>url.endsWith('/channels/'+other)
+    ?response({id:other,guild_id:guild,type:0})
+    :Promise.reject(Error('History must never be read for unapproved channel'));
+  const no=await backfillPage(other,env,store(),foreign);
   assert.equal(no.status,403);
 });
 

@@ -191,3 +191,15 @@ test('AV-2 finishing-place PBs use an independent five-participant same-lobby th
   assert.equal(placementHistory([later,early]).byEvent.get(later.id).some(x=>x.player==='AV2Hero'),false,
     'AV-2 rank PBs never bleed into the AVENGERS qualifying stream');
 });
+
+test('AV-2 career podium counts are independent and require five distinct same-lobby members',()=>{
+ const av2race=(id,date,rank,size=5)=>({id,kind:'piggy',date,status:'final',rows:Array.from({length:size},(_,i)=>({
+  player:i===0?'AV2Hero':'AV2 '+i,clan:'AV-2',score:1000-i*10,metadata:{rank:i===0?rank:i+1,lobby:'av2-main'}
+ }))});
+ const {careerPodiums}=require('../roster-piggy-pb-rank.js');
+ const qualifying=av2race('piggy|2026-10-11','2026-10-11',1,5);
+ const small=av2race('piggy|2026-10-18','2026-10-18',1,4);
+ assert.deepEqual(careerPodiums([qualifying,small],'AV-2').byPlayer.get('AV2Hero'),
+  {wins:1,secondPlaces:0,thirdPlaces:0,podiums:1});
+ assert.equal(careerPodiums([qualifying],'AVENGERS').byPlayer.has('AV2Hero'),false);
+});

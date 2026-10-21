@@ -79,7 +79,7 @@ function buildPiggyMessage(event,clan,report,siteUrl){
    const shares=rows.map(r=>num(r.metadata?.share));
    if(lobbies.size===1&&shares.every(x=>x!==null))rake=shares.reduce((a,b)=>a+b,0)*100;
   }
-  if(pot||rake!==null)lines.push('AV-2 lobby pot: **'+(pot||'unknown')+'** · RAKE: **'+(rake===null?'unknown':rake.toFixed(1)+'%')+'** (sum of displayed shares)');
+  if(pot||rake!==null)lines.push('Whole-lobby displayed pot: **'+(pot||'unknown')+'** · RAKE: **'+(rake===null?'unknown':rake.toFixed(1)+'%')+'** (sum of displayed shares)');
  }
  if(top)lines.push('','**Top five by lines**',top);
  if(typeof report.weekToWeekGrowthPercent==='number'&&Number.isFinite(report.weekToWeekGrowthPercent))

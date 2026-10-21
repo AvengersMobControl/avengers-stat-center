@@ -17,5 +17,5 @@
   "destinationChannelId": "1470175579058999386",
   "activationRequiresProductionEnvironmentSwitch": true,
   "activationRequiresNeonSafetyFlags": true,
-  "note": "Enable only after leader visually approves the v2 Piggy template, migration and live dispatch checks pass. Never backfill the already-recorded 2026-10-18 event."
+  "note": "Keep disabled until the leader approves the v2 visual template, an authorized deterministic path for the original Library-only character PNGs is resolved (or text-only art is explicitly approved), migration 003 is approved/applied, and the real approved-report canary passes. The 2026-10-18 event is a non-backfill baseline."
 }

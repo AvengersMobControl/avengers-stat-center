@@ -15,3 +15,14 @@ ALTER TABLE avengers_dispatch_private.runtime_safety
   CHECK (automatic_discord_delete_enabled = FALSE);
 ALTER TABLE avengers_dispatch_private.send_intents
   DROP CONSTRAINT IF EXISTS send_intents_approved_for_automatic_send_check;
+ALTER TABLE avengers_dispatch_private.send_intents
+  ADD CONSTRAINT automatic_send_is_first_publication_only
+  CHECK (NOT approved_for_automatic_send OR intent_kind = 'first');
+ALTER TABLE avengers_dispatch_private.audit_events
+  DROP CONSTRAINT IF EXISTS audit_events_action_check;
+ALTER TABLE avengers_dispatch_private.audit_events
+  ADD CONSTRAINT audit_events_action_check CHECK (action IN (
+    'manual_authorization_recorded','automatic_authorization_recorded',
+    'manual_receipt_recorded','api_receipt_recorded','replacement_receipt_recorded',
+    'old_message_retirement_attested','manual_reconciliation_required','manual_intent_canceled'
+  ));

@@ -68,6 +68,18 @@ function buildPiggyMessage(event,clan,report,siteUrl){
   if(pot||rake!==null)lines.push('AV-2 lobby pot: **'+(pot||'unknown')+'** · RAKE: **'+(rake===null?'unknown':rake.toFixed(1)+'%')+'** (sum of displayed shares)');
  }
  if(top)lines.push('','**Top five by lines**',top);
+ if(typeof report.weekToWeekGrowthPercent==='number'&&Number.isFinite(report.weekToWeekGrowthPercent))
+  lines.push('', 'Total lines vs prior final Piggy: '+(report.weekToWeekGrowthPercent>=0?'+':'')+report.weekToWeekGrowthPercent.toFixed(1)+'%.');
+ const milestones=Array.isArray(report.milestones)?report.milestones:[];
+ if(milestones.length){
+  lines.push('', '**Line milestones**',milestones.map(m=>(Number(m.threshold)/1000)+'K+ '+Number(m.count)+(m.record?' 🏆':'')).join(' · '));
+  lines.push('GOLD = CLAN RECORD OR TIED RECORD');
+ }
+ const career=Array.isArray(report.topThreeCareer)?report.topThreeCareer.filter(x=>x&&x.careerPodiums):[];
+ if(career.length){
+  lines.push('', '**Top-three recorded career podiums (W / 2nd / 3rd / P)**',
+   career.map(x=>x.player+' '+x.careerPodiums.wins+'/'+x.careerPodiums.secondPlaces+'/'+x.careerPodiums.thirdPlaces+'/'+x.careerPodiums.podiums).join(' · '));
+ }
  if(t.unknownStarRows||t.unknownSparkRows)
   lines.push('', 'Reward data: '+t.unknownStarRows+' unknown Star rows and '+t.unknownSparkRows+' unknown Spark rows; unknown values are not treated as zero.');
  const pbs=Number.isInteger(report.linePBs)?report.linePBs:null;

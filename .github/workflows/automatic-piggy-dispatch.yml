@@ -7,7 +7,7 @@ on:
       mode:
         description: Preview the pinned v2 report, or run the guarded dispatcher
         type: choice
-        options: [preview, dispatch]
+        options: [preview, verify, dispatch]
         default: preview
         required: true
       event_id:
@@ -59,6 +59,11 @@ jobs:
             reports/automatic-piggy-v2-*.txt
           if-no-files-found: error
           retention-days: 7
+      - name: Verify production OIDC endpoint without sending
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'verify'
+        env:
+          AVENGERS_PIGGY_DISPATCH_URL: https://avengers-stat-center.vercel.app/api/dispatch-approved-piggy
+        run: node scripts/automatic-piggy-dispatch.cjs verify-endpoint
       - name: Run guarded automatic dispatch
         if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.mode == 'dispatch')
         env:

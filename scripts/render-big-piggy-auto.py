@@ -84,7 +84,9 @@ def resolve_summary(release, kind, clan, event_id=None):
         raise ValueError("Selected event has no " + clan + " results")
     if event.get("unit") != KINDS[kind][2]:
         raise ValueError("Event unit mismatch; do not mix damage with lines or Space distance")
-    source_rows = [r for r in event["rows"] if r.get("clan") == clan]
+    source_rows = [r for r in event["rows"] if r.get("clan") == clan and r.get("score") != 1]
+    if not source_rows:
+        raise ValueError("Selected event has no participating " + clan + " results")
     rows = sorted(source_rows, key=lambda r: (numeric(r.get("score")) is None,
                             -(numeric(r.get("score")) or 0), r.get("player") or ""))
     people = {p["name"]: p for p in projection.get("people", [])}

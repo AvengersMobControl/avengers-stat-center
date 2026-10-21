@@ -64,8 +64,17 @@ def fixture():
             "flash": {"pbs": [{"eventId": "flash|2026-10-13|2", "score": 13000,
                                     "firstRecorded": True, "newPB": False}]}}}
     ]
+    events[1]["metadata"] = {"av2DisplayedPotStars": "2.0M",
+                             "av2RakePercentDisplayedShareSum": 71.0}
     return {"schemaVersion": 1, "source": "approved-event-ledger",
-            "projection": {"version": VERSION, "events": events, "people": people}}
+            "projection": {"version": VERSION, "events": events, "people": people},
+            "piggyPlacementPBsByClan": {
+                "AVENGERS": {"piggy|2026-10-11": [
+                    {"player": "AV-A", "previousRank": 5, "newRank": 1,
+                     "improved": True, "previousDate": "2026-10-02"}]},
+                "AV-2": {"piggy|2026-10-11": [
+                    {"player": "AV-B", "previousRank": 7, "newRank": 2,
+                     "improved": True, "previousDate": "2026-10-02"}]}}}
 
 
 class ApprovedSourceModelTests(unittest.TestCase):
@@ -168,6 +177,26 @@ class ApprovedSourceModelTests(unittest.TestCase):
                 self.assertEqual(result["kind"],kind)
                 self.assertEqual(Image.open(out).size,(2400,1500))
 
+
+
+    def test_auto_piggy_v2_shows_independent_rank_pbs_and_av2_rake(self):
+        data = fixture()
+        av2 = renderer.resolve_summary(data, "piggy", "AV-2")
+        self.assertEqual(av2["displayedPotStars"], "2.0M")
+        self.assertEqual(av2["rakePercentDisplayedShareSum"], 71.0)
+        self.assertEqual([(x["previousRank"], x["newRank"]) for x in av2["placementPBs"]], [(7, 2)])
+        try:
+            from PIL import Image
+        except ImportError:
+            self.skipTest("Pillow test runs in CI once dependency installed")
+        with tempfile.TemporaryDirectory() as tmp:
+            dest = pathlib.Path(tmp) / "piggy-av2.png"
+            result = renderer.render(data, "piggy", "AV-2", "piggy|2026-10-11", str(dest),
+                                     automatic_piggy_layout=True)
+            self.assertEqual(result["templateVersion"], "piggy-auto-v2-20261021")
+            self.assertFalse(result["readyToPost"])
+            self.assertFalse(result["discordPostingEnabled"])
+            self.assertEqual(Image.open(dest).size, (2400, 1500))
 
 
 class TemporarilyApprovedTemplateTests(unittest.TestCase):

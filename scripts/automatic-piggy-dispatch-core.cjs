@@ -124,7 +124,7 @@ async function verifyGitHubOIDC(token,{fetchImpl=globalThis.fetch,now=Math.floor
   fail('GitHub OIDC issuer, audience or lifetime invalid');
  if(claims.repository!==REPOSITORY||String(claims.repository_id)!==REPOSITORY_ID||
     claims.ref!=='refs/heads/main'||claims.workflow_ref!==WORKFLOW_REF||
-    !['schedule','workflow_dispatch'].includes(claims.event_name)||typeof claims.sha!=='string')
+    !['schedule','workflow_dispatch','push'].includes(claims.event_name)||typeof claims.sha!=='string')
   fail('GitHub OIDC workflow identity is not authorized');
  return claims;
 }

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "description": "SHA-256 of original Discord CDN attachment bytes, retrieved 2026-10-21; no resized previews or signed URLs. Each key is pf{flash}_{imageIndex}.",
+  "images": {
+    "pf1_0": {"sha256":"a517c1b637fd3da43cfdd16005f794d0a8cb4d094051c78cedbab7e71f5aecb7","bytes":1780472,"type":"image/png","attachmentId":"1562400360977530880"},
+    "pf1_1": {"sha256":"577f36c72026e3a51f8740f9379af7f60d60e29c0f1406598377ff637d2e0012","bytes":1576641,"type":"image/png","attachmentId":"1562066498665848862"},
+    "pf1_2": {"sha256":"7d0e9e2b204a650f6a047fbc63cbe6d6e84be2e454144a0c3a000f74a1994966","bytes":1590565,"type":"image/png","attachmentId":"1562066499114377317"},
+    "pf1_3": {"sha256":"a7eca6e6b028ab3c20309ffe7bd9480b33f841e2d64d5564bea250a7830a6819","bytes":1573601,"type":"image/png","attachmentId":"1562066499580076103"},
+    "pf1_4": {"sha256":"276aebea49e6e16ea71b75958d660f5a7dab71feaeb70c82dea9a1edbfe61290","bytes":1534610,"type":"image/png","attachmentId":"1562066500003692605"},
+    "pf1_5": {"sha256":"53a0791819873bf556769ad5bc36e5f10ef5511c6ff52b392492d4018ab9c37b","bytes":1353791,"type":"image/png","attachmentId":"1562066500586573966"},
+    "pf2_0": {"sha256":"52dc69b91a10828d29db32417e5cf406be7f8b978cbdb3dcc5f86531319f0f30","bytes":234638,"type":"image/jpeg","attachmentId":"1562177072976363610"},
+    "pf2_1": {"sha256":"ee1c1054d710712557b4dabbd2efb0cce128a01ba0b6653d00b2865ceb85f42d","bytes":230978,"type":"image/jpeg","attachmentId":"1562156649609830420"},
+    "pf2_2": {"sha256":"13d810c323a1ddc061040a479755134a5478d210fd5fc675c22977fa922414ad","bytes":232731,"type":"image/jpeg","attachmentId":"1562156650129789018"},
+    "pf2_3": {"sha256":"6b33be119ccae9cb524983c37d7624fe55f01623ad828b1a73888f1a855da60b","bytes":229766,"type":"image/jpeg","attachmentId":"1562156650737958992"},
+    "pf2_4": {"sha256":"6230f3419ec499f7988472915505d5d513d0013f9e4fc4cb8ca33f2c5990b4bf","bytes":222293,"type":"image/jpeg","attachmentId":"1562156651375501383"},
+    "pf3_0": {"sha256":"571b8d94578c6c6c8e9dd7093e4dc02a4c04e30600b4846b37a28ad24a15a465","bytes":529804,"type":"image/jpeg","attachmentId":"1562248151270821958"},
+    "pf3_1": {"sha256":"eb578db789798cb16ca9469ccf6c1eb0381d1b62e42aff6f2172f9006a852a38","bytes":156434,"type":"image/jpeg","attachmentId":"1562246872800829581"},
+    "pf3_2": {"sha256":"3a7c407ac1824f79a705b2782bd1600ba8ed9590187186509e54aedba368d936","bytes":154677,"type":"image/jpeg","attachmentId":"1562246873241096302"},
+    "pf3_3": {"sha256":"c31aa00b12b055949933c48101aa8b7cc62df21bf1be3a41d18169cd1d4136a3","bytes":155568,"type":"image/jpeg","attachmentId":"1562246873648070706"},
+    "pf3_4": {"sha256":"6f4d5f462c26c65b61780c82404fe17ce43bfebecf6cf9c25ed686932bf8cb6c","bytes":148102,"type":"image/jpeg","attachmentId":"1562246874080088106"},
+    "pf3_5": {"sha256":"6746f6de025bda409a53feba5a09a3f64c3dc5a6a23c3b41123a0a213b075126","bytes":138935,"type":"image/jpeg","attachmentId":"1562246874633863278"},
+    "pf3_6": {"sha256":"7d0e6c2478aa5e000276539de9a74524265406171e96f44552752119f303bc16","bytes":130843,"type":"image/jpeg","attachmentId":"1562246875065884682"},
+    "pf4_0": {"sha256":"6fc6edfa38fe10b9f0770153d18754a946bdc722ff71c89b4ff85014c25ddb26","bytes":200871,"type":"image/jpeg","attachmentId":"1562340169472806943"},
+    "pf4_1": {"sha256":"c59fe0df2fb8f2cc31b9b9d4c4afd8970c09cbf3f7006754fa6abe81447f117b","bytes":202090,"type":"image/jpeg","attachmentId":"1562340169988964383"},
+    "pf4_2": {"sha256":"877045026f077235d530458cb50a4e5f3441c744ca7de294ef83f22049c41927","bytes":197536,"type":"image/jpeg","attachmentId":"1562340170332774430"},
+    "pf4_3": {"sha256":"77875f67a27c812c96c44132268a95914e13d98ca629b3d2cbad9414ab4d0baf","bytes":193296,"type":"image/jpeg","attachmentId":"1562340170701742080"},
+    "pf4_4": {"sha256":"74053767ee271a437547699f653146214507ba91e864fb815254aa75c40ed3a8","bytes":177492,"type":"image/jpeg","attachmentId":"1562340171062579260"},
+    "pf4_5": {"sha256":"0c6f25d43cb6e8230e205a64f041becf12c5c2e2ea10c8c4a3166adcc0da1a89","bytes":2072450,"type":"image/png","attachmentId":"1562337420849053696"}
+  }
+}

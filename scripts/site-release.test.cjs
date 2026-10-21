@@ -130,9 +130,9 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
     assert(r&&r.score===score&&r.clan==='AVENGERS',name+' event-time result unchanged');
   }
   const lin=people.find(p=>p.name==='AV-Lin');
-  assert.equal(lin.history.length,11,'one player: ten earlier AV-2 events and one AVENGERS');
+  assert.equal(lin.history.length,14,'one player: ten earlier AV-2 events, one Piggy and three newly approved AVENGERS flashes');
   assert.equal(lin.history.filter(r=>r.clan==='AV-2').length,10);
-  assert.equal(lin.history.filter(r=>r.clan==='AVENGERS').length,1);
+  assert.equal(lin.history.filter(r=>r.clan==='AVENGERS').length,4);
   assert(lin.snapshotBreakdown.some(r=>r.sourceName==='AV-2Lin'&&r.clan==='AV-2'));
   const linTransition=lin.kinds.piggy.pbs.find(p=>p.eventId==='piggy|2026-10-18');
   assert.equal(linTransition.firstRecorded,false,'previous AV-2 result retained');

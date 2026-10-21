@@ -1,3 +1,7 @@
+# 2026-10-21 — AVENGERS 105-result Piggy Flash import release in progress
+
+The commissioner approved all **105** AVENGERS final-claim screenshot results for the Oct 20–21 four-Flash Set. All 24 original Discord attachment bytes were retrieved and hashed; exact reviewed data, source proof manifest, guarded importer and regression test are staged. Four ledger updates (25/28/28/24) are approved locally; 97 known reward pairs, eight unknown, no AV-2 or Discord automation changes. Remaining before calling this **LIVE**: PR merge, GitHub Pages build, exact commit/exports/browser checks and Vercel mirror status. Issue #4 real-result ingestion continues beyond this specific approved set.
+
 ## 2026-10-21 — CORRECTION: Piggy Flash daily PBs include one to four PF participations
 
 **Leader's explicit correction supersedes all complete-4/4-day PB requirements.** A player's recorded Flash Set day-total lines are the sum of their scores from whatever PF1–PF4 events they actually joined (1, 2, 3 or 4). A new daily PB requires that day total to **strictly exceed the highest earlier recorded day total**, regardless of prior/current PF participation count. A one-PF score can therefore beat a previous four-PF summed record. A first tracked day is not automatically a PB. Above-prior-average daily totals also compare against earlier recorded day totals regardless of PF attendance, with at least one prior day required. Missing PF scores remain missing, not zero-valued results. Daily-total PBs are distinct from same-PF and all-PF single-race PBs.

@@ -51,7 +51,8 @@ test('four October flashes are zero for both event-time clans and all derived pr
  assert.equal(former,469394,'exact archived October Sparks amount excluded, not transferred to another kind');
  assert.equal(oct.flatMap(e=>e.rows).filter(r=>r.clan==='AVENGERS').length,58);
  assert.equal(oct.flatMap(e=>e.rows).filter(r=>r.clan==='AV-2').length,18);
- for(const e of r.globals.AVENGERS_PIGGY_FLASH_DATA.events.filter(e=>e.date>='2026-10-13')){
+ // Only the immediately post-Kraken Oct 13-14 set is no-Sparks; Oct 20-21 is an ordinary Spark-awarding set.
+ for(const e of r.globals.AVENGERS_PIGGY_FLASH_DATA.events.filter(e=>e.date>='2026-10-13'&&e.date<='2026-10-14')){
   assert(e.entries.every(row=>row.sparks===0),'site Flash tables also zero');
  }
  for(const x of r.projection.people){

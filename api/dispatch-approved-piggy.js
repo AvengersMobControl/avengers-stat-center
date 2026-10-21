@@ -164,6 +164,9 @@ module.exports=async function handler(req,res){
   if(!body||body.sourceCommit!==claims.sha||body.sourceCommit!==mainSha||
      String(env.VERCEL_GIT_COMMIT_SHA||'').toLowerCase()!==mainSha)
    throw Error('GitHub, payload and production deployment commits do not match');
+  if(claims.event_name==='push'&&body.action!=='verify')throw Error('Main-push OIDC may only run a no-send verification');
+  if(body.action==='verify')return respond(res,200,{ok:true,decision:'oidc-endpoint-and-deployment-verified',
+   sendAttempted:false,policyEnabled:policy.enabled,sendEnabled:env.AVENGERS_PIGGY_AUTO_DISPATCH_ENABLED==='true'});
   if(!policy.enabled||policy.status!=='approved'||env.AVENGERS_PIGGY_AUTO_DISPATCH_ENABLED!=='true')
    return respond(res,423,{ok:false,decision:'automatic-piggy-dispatch-disabled'});
   if(policy.automaticDelete!==false)return respond(res,423,{ok:false,decision:'automatic-delete-policy-invalid'});

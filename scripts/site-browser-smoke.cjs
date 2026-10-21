@@ -239,6 +239,21 @@ async function main(){
     assert(!(await page.locator('#piggyContent').innerText()).toLowerCase().includes('sparks/effort (per line)'),'Piggy has no per-line rewards ratio');
     await page.click('.nav-btn[data-page="piggyFlashes"]');
     assert(!(await page.locator('#page-piggyFlashes').innerText()).toLowerCase().includes('sparks/effort (per line)'),'Flash has no per-line rewards ratio');
+    // September 22 screenshot-backed Flash honors: PF4 belongs to the Sep22 set
+    // despite its result being dated Sep23. Do not fabricate unranked podiums.
+    await page.selectOption('#globalStatusFilter','active');
+    await page.selectOption('#flashDaySelect','2026-09-22');
+    assert.equal(await page.locator('#page-piggyFlashes .flash-podium-kpi').count(),5);
+    let podiumCards=await page.locator('#page-piggyFlashes .flash-podium-kpi').allTextContents();
+    assert(podiumCards[0].includes('1 wins')&&podiumCards[0].includes('3 podiums'),'AVENGERS PF1 source places');
+    assert(podiumCards[3].includes('1 wins')&&podiumCards[3].includes('2 podiums'),'Sep23 PF4 ranks');
+    assert(podiumCards[4].includes('4 wins')&&podiumCards[4].includes('11 podiums'),'AVENGERS PF1–PF4 rollup');
+    await page.selectOption('#globalStatusFilter','av2');
+    podiumCards=await page.locator('#page-piggyFlashes .flash-podium-kpi').allTextContents();
+    assert(podiumCards[0].includes('1 wins')&&podiumCards[0].includes('2 podiums'),'AV-2 PF1 distinct lobby');
+    assert(podiumCards[4].includes('2 wins')&&podiumCards[4].includes('4 podiums'),'AV-2 separate PF1–PF4 totals');
+    await page.selectOption('#globalStatusFilter','active');
+
     await page.selectOption('#globalStatusFilter','active');
     await page.click('.nav-btn[data-page="players"]');
     await page.fill('#playerSearch','HarryBallsagna');

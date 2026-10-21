@@ -45,7 +45,9 @@ jobs:
           python -m unittest scripts/test_render_event_summary.py
       - name: Render review-only template preview
         if: github.event_name == 'workflow_dispatch' && inputs.mode == 'preview'
-        run: node scripts/automatic-piggy-dispatch.cjs preview --event-id "${{ inputs.event_id }}"
+        env:
+          EVENT_ID: ${{ inputs.event_id }}
+        run: node scripts/automatic-piggy-dispatch.cjs preview --event-id "$EVENT_ID"
       - name: Upload review-only preview
         if: github.event_name == 'workflow_dispatch' && inputs.mode == 'preview'
         uses: actions/upload-artifact@v4

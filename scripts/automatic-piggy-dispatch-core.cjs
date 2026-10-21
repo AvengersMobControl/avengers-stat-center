@@ -67,6 +67,7 @@ function buildPiggyMessage(event,clan,report,siteUrl){
  const date=new Date(event.date+'T00:00:00Z').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric',timeZone:'UTC'});
  const lines=[
   '🏁 **'+clan+' PIGGY RACE — FINAL RESULTS · '+date.toUpperCase()+'**',
+  'Event-time clan: '+clan+' · Lobby: '+(report.lobbyLabel||deriveLobbyLabel(event,clan))+'.',
   '**'+t.participants+' participating players · '+t.knownScoreSum.toLocaleString('en-US')+' lines**',
   'Known rewards: **'+t.knownStars.toLocaleString('en-US')+' Stars** · **'+t.knownSparks.toLocaleString('en-US')+' Sparks**'
  ];

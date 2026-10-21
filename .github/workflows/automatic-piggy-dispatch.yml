@@ -1,5 +1,7 @@
 name: Big Piggy approved-result dispatch
 on:
+  push:
+    branches: [main]
   schedule:
     - cron: '17 * * * *'
   workflow_dispatch:
@@ -60,7 +62,7 @@ jobs:
           if-no-files-found: error
           retention-days: 7
       - name: Verify production OIDC endpoint without sending
-        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'verify'
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.mode == 'verify')
         env:
           AVENGERS_PIGGY_DISPATCH_URL: https://avengers-stat-center.vercel.app/api/dispatch-approved-piggy
         run: node scripts/automatic-piggy-dispatch.cjs verify-endpoint

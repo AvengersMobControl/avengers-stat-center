@@ -1,3 +1,17 @@
+## 2026-10-21 — Big Piggy results automation (P1; not yet enabled)
+
+- [x] Audited current repository and live production dispatch switches: automatic send, delete, and publication endpoint are all OFF; the approved channel route and synthetic transport canary do not constitute an event poster.
+- [x] Added docs/BIG_PIGGY_RESULT_OPERATING_STANDARD.md and linked it from the Piggy reporting standard.
+- [ ] Verify a real post-race collector/scheduler, source-window pagination, and original Discord CDN byte proofs. Do not infer that a watcher is live from the recorded Oct 23, 2026 02:00 America/Chicago event end.
+- [ ] Complete an approval-gated Big Piggy source-review packet, exact row reconciliation, one-line placeholder exclusion, and canonical event import.
+- [ ] Verify the accepted event updates every dependent site view and the exact live Pages commit/exports/browser before reporting the event as published.
+- [ ] Produce and visually approve the clan-specific PNG plus matching message from the same immutable accepted projection and pinned template.
+- [ ] Finish the private least-privilege dispatch path, fixed destination, durable event+clan idempotence, receipt/readback, concurrency/crash/429/correction tests, and an actual approved-report canary.
+- [ ] Separately activate scheduled/automatic collection and posting only after the above acceptance gates; keep all current production switches OFF until then.
+
+## Next steps and evidence
+Track this work through issues #4 (source/result ingestion), #8 (PNG/publication workflow), and #13 (master roadmap). A passing renderer or synthetic transport canary is not proof of automatic posting. No event pull, import, Discord send, or SAC change was made by this documentation task.
+
 ## 2026-10-21 — Fred roster addition and TheOli transfer
 
 Leader clarified the requested addition is AV-Fred, not Frank. Activate existing AV-Fred profile with its source-backed result. AV-FrankAbagnale remains linked to AV-Addicted without display/identity changes or duplicate history. TheOli current status becomes AV2; historical event-time clans, scores, rewards, fixed Unlogged Sparks and dated snapshots remain unchanged. Current counts: 50 AVENGERS / 51 AV-2. Roster captions use current counts. Shared projection and browser checks required before claiming live; no Discord send, UTC synchronization or SAC change.

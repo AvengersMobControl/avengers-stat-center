@@ -1,6 +1,10 @@
 # AVENGERS Piggy Race — PNG and Discord Report Operating Standard
 **Updated 2026-10-19 (America/Chicago) • AVENGERS project only • manual review required**
 
+**Operational workflow:** Source collection, result verification, canonical site publication, PNG/message generation, and the separate automatic-posting gates are documented in [docs/BIG_PIGGY_RESULT_OPERATING_STANDARD.md](BIG_PIGGY_RESULT_OPERATING_STANDARD.md). That procedure is review-only and does not activate automation.
+
+
+
 ## October 20, 2026 — LEADER-SPECIFIED AV-2 PIGGY PNG CONTRACT (supersedes incompatible AVENGERS defaults)
 
 **Applies to AV-2 Piggy Race graphics, results, and independent finishing-rank-PB tracking. These are requirements, not optional visual suggestions.**

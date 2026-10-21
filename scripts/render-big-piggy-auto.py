@@ -175,7 +175,7 @@ def resolve_summary(release, kind, clan, event_id=None):
         parsed = re.search(r"PF(\d+)", event["id"], re.IGNORECASE)
         flash_num = parsed.group(1) if parsed else None
     return {
-        "eventId": event["id"], "date": event["date"], "kind": kind, "clan": clan,
+        "eventId": event["id"], "date": event["date"], "kind": kind, "clan": clan, "lobbyLabel": lobby_label,
         "flashNumber": str(flash_num) if flash_num else None,
         "status": event["status"], "unit": event["unit"], "projectionVersion": projection["version"],
         "rows": rank_rows, "pbs": pbs, "firstTracked": first,
@@ -246,6 +246,8 @@ def draw_png(model, dest, automatic_piggy_layout=False, automatic_piggy_publish=
     txt(2352, 41, month_date(model["date"]).upper(), 32, "muted", True, "ra")
     header_state=("APPROVED LEDGER · FINAL REPORT" if automatic_piggy_publish else "APPROVED LEDGER · REVIEW PREVIEW") if automatic_piggy_layout else "APPROVED LEDGER · REVIEW PREVIEW"
     txt(2352, 94, header_state, 22, "green", True, "ra")
+    if automatic_piggy_layout:
+        fit(45,118,"Event-time clan: "+model["clan"]+" · Lobby: "+model["lobbyLabel"],1700,18,"muted")
     score = model["knownScoreSum"]
     count = model["participantRows"]
     prev = model["previousScoreSum"]

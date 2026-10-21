@@ -26,7 +26,7 @@ PALETTE = {
     "bg": "#061528", "panel": "#0b2037", "alternate": "#10304c",
     "line": "#285d8a", "fg": "#edf4ff", "muted": "#a5bad6",
     "cyan": "#19d4f0", "purple": "#8b50ff", "green": "#19e8ac",
-    "yellow": "#ffdf50", "red": "#ff626f",
+    "yellow": "#ffdf50", "red": "#ff626f", "magenta": "#ff4fd8",
 }
 
 
@@ -266,7 +266,11 @@ def draw_png(model, dest, automatic_piggy_layout=False):
         rake = model.get("rakePercentDisplayedShareSum")
         rake_text = (f"{rake:.1f}% displayed-share sum" if rake is not None else "displayed-share sum unknown")
         top[3] = ("AV-2 EARNED STARS", format_number(model["knownStars"]),
-                  f"Whole-lobby pot {pot} · RAKE {rake_text}")
+                  f"Whole-lobby displayed pot {pot} · RAKE {rake_text}")
+    elif automatic_piggy_layout and kind == "piggy" and model["clan"] == "AVENGERS":
+        pot = model.get("displayedPotStars") or "unknown"
+        top[3] = ("CLAN EARNED STARS", format_number(model["knownStars"]),
+                  f"Whole-lobby displayed pot {pot} · separate from clan earnings")
     for i, (label, value, subtitle) in enumerate(top):
         x = 45 + i * 588
         box(x, 180, x + 568, 340)
@@ -407,18 +411,57 @@ def draw_png(model, dest, automatic_piggy_layout=False):
             note(lx+30,1225,"No known rewards above comparison threshold",1000)
         note(lx+30,1341,"Effort comparison, not a performance ranking",980)
     box(rx,1091,2355,1376)
-    txt(rx+30,1113,"EVENT COMPARISON & COVERAGE",32,"fg",True)
-    prior_label=model["previousLabel"]
-    if prior_label and prev is not None:
-        note(rx+30,1170,"Previously recorded event: "+prior_label,1000)
-        txt(rx+30,1220,"Known recorded effort",25,"muted")
-        txt(1800,1218,format_score(kind,score),30,"fg",True,"ra")
-        txt(2045,1222,"vs "+format_score(kind,prev),24,"muted",False,"ra")
-        text_change=(f'{(score/prev-1)*100:+.1f}%' if prev>0 else "—")
-        txt(2315,1217,text_change,31,"green" if prev and score>=prev else "red",True,"ra")
-        note(rx+30,1311,"Recorded participation differs; totals not normalized",1000)
+    if automatic_piggy_layout and kind=="piggy":
+        txt(rx+30,1113,"MILESTONES & AVG LINES TREND",29,"fg",True)
+        growth=model.get("weekToWeekGrowthPercent")
+        growth_text=("Total lines vs prior final Piggy: "+f'{growth:+.1f}%' if growth is not None
+                     else "Total lines vs prior final Piggy: no comparable prior event")
+        fit(rx+30,1145,growth_text+" · last five final events",1080,18,"muted")
+        milestones=model.get("milestones",[])
+        per_row=5
+        for i,m in enumerate(milestones):
+            col=i%per_row; row=i//per_row
+            x=rx+30+col*218; y=1168+row*39
+            is_record=bool(m.get("record"))
+            fill=PALETTE["yellow"] if is_record else PALETTE["alternate"]
+            dr.rounded_rectangle((x,y,x+206,y+34),8,fill=fill)
+            color="bg" if is_record else "fg"
+            label=(format_number(m["threshold"]/1000,0)+"K+  ·  "+str(m["count"]))
+            fit(x+10,y+7,label,185,18,color,True)
+        trend=model.get("averageTrend",[])
+        chart_top=min(1322,1170+max(1,(len(milestones)+per_row-1)//per_row)*39+7)
+        chart_bottom=chart_top+22
+        if trend:
+            values=[float(p["average"]) for p in trend]
+            low=min(values); high=max(values)
+            span=high-low or 1.0
+            x_left=rx+40; x_right=rx+1040
+            points=[]
+            for i,item in enumerate(trend):
+                x=x_left+(x_right-x_left)*(i/(len(trend)-1) if len(trend)>1 else 0.5)
+                y=chart_bottom-((float(item["average"])-low)/span)*18
+                points.append((int(x),int(y)))
+            if len(points)>1: dr.line(points,fill=PALETTE["magenta"],width=4)
+            for x,y in points: dr.ellipse((x-4,y-4,x+4,y+4),fill=PALETTE["magenta"])
+            fit(rx+30,chart_top-4,"AVG LINES / PLAYER",230,16,"muted",True)
+            last=trend[-1]
+            txt(rx+1090,chart_top-4,format_number(last["average"],1)+" avg",18,"magenta",True,"ra")
+        else:
+            note(rx+30,chart_top,"No comparable final-event average trend in accepted history",1000)
+        txt(rx+30,1345,"GOLD = CLAN RECORD OR TIED RECORD",17,"yellow",True)
     else:
-        note(rx+30,1202,"No prior clan result for this event type in accepted history",1060)
+        txt(rx+30,1113,"EVENT COMPARISON & COVERAGE",32,"fg",True)
+        prior_label=model["previousLabel"]
+        if prior_label and prev is not None:
+            note(rx+30,1170,"Previously recorded event: "+prior_label,1000)
+            txt(rx+30,1220,"Known recorded effort",25,"muted")
+            txt(1800,1218,format_score(kind,score),30,"fg",True,"ra")
+            txt(2045,1222,"vs "+format_score(kind,prev),24,"muted",False,"ra")
+            text_change=(f'{(score/prev-1)*100:+.1f}%' if prev>0 else "—")
+            txt(2315,1217,text_change,31,"green" if prev and score>=prev else "red",True,"ra")
+            note(rx+30,1311,"Recorded participation differs; totals not normalized",1000)
+        else:
+            note(rx+30,1202,"No prior clan result for this event type in accepted history",1060)
     state="PARTIAL RESULTS" if not model["coverageComplete"] else "MARKED FINAL IN LEDGER"
     footer=(f'{state} · {model["participantRows"]} recorded rows · '
             f'{model["unknownSparkRows"]} missing Sparks · preview only · NOT POSTED')

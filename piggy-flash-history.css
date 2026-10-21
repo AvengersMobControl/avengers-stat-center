@@ -1,0 +1,26 @@
+
+.flash-history-root{margin:16px 0 24px}
+.flash-history-scope{padding:12px 14px;border:1px solid rgba(75,205,255,.28);background:rgba(25,67,105,.16);border-radius:11px;font-size:12px}
+.flash-history-panel{margin:16px 0;padding:14px 16px;background:var(--panel,#101e31);border:1px solid var(--border,#304660);border-radius:12px}
+.flash-history-panel h3{margin:0 0 11px;font-size:16px}
+.flash-history-panel p{font-size:11px;opacity:.68;line-height:1.5}
+.flash-history-grid,.flash-history-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.flash-history-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
+.flash-history-card{min-width:0;padding:11px;background:rgba(57,89,137,.16);border:1px solid rgba(85,173,225,.24);border-radius:10px}
+.flash-history-card b{font-size:23px;color:#75d8fc;display:block;margin-bottom:5px}
+.flash-history-card strong{font-size:14px;color:#72d9fa;display:block}
+.flash-history-card span{font-size:12px;font-weight:650;display:block;margin-top:7px}
+.flash-history-card small{display:block;font-size:10px;margin-top:7px;opacity:.73}
+.flash-history-table{border-collapse:collapse;width:100%;min-width:690px}
+.flash-history-table th,.flash-history-table td{border-bottom:1px solid rgba(118,147,185,.15);padding:9px 12px;text-align:left;white-space:nowrap;font-size:12px;font-variant-numeric:tabular-nums}
+.flash-history-table th{opacity:.8;font-size:11px}
+.flash-history-table tr.flash-history-highlight td{background:rgba(247,190,73,.14);font-weight:850}
+.flash-history-archive{border:1px solid rgba(140,174,220,.18);border-radius:9px;margin:10px 0;overflow:hidden}
+.flash-history-archive summary{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:13px 15px;cursor:pointer}
+.flash-history-archive summary span{font-size:11px;opacity:.7}
+.flash-history-content{padding:0 12px 14px}
+.flash-history-search{font-size:11px;display:flex;gap:10px;align-items:center;margin-bottom:11px}
+.flash-history-search input{background:#0d1d32;color:inherit;border:1px solid #34516d;border-radius:8px;min-width:235px;padding:7px 9px;max-width:100%}
+.flash-history-table button[data-hist-sort]{font:inherit;color:inherit;border:0;background:transparent;cursor:pointer;font-weight:850;padding:0}
+.flash-history-table tr[hidden]{display:none}
+@media(max-width:850px){.flash-history-grid,.flash-history-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.flash-history-panel{padding:12px}}

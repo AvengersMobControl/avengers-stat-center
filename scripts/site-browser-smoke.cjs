@@ -249,11 +249,39 @@ async function main(){
     assert(podiumCards[0].includes('1 wins')&&podiumCards[0].includes('3 podiums'),'AVENGERS PF1 source places');
     assert(podiumCards[3].includes('1 wins')&&podiumCards[3].includes('2 podiums'),'Sep23 PF4 ranks');
     assert(podiumCards[4].includes('4 wins')&&podiumCards[4].includes('11 podiums'),'AVENGERS PF1–PF4 rollup');
+
+    // New AVENGERS-only historical Flash report, computed from the same live page source.
+    const hist=page.locator('#flashHistoricalReporting');
+    assert(await hist.isVisible(),'AVENGERS Flash historical report displayed');
+    assert.equal(await hist.locator('.flash-history-card').count(),14,'4 pot cards + 6 history metrics + 4 milestones');
+    const pctLabels=await hist.locator('.flash-history-grid .flash-history-card').allTextContents();
+    assert(pctLabels[0].includes('77.4%')&&pctLabels[0].includes('1/38'),'Sep22 PF1 header estimated rake: '+JSON.stringify(pctLabels));
+    assert(pctLabels[1].includes('93.5%')&&pctLabels[1].includes('3/50'),'Sep22 PF2 pot rank and rake');
+    assert(pctLabels[3].includes('2.76M')&&pctLabels[3].includes('1/37'),'PF4 next-day header retained');
+    const leaderRow=hist.locator('.flash-history-panel').filter({has:page.locator('h3', {hasText:'Top Five Combined Contributors'})}).locator('tbody tr').first();
+    const leaderText=await leaderRow.textContent();
+    const leaderIdentity=await page.evaluate(()=>window.AVENGERS_DATA.resolvePlayerName?.('AV-ZolikaLoveKira')||'AV-ZolikaLoveKira');
+    assert(leaderText.includes('9,880')&&leaderText.includes(leaderIdentity),
+      'combined-day 9,880 leader and canonical player identity: '+JSON.stringify({leaderText,leaderIdentity}));
+    assert((await hist.innerText()).includes('9,880'),'top recorded combined-day score');
+    assert((await hist.innerText()).includes('4,936'),'top single-race score');
+    assert((await hist.innerText()).includes('6/2,761'),'top single-race historical rank');
+    const potDetail=hist.locator('details[data-hist-open="pots"]');
+    await potDetail.locator('summary').click();
+    assert.equal(await potDetail.locator('tbody tr[data-hist-row]').count(),165,'165 recorded main lobby header pots retained');
+    await potDetail.locator('input[data-hist-search]').fill('2026-09-22');
+    assert.equal(await potDetail.locator('tbody tr[data-hist-row]:visible').count(),3,
+      'Sep22 has three flash pot headers; PF4 is on Sep23');
+    await potDetail.locator('button[data-hist-sort][data-hist-key="potStars"]').click();
+    assert((await hist.locator('details[data-hist-open="pots"] summary').innerText()).includes('165 tracked'),
+      'sortable original archive persists');
+
     await page.selectOption('#globalStatusFilter','av2');
     await page.click('.nav-btn[data-page="piggyFlashes"]');
     podiumCards=await page.locator('#page-piggyFlashes .flash-podium-kpi').allTextContents();
     assert(podiumCards[0].includes('1 wins')&&podiumCards[0].includes('2 podiums'),'AV-2 PF1 distinct lobby');
     assert(podiumCards[4].includes('2 wins')&&podiumCards[4].includes('4 podiums'),'AV-2 separate PF1–PF4 totals');
+    assert.equal(await page.locator('#flashHistoricalReporting').count(),0,'AV-2 view remains unchanged; AVENGERS-only report not mixed');
     assert(podiumCards[2].includes('No source rows')&&podiumCards[3].includes('No source rows'),
       'AV-2 unrecorded PF3/PF4 display missing coverage, not zero finishes');
     await page.selectOption('#globalStatusFilter','active');

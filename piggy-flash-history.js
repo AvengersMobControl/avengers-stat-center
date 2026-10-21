@@ -92,7 +92,8 @@ function analyze(events,options={}){
       const previous=prior.length?prior.reduce((sum,x)=>sum+x,0)/prior.length:null;
       const keyPF=row.player+'|'+row.flash;
       const priorPF=lastPF.get(keyPF),priorSingle=lastSingle.get(row.player);
-      const fresh=!prior.length;
+      // New member is a first tracked appearance only once, not on every PF of the same set.
+      const fresh=!prior.length&&priorSingle===undefined;
       pb.push({...row,priorCount:prior.length,priorAverage:previous,
         abovePriorAverage:previous===null?null:row.lines>previous,
         firstTracked:fresh,

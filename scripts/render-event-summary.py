@@ -226,7 +226,7 @@ def draw_png(model, dest, automatic_piggy_layout=False):
         ("KNOWN SPARKS", format_number(model["knownSparks"]),
          str(model["unknownSparkRows"]) + " reward rows unknown" +
          (" · estimated: " + str(model["estimatedSparkRows"]) if kind == "kraken" else "")),
-        (("PLAYERS LOGGED" if kind == "kraken" else ("AV-2 EARNED STARS" if kind == "piggy" and model["clan"] == "AV-2" else "KNOWN STARS")),
+        (("PLAYERS LOGGED" if kind == "kraken" else ("AV-2 EARNED STARS" if automatic_piggy_layout and kind == "piggy" and model["clan"] == "AV-2" else "KNOWN STARS")),
          str(count) if kind == "kraken" else format_number(model["knownStars"]),
          ("Kraken awards no Stars" if kind == "kraken" else str(model["unknownStarRows"]) + " Star rows unknown"))
     ]
@@ -417,7 +417,10 @@ def render(release, kind, clan, event_id, output, automatic_piggy_layout=False):
         "knownSparks":model["knownSparks"],
         "imageSHA256":hashlib.sha256(dest.read_bytes()).hexdigest(),
         "participants":model["participantRows"],"pbs":len(model["pbs"]),
+        "linePBs":len(model["pbs"]),"placementPBs":len(model["placementPBs"]),
         "firstTracked":len(model["firstTracked"]),
+        "rakePercentDisplayedShareSum":model["rakePercentDisplayedShareSum"],
+        "displayedPotStars":model["displayedPotStars"],
         "unknownSparkRows":model["unknownSparkRows"],
         "unknownStarRows":model["unknownStarRows"],
         "eventStatus":model["status"],

@@ -10,22 +10,22 @@ function fixture(){
  }
  return window.AVENGERS_PIGGY_FLASH_DATA.events;
 }
-test('35 recorded pot headers, 836 AVENGERS single Flash results and 383 recorded player-day lines',()=>{
- const h=analyze(fixture());assert.equal(h.coverage.potsRecorded,35);
- assert.equal(h.coverage.potsMissing,1);
- assert.equal(h.singles.length,836);
- assert.equal(h.days.length,383);
+test('58 recorded pot headers, 1357 AVENGERS single Flash results and 870 recorded player-day lines',()=>{
+ const h=analyze(fixture());assert.equal(h.coverage.potsRecorded,58);
+ assert.equal(h.coverage.potsMissing,2);
+ assert.equal(h.singles.length,1357);
+ assert.equal(h.days.length,870);
  assert.ok(h.pots.every(x=>x.lobby.includes('source header')&&x.approximate===true));
  assert.ok(h.rows.every(x=>x.clan==='AVENGERS'));
 });
 test('September 22 pot rankings and rake are grounded in existing header and stars',()=>{
  const h=analyze(fixture());
  const sep=h.pots.filter(x=>x.setId==='2026-09-22-A').sort((a,b)=>a.flash-b.flash);
- assert.deepEqual(sep.map(x=>x.flash),[1,2,3,4]);
- assert.deepEqual(sep.map(x=>x.potStars),[2500000,3310000,3090000,2760000]);
- assert.deepEqual(sep.map(x=>x.pfRank),[1,3,1,1]);
- assert.deepEqual(sep.map(x=>x.overallRank),[12,3,5,8]);
- assert.deepEqual(sep.map(x=>x.pfCount),[9,8,9,9]);
+ assert.deepEqual(Array.from(sep,x=>x.flash),[1,2,3,4]);
+ assert.deepEqual(Array.from(sep,x=>x.potStars),[2500000,3310000,3090000,2760000]);
+ assert.deepEqual(Array.from(sep,x=>x.pfRank),[1,3,1,1]);
+ assert.deepEqual(Array.from(sep,x=>x.overallRank),[12,3,5,8]);
+ assert.deepEqual(Array.from(sep,x=>x.pfCount),[9,31,9,9]);
  assert.ok(Math.abs(sep[0].rakePercent-(1935828/2500000)*100)<1e-8);
  assert.ok(Math.abs(sep[1].rakePercent-(3093736/3310000)*100)<1e-8);
  assert.ok(Math.abs(sep[2].rakePercent-(2915465/3090000)*100)<1e-8);
@@ -35,10 +35,10 @@ test('four Flash event-day historical rankings remain stable, actual day ranks a
  const h=analyze(fixture());
  const days=h.days.filter(x=>x.setId==='2026-09-22-A').sort((a,b)=>b.lines-a.lines);
  assert.equal(days[0].player,'AV-ZolikaLoveKira');assert.equal(days[0].lines,9880);
- assert.equal(days[0].allRank,6);assert.equal(days[0].allCount,383);
+ assert.equal(days[0].allRank,7);assert.equal(days[0].allCount,870);
  const single=h.singles.filter(x=>x.setId==='2026-09-22-A').sort((a,b)=>b.lines-a.lines);
  assert.equal(single[0].player,'AV-Abu//npjp');assert.equal(single[0].lines,4936);
- assert.equal(single[0].allRank,5);assert.equal(single[0].allCount,836);
+ assert.equal(single[0].allRank,6);assert.equal(single[0].allCount,1357);
  assert.ok(single.slice(0,10).filter(x=>x.player==='AV-ZolikaLoveKira').length===2,
    'Single race ranking permits the same player twice on one day');
  assert.equal(h.podiums.filter(x=>x.setId==='2026-09-22-A').length,11);

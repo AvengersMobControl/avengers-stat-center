@@ -66,7 +66,7 @@ test('clan and explicitly distinct lobby cannot be mixed',()=>{
 test('four independent flashes and combined totals reconcile using real Sep22 source and Sep23 PF4',()=>{
  const events=sourceEvents();
  const selected=events.filter(e=>e.setId==='2026-09-22-A');
- assert.deepEqual(selected.map(e=>e.flash).slice().sort(),[1,2,3,4]);
+ assert.deepEqual(Array.from(selected,e=>Number(e.flash)).sort(),[1,2,3,4]);
  assert.equal(selected.find(e=>e.flash===4).date,'2026-09-23',
    'PF4 is next calendar day but still belongs in Sep22 Flash Set');
  const rows=flatten(selected);

@@ -37,6 +37,7 @@ jobs:
         run: |
           python3 -m pip install --disable-pip-version-check Pillow==11.3.0
           python3 -m unittest discover -s scripts -p test_render_event_summary.py -v
+          python3 -m unittest discover -s scripts -p test_render_big_piggy_auto.py -v
           python3 -m unittest discover -s scripts -p test_render_piggy_finish_pb_preview.py -v
           node scripts/export-event-summary.cjs approved-summary-release.json
           for kind in piggy flash kraken; do

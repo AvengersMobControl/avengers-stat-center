@@ -142,10 +142,34 @@ def resolve_summary(release, kind, clan, event_id=None):
     missing_sparks = sum(r["sparks"] is None for r in rank_rows)
     missing_stars = sum(r["stars"] is None for r in rank_rows) if kind != "kraken" else None
     prior = next((e for e in reversed(events)
-                  if (e["date"], e["id"]) < (event["date"], event["id"])
-                  and any(r.get("clan") == clan for r in e.get("rows", []))), None)
-    prior_rows = [r for r in prior.get("rows", []) if r.get("clan") == clan] if prior else []
+                  if e.get("status") == "final" and (e["date"], e["id"]) < (event["date"], event["id"])
+                  and any(r.get("clan") == clan and r.get("score") != 1 for r in e.get("rows", []))), None)
+    prior_rows = [r for r in prior.get("rows", []) if r.get("clan") == clan and r.get("score") != 1] if prior else []
     prior_known = [numeric(r.get("score")) for r in prior_rows if numeric(r.get("score")) is not None]
+    average_trend = []
+    for history_event in projection.get("events", []):
+        if history_event.get("kind") != kind or history_event.get("status") != "final" or history_event.get("date") > event["date"]:
+            continue
+        history_rows = [r for r in history_event.get("rows", []) if r.get("clan") == clan and r.get("score") != 1
+                        and numeric(r.get("score")) is not None]
+        if history_rows:
+            average_trend.append({"date":history_event["date"],
+                                  "average":sum(numeric(r.get("score")) for r in history_rows)/len(history_rows),
+                                  "total":sum(numeric(r.get("score")) for r in history_rows)})
+    average_trend.sort(key=lambda x:x["date"])
+    average_trend = average_trend[-5:]
+    week_growth = ((total_score-sum(prior_known))/sum(prior_known)*100
+                   if prior_known and sum(prior_known)>0 else None)
+    benchmark_data = (release.get("piggyBenchmarksByClan") or {}).get(clan, {})
+    weekly_benchmark = next((w for w in benchmark_data.get("weekly",[]) if w.get("date")==event["date"]),None)
+    milestones = []
+    if weekly_benchmark:
+        for i, threshold in enumerate(benchmark_data.get("thresholds",[])):
+            count = weekly_benchmark.get("counts",[])[i] if i < len(weekly_benchmark.get("counts",[])) else 0
+            if count <= 0: continue
+            record = next((r for r in benchmark_data.get("records",[]) if r.get("threshold")==threshold),{})
+            milestones.append({"threshold":threshold,"count":count,
+              "record":record.get("count")==count and event["date"] in (record.get("tiedDates") or [])})
     flash_num = event.get("metadata", {}).get("flash") if kind == "flash" else None
     if kind == "flash" and not flash_num:
         parsed = re.search(r"PF(\d+)", event["id"], re.IGNORECASE)
@@ -166,6 +190,9 @@ def resolve_summary(release, kind, clan, event_id=None):
         "previousLabel": previous_event_label(prior) if prior else None,
         "previousScoreSum": sum(prior_known) if prior else None,
         "previousKnownCount": len(prior_known),
+        "weekToWeekGrowthPercent": week_growth,
+        "averageTrend": average_trend,
+        "milestones": milestones,
         "coverageComplete": event["status"] == "final",
         "readyToPost": False,
     }

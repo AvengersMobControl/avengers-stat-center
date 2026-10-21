@@ -51,3 +51,11 @@ test('records and date are derived from approved 2026 historical Piggy event dat
   assert.deepEqual(oct.counts,[48,38,23,11,3,0,0,0]);
   assert(x.weekly.some(w=>w.date==='2026-01-04'),'All tracked 2026 races must be included');
 });
+
+test('AV-2 benchmarks use only AV-2 event-time rows and exclude one-line placeholders',()=>{
+ const x=benchmarks.compute({'2026-10-25':[
+  {name:'A',clan:'AV-2',lines:50000},{name:'B',clan:'AV-2',lines:10000},
+  {name:'C',clan:'AV-2',lines:1},{name:'D',clan:'AVENGERS',lines:90000}
+ ]},{clan:'AV-2'});
+ assert.deepEqual(x.weekly.map(w=>[w.date,w.players,w.counts[0],w.counts[1]]),[['2026-10-25',2,2,2]]);
+});

@@ -123,7 +123,7 @@ async function sendAndReadback(token,channelId,bytes,imageSha,body){
  const readback=await discord(token,'https://discord.com/api/v10/channels/'+channelId+'/messages/'+posted.id);
  if(String(readback.id)!==String(posted.id)||String(readback.channel_id)!==channelId||readback.content!==body.message)
   throw Error('Discord message readback does not match exact message');
- const attachment=(readback.attachments||[]).find(a=>a.filename===filename&&a.content_type?.startsWith('image/png'));
+ const attachment=(readback.attachments||[]).find(a=>a.filename===filename);
  if(!attachment||!String(attachment.url).startsWith('https://'))throw Error('Discord PNG attachment missing on readback');
  const response=await fetch(attachment.url,{signal:AbortSignal.timeout(15000)});
  if(!response.ok)throw Error('Discord PNG readback download failed');
@@ -190,7 +190,7 @@ module.exports=async function handler(req,res){
    channelId:route.channelId,messageId:proof.messageId,attachmentBytes:proof.attachmentBytes,imageSHA256:imageSha});
  }catch(error){
   const msg=String(error?.message||'');
-  const status=/already|existing Piggy publication requires/.test(msg)?409:
+  const status=/already|existing Piggy publication requires/i.test(msg)?409:
    /github|oidc|identity|authorization/.test(msg.toLowerCase())?401:422;
   return respond(res,status,{ok:false,decision:'blocked',reason:msg.slice(0,240)});
  }

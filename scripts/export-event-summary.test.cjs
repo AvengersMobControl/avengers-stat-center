@@ -11,6 +11,8 @@ test('PNG input comes from exactly the accepted canonical projection; never a dr
  assert.equal(typeof exported.piggyPlacementPBs,'object');
  assert.equal(typeof exported.piggyPlacementPBsByClan,'object');
  assert.equal(typeof exported.piggyCareerPodiumsByClan,'object');
+ assert.equal(typeof exported.piggyBenchmarksByClan,'object');
+ assert.deepEqual(Object.keys(exported.piggyBenchmarksByClan).sort(),['AV-2','AVENGERS']);
  assert.deepEqual(Object.keys(exported.piggyCareerPodiumsByClan).sort(),['AV-2','AVENGERS']);
  assert.deepEqual(Object.keys(exported.piggyPlacementPBsByClan).sort(),['AV-2','AVENGERS']);
  assert(Array.isArray(exported.piggyPlacementPBs['piggy|2026-10-11']));

@@ -66,6 +66,11 @@ test('GitHub OIDC signature, audience, repo, workflow and main-ref claims are ch
  const sig=crypto.sign('RSA-SHA256',Buffer.from(input),privateKey).toString('base64url');
  const verified=await verifyGitHubOIDC(input+'.'+sig,{now,jwks:{keys:[jwk]}});
  assert.equal(verified.sha,claims.sha);
+ const pushClaims={...claims,event_name:'push'};
+ const pushPayload=b64(pushClaims),pushInput=h+'.'+pushPayload;
+ const pushSig=crypto.sign('RSA-SHA256',Buffer.from(pushInput),privateKey).toString('base64url');
+ assert.equal((await verifyGitHubOIDC(pushInput+'.'+pushSig,{now,jwks:{keys:[jwk]}})).event_name,'push');
+
  const badClaims={...claims,ref:'refs/heads/evil'};
  const bp=b64(badClaims),badInput=h+'.'+bp;
  const badSig=crypto.sign('RSA-SHA256',Buffer.from(badInput),privateKey).toString('base64url');

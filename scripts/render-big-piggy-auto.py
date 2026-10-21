@@ -251,7 +251,6 @@ def draw_png(model, dest, automatic_piggy_layout=False):
     dr.rounded_rectangle((lx + 17, 395, 1120, 493), 14, fill="#112d49")
     txt(lx + 38, 407, "★ PERSONAL BESTS", 47, "fg", True)
     if automatic_piggy_layout and kind == "piggy":
-        fit(1095, 416, f'{len(model["pbs"])} LINE · {len(model["placementPBs"])} RANK PBs', 470, 24, "green", True)
         txt(lx+30, 478, "LINE PBs", 23, "cyan", True)
         txt(lx+535, 478, str(len(model["pbs"])), 22, "muted", True, "ra")
         txt(lx+565, 478, "FINISH-PLACE PBs", 23, "purple", True)
@@ -259,12 +258,12 @@ def draw_png(model, dest, automatic_piggy_layout=False):
         for i, entry in enumerate(model["pbs"][:4]):
             y=525+i*65
             t=entry["transition"]
-            if i%2==0: dr.rounded_rectangle((lx+20,y-5, lx+515,y+51),10,fill=PALETTE["alternate"])
-            fit(lx+30,y,display_name(entry["player"]),190,23,"yellow" if i==0 else "fg",True)
-            txt(lx+355,y,format_score(kind,t["previousPB"]),22,"muted",True,"ra")
-            txt(lx+455,y,format_score(kind,entry["score"]),22,"fg",True,"ra")
+            if i%2==0: dr.rounded_rectangle((lx+20,y-5, lx+525,y+51),10,fill=PALETTE["alternate"])
+            fit(lx+30,y,display_name(entry["player"]),190,22,"yellow" if i==0 else "fg",True)
+            old_new=format_score(kind,t["previousPB"])+" → "+format_score(kind,entry["score"])
+            txt(lx+430,y,old_new,18,"fg",True,"ra")
             improvement=numeric(t.get("improvement"))
-            txt(lx+520,y,f'+{improvement*100:.1f}%' if improvement is not None else "—",19,"green",True,"ra")
+            txt(lx+520,y,f'+{improvement*100:.1f}%' if improvement is not None else "—",16,"green",True,"ra")
         for i, entry in enumerate(model["placementPBs"][:4]):
             y=525+i*65
             if i%2==0: dr.rounded_rectangle((lx+550,y-5,1115,y+51),10,fill=PALETTE["alternate"])
@@ -311,9 +310,7 @@ def draw_png(model, dest, automatic_piggy_layout=False):
         headers=[(rx+27,"#",False),(rx+83,"PLAYER",False),(rx+570,"DAMAGE",True),
                  (rx+855,"SPARKS",True),(rx+1030,"SHARE",True),(rx+1154,"PAYOUT",True)]
     else:
-        headers=[(rx+27,"#",False),(rx+83,"PLAYER",False),(rx+570,"SCORE",True),
-                 (rx+765,"STARS",True),(rx+944,"SPARKS",True),(rx+1062,"SHARE",True),
-                 (rx+1154,"SP / LN",True)]
+        headers=[(rx+27,"#",False),(rx+83,"PLAYER",False),(rx+1154,"LINES",True)]
     for x, label, right in headers:
         txt(x,508,label,19,"muted",True,"ra" if right else None)
     for i, entry in enumerate(model["rows"][:10]):
@@ -321,22 +318,8 @@ def draw_png(model, dest, automatic_piggy_layout=False):
         if i%2==0:dr.rectangle((rx+20,y-3,2335,y+44),fill=PALETTE["alternate"])
         shade="yellow" if i==0 else "fg"
         txt(rx+27,y,i+1,25,shade,True)
-        fit(rx+83,y,display_name(entry["player"]),360,26,shade,True)
-        txt(rx+570,y,format_score(kind,entry["score"]),23,"fg",True,"ra")
-        share=entry["share"]
-        share_text=f'{share*100:.1f}%' if share is not None else "—"
-        if kind=="kraken":
-            sparks_text=("≈" if entry["estimatedSparks"] and entry["sparks"] is not None else "")+format_number(entry["sparks"])
-            txt(rx+855,y,sparks_text,23,"muted",False,"ra")
-            txt(rx+1030,y,share_text,22,"muted",False,"ra")
-            payout="EST." if entry["estimatedSparks"] else ("UNKNOWN" if entry["sparks"] is None else "RECORDED")
-            fit(rx+1062,y,payout,118,18,"cyan")
-        else:
-            txt(rx+765,y,format_number(entry["stars"]),22,"muted",False,"ra")
-            txt(rx+944,y,format_number(entry["sparks"]),23,"muted",False,"ra")
-            txt(rx+1062,y,share_text,22,"muted",False,"ra")
-            effort=entry["sparks"]/entry["score"] if entry["sparks"] is not None and entry["score"] else None
-            txt(rx+1154,y,format_number(effort,1),23,"cyan",False,"ra")
+        fit(rx+83,y,display_name(entry["player"]),650,26,shade,True)
+        txt(rx+1154,y,format_score(kind,entry["score"]),24,"fg",True,"ra")
     box(lx,869,1138,1070)
     txt(lx+28,893,"FIRST TRACKED "+heading.split(" · ")[0]+" RESULTS",27,"cyan",True)
     for i, entry in enumerate(model["firstTracked"][:4]):
@@ -350,12 +333,32 @@ def draw_png(model, dest, automatic_piggy_layout=False):
     else:
         note(lx+30,1034,"First in our recorded history · not necessarily first-ever",980)
     box(lx,1091,1138,1376,"purple")
-    txt(lx+30,1114,"EFFORT & REWARDS",34,"fg",True)
-    if kind=="kraken":
+    if automatic_piggy_layout and kind=="piggy":
+        txt(lx+30,1114,"RACE HIGHLIGHTS",34,"fg",True)
+        if model["pbs"]:
+            best=model["pbs"][0]
+            transition=best["transition"]
+            improvement=numeric(transition.get("improvement"))
+            line_text="Line PB: "+display_name(best["player"])+" · "+format_score(kind,transition["previousPB"])+" → "+format_score(kind,best["score"])
+            if improvement is not None: line_text+=" ("+f'{improvement*100:+.1f}%'+")"
+            fit(lx+30,1172,line_text,1040,25,"cyan",True)
+        else:
+            note(lx+30,1172,"No verified returning-player line PB in this event",1040)
+        if model["placementPBs"]:
+            best_rank=model["placementPBs"][0]
+            rank_text="Finish-place PB: "+display_name(best_rank.get("player",""))+" · "+format_finish(best_rank.get("previousRank"))+" → "+format_finish(best_rank.get("newRank"))
+            if best_rank.get("previousDate"): rank_text+=" · prior "+best_rank["previousDate"][5:]
+            fit(lx+30,1228,rank_text,1040,24,"purple",True)
+        else:
+            note(lx+30,1228,"No verified qualifying finishing-place PB improvement",1040)
+        note(lx+30,1300,str(len(model["firstTracked"]))+" first tracked entries · original finishing ranks are independent of line scores",1040)
+    elif kind=="kraken":
+        txt(lx+30,1114,"EFFORT & REWARDS",34,"fg",True)
         note(lx+30,1170,"Damage and Sparks use separately sourced values",1000)
         note(lx+30,1220,"Estimated or missing payouts stay labeled as such",1000)
         note(lx+30,1270,"No Kraken Stars or mixed-unit Sparks/Effort",1000)
     else:
+        txt(lx+30,1114,"EFFORT & REWARDS",34,"fg",True)
         threshold=3500 if kind=="piggy" else 1
         note(lx+30,1170,"Lowest known Sparks per line · "+("at least 3,500 lines" if kind=="piggy" else "positive Flash results"),1000)
         shouts=sorted((r for r in model["rows"] if r["sparks"] is not None

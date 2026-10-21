@@ -1,0 +1,22 @@
+name: Guide Research Safety Tests
+on:
+  push:
+    branches: [feature/discord-strategy-research-20261021]
+    paths:
+      - 'server/discord-guide-*.cjs'
+      - 'scripts/discord-guide-*.test.cjs'
+      - 'api/discord/guide-*.js'
+      - 'database/migrations/004_private_strategy_guide.sql'
+      - '.github/workflows/guide-research-tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Safety, source provenance, access, cursor and cutoff tests
+        run: node --test scripts/discord-guide-research.test.cjs scripts/discord-guide-backfill.test.cjs

@@ -478,7 +478,7 @@ async function main(){
           metadata:kind==='flash'?{flash:1}:kind==='kraken'?{monthKey:'browser-fixture',monthLabel:'Fixture'}:{},
           rows:[{player:name,clan,score:90000,sparks:50,stars:kind==='kraken'?null:500}]};
         const add={approved:true,expectedRevision:0,event};
-        const lower={approved:true,expectedRevision:1,event:{...event,rows:[{...event.rows[0],score:1,sparks:7}]}};
+        const lower={approved:true,expectedRevision:1,event:{...event,rows:[{...event.rows[0],score:2,sparks:7}]}};
         const revoke={approved:true,expectedRevision:2,event:{...lower.event,status:'revoked'}};
         for(const [updates,extra]of [[[add],50],[[add,lower],7],[[add,lower,revoke],0]]){
           const approved=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/approved-event-updates.json'))).updates;

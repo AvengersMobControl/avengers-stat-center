@@ -2,6 +2,23 @@
 
 **Status: code staged for review; NOT DEPLOYED, NO MESSAGES PULLED, NO GUIDE PUBLISHED.**
 
+## Commissioner-selected Discord source scope — October 21, 2026
+
+The commissioner selected **eight** source channels. Exact Discord channel IDs and date policy live in an encrypted Vercel allowlist, not in this public repository. The collector rejects every non-allowlisted channel and enforces the cutoff on the server.
+
+| Source channel | Historical range | Priority |
+| --- | --- | --- |
+| clips-tips-n-tricks | Entire history | **First / highest** |
+| space-race-strategy | Entire history | Standard |
+| piggy-strategy | Entire history | Standard |
+| pinata-strategy | Entire history | Standard |
+| d-and-c-attackes | Since July 21, 2026 | Standard |
+| coordinate-arena | Since July 21, 2026 | Standard |
+| race-coordination | Since April 21, 2026 | Standard |
+| general-chat | Since April 21, 2026 | Standard; high noise expected |
+
+The two time boundaries are fixed at **2026-07-21 00:00 Central** and **2026-04-21 00:00 Central**, respectively, for this initial backfill—not sliding windows that would discard previously collected source. Do not import unrelated channels, and do not mistake general discussion for vetted advice. Exact source coverage and missing/inaccessible ranges must be recorded after a real pull.
+
 The existing result-screenshot puller intentionally returns *image-bearing* posts from eight result channels. It does **not** constitute a comprehensive history of conversation. This separate source-research facility retrieves ordinary Discord messages, context links and thread metadata from explicitly approved channels without modifying or posting to Discord.
 
 ## Goal and editorial contract
@@ -34,6 +51,8 @@ One or both of these private Vercel values authorize review:
 - `AVENGERS_GUIDE_RESEARCH_SECRET`: at least 32 characters, server-to-server bearer credential. Keep it secret, do not place in client JS, query strings or logs.
 
 Existing `DISCORD_BOT_TOKEN`, `DISCORD_GUILD_ID` and `AUTH_SECRET` are required. No new Vercel values have been set by this branch. Never copy/decrypt Discord bot credentials into local source files or use a raw public endpoint.
+
+`AVENGERS_GUIDE_CHANNELS_JSON` is a private JSON object keyed by exact Discord channel ID. Each object value specifies `since` (ISO UTC cutoff or `null` for full history) and `priority` (`primary` for clips/tips, otherwise `normal`). Missing or invalid configuration fails closed. Any thread inherits the approved parent channel's cutoff. The channel inventory displays only those eight approved parents, plus a list of any missing IDs; it does not reveal unrelated private guild channels.
 
 ### Security and release checklist
 

@@ -66,6 +66,26 @@ function reviewerAuthorized(userId,roles,env) {
   return allowedIds.includes(userId)||allowedRoles.some(role=>roles.includes(role));
 }
 
+function researchScope(env) {
+  let parsed;
+  try {parsed=JSON.parse(String(env.AVENGERS_GUIDE_CHANNELS_JSON||''));}catch{return null;}
+  if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))return null;
+  const entries=Object.entries(parsed);
+  if(entries.length<1||entries.length>25)return null;
+  const allowed=new Map();
+  for(const [channelId,config] of entries) {
+    if(!id(channelId)||!config||typeof config!=='object'||Array.isArray(config))return null;
+    if(config.since!==null && (typeof config.since!=='string'||!Number.isFinite(Date.parse(config.since))))return null;
+    allowed.set(channelId,{since:config.since,priority:config.priority==='primary'?'primary':'normal'});
+  }
+  return allowed;
+}
+
+function permittedChannel(channel,scope) {
+  if(!channel)return null;
+  return scope.get(String(channel.id)) || (channel.parent_id ? scope.get(String(channel.parent_id)) : null) || null;
+}
+
 function tags(content) {
   return Object.entries(CATEGORIES).filter(([,re])=>re.test(content)).map(([name])=>name);
 }
@@ -124,6 +144,8 @@ async function researchHandler(req,res,env=process.env,fetchImpl=fetch) {
   if(req.method!=='POST') return makeResponse(res,405,{error:'POST required'});
   if(!permittedOrigin(req)) return makeResponse(res,403,{error:'Origin denied'});
   if(!id(env.DISCORD_GUILD_ID)||!env.DISCORD_BOT_TOKEN) return makeResponse(res,503,{error:'Guide research unavailable'});
+  const scope=researchScope(env);
+  if(!scope) return makeResponse(res,503,{error:'Guide channel scope not configured'});
   let body;
   try{body=parseBody(req);}catch{return makeResponse(res,400,{error:'Invalid JSON'});}
 
@@ -143,18 +165,21 @@ async function researchHandler(req,res,env=process.env,fetchImpl=fetch) {
     const response=await discordGet(`/guilds/${guildId}/channels`,token,fetchImpl);
     if(response.rateLimited) return makeResponse(res,429,response);
     if(!Array.isArray(response.data)) return makeResponse(res,502,{error:'Discord channel inventory unavailable'});
-    const channels=response.data.filter(c=>[0,5,15].includes(c.type)&&id(c.id)).map(c=>({
+    const channels=response.data.filter(c=>[0,5,15].includes(c.type)&&scope.has(String(c.id))).map(c=>({
       id:String(c.id),name:String(c.name||''),type:c.type,parentId:c.parent_id||null,
-      categoryName:response.data.find(p=>p.id===c.parent_id)?.name||null
+      categoryName:response.data.find(p=>p.id===c.parent_id)?.name||null,
+      since:scope.get(String(c.id)).since,priority:scope.get(String(c.id)).priority
     }));
-    return makeResponse(res,200,{mode:'read-only',guildId,channels,hasMessageContents:false});
+    return makeResponse(res,200,{mode:'read-only',guildId,channels,
+      missingScopedChannelIds:[...scope.keys()].filter(channelId=>!channels.some(c=>c.id===channelId)),
+      hasMessageContents:false});
   }
   if(action==='activeThreads') {
     const r=await discordGet(`/guilds/${guildId}/threads/active`,token,fetchImpl);
     if(r.rateLimited) return makeResponse(res,429,r);
     if(!r.data||!Array.isArray(r.data.threads)) return makeResponse(res,502,{error:'Active threads unavailable'});
     return makeResponse(res,200,{mode:'read-only',threads:r.data.threads
-      .filter(t=>String(t.guild_id)===guildId&&id(t.id))
+      .filter(t=>String(t.guild_id)===guildId&&id(t.id)&&scope.has(String(t.parent_id)))
       .map(t=>({id:String(t.id),name:String(t.name||''),parentId:t.parent_id||null,archived:false}))});
   }
   if(action==='threads') {
@@ -162,7 +187,7 @@ async function researchHandler(req,res,env=process.env,fetchImpl=fetch) {
     if(!parent) return makeResponse(res,400,{error:'channelId required'});
     const c=await discordGet(`/channels/${parent}`,token,fetchImpl);
     if(c.rateLimited) return makeResponse(res,429,c);
-    if(!c.data||String(c.data.guild_id)!==guildId||![0,5,15].includes(c.data.type))
+    if(!c.data||String(c.data.guild_id)!==guildId||![0,5,15].includes(c.data.type)||!scope.has(parent))
       return makeResponse(res,403,{error:'Channel not in approved guild'});
     const before=body.before?String(body.before):null;
     if(before && !/^\d{4}-\d\d-\d\dT[\d:.]+Z$/.test(before)) return makeResponse(res,400,{error:'Invalid thread timestamp cursor'});
@@ -181,22 +206,28 @@ async function researchHandler(req,res,env=process.env,fetchImpl=fetch) {
     if(!channelId||body.beforeMessageId!=null&&!before) return makeResponse(res,400,{error:'Invalid channel or cursor'});
     const c=await discordGet(`/channels/${channelId}`,token,fetchImpl);
     if(c.rateLimited) return makeResponse(res,429,c);
-    if(!c.data||String(c.data.guild_id)!==guildId||![0,5,10,11,12,15].includes(c.data.type))
+    if(!c.data||String(c.data.guild_id)!==guildId||![0,5,10,11,12,15].includes(c.data.type)||!permittedChannel(c.data,scope))
       return makeResponse(res,403,{error:'Channel not in approved guild'});
+    const policy=permittedChannel(c.data,scope);
     const limit=Math.max(1,Math.min(100,Math.floor(Number(body.limit)||100)));
     const params=new URLSearchParams({limit:String(limit)});
     if(before)params.set('before',before);
     const result=await discordGet(`/channels/${channelId}/messages?${params}`,token,fetchImpl);
     if(result.rateLimited) return makeResponse(res,429,result);
     if(!Array.isArray(result.data)) return makeResponse(res,502,{error:'Message history unavailable'});
-    const messages=result.data.map(m=>normalizeMessage(m,guildId,channelId));
+    const sinceMs=policy.since ? Date.parse(policy.since) : null;
+    const cutoffReached=sinceMs!=null && result.data.some(m=>Date.parse(String(m.timestamp||''))<sinceMs);
+    const messages=result.data
+      .filter(m=>sinceMs==null||Date.parse(String(m.timestamp||''))>=sinceMs)
+      .map(m=>normalizeMessage(m,guildId,channelId));
     return makeResponse(res,200,{
-      mode:'read-only',channelId,guildId,scanned:messages.length,messages,
-      nextBeforeMessageId:messages.at(-1)?.id||null,hasMore:messages.length===limit,
+      mode:'read-only',channelId,guildId,scanned:result.data.length,returned:messages.length,
+      since:policy.since,cutoffReached,messages,
+      nextBeforeMessageId:cutoffReached?null:(result.data.at(-1)?.id||null),hasMore:!cutoffReached&&result.data.length===limit,
       reminder:'Candidate tags are search hints only; advice must be reviewed against original messages and dates.'
     });
   }
   return makeResponse(res,400,{error:'Invalid action'});
 }
 
-module.exports={id,signedMember,bearerAuthorized,reviewerAuthorized,tags,normalizeMessage,discordGet,researchHandler};
+module.exports={id,signedMember,bearerAuthorized,reviewerAuthorized,researchScope,permittedChannel,tags,normalizeMessage,discordGet,researchHandler};

@@ -16,6 +16,7 @@ const TOKEN='do-not-log-this-discord-bot-token';
 const env={
   AUTH_SECRET:SECRET,DISCORD_GUILD_ID:GUILD,DISCORD_BOT_TOKEN:TOKEN,
   AVENGERS_GUIDE_COUNCIL_ROLE_IDS:ROLE,
+  AVENGERS_GUIDE_CHANNELS_JSON:JSON.stringify({[CHANNEL]:{since:null,priority:'primary'}}),
   AVENGERS_GUIDE_RESEARCH_SECRET:'some-long-private-service-token-that-is-only-in-env'
 };
 function session(extra={}) {
@@ -132,6 +133,39 @@ test('rejects other-guild channel, invalid cursor and unrecognized action',async
   assert.equal((await call(req({action:'history',channelId:CHANNEL}),external)).statusCode,403);
   assert.equal((await call(req({action:'history',channelId:CHANNEL,beforeMessageId:'bogus'}))).statusCode,400);
   assert.equal((await call(req({action:'wipeDatabase'}))).statusCode,400);
+});
+
+test('exact private channel allowlist and fixed historical cutoff are enforced server-side',async()=>{
+  const scopedEnv={...env,AVENGERS_GUIDE_CHANNELS_JSON:JSON.stringify({
+    [CHANNEL]:{since:'2026-07-21T05:00:00Z',priority:'normal'}
+  })};
+  const response=await call(req({action:'history',channelId:CHANNEL}),url=>{
+    if(url.includes('/members/'))return ok({roles:[ROLE]});
+    if(url.endsWith(`/channels/${CHANNEL}`))return ok({id:CHANNEL,guild_id:GUILD,type:0});
+    if(url.includes('/messages?'))return ok([
+      {id:'1555555555555555555',timestamp:'2026-07-22T00:00:00Z',content:'tip after cutoff'},
+      {id:'1555555555555555554',timestamp:'2026-07-20T23:00:00Z',content:'tip before cutoff'}
+    ]);
+    throw Error('unexpected '+url);
+  },scopedEnv);
+  assert.equal(response.statusCode,200);
+  assert.equal(response.body.scanned,2);
+  assert.equal(response.body.returned,1);
+  assert.equal(response.body.cutoffReached,true);
+  assert.equal(response.body.nextBeforeMessageId,null);
+  assert.equal(response.body.hasMore,false);
+  assert.equal(response.body.messages[0].content,'tip after cutoff');
+  const denied=await call(req({action:'history',channelId:OTHER}),url=>
+    url.includes('/members/')?ok({roles:[ROLE]}):ok({id:OTHER,guild_id:GUILD,type:0}),scopedEnv);
+  assert.equal(denied.statusCode,403);
+});
+
+test('missing or malformed private scope fails closed before Discord access',async()=>{
+  for(const scope of ['',JSON.stringify({[CHANNEL]:{since:'garbage'}}),'{}']) {
+    const response=await call(req({action:'channels'}),()=>{throw Error('must not call Discord');},
+      {...env,AVENGERS_GUIDE_CHANNELS_JSON:scope});
+    assert.equal(response.statusCode,503);
+  }
 });
 
 test('Discord rate limit becomes bounded retry hint and does not re-fetch',async()=>{

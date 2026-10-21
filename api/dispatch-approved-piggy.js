@@ -174,6 +174,7 @@ module.exports=async function handler(req,res){
   const source=sourceEventForDispatch({approvedUpdates:approved,holds,eventId:body.eventId,clan:body.clan,
    minimumEventDateExclusive:policy.minimumEventDateExclusive});
   if(source.event.date!==body.report.date)throw Error('PNG event date differs from canonical source');
+  if(body.report.lobbyLabel!==source.lobbyLabel)throw Error('PNG lobby identity differs from canonical source');
   const expectedRows=source.rows;
   const scoreRows=expectedRows.filter(r=>typeof r.score==='number'&&Number.isFinite(r.score));
   const starsRows=expectedRows.filter(r=>typeof r.stars==='number'&&Number.isFinite(r.stars));

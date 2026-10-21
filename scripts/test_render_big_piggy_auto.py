@@ -26,7 +26,9 @@ def fixture():
     return {"schemaVersion":1,"source":"approved-event-ledger",
             "projection":{"version":"a"*64,"events":[event],"people":people},
             "piggyPlacementPBsByClan":{"AV-2":{event_id:[{"player":"AV-B","previousRank":7,"newRank":2,
-              "improved":True,"previousDate":"2026-10-02"}]}}}
+              "improved":True,"previousDate":"2026-10-02"}]}},
+            "piggyCareerPodiumsByClan":{"AV-2":{"AV-A":{"wins":3,"secondPlaces":1,"thirdPlaces":0,"podiums":4},
+              "AV-B":{"wins":1,"secondPlaces":2,"thirdPlaces":1,"podiums":4}}}}
 
 class BigPiggyV2Tests(unittest.TestCase):
     def test_av2_rake_and_rank_pb_metrics_are_explicit_and_separate(self):
@@ -36,6 +38,8 @@ class BigPiggyV2Tests(unittest.TestCase):
         self.assertEqual(model["rakePercentDisplayedShareSum"],71.0)
         self.assertEqual([(x["previousRank"],x["newRank"]) for x in model["placementPBs"]],[(7,2)])
         self.assertEqual(model["participantRows"],5,"one-line placeholders are not participants")
+        self.assertEqual(model["rows"][0]["careerPodiums"]["wins"],3)
+        self.assertEqual(model["rows"][1]["careerPodiums"]["secondPlaces"],2)
         with tempfile.TemporaryDirectory() as tmp:
             dest=pathlib.Path(tmp)/"av2-piggy-v2.png"
             result=renderer.render(data,"piggy","AV-2","piggy|2026-10-11",str(dest),automatic_piggy_layout=True)

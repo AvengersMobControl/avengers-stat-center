@@ -1,3 +1,11 @@
+## 2026-10-21 — Big Piggy Race operating standard; automation remains OFF
+
+Leader asked whether Big Piggy results are automatically posted and requested instructions comparable to the Piggy Flash process. Current live check: production Neon runtime_safety flags automatic_discord_send_enabled=false, automatic_discord_delete_enabled=false, publication_endpoint_enabled=false. The fixed Performance Statistics channel is configured; the successful synthetic one-shot canary is transport proof only. vercel.json has no Big Piggy cron and the GitHub Pages workflow is preview/build/test only, with no Discord post. Thus there is no unattended end-to-end source→approved result→website→PNG/message→Discord pipeline.
+
+Documented the event-specific operating standard in docs/BIG_PIGGY_RESULT_OPERATING_STANDARD.md and cross-linked it from docs/PIGGY_REPORTING_STANDARD.md. Requirements include verified final screenshots and original CDN bytes, complete pagination, separate lobbies and event-time clan, one-line nonparticipation exclusion, exact AVENGERS/AV-2 finishing-rank PB thresholds, deterministic same-version PNG and message, sitewide publication verification, idempotent private dispatch, receipts/readback, and fail-closed recovery.
+
+No code, source data, production flags, schedules, event imports, or Discord messages changed. This decision records the current status and acceptance gates; it does not activate automation or authorize a new post. AVENGERS-only; SAC / Lock It In remains separate.
+
 ## 2026-10-21 — Fred roster addition and TheOli transfer
 
 Leader clarified the requested addition is AV-Fred, not Frank. Activate existing AV-Fred profile with its source-backed result. AV-FrankAbagnale remains linked to AV-Addicted without display/identity changes or duplicate history. TheOli current status becomes AV2; historical event-time clans, scores, rewards, fixed Unlogged Sparks and dated snapshots remain unchanged. Current counts: 50 AVENGERS / 51 AV-2. Roster captions use current counts. Shared projection and browser checks required before claiming live; no Discord send, UTC synchronization or SAC change.

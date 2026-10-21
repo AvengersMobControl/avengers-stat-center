@@ -45,7 +45,7 @@ async function githubMainSha(){
 function validateBody(body,claims,mainSha,env){
  if(!body||typeof body!=='object'||Array.isArray(body))throw Error('Dispatch payload missing');
  if(body.sourceCommit!==claims.sha||body.sourceCommit!==mainSha||
-    env.VERCEL_GIT_COMMIT_SHA!==mainSha)throw Error('GitHub, payload and production deployment commits do not match');
+    String(env.VERCEL_GIT_COMMIT_SHA||'').toLowerCase()!==mainSha)throw Error('GitHub, payload and production deployment commits do not match');
  if(body.kind!=='piggy'||!['AVENGERS','AV-2'].includes(body.clan)||
     !policy.allowedKinds.includes(body.kind)||!policy.allowedClans.includes(body.clan))throw Error('Event kind or clan is not allowed');
  if(typeof body.eventId!=='string'||body.eventId.length>140||

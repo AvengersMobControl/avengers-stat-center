@@ -1,3 +1,17 @@
+## 2026-10-21 — Big Piggy automated publication (PR #138; pending activation)
+
+- [x] Implement independent event-time clan finishing-place PB history: AVENGERS requires 30+ distinct participants in one lobby; AV-2 requires 5+ in one lobby. Include prior best date.
+- [x] Keep the pinned Piggy v1 renderer unchanged; build a separate v2 preview with AV-2 earned Stars vs whole-lobby pot, displayed-share RAKE %, rank PBs, top-three career podium counts, and no redundant reward/share/Sparks-per-line columns.
+- [x] Implement hourly GitHub Actions candidate runner and OIDC-verified Vercel publisher; validate current main/deployment SHA, latest approved final source, active holds, report/source metrics, exact message, and PNG SHA.
+- [x] Implement unique event+clan slots, receipt/readback of exact Discord message and PNG bytes, and fail-closed reconciliation. Automatic correction and delete are disabled.
+- [ ] Complete PR #138 CI and inspect both v2 PNG artifacts. Obtain leader visual approval before changing the template registry/policy to approved.
+- [ ] Prepare and test migration 003 on a temporary Neon branch; request explicit approval before applying it to production.
+- [ ] After visual approval and migration approval, activate the Piggy-only policy, production environment switch, and Neon send/endpoint flags; keep deletion hard-OFF.
+- [ ] Run one real approved-report canary, verify Discord readback and ledger receipt, then confirm hourly scheduling handles future newly approved final Piggy events. The workflow does not auto-approve screenshots or import unreviewed rows.
+- [ ] Record production deployment SHA, migration result, activation flags, canary message IDs/PNG hashes, and first future event receipt before calling the system LIVE.
+
+No source import, production migration, Vercel environment change, or Discord send has occurred in PR #138. The already-recorded 2026-10-18 event is excluded from automatic backfill.
+
 ## 2026-10-21 — Explicit Discord send instructions are authorization (standing operating rule)
 
 **When the leader directly tells the assistant to send, post, or push a specified item to Discord, treat that instruction as explicit authorization for that one-time publication and execute it immediately using the existing secured AVENGERS GitHub/Vercel/Neon/server-side Discord workflow. Do not ask the leader to approve the same send again, do not redirect them to perform it manually, and do not claim the integrations are unavailable without checking them.**

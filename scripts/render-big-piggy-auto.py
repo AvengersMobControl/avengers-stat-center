@@ -90,6 +90,7 @@ def resolve_summary(release, kind, clan, event_id=None):
     rows = sorted(source_rows, key=lambda r: (numeric(r.get("score")) is None,
                             -(numeric(r.get("score")) or 0), r.get("player") or ""))
     people = {p["name"]: p for p in projection.get("people", [])}
+    career_counts = (release.get("piggyCareerPodiumsByClan") or {}).get(clan, {})
     pbs, first, rank_rows = [], [], []
     for ix, row in enumerate(rows, 1):
         person = row.get("player")
@@ -100,7 +101,8 @@ def resolve_summary(release, kind, clan, event_id=None):
                     stars=None if kind == "kraken" else numeric(row.get("stars")),
                     estimatedSparks=bool(row.get("estimatedSparks")),
                     share=numeric(meta.get("share")), group=meta.get("group"),
-                    rank=ix, transition=None)
+                    rank=ix, transition=None,
+                    careerPodiums=(career_counts.get(person) if ix <= 3 and person else None))
         if person and person in people:
             transitions = people[person].get("kinds", {}).get(kind, {}).get("pbs", [])
             match = next((t for t in transitions if t.get("eventId") == event["id"]), None)
@@ -310,7 +312,8 @@ def draw_png(model, dest, automatic_piggy_layout=False):
         headers=[(rx+27,"#",False),(rx+83,"PLAYER",False),(rx+570,"DAMAGE",True),
                  (rx+855,"SPARKS",True),(rx+1030,"SHARE",True),(rx+1154,"PAYOUT",True)]
     else:
-        headers=[(rx+27,"#",False),(rx+83,"PLAYER",False),(rx+1154,"LINES",True)]
+        headers=[(rx+27,"#",False),(rx+83,"PLAYER",False),
+                 (rx+930,"CAREER W / 2 / 3 / P",True),(rx+1154,"LINES",True)]
     for x, label, right in headers:
         txt(x,508,label,19,"muted",True,"ra" if right else None)
     for i, entry in enumerate(model["rows"][:10]):
@@ -318,7 +321,11 @@ def draw_png(model, dest, automatic_piggy_layout=False):
         if i%2==0:dr.rectangle((rx+20,y-3,2335,y+44),fill=PALETTE["alternate"])
         shade="yellow" if i==0 else "fg"
         txt(rx+27,y,i+1,25,shade,True)
-        fit(rx+83,y,display_name(entry["player"]),650,26,shade,True)
+        fit(rx+83,y,display_name(entry["player"]),620,26,shade,True)
+        career=entry.get("careerPodiums")
+        if i<3 and career:
+            career_text=str(career.get("wins",0))+"/"+str(career.get("secondPlaces",0))+"/"+str(career.get("thirdPlaces",0))+"/"+str(career.get("podiums",0))
+            txt(rx+930,y,career_text,21,"purple",True,"ra")
         txt(rx+1154,y,format_score(kind,entry["score"]),24,"fg",True,"ra")
     box(lx,869,1138,1070)
     txt(lx+28,893,"FIRST TRACKED "+heading.split(" · ")[0]+" RESULTS",27,"cyan",True)

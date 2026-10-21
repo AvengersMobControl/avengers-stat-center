@@ -59,6 +59,24 @@ function render(host,events,day,tab,resolve){
  ];
  const pbSection=selected?part('PBs & Prior-Average Comparisons','<div class="flash-history-metrics">'+metrics.map(x=>
   '<div class="flash-history-card"><b>'+esc(x[1])+'</b><strong>'+esc(x[0])+'</strong><small>'+esc(x[2])+'</small></div>').join('')+'</div>'):'';
+ const milestones=selected?part('Combined-Line Milestones','<div class="flash-history-metrics">'+
+   [1000,3000,5000,10000].map(t=>'<div class="flash-history-card"><b>'+
+   fmt(days.filter(d=>d.lines>=t).length)+'</b><strong>'+fmt(t)+'+ lines</strong>'+
+   '<small>Distinct AVENGERS players · recorded PF results summed for selected Flash Set</small></div>').join('')+
+   '</div>'):'';
+ const pbHighlights=selected?part('New Tracked PB Details','<details class="flash-history-archive"><summary>View PB improvements by player and Flash</summary>'+
+   '<div class="table-wrap"><table class="flash-history-table"><thead><tr><th>Player</th><th>PF</th><th>Lines</th><th>PF record</th><th>All-PF record</th></tr></thead><tbody>'+
+   (pb.filter(x=>x.pfPB||x.singlePB).sort((a,b)=>b.lines-a.lines).map(x=>'<tr><td>'+esc(x.player)+'</td><td>PF'+x.flash+'</td><td>'+fmt(x.lines)+'</td><td>'+
+   (x.pfPB?fmt(x.oldPfBest)+' → '+fmt(x.lines):'—')+'</td><td>'+
+   (x.singlePB?fmt(x.oldSingleBest)+' → '+fmt(x.lines):'—')+'</td></tr>').join('')||
+   '<tr><td colspan="5">No prior tracked single-race records beaten in this selection.</td></tr>')+
+   '</tbody></table></div></details>'+
+   '<details class="flash-history-archive"><summary>View complete-day PB improvements</summary>'+
+   '<div class="table-wrap"><table class="flash-history-table"><thead><tr><th>Player</th><th>Prior full-day PB</th><th>New full-day PB</th></tr></thead><tbody>'+
+   (dayPB.map(x=>'<tr><td>'+esc(x.player)+'</td><td>'+fmt(x.priorPB)+'</td><td>'+fmt(x.lines)+'</td></tr>').join('')||
+   '<tr><td colspan="3">No comparable complete-day record improved.</td></tr>')+
+   '</tbody></table></div></details>','First tracked appearances are excluded from new PB counts.'):'';
+
  const potsHeader=hdr('pots','date','Date')+hdr('pots','flash','PF')+hdr('pots','potStars','Pot Stars')+hdr('pots','awardedStars','AVENGERS Stars')+hdr('pots','rakePercent','Est. rake')+hdr('pots','pfRank','PF rank')+hdr('pots','overallRank','All PF rank')+'<th>Lobby</th>';
  const potRows=sortBy(h.pots,'pots').map(r=>'<tr data-hist-row data-hist-text="'+esc((r.date+' PF'+r.flash+' '+r.lobby).toLowerCase())+'"><td>'+esc(r.date)+'</td><td>PF'+r.flash+'</td><td>'+fmt(r.potStars)+'</td><td>'+fmt(r.awardedStars)+'</td><td>'+pct(r.rakePercent)+'</td><td>'+fmt(r.pfRank)+'/'+fmt(r.pfCount)+'</td><td>'+fmt(r.overallRank)+'/'+fmt(r.overallCount)+'</td><td>'+esc(r.lobby)+'</td></tr>').join('');
  const dayHeader=hdr('days','setId','Flash Set')+hdr('days','player','Player')+hdr('days','lines','Total lines')+hdr('days','flashCount','PF results')+hdr('days','allRank','All-time rank')+'<th>Coverage</th>';
@@ -66,7 +84,7 @@ function render(host,events,day,tab,resolve){
  const singleHeader=hdr('singles','date','Date')+hdr('singles','player','Player')+hdr('singles','flash','PF')+hdr('singles','lines','Lines')+hdr('singles','allRank','All-time rank')+'<th>Original rank</th>';
  const singleRows=sortBy(h.singles,'singles').map(r=>'<tr data-hist-row data-hist-text="'+esc((r.date+' '+r.player+' PF'+r.flash).toLowerCase())+'"><td>'+esc(r.date)+'</td><td>'+esc(r.player)+'</td><td>PF'+r.flash+'</td><td>'+fmt(r.lines)+'</td><td>'+fmt(r.allRank)+'/'+fmt(r.allCount)+'</td><td>'+fmt(r.finish)+'</td></tr>').join('');
  host.innerHTML='<div class="flash-history-scope"><strong>AVENGERS historical Flash statistics</strong> · PNG source metrics; AV-2 excluded.</div>'+
-  card+podium+contrib+top10+pbSection+part('Historical Ranking Tables',
+  card+podium+contrib+top10+pbSection+pbHighlights+milestones+part('Historical Ranking Tables',
   archive('pots','Lobby Pot History',fmt(h.coverage.potsRecorded)+' of '+fmt(h.coverage.sourceEvents)+' Flash source events have main-lobby pot headers. Rankings span all recorded PFs; secondary lobby pots can be backfilled.',potsHeader,potRows,h.pots.length)+
   archive('days','Historical Combined-Day Lines','Rank includes observed partial days; the PF results column identifies incomplete coverage.',dayHeader,dayRows,h.days.length)+
   archive('singles','Historical Single-Race Lines','Each player-race is ranked separately. Players may appear multiple times in a Flash Set.',singleHeader,singleRows,h.singles.length),

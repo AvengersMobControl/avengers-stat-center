@@ -36,18 +36,20 @@ async function verifyEndpoint(){
  const endpoint=process.env.AVENGERS_PIGGY_DISPATCH_URL||'https://avengers-stat-center.vercel.app/api/dispatch-approved-piggy';
  const tokenClaims=JSON.parse(Buffer.from(token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'),'base64').toString('utf8'));
  if(!/^[a-f0-9]{40}$/i.test(tokenClaims.sha||''))fail('OIDC token lacks a valid commit SHA');
- const response=await fetch(endpoint,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
-  body:JSON.stringify({sourceCommit:tokenClaims.sha.toLowerCase()}),signal:AbortSignal.timeout(20000)});
- let answer={};try{answer=await response.json();}catch{}
- if(response.status===423&&answer.decision==='automatic-piggy-dispatch-disabled'){
-  console.log(JSON.stringify({decision:'oidc-endpoint-verified-disabled',endpoint,productionSendStillOff:true}));
-  return;
+ for(let attempt=1;attempt<=8;attempt++){
+  const response=await fetch(endpoint,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
+   body:JSON.stringify({action:'verify',sourceCommit:tokenClaims.sha.toLowerCase()}),signal:AbortSignal.timeout(20000)});
+  let answer={};try{answer=await response.json();}catch{}
+  if(response.ok&&answer.decision==='oidc-endpoint-and-deployment-verified'){
+   console.log(JSON.stringify({decision:answer.decision,endpoint,sendAttempted:false,policyEnabled:answer.policyEnabled}));
+   return;
+  }
+  const retryable=[404,502,503,504].includes(response.status)||
+   /production deployment commits do not match/i.test(String(answer.reason||''));
+  if(retryable&&attempt<8){await new Promise(resolve=>setTimeout(resolve,15000));continue;}
+  fail('OIDC endpoint check failed safely: HTTP '+response.status+' / '+(answer.decision||answer.reason||'unverified response'));
  }
- if(response.status===422&&answer.decision==='blocked'&&answer.reason==='Event kind or clan is not allowed'){
-  console.log(JSON.stringify({decision:'oidc-endpoint-and-deployment-verified',endpoint,sendAttempted:false}));
-  return;
- }
- fail('OIDC endpoint check failed safely: HTTP '+response.status+' / '+(answer.decision||'unverified response'));
+ fail('OIDC endpoint check failed after bounded deployment retries');
 }
 async function send(prepared,sourceCommit){
  const pngBytes=fs.readFileSync(prepared.png);

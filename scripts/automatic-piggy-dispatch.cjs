@@ -22,6 +22,7 @@ function prepareReport(release,event,clan,publish=false){
  if(publish)renderArgs.push('--automatic-piggy-publish');
  execFileSync('python3',renderArgs,{cwd:root,stdio:'pipe'});
  const report=JSON.parse(fs.readFileSync(path.join(reports,stem+'.json'),'utf8'));
+ report.lobbyLabel=deriveLobbyLabel(event,clan);
  const message=buildPiggyMessage(event,clan,report);
  const messageFileText=publish?message:'[REVIEW PREVIEW — NOT FOR POSTING]\n\n'+message;
  fs.writeFileSync(path.join(reports,stem+'.txt'),messageFileText+'\n','utf8');

@@ -109,7 +109,7 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
   const R=BASE.globals.AVENGERS_MEMBER_TIMEZONES,D=BASE.globals.AVENGERS_DATA;
   const people=BASE.projection.people;
   const active=R.rows.filter(r=>r.status==='Active'),av2=R.rows.filter(r=>r.status==='AV2');
-  assert.equal(active.length,50);assert.equal(av2.length,50);
+  assert.equal(active.length,50);assert.equal(av2.length,51);
   for(const name of ['AV-Lin','AV-JefhKintz05','AV-SiFra']){
     assert.equal(R.byName[name]?.status,'Active',name+' roster');
     assert.equal(D.members.filter(m=>m.name===name&&m.status==='Active').length,1,name+' unique profile');
@@ -148,7 +148,7 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
 });
 test('current roster and every materialized PB/reward agree with independent canonical source sums',()=>{
   const D=BASE.globals.AVENGERS_DATA,R=BASE.globals.AVENGERS_MEMBER_TIMEZONES;
-  assert.equal(R.rows.filter(r=>r.status==='Active').length,50);assert.equal(R.rows.filter(r=>r.status==='AV2').length,50);
+  assert.equal(R.rows.filter(r=>r.status==='Active').length,50);assert.equal(R.rows.filter(r=>r.status==='AV2').length,51);
   const events=BASE.projection.events.filter(e=>e.status!=='revoked');
   for(const m of D.members){
     // Approved overlays may retain their original source alias; compare canonically.
@@ -208,8 +208,8 @@ test('Adigarian does not get artificial gap from a reset returning-clan counter'
 const {audit:transferAudit}=require('./audit-transfer-restorations.cjs');
 test('transfer restoration reconciles every current member, not only Hoops',()=>{
  const result=transferAudit(BASE);
- assert.equal(result.summary.roster,100);
- assert.equal(result.rows.length,100);
+ assert.equal(result.summary.roster,101);
+ assert.equal(result.rows.length,101);
  for(const r of result.rows){
   const player=BASE.projection.people.find(p=>p.name===r.name);
   assert(player,'Missing member '+r.name);
@@ -271,4 +271,19 @@ test('near-one-million AV gaps appear in both dated photos and are not additive'
   const {originallyObservedGap}=require('./audit-transfer-restorations.cjs');
   assert(Math.abs(p.screenshotGap-Math.max(...e.map(s=>originallyObservedGap(p,s))))<=0.5);
  }
+});
+
+test('Fred active independently of Frank and TheOli transfer preserves event-time clans',()=>{
+  const R=BASE.globals.AVENGERS_MEMBER_TIMEZONES;
+  assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV-FrankAbagnale'),'AV-Addicted');
+  assert.equal(R.rows.filter(r=>r.name==='AV-FrankAbagnale'&&r.status==='Active').length,1);
+  assert.equal(R.rows.filter(r=>r.name==='AV-Fred'&&r.status==='Active').length,1);
+  assert.equal(BASE.projection.people.filter(p=>p.name==='AV-Addicted').length,1);
+  const fred=BASE.projection.people.find(p=>p.name==='AV-Fred');
+  assert.equal(fred.status,'Active');assert.equal(fred.history.length,1);
+  assert.equal(R.byName['AV-TheOli'].status,'AV2');
+  assert.equal(BASE.projection.people.find(p=>p.name==='AV-TheOli').status,'AV2');
+  const old=BASE.projection.people.find(p=>p.name==='AV-TheOli').history;
+  assert(old.length>0);
+  assert(old.some(r=>r.clan==='AVENGERS'),'historical AVENGERS participation retained');
 });

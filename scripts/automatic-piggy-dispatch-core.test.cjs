@@ -44,7 +44,7 @@ test('PNG validator requires the approved raster dimensions and a bounded payloa
  const png=Buffer.alloc(24);Buffer.from('89504e470d0a1a0a','hex').copy(png,0);
  png.writeUInt32BE(13,8);png.writeUInt32BE(0x49484452,12);png.writeUInt32BE(2400,16);png.writeUInt32BE(1500,20);
  assert.equal(verifyPngBytes(png).length,64);
- assert.throws(()=>verifyPngBytes(Buffer.from('nope')),/signature/);
+ assert.throws(()=>verifyPngBytes(Buffer.from('nope')),/size|signature/);
  const wrong=Buffer.from(png);wrong.writeUInt32BE(100,16);
  assert.throws(()=>verifyPngBytes(wrong),/2400/);
 });

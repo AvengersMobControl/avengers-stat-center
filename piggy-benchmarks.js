@@ -1,7 +1,7 @@
 'use strict';
 /* AVENGERS Piggy line benchmark ledger.
- * Counts DISTINCT competitors at or above each threshold from the actual
- * AVENGERS event-time race rows (never current roster or AV-2 results).
+ * Counts DISTINCT competitors at or above each threshold from actual event-time
+ * race rows. AVENGERS and AV-2 are computed independently; default is AVENGERS.
  * Authoritative input: window.AVENGERS_DATA.piggy.events, derived from the
  * approved event ledger. No editable/manual record count declarations.
  */

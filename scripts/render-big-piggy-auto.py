@@ -255,7 +255,7 @@ def draw_png(model, dest, automatic_piggy_layout=False, automatic_piggy_publish=
     header_state=("APPROVED LEDGER · FINAL REPORT" if automatic_piggy_publish else "APPROVED LEDGER · REVIEW PREVIEW") if automatic_piggy_layout else "APPROVED LEDGER · REVIEW PREVIEW"
     txt(2352, 94, header_state, 22, "green", True, "ra")
     if automatic_piggy_layout:
-        fit(45,118,"Event-time clan: "+model["clan"]+" · Lobby: "+model["lobbyLabel"],1700,18,"muted")
+        fit(45,137,"Event-time clan: "+model["clan"]+" · Lobby: "+model["lobbyLabel"],1700,15,"muted")
     score = model["knownScoreSum"]
     count = model["participantRows"]
     prev = model["previousScoreSum"]
@@ -277,11 +277,11 @@ def draw_png(model, dest, automatic_piggy_layout=False, automatic_piggy_publish=
         rake = model.get("rakePercentDisplayedShareSum")
         rake_text = (f"{rake:.1f}% displayed-share sum" if rake is not None else "displayed-share sum unknown")
         top[3] = ("AV-2 EARNED STARS", format_number(model["knownStars"]),
-                  f"Whole-lobby displayed pot {pot} · RAKE {rake_text}")
+                  f"Whole-lobby pot {pot} · RAKE {rake_text}")
     elif automatic_piggy_layout and kind == "piggy" and model["clan"] == "AVENGERS":
         pot = model.get("displayedPotStars") or "unknown"
         top[3] = ("CLAN EARNED STARS", format_number(model["knownStars"]),
-                  f"Whole-lobby displayed pot {pot} · separate from clan earnings")
+                  f"Whole-lobby pot {pot} · clan Stars shown separately")
     for i, (label, value, subtitle) in enumerate(top):
         x = 45 + i * 588
         box(x, 180, x + 568, 340)
@@ -446,7 +446,7 @@ def draw_png(model, dest, automatic_piggy_layout=False, automatic_piggy_publish=
             values=[float(p["average"]) for p in trend]
             low=min(values); high=max(values)
             span=high-low or 1.0
-            x_left=rx+40; x_right=rx+1040
+            x_left=rx+260; x_right=rx+1000
             points=[]
             for i,item in enumerate(trend):
                 x=x_left+(x_right-x_left)*(i/(len(trend)-1) if len(trend)>1 else 0.5)
@@ -454,7 +454,7 @@ def draw_png(model, dest, automatic_piggy_layout=False, automatic_piggy_publish=
                 points.append((int(x),int(y)))
             if len(points)>1: dr.line(points,fill=PALETTE["magenta"],width=4)
             for x,y in points: dr.ellipse((x-4,y-4,x+4,y+4),fill=PALETTE["magenta"])
-            fit(rx+30,chart_top-4,"AVG LINES / PLAYER",230,16,"muted",True)
+            fit(rx+30,chart_top-4,"AVG LINES / PLAYER",220,15,"muted",True)
             last=trend[-1]
             txt(rx+1090,chart_top-4,format_number(last["average"],1)+" avg",18,"magenta",True,"ra")
         else:

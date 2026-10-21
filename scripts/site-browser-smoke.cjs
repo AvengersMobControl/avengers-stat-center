@@ -253,7 +253,7 @@ async function main(){
     // New AVENGERS-only historical Flash report, computed from the same live page source.
     const hist=page.locator('#flashHistoricalReporting');
     assert(await hist.isVisible(),'AVENGERS Flash historical report displayed');
-    assert.equal(await hist.locator('.flash-history-card').count(),10,'4 header pot cards + 6 comparison metrics');
+    assert.equal(await hist.locator('.flash-history-card').count(),14,'4 pot cards + 6 history metrics + 4 milestones');
     const pctLabels=await hist.locator('.flash-history-grid .flash-history-card').allTextContents();
     assert(pctLabels[0].includes('77.4%')&&pctLabels[0].includes('1/38'),'Sep22 PF1 header estimated rake: '+JSON.stringify(pctLabels));
     assert(pctLabels[1].includes('93.5%')&&pctLabels[1].includes('3/50'),'Sep22 PF2 pot rank and rake');

@@ -258,7 +258,7 @@ async function main(){
     assert(pctLabels[0].includes('77.4%')&&pctLabels[0].includes('1/38'),'Sep22 PF1 header estimated rake: '+JSON.stringify(pctLabels));
     assert(pctLabels[1].includes('93.5%')&&pctLabels[1].includes('3/50'),'Sep22 PF2 pot rank and rake');
     assert(pctLabels[3].includes('2.76M')&&pctLabels[3].includes('1/37'),'PF4 next-day header retained');
-    assert((await hist.innerText()).includes('AV-ZolikaLoveKira'),'combined-day leader shown');
+    assert((await hist.innerText()).includes('AV-Zolika.x.Kira'),'combined-day leader shown under current canonical player identity');
     assert((await hist.innerText()).includes('9,880'),'top recorded combined-day score');
     assert((await hist.innerText()).includes('4,936'),'top single-race score');
     assert((await hist.innerText()).includes('6/2,761'),'top single-race historical rank');

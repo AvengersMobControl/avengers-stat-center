@@ -112,6 +112,25 @@ def resolve_summary(release, kind, clan, event_id=None):
     pbs.sort(key=lambda r: (-(numeric(r["transition"].get("improvement")) or 0),
                              r["player"]))
     first.sort(key=lambda r: (-(r["score"] or 0), r["player"]))
+    placement_source = (release.get("piggyPlacementPBsByClan") or {}).get(clan, {}).get(event["id"], [])
+    placement_pbs = [dict(x) for x in placement_source
+                     if x.get("improved") is True and numeric(x.get("previousRank")) is not None
+                     and numeric(x.get("newRank")) is not None
+                     and numeric(x.get("newRank")) < numeric(x.get("previousRank"))]
+    placement_pbs.sort(key=lambda x: (numeric(x.get("newRank")), x.get("player", "")))
+    event_metadata = event.get("metadata") or {}
+    if clan == "AV-2":
+        displayed_pot = event_metadata.get("av2DisplayedPotStars")
+        rake_percent = numeric(event_metadata.get("av2RakePercentDisplayedShareSum"))
+        if rake_percent is None:
+            lobby_ids = {str((r.get("metadata") or {}).get("lobby",
+                          (r.get("metadata") or {}).get("group", "unknown"))) for r in source_rows}
+            shares = [numeric((r.get("metadata") or {}).get("share")) for r in source_rows]
+            if len(lobby_ids) == 1 and shares and all(x is not None for x in shares):
+                rake_percent = sum(shares) * 100
+    else:
+        displayed_pot = event_metadata.get("displayedPotStars")
+        rake_percent = None
     total_score = sum(r["score"] for r in rank_rows if r["score"] is not None)
     total_sparks = sum(r["sparks"] for r in rank_rows if r["sparks"] is not None)
     total_stars = sum(r["stars"] for r in rank_rows if r["stars"] is not None)
@@ -132,6 +151,8 @@ def resolve_summary(release, kind, clan, event_id=None):
         "flashNumber": str(flash_num) if flash_num else None,
         "status": event["status"], "unit": event["unit"], "projectionVersion": projection["version"],
         "rows": rank_rows, "pbs": pbs, "firstTracked": first,
+        "placementPBs": placement_pbs, "displayedPotStars": displayed_pot,
+        "rakePercentDisplayedShareSum": rake_percent,
         "participantRows": len(rank_rows), "knownScoreSum": total_score,
         "knownScoreCount": len(rank_rows) - missing_scores, "knownSparks": total_sparks,
         "knownStars": total_stars if kind != "kraken" else None,
@@ -157,7 +178,7 @@ def _fonts(size, bold=False):
     raise RuntimeError("Pillow DejaVuSans font unavailable; do not substitute an unreviewed graphic")
 
 
-def draw_png(model, dest):
+def draw_png(model, dest, automatic_piggy_layout=False):
     from PIL import Image, ImageDraw
     w, h = 2400, 1500
     image = Image.new("RGB", (w, h), PALETTE["bg"])
@@ -205,10 +226,16 @@ def draw_png(model, dest):
         ("KNOWN SPARKS", format_number(model["knownSparks"]),
          str(model["unknownSparkRows"]) + " reward rows unknown" +
          (" · estimated: " + str(model["estimatedSparkRows"]) if kind == "kraken" else "")),
-        (("PLAYERS LOGGED" if kind == "kraken" else "KNOWN STARS"),
+        (("PLAYERS LOGGED" if kind == "kraken" else ("AV-2 EARNED STARS" if kind == "piggy" and model["clan"] == "AV-2" else "KNOWN STARS")),
          str(count) if kind == "kraken" else format_number(model["knownStars"]),
          ("Kraken awards no Stars" if kind == "kraken" else str(model["unknownStarRows"]) + " Star rows unknown"))
     ]
+    if automatic_piggy_layout and kind == "piggy" and model["clan"] == "AV-2":
+        pot = model.get("displayedPotStars") or "unknown"
+        rake = model.get("rakePercentDisplayedShareSum")
+        rake_text = (f"{rake:.1f}% displayed-share sum" if rake is not None else "displayed-share sum unknown")
+        top[3] = ("AV-2 EARNED STARS", format_number(model["knownStars"]),
+                  f"Whole-lobby pot {pot} · RAKE {rake_text}")
     for i, (label, value, subtitle) in enumerate(top):
         x = 45 + i * 588
         box(x, 180, x + 568, 340)
@@ -221,29 +248,60 @@ def draw_png(model, dest):
     box(lx, 378, 1138, 848, "cyan")
     dr.rounded_rectangle((lx + 17, 395, 1120, 493), 14, fill="#112d49")
     txt(lx + 38, 407, "★ PERSONAL BESTS", 47, "fg", True)
-    txt(1095, 421, f'{len(model["pbs"])} NEW PBs', 28, "green", True, "ra")
-    fit(lx + 40, 465, "Returning players · ranked by improvement", 950, 22, "muted")
-    for x, label, right in [(lx+30,"#",False),(lx+82,"PLAYER",False),
-                             (730,"OLD PB",True),(918,"NEW PB",True),(1100,"INCREASE",True)]:
-        txt(x, 521, label, 21, "muted", True, "ra" if right else None)
-    for i, entry in enumerate(model["pbs"][:4]):
-        y = 565 + i * 65
-        t = entry["transition"]
-        if i % 2 == 0:
-            dr.rounded_rectangle((lx+20,y-5,1115,y+53),10,fill=PALETTE["alternate"])
-        txt(lx+30, y, i+1, 29, "cyan", True)
-        fit(lx+80,y,display_name(entry["player"]),385,30,"yellow" if i==0 else "fg",True)
-        txt(730,y,format_score(kind,t["previousPB"]),29,"muted",True,"ra")
-        txt(918,y,format_score(kind,entry["score"]),29,"fg",True,"ra")
-        improvement=numeric(t.get("improvement"))
-        txt(1100,y,f'+{improvement*100:.1f}%' if improvement is not None else "—",
-            29,"green",True,"ra")
-    if not model["pbs"]:
-        note(lx+48,620,"No confirmed returning-player personal bests in this event",1000)
-    if len(model["pbs"])>4:
-        txt(lx+38,808,f'+ {len(model["pbs"])-4} more verified PBs · see Stat Center event records',21,"cyan")
+    if automatic_piggy_layout and kind == "piggy":
+        fit(1095, 416, f'{len(model["pbs"])} LINE · {len(model["placementPBs"])} RANK PBs', 470, 24, "green", True)
+        txt(lx+30, 478, "LINE PBs", 23, "cyan", True)
+        txt(lx+535, 478, str(len(model["pbs"])), 22, "muted", True, "ra")
+        txt(lx+565, 478, "FINISH-PLACE PBs", 23, "purple", True)
+        txt(lx+1050, 478, str(len(model["placementPBs"])), 22, "muted", True, "ra")
+        for i, entry in enumerate(model["pbs"][:4]):
+            y=525+i*65
+            t=entry["transition"]
+            if i%2==0: dr.rounded_rectangle((lx+20,y-5, lx+515,y+51),10,fill=PALETTE["alternate"])
+            fit(lx+30,y,display_name(entry["player"]),190,23,"yellow" if i==0 else "fg",True)
+            txt(lx+355,y,format_score(kind,t["previousPB"]),22,"muted",True,"ra")
+            txt(lx+455,y,format_score(kind,entry["score"]),22,"fg",True,"ra")
+            improvement=numeric(t.get("improvement"))
+            txt(lx+520,y,f'+{improvement*100:.1f}%' if improvement is not None else "—",19,"green",True,"ra")
+        for i, entry in enumerate(model["placementPBs"][:4]):
+            y=525+i*65
+            if i%2==0: dr.rounded_rectangle((lx+550,y-5,1115,y+51),10,fill=PALETTE["alternate"])
+            fit(lx+565,y,display_name(entry.get("player","")),205,23,"yellow" if i==0 else "fg",True)
+            previous=entry.get("previousRank")
+            current=entry.get("newRank")
+            txt(1040,y,f'{format_finish(previous)} → {format_finish(current)}',22,"fg",True,"ra")
+            old_date=entry.get("previousDate")
+            txt(1100,y+26,old_date[5:] if isinstance(old_date,str) and len(old_date)>=10 else "prior",16,"muted",False,"ra")
+        if not model["pbs"]:
+            note(lx+30,800,"No confirmed line PBs in this event",480)
+        if not model["placementPBs"]:
+            note(lx+565,800,"No qualifying finish-place improvements",530)
+        else:
+            note(lx+565,800,"Original ranks · same-lobby threshold met",530)
     else:
-        txt(lx+38,810,"Historical PBs from this event type only · no unverified claims",20,"muted")
+        txt(1095, 421, f'{len(model["pbs"])} NEW PBs', 28, "green", True, "ra")
+        fit(lx + 40, 465, "Returning players · ranked by improvement", 950, 22, "muted")
+        for x, label, right in [(lx+30,"#",False),(lx+82,"PLAYER",False),
+                                 (730,"OLD PB",True),(918,"NEW PB",True),(1100,"INCREASE",True)]:
+            txt(x, 521, label, 21, "muted", True, "ra" if right else None)
+        for i, entry in enumerate(model["pbs"][:4]):
+            y = 565 + i * 65
+            t = entry["transition"]
+            if i % 2 == 0:
+                dr.rounded_rectangle((lx+20,y-5,1115,y+53),10,fill=PALETTE["alternate"])
+            txt(lx+30, y, i+1, 29, "cyan", True)
+            fit(lx+80,y,display_name(entry["player"]),385,30,"yellow" if i==0 else "fg",True)
+            txt(730,y,format_score(kind,t["previousPB"]),29,"muted",True,"ra")
+            txt(918,y,format_score(kind,entry["score"]),29,"fg",True,"ra")
+            improvement=numeric(t.get("improvement"))
+            txt(1100,y,f'+{improvement*100:.1f}%' if improvement is not None else "—",
+                29,"green",True,"ra")
+        if not model["pbs"]:
+            note(lx+48,620,"No confirmed returning-player personal bests in this event",1000)
+        if len(model["pbs"])>4:
+            txt(lx+38,808,f'+ {len(model["pbs"])-4} more verified PBs · see Stat Center event records',21,"cyan")
+        else:
+            txt(lx+38,810,"Historical PBs from this event type only · no unverified claims",20,"muted")
     box(rx,378,2355,1070)
     txt(rx+30,405,"TOP 10 — "+KINDS[kind][1],38,"fg",True)
     txt(rx+30,458,model["clan"]+" event-time competitors",23,"muted")
@@ -332,15 +390,31 @@ def draw_png(model, dest):
     image.save(dest, format="PNG", optimize=False)
 
 
-def render(release, kind, clan, event_id, output):
+def format_finish(place):
+    n = numeric(place)
+    if n is None or int(n) != n or n <= 0:
+        return "—"
+    n = int(n)
+    suffix = "th" if 10 <= n % 100 <= 20 else {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    return f"{n}{suffix}"
+
+
+def render(release, kind, clan, event_id, output, automatic_piggy_layout=False):
+    if automatic_piggy_layout and kind != "piggy":
+        raise ValueError("Automatic Piggy layout is only available for Piggy Race")
     model=resolve_summary(release,kind,clan,event_id)
     dest=Path(output)
     if dest.suffix.lower()!=".png":raise ValueError("Output path must end with .png")
     if not dest.parent.exists():raise ValueError("Output folder must already exist")
-    draw_png(model,dest)
+    draw_png(model,dest,automatic_piggy_layout=automatic_piggy_layout)
     result={
-        "eventId":model["eventId"],"clan":clan,"kind":kind,
+        "eventId":model["eventId"],"date":model["date"],"clan":clan,"kind":kind,
         "projectionVersion":model["projectionVersion"],
+        "templateVersion":("piggy-auto-v2-20261021" if automatic_piggy_layout else
+                           {"piggy":"piggy-temp-v1-20261016","flash":"flash-temp-v1-20261016",
+                            "kraken":"kraken-temp-v1-20261016"}[kind]),
+        "knownScoreSum":model["knownScoreSum"],"knownStars":model["knownStars"],
+        "knownSparks":model["knownSparks"],
         "imageSHA256":hashlib.sha256(dest.read_bytes()).hexdigest(),
         "participants":model["participantRows"],"pbs":len(model["pbs"]),
         "firstTracked":len(model["firstTracked"]),
@@ -363,9 +437,12 @@ def main():
     parser.add_argument("--kind",choices=tuple(KINDS),required=True)
     parser.add_argument("--clan",choices=("AVENGERS","AV-2"),default="AVENGERS")
     parser.add_argument("--event-id",default=None)
+    parser.add_argument("--automatic-piggy-layout",action="store_true",
+                        help="Render the separate, pending-review Big Piggy v2 template")
     args=parser.parse_args()
     release=json.loads(Path(args.release).read_text(encoding="utf-8"))
-    print(json.dumps(render(release,args.kind,args.clan,args.event_id,args.output),sort_keys=True))
+    print(json.dumps(render(release,args.kind,args.clan,args.event_id,args.output,
+                            automatic_piggy_layout=args.automatic_piggy_layout),sort_keys=True))
 
 
 if __name__=="__main__":

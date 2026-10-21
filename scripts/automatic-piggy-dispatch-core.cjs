@@ -21,6 +21,19 @@ function selectLatestEligiblePiggy(projection,policy){
  if(event.status!=='final')return {decision:'latest-piggy-event-not-final',event:null,eventId:event.id,status:event.status};
  return {decision:'eligible-final-piggy-event',event};
 }
+function deriveLobbyLabel(event,clan){
+ const meta=event?.metadata||{};
+ for(const key of ['lobbyLabel','lobbyName','lobby']){
+  if(typeof meta[key]==='string'&&meta[key].trim())return meta[key].trim();
+ }
+ const labels=[...new Set((event?.rows||[]).filter(r=>r.clan===clan&&r.score!==1).map(r=>{
+  const m=r.metadata||{};
+  return [m.lobbyLabel,m.lobbyName,m.lobby].find(v=>typeof v==='string'&&v.trim())?.trim();
+ }).filter(Boolean))].sort();
+ if(labels.length===1)return labels[0];
+ if(labels.length>1)return 'Multiple lobbies ('+labels.length+')';
+ return 'Not source-labeled';
+}
 function sourceEventForDispatch({approvedUpdates,holds,eventId,clan,minimumEventDateExclusive}){
  const update=(approvedUpdates?.updates||[]).filter(u=>u.event?.id===eventId).at(-1);
  if(!update||update.approved!==true||update.event.status!=='final')fail('Only the latest approved final Piggy source is dispatchable');

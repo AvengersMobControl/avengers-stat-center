@@ -1,3 +1,16 @@
+## October 21, 2026 — Commissioner clarification and website data model (supersedes earlier rake backfill assumption)
+
+- **Rake % is explicitly APPROVED as an estimate:** \`sum of recorded AVENGERS players' earned Stars / main game-lobby pot Stars × 100\`. The pot denominator is the Star pot shown in the header screenshots. Include outside-lobby AVENGERS rewards when summing numerator; commissioner accepts the small discrepancy. Clearly label the percentage *estimated rake*, not exact screenshot-share sum. Do **not** delay the new website tables waiting for exact individual share-% screenshot backfill. Pot value source and lobby scope remain explicit; do not cap >100% estimates or mistake displayed rounded pot values for exact values.
+- For the **combined four-Flash PNG, exclude AV-2 entirely.** Leave existing AV-2 website history untouched; the new AVENGERS-only website tables are canonical sources for this PNG.
+- Preserve **four substantial PF1–PF4 cards at the top** (Layout A), with each source header pot, estimated rake, pot rank *within that PF type* and *among all recorded PF pots*, plus relevant Flash metrics.
+- **Career honors**, not redundant sweep counts: show the selected day's actual podium finishers (source game rank 1–3), each accompanied by their *tracked career wins/podiums through that event*, excluding future results.
+- **Top Five Combined Day Contributors**: highlight #1 and show its all-time rank among *recorded per-player Flash Set totals*, dynamic \`rank/total\` (e.g., 6/383). **Top Ten Single-Race Lines of Day**: separate table, allow the same player up to four distinct race entries, highlight the first and display its \`rank/total\` among all recorded individual PF line scores (e.g. 5/836). Those are **two independently sortable/searchable historical website tables**, not a repeated clan win KPI.
+- **Line PBs are three independent tracked metrics:** best lines in PF1/2/3/4 type, best lines in any individual PF, and best *complete* four-Flash day. A first tracked appearance is never automatically counted as a new PB. Four-Flash daily PBs / averages require a prior complete 4/4 observed player-day; partial screenshot coverage must not be compared to full 4/4 days. Above-prior-average single-Flash figures must use earlier-set baselines and disclose the eligible denominator.
+- Prefer **Layout B's milestone presentation**, informed by actual summed player totals. Never print commissioner instructions on PNGs; include only natural metric explanations. No new PNG until the website additions are verified.
+- **Backfill:** archive all recorded main-lobby pot headers; 35/36 source events already have header pot values, with 2026-08-19 PF1 missing. Secondary lobby pots may be added with explicit source provenance later. Historical ranks change as backfill expands; label them "recorded" all-time ranks.
+
+**Implementation in PR #130:** \`piggy-flash-history.js\` contains pure source-derived analyses and \`piggy-flash-history-view.js\` provides four cards, recognition and the three historical ranking tables in the existing Flash tab. This is a website change only (no PNG / Discord sending).
+
 # Piggy Flash — combined four-Flash reporting requirements
 
 **Leader-approved direction, 2026-10-20. Applies to AVENGERS Mob Control only; website/statistics implementation comes before any new PNG.**

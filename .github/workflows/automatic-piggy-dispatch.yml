@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: Preview the pinned v2 report, or run the guarded dispatcher
+        description: Preview the pinned v2 report, verify the no-send endpoint, or run the guarded dispatcher
         type: choice
         options: [preview, verify, dispatch]
         default: preview

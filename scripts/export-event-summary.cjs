@@ -6,7 +6,7 @@
 const fs=require('node:fs'),path=require('node:path');
 const {create}=require('./create-site-release.cjs');
 const {root}=require('./load-site-data.cjs');
-const {placementHistory}=require('../roster-piggy-pb-rank.js');
+const {placementHistory,careerPodiums}=require('../roster-piggy-pb-rank.js');
 function exportRelease(){
  const release=create();
  if(!release?.projection?.version||!Array.isArray(release.projection.events))throw Error('Canonical projection unavailable');
@@ -17,8 +17,14 @@ function exportRelease(){
  const piggyPlacementPBsByClan={AVENGERS:piggyPlacementPBs};
  const av2Transitions=placementHistory(release.projection.events,'AV-2');
  piggyPlacementPBsByClan['AV-2']=Object.fromEntries([...av2Transitions.byEvent].map(([eventId,rows])=>[eventId,rows]));
+ const avengersCareer=careerPodiums(release.projection.events,'AVENGERS');
+ const av2Career=careerPodiums(release.projection.events,'AV-2');
+ const piggyCareerPodiumsByClan={
+  AVENGERS:Object.fromEntries([...avengersCareer.byPlayer].map(([name,counts])=>[name,counts])),
+  'AV-2':Object.fromEntries([...av2Career.byPlayer].map(([name,counts])=>[name,counts]))
+ };
  return {schemaVersion:1,source:'approved-event-ledger',projection:release.projection,
-   piggyPlacementPBs,piggyPlacementPBsByClan};
+   piggyPlacementPBs,piggyPlacementPBsByClan,piggyCareerPodiumsByClan};
 }
 function writeApprovedRelease(name){
  if(!/^[A-Za-z0-9][A-Za-z0-9_.-]*\.json$/.test(name||''))throw Error('Output must be a local JSON filename');

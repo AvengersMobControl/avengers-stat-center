@@ -42,7 +42,7 @@ function sourceEventForDispatch({approvedUpdates,holds,eventId,clan,minimumEvent
  if((holds?.holds||[]).some(h=>h.eventId===eventId&&(h.clan===clan||h.clan==='ALL')))fail('Event/clan has an active source hold');
  const rows=participatingRows(event,clan);
  if(!rows.length)fail('No verified participating rows for this event-time clan');
- return {event,rows};
+ return {event,rows,lobbyLabel:deriveLobbyLabel(event,clan)};
 }
 function totals(rows){
  const scores=rows.filter(r=>num(r.score)!==null),stars=rows.filter(r=>num(r.stars)!==null),sparks=rows.filter(r=>num(r.sparks)!==null);
@@ -142,4 +142,4 @@ async function verifyGitHubOIDC(token,{fetchImpl=globalThis.fetch,now=Math.floor
  return claims;
 }
 module.exports={REPOSITORY,REPOSITORY_ID,WORKFLOW_REF,OIDC_AUDIENCE,participatingRows,
- selectLatestEligiblePiggy,sourceEventForDispatch,totals,buildPiggyMessage,verifyPngBytes,verifyGitHubOIDC};
+ selectLatestEligiblePiggy,sourceEventForDispatch,deriveLobbyLabel,totals,buildPiggyMessage,verifyPngBytes,verifyGitHubOIDC};

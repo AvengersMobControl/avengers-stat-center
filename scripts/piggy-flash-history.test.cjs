@@ -14,11 +14,11 @@ function fixture(){
  }
  return window.AVENGERS_PIGGY_FLASH_DATA.events;
 }
-test('165 recorded pot headers, 2761 AVENGERS single Flash results and 1535 recorded player-day lines',()=>{
+test('165 recorded pot headers, excluding one-line nonparticipants from 2708 results and 1510 player-days',()=>{
  const h=analyze(fixture());assert.equal(h.coverage.potsRecorded,165);
  assert.equal(h.coverage.potsMissing,13);
- assert.equal(h.singles.length,2761);
- assert.equal(h.days.length,1535);
+ assert.equal(h.singles.length,2708);
+ assert.equal(h.days.length,1510);
  assert.ok(h.pots.every(x=>x.lobby.includes('source header')&&x.approximate===true));
  assert.ok(h.rows.every(x=>x.clan==='AVENGERS'));
 });
@@ -38,11 +38,11 @@ test('September 22 pot rankings and rake are grounded in existing header and sta
 test('four Flash event-day historical rankings remain stable, actual day ranks and repeated single performances',()=>{
  const h=analyze(fixture());
  const days=h.days.filter(x=>x.setId==='2026-09-22-A').sort((a,b)=>b.lines-a.lines);
- assert.equal(days[0].player,'AV-ZolikaLoveKira');assert.equal(days[0].lines,9880);
- assert.equal(days[0].allRank,7);assert.equal(days[0].allCount,1535);
+ assert.equal(days[0].player,'AV-ZolikaLoveKira');assert.equal(days[0].lines,9879);
+ assert.equal(days[0].allRank,7);assert.equal(days[0].allCount,1510);
  const single=h.singles.filter(x=>x.setId==='2026-09-22-A').sort((a,b)=>b.lines-a.lines);
  assert.equal(single[0].player,'AV-Abu//npjp');assert.equal(single[0].lines,4936);
- assert.equal(single[0].allRank,6);assert.equal(single[0].allCount,2761);
+ assert.equal(single[0].allRank,6);assert.equal(single[0].allCount,2708);
  assert.ok(single.slice(0,10).filter(x=>x.player==='AV-ZolikaLoveKira').length===2,
    'Single race ranking permits the same player twice on one day');
  assert.equal(h.podiums.filter(x=>x.setId==='2026-09-22-A').length,11);
@@ -53,7 +53,7 @@ test('daily-total PBs use observed Flash Set lines regardless of PF attendance',
  assert.ok(pb.every(x=>x.firstTracked===true?(x.oldPfBest===null&&x.oldSingleBest===null):true));
  assert.ok(pb.some(x=>x.pfPB&&!x.singlePB),'PF-specific and all-PF PBs are distinct');
  const day=h.dailyComparisons.filter(x=>x.setId==='2026-09-22-A');
- assert.equal(day.filter(x=>x.comparable).length,39);
+ assert.equal(day.filter(x=>x.comparable).length,38);
  assert.equal(day.filter(x=>x.abovePriorAverage).length,28);
  assert.equal(day.filter(x=>x.combinedDayPB).length,9);
  assert.ok(day.some(x=>!x.complete&&x.combinedDayPB),'Partial PF days can set daily PBs');

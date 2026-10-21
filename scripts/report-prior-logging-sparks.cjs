@@ -19,7 +19,7 @@ const rows=(R.rows||[]).filter(r=>['Active','AV2'].includes(r.status)).map(r=>{
    categories:Object.fromEntries(Object.entries(p.categories).map(([k,v])=>[k,v.sparks])),
    screenshots:p.snapshotBreakdown||[]};
 });
-if(rows.length!==99||new Set(rows.map(r=>r.name)).size!==rows.length)throw Error('Expected 99 distinct current members after name reconciliation and LT removal');
+if(rows.length!==100||new Set(rows.map(r=>r.name)).size!==rows.length)throw Error('Expected 100 distinct current members after adding Timmy without duplicating Frank');
 rows.sort((a,b)=>b.priorToLoggingSparks-a.priorToLoggingSparks||a.name.localeCompare(b.name));
 const positives=rows.filter(r=>r.priorToLoggingSparks>0);
 const summary={all:rows.length,positive:positives.length,over1000:positives.filter(r=>r.priorToLoggingSparks>=1000).length,

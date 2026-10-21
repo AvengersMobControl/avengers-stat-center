@@ -17,7 +17,7 @@ function analyze(events,options={}){
       const clan=raw.clan||ev.clan||'AVENGERS';
       if(clan!=='AVENGERS')continue;
       const lines=integer(raw.lines);
-      if(lines===null||lines<0)continue;
+      if(lines===null||lines<0||lines===1)continue;
       const player=String(resolve(raw.name)||raw.name||'').trim();
       if(!player)continue;
       rows.push({player,clan,flash:ev.flash,setId:ev.setId,date:String(ev.date||''),

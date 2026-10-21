@@ -2,7 +2,7 @@
 'use strict';
 // One-off, source-byte-verified, commissioner-approved Oct 20/21 four-Flash import.
 // No Discord sends, no network, no Vercel writes. By default: read-only.
-// `--apply` writes only data/approved-event-updates.json after exact 105-row checks.
+// Retain exact 105-row proof, then apply the commissioner's later exclusions.
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const {root}=require('./load-site-data.cjs');
 const {hashOriginalImage}=require('./hash-original-image.cjs');
@@ -62,6 +62,7 @@ function prepare(proofDirectory){
     const result=assemble(bound,{aliases});
     assert.equal(result.report.distinctResults,e.rows.length);
     const update=result.update;
+    update.event.rows=update.event.rows.filter(r=>r.score!==1&&!/tavito/i.test(r.player||''));
     update.event.metadata={...update.event.metadata,
       setId:e.setId,clan:'AVENGERS',potStars:e.mainPotStars,potStarsDisplay:e.mainPotDisplay,
       secondaryPotStars:e.secondaryPotStars,secondaryPotStarsDisplay:e.secondaryPotDisplay,
@@ -99,7 +100,7 @@ function run({proofDirectory,apply=false}={}){
   }
   if(apply){
     const total=current.slice(accepted.updates.length).reduce((s,u)=>s+u.event.rows.length,0);
-    assert.equal(total,105);assert.equal(current.length-accepted.updates.length,4);
+    assert.equal(total,95);assert.equal(current.length-accepted.updates.length,4);
     const next={...accepted,updates:current};
     const temporary=updatesPath+'.tmp';fs.writeFileSync(temporary,JSON.stringify(next,null,2)+'\n');fs.renameSync(temporary,updatesPath);
   }

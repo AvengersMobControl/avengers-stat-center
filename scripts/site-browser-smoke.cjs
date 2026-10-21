@@ -24,6 +24,14 @@ async function main(){
     assert.equal(await page.evaluate(()=>window.AVENGERS_REWARD_METRICS.efficiency(100,25)),4);
     const version=await page.evaluate(()=>window.AVENGERS_EVENT_PROJECTION.version);
     if(!process.env.AVENGERS_SMOKE_URL)assert.equal(version,built.manifest.version);
+    const participation=await page.evaluate(()=>{
+      const P=window.AVENGERS_EVENT_PROJECTION,D=window.AVENGERS_DATA;
+      return {timmy:P.people.find(p=>p.name==='AV-Timmy')?.status,
+        frank:P.people.find(p=>p.name===D.resolvePlayerName('AV-FrankAbagnale'))?.status,
+        placeholders:P.events.filter(e=>['piggy','flash'].includes(e.kind)).flatMap(e=>e.rows).filter(r=>r.score===1).length,
+        tavito:P.events.filter(e=>e.metadata?.setId==='2026-10-20-A').flatMap(e=>e.rows).filter(r=>/tavito/i.test(r.player||'')).length};
+    });
+    assert.deepEqual(participation,{timmy:'Active',frank:'Active',placeholders:0,tavito:0});
     for(const status of ['active','av2']){
       await page.selectOption('#globalStatusFilter',status);
       for(const name of ['overview','rosters','piggy','piggyFlashes','space','kraken','trends','eventTotals','ratings','players','records','achievements','weeklyRecap']){
@@ -261,11 +269,11 @@ async function main(){
     const leaderRow=hist.locator('.flash-history-panel').filter({has:page.locator('h3', {hasText:'Top Five Combined Contributors'})}).locator('tbody tr').first();
     const leaderText=await leaderRow.textContent();
     const leaderIdentity=await page.evaluate(()=>window.AVENGERS_DATA.resolvePlayerName?.('AV-ZolikaLoveKira')||'AV-ZolikaLoveKira');
-    assert(leaderText.includes('9,880')&&leaderText.includes(leaderIdentity),
-      'combined-day 9,880 leader and canonical player identity: '+JSON.stringify({leaderText,leaderIdentity}));
-    assert((await hist.innerText()).includes('9,880'),'top recorded combined-day score');
+    assert(leaderText.includes('9,879')&&leaderText.includes(leaderIdentity),
+      'combined-day leader excludes one-line nonparticipation: '+JSON.stringify({leaderText,leaderIdentity}));
+    assert((await hist.innerText()).includes('9,879'),'top recorded combined-day score');
     assert((await hist.innerText()).includes('4,936'),'top single-race score');
-    assert((await hist.innerText()).includes('8/2,866'),'top single-race historical rank updated with 105 approved results');
+    assert((await hist.innerText()).includes('8/2,803'),'top single-race historical rank excludes one-line nonparticipants and Tavito');
     const potDetail=hist.locator('details[data-hist-open="pots"]');
     await potDetail.locator('summary').click();
     assert.equal(await potDetail.locator('tbody tr[data-hist-row]').count(),169,'169 recorded main lobby header pots retained');
@@ -470,7 +478,7 @@ async function main(){
           metadata:kind==='flash'?{flash:1}:kind==='kraken'?{monthKey:'browser-fixture',monthLabel:'Fixture'}:{},
           rows:[{player:name,clan,score:90000,sparks:50,stars:kind==='kraken'?null:500}]};
         const add={approved:true,expectedRevision:0,event};
-        const lower={approved:true,expectedRevision:1,event:{...event,rows:[{...event.rows[0],score:1,sparks:7}]}};
+        const lower={approved:true,expectedRevision:1,event:{...event,rows:[{...event.rows[0],score:2,sparks:7}]}};
         const revoke={approved:true,expectedRevision:2,event:{...lower.event,status:'revoked'}};
         for(const [updates,extra]of [[[add],50],[[add,lower],7],[[add,lower,revoke],0]]){
           const approved=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/approved-event-updates.json'))).updates;

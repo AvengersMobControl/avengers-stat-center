@@ -1,3 +1,11 @@
+## 2026-10-21 — Timmy/Frank roster and one-line nonparticipation correction (PR #132, staged)
+
+Leader confirmed Timmy and Frank as AVENGERS roster members, excluded Tavito, and defined exactly one line in Piggy/Flash as NONPARTICIPATION. Add AV-Timmy; Frank already resolves AV-FrankAbagnale → AV-Addicted and remains Active with one history. Roster is now 50 AVENGERS / 50 AV-2; no invented screenshot balances, location, UTC or join dates.
+
+Supersedes the earlier 105-row import scope: **95 participating Oct20–21 rows, PF1 22 / PF2 28 / PF3 24 / PF4 21**, excluding eight one-line placeholders and two Tavito entries. Totals: **137,708 lines / 9,485,120 Stars / 948,521 Sparks**. Original 105-row transcription and 24 original-image proofs are preserved. Importer reproduces the latest exclusions.
+
+One-line Piggy/Flash entries are excluded retrospectively and prospectively for both clans from canonical projected race tables, averages, last-three, event counts, PB/first appearances, profiles, daily Flash totals, rankings, exports and reports. Original source ledger evidence remains intact. Space distance and Kraken damage are unaffected. Snapshot audit arithmetic and fixed 28 Unlogged Sparks stay frozen. Historical raw Flash reporting also filters one-line placeholders; prior static result/day denominators and any one-line-inclusive PNG totals are superseded. **STAGED: require PR CI, merge, exact public commit/export and browser verification before claiming LIVE.** No Discord sending, UTC activation or SAC changes.
+
 # 2026-10-21 — AVENGERS 105-result Piggy Flash import release in progress
 
 The commissioner approved all **105** AVENGERS final-claim screenshot results for the Oct 20–21 four-Flash Set. All 24 original Discord attachment bytes were retrieved and hashed; exact reviewed data, source proof manifest, guarded importer and regression test are staged. Four ledger updates (25/28/28/24) are approved locally; 97 known reward pairs, eight unknown, no AV-2 or Discord automation changes. Remaining before calling this **LIVE**: PR merge, GitHub Pages build, exact commit/exports/browser checks and Vercel mirror status. Issue #4 real-result ingestion continues beyond this specific approved set.

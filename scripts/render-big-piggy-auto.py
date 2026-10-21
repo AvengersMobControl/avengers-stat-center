@@ -209,7 +209,7 @@ def _fonts(size, bold=False):
     raise RuntimeError("Pillow DejaVuSans font unavailable; do not substitute an unreviewed graphic")
 
 
-def draw_png(model, dest, automatic_piggy_layout=False):
+def draw_png(model, dest, automatic_piggy_layout=False, automatic_piggy_publish=False):
     from PIL import Image, ImageDraw
     w, h = 2400, 1500
     image = Image.new("RGB", (w, h), PALETTE["bg"])
@@ -244,7 +244,8 @@ def draw_png(model, dest, automatic_piggy_layout=False):
     txt(48, 32, model["clan"] + " // STAT CENTER", 28, "cyan", True)
     fit(45, 82, heading, 1600, 62, "fg", True)
     txt(2352, 41, month_date(model["date"]).upper(), 32, "muted", True, "ra")
-    txt(2352, 94, "APPROVED LEDGER · REVIEW PREVIEW", 22, "green", True, "ra")
+    header_state=("APPROVED LEDGER · FINAL REPORT" if automatic_piggy_publish else "APPROVED LEDGER · REVIEW PREVIEW") if automatic_piggy_layout else "APPROVED LEDGER · REVIEW PREVIEW"
+    txt(2352, 94, header_state, 22, "green", True, "ra")
     score = model["knownScoreSum"]
     count = model["participantRows"]
     prev = model["previousScoreSum"]
@@ -463,8 +464,12 @@ def draw_png(model, dest, automatic_piggy_layout=False):
         else:
             note(rx+30,1202,"No prior clan result for this event type in accepted history",1060)
     state="PARTIAL RESULTS" if not model["coverageComplete"] else "MARKED FINAL IN LEDGER"
-    footer=(f'{state} · {model["participantRows"]} recorded rows · '
-            f'{model["unknownSparkRows"]} missing Sparks · preview only · NOT POSTED')
+    if automatic_piggy_layout and automatic_piggy_publish:
+        footer=(f'{state} · {model["participantRows"]} recorded rows · '
+                f'{model["unknownSparkRows"]} missing Sparks · FINAL SOURCE-VERIFIED REPORT')
+    else:
+        footer=(f'{state} · {model["participantRows"]} recorded rows · '
+                f'{model["unknownSparkRows"]} missing Sparks · preview only · NOT POSTED')
     fit(45,1410,footer,2300,22,"muted")
     fit(45,1450,"Event "+model["eventId"]+" · source projection "+model["projectionVersion"][:16],
         1900,20,"muted")
@@ -481,14 +486,14 @@ def format_finish(place):
     return f"{n}{suffix}"
 
 
-def render(release, kind, clan, event_id, output, automatic_piggy_layout=False):
+def render(release, kind, clan, event_id, output, automatic_piggy_layout=False, automatic_piggy_publish=False):
     if automatic_piggy_layout and kind != "piggy":
         raise ValueError("Automatic Piggy layout is only available for Piggy Race")
     model=resolve_summary(release,kind,clan,event_id)
     dest=Path(output)
     if dest.suffix.lower()!=".png":raise ValueError("Output path must end with .png")
     if not dest.parent.exists():raise ValueError("Output folder must already exist")
-    draw_png(model,dest,automatic_piggy_layout=automatic_piggy_layout)
+    draw_png(model,dest,automatic_piggy_layout=automatic_piggy_layout,automatic_piggy_publish=automatic_piggy_publish)
     result={
         "eventId":model["eventId"],"date":model["date"],"clan":clan,"kind":kind,
         "projectionVersion":model["projectionVersion"],
@@ -509,9 +514,11 @@ def render(release, kind, clan, event_id, output, automatic_piggy_layout=False):
         "unknownSparkRows":model["unknownSparkRows"],
         "unknownStarRows":model["unknownStarRows"],
         "eventStatus":model["status"],
-        "readyToPost":False,"discordPostingEnabled":False,
+        "previewOnly":not (automatic_piggy_layout and automatic_piggy_publish),
+        "readyToPost":bool(automatic_piggy_layout and automatic_piggy_publish),
+        "discordPostingEnabled":bool(automatic_piggy_layout and automatic_piggy_publish),
         "approvedSourceOnly":True,
-        "disclaimer":"Graphic generated for human review; no automated send or source changes.",
+        "disclaimer":("Final report generated from the accepted canonical source; dispatch is separately gated." if automatic_piggy_layout and automatic_piggy_publish else "Graphic generated for human review; no automated send or source changes."),
     }
     meta=dest.with_suffix(".json")
     meta.write_text(json.dumps(result,indent=2,sort_keys=True)+"\n",encoding="utf-8")
@@ -526,11 +533,14 @@ def main():
     parser.add_argument("--clan",choices=("AVENGERS","AV-2"),default="AVENGERS")
     parser.add_argument("--event-id",default=None)
     parser.add_argument("--automatic-piggy-layout",action="store_true",
-                        help="Render the separate, pending-review Big Piggy v2 template")
+                        help="Render the separate Big Piggy v2 template")
+    parser.add_argument("--automatic-piggy-publish",action="store_true",
+                        help="Render the final, source-verified form; only the guarded dispatcher may send it")
     args=parser.parse_args()
     release=json.loads(Path(args.release).read_text(encoding="utf-8"))
     print(json.dumps(render(release,args.kind,args.clan,args.event_id,args.output,
-                            automatic_piggy_layout=args.automatic_piggy_layout),sort_keys=True))
+                            automatic_piggy_layout=args.automatic_piggy_layout,
+                            automatic_piggy_publish=args.automatic_piggy_publish),sort_keys=True))
 
 
 if __name__=="__main__":

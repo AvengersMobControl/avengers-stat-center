@@ -12,10 +12,13 @@ function exportRelease(){
  if(!release?.projection?.version||!Array.isArray(release.projection.events))throw Error('Canonical projection unavailable');
  // A separately derived PB stream for qualifying AVENGERS finishing positions.
  // It never modifies the accepted source projection or approved PNG artwork.
- const transitions=placementHistory(release.projection.events);
+ const transitions=placementHistory(release.projection.events,'AVENGERS');
  const piggyPlacementPBs=Object.fromEntries([...transitions.byEvent].map(([eventId,rows])=>[eventId,rows]));
+ const piggyPlacementPBsByClan={AVENGERS:piggyPlacementPBs};
+ const av2Transitions=placementHistory(release.projection.events,'AV-2');
+ piggyPlacementPBsByClan['AV-2']=Object.fromEntries([...av2Transitions.byEvent].map(([eventId,rows])=>[eventId,rows]));
  return {schemaVersion:1,source:'approved-event-ledger',projection:release.projection,
-   piggyPlacementPBs};
+   piggyPlacementPBs,piggyPlacementPBsByClan};
 }
 function writeApprovedRelease(name){
  if(!/^[A-Za-z0-9][A-Za-z0-9_.-]*\.json$/.test(name||''))throw Error('Output must be a local JSON filename');

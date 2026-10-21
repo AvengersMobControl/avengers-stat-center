@@ -35,7 +35,10 @@ test('message is source-derived, clan-specific and leaves unknown rewards explic
  e.metadata={av2DisplayedPotStars:'1.5M'};
  const report={eventId:e.id,clan:'AV-2',kind:'piggy',eventStatus:'final',participants:2,knownScoreSum:1600,knownStars:30,knownSparks:2,unknownScoreRows:0,unknownStarRows:0,unknownSparkRows:1,linePBs:1,placementPBs:2,firstTracked:1,
   weekToWeekGrowthPercent:12.5,milestones:[{threshold:5000,count:2,record:true},{threshold:10000,count:1,record:false}],
-  topThreeCareer:[{player:'A',careerPodiums:{wins:1,secondPlaces:2,thirdPlaces:0,podiums:3}}]};
+  topThreeCareer:[{player:'A',careerPodiums:{wins:1,secondPlaces:2,thirdPlaces:0,podiums:3}}],
+  linePBDetails:[{player:'A',previousPB:1200,currentScore:1600,previousDate:'2026-10-04'}],
+  placementPBDetails:[{player:'B',previousRank:7,newRank:2,previousDate:'2026-10-02'}],
+  firstTrackedDetails:[{player:'A',score:1600}]};
  const m=buildPiggyMessage(e,'AV-2',report);
  assert.match(m,/Event-time clan: AV-2 · Lobby: av2/);
  assert.match(m,/2 participating players · 1,600 lines/);
@@ -45,6 +48,9 @@ test('message is source-derived, clan-specific and leaves unknown rewards explic
  assert.match(m,/Total lines vs prior final Piggy: \+12.5%/);
  assert.match(m,/5K\+ 2 🏆/);
  assert.match(m,/GOLD = CLAN RECORD OR TIED RECORD/);
+ assert.match(m,/A 1,200 → 1,600 \(prior 2026-10-04\)/);
+ assert.match(m,/B #7 → #2 \(prior 2026-10-02\)/);
+ assert.match(m,/A — 1,600 lines/);
  assert.match(m,/A 1\/2\/0\/3/);
  assert.doesNotMatch(m,/B — 1 lines/);
  assert.throws(()=>buildPiggyMessage(e,'AV-2',{...report,knownScoreSum:1}),/source mismatch/);

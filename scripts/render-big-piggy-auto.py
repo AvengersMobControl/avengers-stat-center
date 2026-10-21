@@ -123,6 +123,14 @@ def resolve_summary(release, kind, clan, event_id=None):
                      and numeric(x.get("newRank")) < numeric(x.get("previousRank"))]
     placement_pbs.sort(key=lambda x: (numeric(x.get("newRank")), x.get("player", "")))
     event_metadata = event.get("metadata") or {}
+    lobby_labels = sorted({str((r.get("metadata") or {}).get("lobbyLabel") or
+                               (r.get("metadata") or {}).get("lobbyName") or
+                               (r.get("metadata") or {}).get("lobby"))
+                           for r in source_rows if ((r.get("metadata") or {}).get("lobbyLabel") or
+                               (r.get("metadata") or {}).get("lobbyName") or
+                               (r.get("metadata") or {}).get("lobby"))})
+    lobby_label = str(event_metadata.get("lobbyLabel") or event_metadata.get("lobbyName") or event_metadata.get("lobby") or
+                      (lobby_labels[0] if len(lobby_labels)==1 else ("Multiple lobbies ("+str(len(lobby_labels))+")" if lobby_labels else "Not source-labeled")))
     if clan == "AV-2":
         displayed_pot = event_metadata.get("av2DisplayedPotStars")
         rake_percent = numeric(event_metadata.get("av2RakePercentDisplayedShareSum"))

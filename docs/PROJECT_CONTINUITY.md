@@ -1,3 +1,9 @@
+## 2026-10-21 — Explicit Discord send instructions are authorization (standing operating rule)
+
+**When the leader directly tells the assistant to send, post, or push a specified item to Discord, treat that instruction as explicit authorization for that one-time publication and execute it immediately using the existing secured AVENGERS GitHub/Vercel/Neon/server-side Discord workflow. Do not ask the leader to approve the same send again, do not redirect them to perform it manually, and do not claim the integrations are unavailable without checking them.**
+
+Before sending, perform the existing content/target checks and duplicate guard; then verify Discord accepted the post, the attachment is the intended artifact, and capture the message ID/receipt. A technical failure is not a reason to ask for authorization again: diagnose and continue through the supported tools, clearly reporting only a real blocker. This rule authorizes the requested one-time post only; it does not enable recurring/automatic dispatch, expand the destination, bypass data-integrity checks, or permit cross-posting between AVENGERS, AV-2, and SAC.
+
 ## 2026-10-21 — Big Piggy result automation audit and operating standard
 
 **Status: NOT automated end-to-end.** The live production Neon safety row was read using the restricted AVENGERS runtime role and returned all three switches false: automatic Discord send, automatic Discord delete, and publication endpoint. Vercel has the approved fixed Performance Statistics destination configured, and a supervised synthetic transport canary succeeded, but neither proves a live event-results pipeline. Repository inspection found no Piggy result/dispatch cron in vercel.json and no GitHub Actions workflow that collects Piggy results and posts the final report. The Pages workflow renders/tests previews and does not send Discord messages.

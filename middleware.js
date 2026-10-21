@@ -51,6 +51,7 @@ export default async function middleware(request){
     // Do NOT use a generic /api/discord prefix: only the exact one-off path.
     p==='/api/discord-canary' ||
     p==='/api/discord-publish-av2' ||
+    p==='/api/discord-publish-avengers-oct20' ||
     p.startsWith('/api/guest/') ||
     p==='/mcp' ||
     p.startsWith('/.well-known/') ||

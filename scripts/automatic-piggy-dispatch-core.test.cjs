@@ -31,12 +31,18 @@ test('message is source-derived, clan-specific and leaves unknown rewards explic
  {player:'C',clan:'AV-2',score:700,stars:20,sparks:2,metadata:{lobby:'av2',share:.3}}
  ]);
  e.metadata={av2DisplayedPotStars:'1.5M'};
- const report={eventId:e.id,clan:'AV-2',kind:'piggy',eventStatus:'final',participants:2,knownScoreSum:1600,knownStars:30,knownSparks:2,unknownStarRows:0,unknownSparkRows:1,linePBs:1,placementPBs:2,firstTracked:1};
+ const report={eventId:e.id,clan:'AV-2',kind:'piggy',eventStatus:'final',participants:2,knownScoreSum:1600,knownStars:30,knownSparks:2,unknownStarRows:0,unknownSparkRows:1,linePBs:1,placementPBs:2,firstTracked:1,
+  weekToWeekGrowthPercent:12.5,milestones:[{threshold:5000,count:2,record:true},{threshold:10000,count:1,record:false}],
+  topThreeCareer:[{player:'A',careerPodiums:{wins:1,secondPlaces:2,thirdPlaces:0,podiums:3}}]};
  const m=buildPiggyMessage(e,'AV-2',report);
  assert.match(m,/2 participating players · 1,600 lines/);
  assert.match(m,/RAKE: \*\*70.0%\*\*/);
  assert.match(m,/A — 900 lines/);
  assert.match(m,/unknown Spark rows/);
+ assert.match(m,/Total lines vs prior final Piggy: \+12.5%/);
+ assert.match(m,/5K\+ 2 🏆/);
+ assert.match(m,/GOLD = CLAN RECORD OR TIED RECORD/);
+ assert.match(m,/A 1\/2\/0\/3/);
  assert.doesNotMatch(m,/B — 1 lines/);
  assert.throws(()=>buildPiggyMessage(e,'AV-2',{...report,knownScoreSum:1}),/source mismatch/);
 });

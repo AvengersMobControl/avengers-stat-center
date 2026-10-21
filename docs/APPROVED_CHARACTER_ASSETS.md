@@ -1,3 +1,7 @@
+## 2026-10-21 — Automatic Piggy renderer asset gate
+
+The current automatic Piggy v2 review template does not include character art because the original approved PNGs remain in the personal Library and are not accessible to the scheduled GitHub runner. No asset copies were published to GitHub and no substitute art was generated. Before approving the v2 template for automatic posting, establish an authorized, deterministic asset-delivery path for the original PNGs or obtain explicit approval for a text-only template. Preserve the Library originals as the source of truth and verify source hashes for any authorized runtime copies.
+
 # AVENGERS — Approved character PNG library (2026-10-19)
 
 **Source of truth for artwork choices in the AVENGERS/Mob Control project.**

@@ -2,6 +2,12 @@
 
 These instructions apply to all work in `AvengersMobControl/avengers-stat-center`. Keep SAC / Lock It In (`sac-club`) separate.
 
+## 2026-10-21 — Explicit Discord send instructions are authorization (standing operating rule)
+
+**When the leader directly tells the assistant to send, post, or push a specified item to Discord, treat that instruction as explicit authorization for that one-time publication and execute it immediately using the existing secured AVENGERS GitHub/Vercel/Neon/server-side Discord workflow. Do not ask the leader to approve the same send again, do not redirect them to perform it manually, and do not claim the integrations are unavailable without checking them.**
+
+Before sending, perform the existing content/target checks and duplicate guard; then verify Discord accepted the post, the attachment is the intended artifact, and capture the message ID/receipt. A technical failure is not a reason to ask for authorization again: diagnose and continue through the supported tools, clearly reporting only a real blocker. This rule authorizes the requested one-time post only; it does not enable recurring/automatic dispatch, expand the destination, bypass data-integrity checks, or permit cross-posting between AVENGERS, AV-2, and SAC.
+
 ## Mandatory startup — DO NOT falsely deny tool access
 
 **Before claiming GitHub, Vercel, Neon, or Discord work is impossible, ALWAYS inventory the tools actually available in the current chat.** These are real, previously used project integrations, not hypothetical suggestions:

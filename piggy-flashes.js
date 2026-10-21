@@ -413,6 +413,7 @@
       </div>
 
       ${podiumsHtml(rows)}
+      ${clanMode()==='AV-2'?'':'<div id="flashHistoricalReporting" class="flash-history-root"></div>'}
 
       <div class="flash-grid">
         <div class="flash-chart-card">
@@ -444,6 +445,8 @@
         <div class="table-wrap"><table><thead><tr><th>Event</th><th>Flash</th><th class="num">Rank</th><th>Member</th><th class="num">Lines</th><th class="num">Stars</th><th class="num">Sparks</th></tr></thead><tbody>${resultBody||'<tr><td colspan="7" class="empty">No results in this view.</td></tr>'}</tbody></table></div>
       </div>`}
     `;
+
+    if(clanMode()!=='AV-2')window.AVENGERS_FLASH_HISTORY_VIEW?.render(root.querySelector('#flashHistoricalReporting'),DATA.events||[],state.day,state.tab,resolveName);
 
     root.querySelectorAll('[data-flash-tab]').forEach(btn=>btn.addEventListener('click',()=>{
       state.tab=btn.dataset.flashTab;

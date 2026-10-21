@@ -7,6 +7,7 @@ const fs=require('node:fs'),path=require('node:path');
 const {create}=require('./create-site-release.cjs');
 const {root}=require('./load-site-data.cjs');
 const {placementHistory,careerPodiums}=require('../roster-piggy-pb-rank.js');
+const piggyBenchmarks=require('../piggy-benchmarks.js');
 function exportRelease(){
  const release=create();
  if(!release?.projection?.version||!Array.isArray(release.projection.events))throw Error('Canonical projection unavailable');
@@ -23,8 +24,19 @@ function exportRelease(){
   AVENGERS:Object.fromEntries([...avengersCareer.byPlayer].map(([name,counts])=>[name,counts])),
   'AV-2':Object.fromEntries([...av2Career.byPlayer].map(([name,counts])=>[name,counts]))
  };
+ const benchmarkEvents={};
+ for(const event of release.projection.events){
+  if(event.kind!=='piggy'||event.status!=='final'||typeof event.date!=='string')continue;
+  benchmarkEvents[event.date]=(event.rows||[]).filter(r=>r.score!==1).map(r=>({
+   name:r.player,clan:r.clan,lines:r.score
+  }));
+ }
+ const piggyBenchmarksByClan={
+  AVENGERS:piggyBenchmarks.compute(benchmarkEvents,{clan:'AVENGERS'}),
+  'AV-2':piggyBenchmarks.compute(benchmarkEvents,{clan:'AV-2'})
+ };
  return {schemaVersion:1,source:'approved-event-ledger',projection:release.projection,
-   piggyPlacementPBs,piggyPlacementPBsByClan,piggyCareerPodiumsByClan};
+   piggyPlacementPBs,piggyPlacementPBsByClan,piggyCareerPodiumsByClan,piggyBenchmarksByClan};
 }
 function writeApprovedRelease(name){
  if(!/^[A-Za-z0-9][A-Za-z0-9_.-]*\.json$/.test(name||''))throw Error('Output must be a local JSON filename');

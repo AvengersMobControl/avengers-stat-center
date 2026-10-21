@@ -181,7 +181,7 @@ module.exports=async function handler(req,res){
   const sparksRows=expectedRows.filter(r=>typeof r.sparks==='number'&&Number.isFinite(r.sparks));
   const expected={participants:expectedRows.length,knownScoreSum:expectedRows.reduce((n,r)=>n+(r.score??0),0),
    knownStars:expectedRows.reduce((n,r)=>n+(r.stars??0),0),knownSparks:expectedRows.reduce((n,r)=>n+(r.sparks??0),0),
-   unknownStarRows:expectedRows.length-starsRows.length,unknownSparkRows:expectedRows.length-sparksRows.length};
+   unknownScoreRows:expectedRows.length-scoreRows.length,unknownStarRows:expectedRows.length-starsRows.length,unknownSparkRows:expectedRows.length-sparksRows.length};
   for(const k of Object.keys(expected))if(body.report[k]!==expected[k])throw Error('PNG report/source mismatch: '+k);
   const message=buildPiggyMessage(source.event,body.clan,body.report);
   if(message!==body.message)throw Error('Message differs from source-derived expected text');

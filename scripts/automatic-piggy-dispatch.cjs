@@ -29,7 +29,13 @@ function prepareReport(release,event,clan,publish=false){
    messagePath:path.join(reports,stem+'.txt'),message,report};
 }
 async function getOidcToken(){
- const token=await getOidcToken();
+ const tokenUrl=new URL(process.env.ACTIONS_ID_TOKEN_REQUEST_URL||'');
+ if(!process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN)fail('GitHub Actions OIDC token request is unavailable');
+ tokenUrl.searchParams.set('audience',OIDC_AUDIENCE);
+ const tokenResponse=await fetch(tokenUrl,{headers:{Authorization:'bearer '+process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN}});
+ if(!tokenResponse.ok)fail('Could not obtain the scoped GitHub Actions OIDC token');
+ const token=(await tokenResponse.json()).value;
+ if(typeof token!=='string'||!token.length)fail('GitHub Actions returned an empty OIDC token');
  return token;
 }
 async function verifyEndpoint(){

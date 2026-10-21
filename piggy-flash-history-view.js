@@ -67,7 +67,7 @@ function render(host,events,day,tab,resolve){
  const singleRows=sortBy(h.singles,'singles').map(r=>'<tr data-hist-row data-hist-text="'+esc((r.date+' '+r.player+' PF'+r.flash).toLowerCase())+'"><td>'+esc(r.date)+'</td><td>'+esc(r.player)+'</td><td>PF'+r.flash+'</td><td>'+fmt(r.lines)+'</td><td>'+fmt(r.allRank)+'/'+fmt(r.allCount)+'</td><td>'+fmt(r.finish)+'</td></tr>').join('');
  host.innerHTML='<div class="flash-history-scope"><strong>AVENGERS historical Flash statistics</strong> · PNG source metrics; AV-2 excluded.</div>'+
   card+podium+contrib+top10+pbSection+part('Historical Ranking Tables',
-  archive('pots','Lobby Pot History','Source main-lobby pot headers, ranked within PF and across all PFs. Historical secondary pots can be added when recovered.',potsHeader,potRows,h.pots.length)+
+  archive('pots','Lobby Pot History',fmt(h.coverage.potsRecorded)+' of '+fmt(h.coverage.sourceEvents)+' Flash source events have main-lobby pot headers. Rankings span all recorded PFs; secondary lobby pots can be backfilled.',potsHeader,potRows,h.pots.length)+
   archive('days','Historical Combined-Day Lines','Rank includes observed partial days; the PF results column identifies incomplete coverage.',dayHeader,dayRows,h.days.length)+
   archive('singles','Historical Single-Race Lines','Each player-race is ranked separately. Players may appear multiple times in a Flash Set.',singleHeader,singleRows,h.singles.length),
   'Recorded history only; rankings and denominators update as earlier source results are added.');

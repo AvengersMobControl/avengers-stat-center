@@ -301,9 +301,13 @@
     if(!api||typeof api.tally!=='function')return '<div class="flash-note">Finishing-place summary unavailable.</div>';
     const data=api.tally(rows);
     const kpis=data.perFlash.concat([{flash:'Total',...data.overall}]);
+    const observed=rows.reduce((m,r)=>{const f=Number(r.flash);if(f>=1&&f<=4)m[f]=(m[f]||0)+1;return m;},{});
     const kpiHtml=kpis.map(x=>'<div class="flash-podium-kpi"><strong>'+
-      (x.flash==='Total'?'All four':'PF'+x.flash)+'</strong><span>'+fmt(x.wins)+' wins</span><span>'+fmt(x.podiums)+
-      ' podiums</span></div>').join('');
+      (x.flash==='Total'?'All four':'PF'+x.flash)+'</strong>'+
+      (x.flash!=='Total'&&!observed[x.flash]
+        ?'<em>No source rows in this view</em>'
+        :'<span>'+fmt(x.wins)+' wins</span><span>'+fmt(x.podiums)+' podiums</span>')+
+      '</div>').join('');
     const showClan=clanMode()==='all';
     const body=data.members.map((m,i)=>'<tr><td class="num">'+(i+1)+'</td><td class="flash-podium-member"><strong>'+
       esc(m.player)+'</strong>'+(showClan?'<div class="flash-note">'+esc(m.clan)+'</div>':'')+'</td>'+

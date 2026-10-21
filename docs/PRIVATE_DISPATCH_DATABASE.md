@@ -1,3 +1,7 @@
+## Migration 003 — guarded automatic Piggy dispatch (staged only)
+
+Migration `003_guarded_automatic_dispatch.sql` removes the legacy always-false send/endpoint constraints while adding the guarded invariant that automatic send requires the publication endpoint, automatic deletion stays hard-OFF, and an automatic-send intent can only be the first publication. It adds the automatic authorization audit action. **The migration is not applied to production.** Existing safety flag values remain unchanged; this migration contains no UPDATE enabling send or endpoint. Apply only after explicit approval and successful temporary-branch validation.
+
 ## 2026-10-20 — AV-2 Piggy corrected in-chat PNG; guarded automatic Discord rollout requested (NOT LIVE)
 
 Leader asked to correct AV-2 Oct18 report art/claims and then set up automatic Discord PNG delivery. Corrected **manual review** image `AV2_Piggy_2026-10-18_CORRECTED_REVIEW.png` is available in the ChatGPT conversation (not in public GitHub), SHA-256 `42686548ee813673bc78c9bfe43512c929f4ec252fb2aace57e356c75c39eeca`; uses verified originals Spider, Terrorist, Kaboom, Raccoon. Source-backed: 19 AV-2 racers, 56,925 lines, 4,178,040 earned Stars, 417,799 Sparks, displayed whole-lobby pot 5.86M, summed displayed-share rake 71.0%, four independently qualified rank PBs using **AV-2 5+ same-lobby** cutoff, five tracked AV-2 line improvements, and ten first tracked AV-2 appearances. Old misleading generated fake artwork and unverified PB claims superseded; no image or data published to Discord or site.

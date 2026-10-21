@@ -10,6 +10,8 @@ test('PNG input comes from exactly the accepted canonical projection; never a dr
  assert.equal(exported.projection.version,canonical.projection.version);
  assert.equal(typeof exported.piggyPlacementPBs,'object');
  assert.equal(typeof exported.piggyPlacementPBsByClan,'object');
+ assert.equal(typeof exported.piggyCareerPodiumsByClan,'object');
+ assert.deepEqual(Object.keys(exported.piggyCareerPodiumsByClan).sort(),['AV-2','AVENGERS']);
  assert.deepEqual(Object.keys(exported.piggyPlacementPBsByClan).sort(),['AV-2','AVENGERS']);
  assert(Array.isArray(exported.piggyPlacementPBs['piggy|2026-10-11']));
  for(const rows of Object.values(exported.piggyPlacementPBs))for(const pb of rows){

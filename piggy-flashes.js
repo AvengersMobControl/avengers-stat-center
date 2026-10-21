@@ -303,7 +303,7 @@
     const kpis=data.perFlash.concat([{flash:'Total',...data.overall}]);
     const observed=rows.reduce((m,r)=>{const f=Number(r.flash);if(f>=1&&f<=4)m[f]=(m[f]||0)+1;return m;},{});
     const kpiHtml=kpis.map(x=>'<div class="flash-podium-kpi"><strong>'+
-      (x.flash==='Total'?'All four':'PF'+x.flash)+'</strong>'+
+      (x.flash==='Total'?'Selected total':'PF'+x.flash)+'</strong>'+
       (x.flash!=='Total'&&!observed[x.flash]
         ?'<em>No source rows in this view</em>'
         :'<span>'+fmt(x.wins)+' wins</span><span>'+fmt(x.podiums)+' podiums</span>')+

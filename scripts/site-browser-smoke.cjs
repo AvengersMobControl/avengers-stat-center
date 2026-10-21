@@ -260,7 +260,20 @@ async function main(){
     assert(pctLabels[3].includes('2.76M')&&pctLabels[3].includes('1/37'),'PF4 next-day header retained');
     const leaderRow=hist.locator('.flash-history-panel').filter({has:page.locator('h3', {hasText:'Top Five Combined Contributors'})}).locator('tbody tr').first();
     const leaderText=await leaderRow.textContent();
-    const leaderIdentity=await page.evaluate(()=>window.AVENGERS_DATA.resolvePlayerName?.('AV-ZolikaLoveKira')||'AV-ZolikaLoveKira');
+    const zolikaCanonical=await page.evaluate(()=>{
+      const D=window.AVENGERS_DATA;
+      const aliases=['AV-ZolikalovesKira','AV-ZolikaLoveKira','AV-Zolika.x.Kira','AV-Zolika.x.TheBoss'];
+      return {
+        resolved:aliases.map(name=>D.resolvePlayerName?.(name)||name),
+        currentMemberCount:D.members.filter(m=>m.name==='AV-Zolika.x.TheBoss').length,
+        obsoleteMemberCount:D.members.filter(m=>m.name==='AV-Zolika.x.Kira'||m.name==='AV-ZolikaLoveKira').length
+      };
+    });
+    assert(zolikaCanonical.resolved.every(name=>name==='AV-Zolika.x.TheBoss'),
+      'Zolika historical aliases must normalize to the leader-confirmed current identity: '+JSON.stringify(zolikaCanonical));
+    assert.equal(zolikaCanonical.currentMemberCount,1,'Zolika current roster identity is unique');
+    assert.equal(zolikaCanonical.obsoleteMemberCount,0,'obsolete Zolika identities are not listed as current roster');
+    const leaderIdentity='AV-Zolika.x.TheBoss';
     assert(leaderText.includes('9,880')&&leaderText.includes(leaderIdentity),
       'combined-day 9,880 leader and canonical player identity: '+JSON.stringify({leaderText,leaderIdentity}));
     assert((await hist.innerText()).includes('9,880'),'top recorded combined-day score');

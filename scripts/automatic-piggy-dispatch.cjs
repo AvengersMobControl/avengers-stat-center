@@ -17,7 +17,7 @@ function prepareReport(release,event,clan){
  const stem='automatic-piggy-v2-'+event.date+'-'+clan.toLowerCase();
  const png=path.join(reports,stem+'.png');
  const releasePath=writeApprovedRelease('automatic-piggy-release.json');
- execFileSync('python3',['scripts/render-event-summary.py',releasePath,png,'--kind','piggy',
+ execFileSync('python3',['scripts/render-big-piggy-auto.py',releasePath,png,'--kind','piggy',
    '--clan',clan,'--event-id',event.id,'--automatic-piggy-layout'],{cwd:root,stdio:'pipe'});
  const report=JSON.parse(fs.readFileSync(path.join(reports,stem+'.json'),'utf8'));
  const message=buildPiggyMessage(event,clan,report);

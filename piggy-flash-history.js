@@ -82,7 +82,7 @@ function analyze(events,options={}){
   const eventsBySet=[...new Set(source.map(e=>e.setId))].sort();
   const setsRows=new Map();
   for(const row of rows){const arr=setsRows.get(row.setId)||[];arr.push(row);setsRows.set(row.setId,arr);}
-  const historicalCompleteDays=new Map();
+  const historicalDayTotals=new Map();
   for(const setId of eventsBySet){
     const current=(setsRows.get(setId)||[]).sort((a,b)=>a.flash-b.flash||a.player.localeCompare(b.player));
     const snapshot=new Map([...baselines].map(([key,history])=>[key,history.slice()]));
@@ -106,15 +106,16 @@ function analyze(events,options={}){
     for(const row of current){const history=baselines.get(row.player)||[];history.push(row.lines);baselines.set(row.player,history);}
     const dayRows=days.filter(x=>x.setId===setId);
     for(const d of dayRows){
-      if(!d.complete){dailyComparisons.push({...d,comparable:false,reason:'Incomplete recorded Flash Set'});continue;}
-      const prior=historicalCompleteDays.get(d.player)||[];
+      // One day total sums observed PF1–PF4 lines regardless of how many were
+      // attended. Previous partial-day totals count for both averages and PBs.
+      const prior=historicalDayTotals.get(d.player)||[];
       const mean=prior.length?prior.reduce((a,b)=>a+b,0)/prior.length:null;
       const peak=prior.length?Math.max(...prior):null;
       dailyComparisons.push({...d,comparable:prior.length>0,
-        priorCompleteDays:prior.length,priorAverage:mean,
+        priorRecordedDays:prior.length,priorAverage:mean,
         abovePriorAverage:mean===null?null:d.lines>mean,
         priorPB:peak,combinedDayPB:peak===null?false:d.lines>peak});
-      prior.push(d.lines);historicalCompleteDays.set(d.player,prior);
+      prior.push(d.lines);historicalDayTotals.set(d.player,prior);
     }
   }
   // Distinguish first appearance from PB rather than automatically crediting first result.

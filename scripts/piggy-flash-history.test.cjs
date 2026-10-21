@@ -47,17 +47,41 @@ test('four Flash event-day historical rankings remain stable, actual day ranks a
    'Single race ranking permits the same player twice on one day');
  assert.equal(h.podiums.filter(x=>x.setId==='2026-09-22-A').length,11);
 });
-test('PB categories stay distinct and partial-days are never compared against complete 4/4 PBs',()=>{
+test('daily-total PBs use observed Flash Set lines regardless of PF attendance',()=>{
  const h=analyze(fixture());
  const pb=h.pb.filter(x=>x.setId==='2026-09-22-A');
  assert.ok(pb.every(x=>x.firstTracked===true?(x.oldPfBest===null&&x.oldSingleBest===null):true));
- assert.ok(pb.some(x=>x.pfPB&&!x.singlePB),'PF-specific records differ from all-PF record');
+ assert.ok(pb.some(x=>x.pfPB&&!x.singlePB),'PF-specific and all-PF PBs are distinct');
  const day=h.dailyComparisons.filter(x=>x.setId==='2026-09-22-A');
- assert.equal(day.filter(x=>x.comparable).length,5);
- assert.equal(day.filter(x=>x.abovePriorAverage).length,5);
- assert.equal(day.filter(x=>x.combinedDayPB).length,3);
- assert.ok(day.filter(x=>!x.complete).every(x=>x.comparable===false));
- assert.equal(rank(50,[{n:51},{n:50},{n:50}],x=>x.n),2,'competition ties retain same rank');
+ assert.equal(day.filter(x=>x.comparable).length,39);
+ assert.equal(day.filter(x=>x.abovePriorAverage).length,28);
+ assert.equal(day.filter(x=>x.combinedDayPB).length,9);
+ assert.ok(day.some(x=>!x.complete&&x.combinedDayPB),'Partial PF days can set daily PBs');
+ assert.ok(day.filter(x=>!x.comparable).every(x=>x.priorPB===null&&!x.combinedDayPB));
+ const harry=day.find(x=>x.player==='AV-HarryBallsagna');
+ assert.equal(harry.priorPB,12050);
+ assert.equal(harry.combinedDayPB,false);
+ assert.equal(rank(50,[{n:51},{n:50},{n:50}],x=>x.n),2,'Competition ties');
+});
+test('one PF beats four PFs for daily PB; first day is not a PB',()=>{
+ const entry=(id,date,flash,player,lines)=>({id,date,setId:date+'-A',flash,clan:'AVENGERS',complete:true,
+   entries:[{name:player,clan:'AVENGERS',rank:4,lines,stars:10,sparks:1}]});
+ const h=analyze([
+   entry('a','2026-01-01',1,'AV-Test',10),entry('b','2026-01-01',2,'AV-Test',20),
+   entry('c','2026-01-01',3,'AV-Test',30),entry('d','2026-01-01',4,'AV-Test',40),
+   entry('e','2026-01-08',1,'AV-Test',125),
+   entry('f','2026-01-15',1,'AV-Test',110),
+   entry('g','2026-01-15',2,'AV-New',500)
+ ]);
+ const before=h.dailyComparisons.find(x=>x.player==='AV-Test'&&x.setId==='2026-01-01-A');
+ const beat=h.dailyComparisons.find(x=>x.player==='AV-Test'&&x.setId==='2026-01-08-A');
+ const later=h.dailyComparisons.find(x=>x.player==='AV-Test'&&x.setId==='2026-01-15-A');
+ const newcomer=h.dailyComparisons.find(x=>x.player==='AV-New');
+ assert.equal(before.complete,true);assert.equal(before.comparable,false);
+ assert.equal(beat.complete,false);assert.equal(beat.priorPB,100);assert.equal(beat.combinedDayPB,true);
+ assert.equal(beat.priorRecordedDays,1);assert.equal(beat.abovePriorAverage,true);
+ assert.equal(later.priorPB,125);assert.equal(later.combinedDayPB,false);
+ assert.equal(newcomer.comparable,false);assert.equal(newcomer.combinedDayPB,false);
 });
 test('AV-2 rows do not contaminate calculated AVENGERS scores, pot rake, rank or podium',()=>{
  const e=fixture(),before=analyze(e);

@@ -51,10 +51,10 @@ function render(host,events,day,tab,resolve){
    '</tbody></table></div>','A player can appear multiple times. Ranks count '+fmt(h.coverage.singleResults)+' tracked AVENGERS single-Flash results.'):'';
  const metrics=[
   ['Above prior single-Flash average',fmt(above.length)+'/'+fmt(base.length),'Recorded finishes with a historical baseline'],
-  ['Above prior full four-Flash day average',fmt(aboveDays.length)+'/'+fmt(comparable.length),'Previous complete 4/4 days required'],
+  ['Above prior Flash Set day-total average',fmt(aboveDays.length)+'/'+fmt(comparable.length),'Earlier recorded day totals; 1–4 PFs qualify'],
   ['New PF-specific line PBs',fmt(pb.filter(x=>x.pfPB).length),'Previous best within the same PF designation'],
   ['New all-PF single-race PBs',fmt(pb.filter(x=>x.singlePB).length),'Previous best across all PF1–PF4 races'],
-  ['New complete-day line PBs',fmt(dayPB.length),'Previous comparable complete days required'],
+  ['New Flash Set daily-total line PBs',fmt(dayPB.length),'Beat prior day total regardless of PF count'],
   ['First tracked Flash appearances',fmt(new Set(pb.filter(x=>x.firstTracked).map(x=>x.player)).size),'First recorded Flash results are not automatically PBs']
  ];
  const pbSection=selected?part('PBs & Prior-Average Comparisons','<div class="flash-history-metrics">'+metrics.map(x=>
@@ -71,10 +71,10 @@ function render(host,events,day,tab,resolve){
    (x.singlePB?fmt(x.oldSingleBest)+' → '+fmt(x.lines):'—')+'</td></tr>').join('')||
    '<tr><td colspan="5">No prior tracked single-race records beaten in this selection.</td></tr>')+
    '</tbody></table></div></details>'+
-   '<details class="flash-history-archive"><summary>View complete-day PB improvements</summary>'+
-   '<div class="table-wrap"><table class="flash-history-table"><thead><tr><th>Player</th><th>Prior full-day PB</th><th>New full-day PB</th></tr></thead><tbody>'+
+   '<details class="flash-history-archive"><summary>View Flash Set daily-total PB improvements</summary>'+
+   '<div class="table-wrap"><table class="flash-history-table"><thead><tr><th>Player</th><th>Prior daily PB</th><th>New daily PB</th></tr></thead><tbody>'+
    (dayPB.map(x=>'<tr><td>'+esc(x.player)+'</td><td>'+fmt(x.priorPB)+'</td><td>'+fmt(x.lines)+'</td></tr>').join('')||
-   '<tr><td colspan="3">No comparable complete-day record improved.</td></tr>')+
+   '<tr><td colspan="3">No previous recorded daily total was beaten.</td></tr>')+
    '</tbody></table></div></details>','First tracked appearances are excluded from new PB counts.'):'';
 
  const potsHeader=hdr('pots','date','Date')+hdr('pots','flash','PF')+hdr('pots','potStars','Pot Stars')+hdr('pots','awardedStars','AVENGERS Stars')+hdr('pots','rakePercent','Est. rake')+hdr('pots','pfRank','PF rank')+hdr('pots','overallRank','All PF rank')+'<th>Lobby</th>';

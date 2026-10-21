@@ -1,3 +1,5 @@
+- [ ] Resolve approved-character asset delivery for the scheduled renderer. Originals remain in the personal Library and are not available to GitHub Actions; do not copy them into the public repository or substitute generated art without explicit approval. Final activation requires a deterministic approved-asset path or explicit text-only approval.
+
 ## 2026-10-21 — Big Piggy automated publication (PR #138; pending activation)
 
 - [x] Implement independent event-time clan finishing-place PB history: AVENGERS requires 30+ distinct participants in one lobby; AV-2 requires 5+ in one lobby. Include prior best date.

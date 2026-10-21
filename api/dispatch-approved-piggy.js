@@ -55,7 +55,8 @@ function validateBody(body,claims,mainSha,env){
     body.report.clan!==body.clan||body.report.date===undefined||
     body.report.projectionVersion!==body.projectionVersion||body.report.templateVersion!==body.templateVersion||
     body.report.eventStatus!=='final'||body.report.approvedSourceOnly!==true||
-    body.report.readyToPost!==false||body.report.discordPostingEnabled!==false)throw Error('PNG review manifest is not a matching approved-source preview');
+    body.report.previewOnly!==false||body.report.readyToPost!==true||body.report.discordPostingEnabled!==true)
+  throw Error('PNG manifest is not a matching final approved-source report');
  if(!Number.isInteger(body.report.participants)||body.report.participants<1||
     !Number.isInteger(body.report.knownScoreSum)||body.report.knownScoreSum<0||
     !Number.isInteger(body.report.knownStars)||body.report.knownStars<0||

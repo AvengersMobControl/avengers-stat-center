@@ -70,6 +70,21 @@ function validateBody(body,claims,mainSha,env){
     !(body.report.weekToWeekGrowthPercent===null||(typeof body.report.weekToWeekGrowthPercent==='number'&&Number.isFinite(body.report.weekToWeekGrowthPercent)))||
     !Array.isArray(body.report.averageTrend)||!Array.isArray(body.report.milestones)||!Array.isArray(body.report.topThreeCareer))
   throw Error('PNG manifest metrics invalid');
+ if(!Array.isArray(body.report.linePBDetails)||!Array.isArray(body.report.placementPBDetails)||
+    !Array.isArray(body.report.firstTrackedDetails)||body.report.linePBDetails.length>8||
+    body.report.placementPBDetails.length>8||body.report.firstTrackedDetails.length>8)
+  throw Error('PNG historical-detail manifest invalid');
+ for(const p of body.report.linePBDetails){
+  if(typeof p.player!=='string'||!Number.isInteger(p.previousPB)||!Number.isInteger(p.currentScore)||
+     !(p.previousDate===null||typeof p.previousDate==='string'))throw Error('PNG line-PB detail invalid');
+ }
+ for(const p of body.report.placementPBDetails){
+  if(typeof p.player!=='string'||!Number.isInteger(p.previousRank)||!Number.isInteger(p.newRank)||
+     !(p.previousDate===null||typeof p.previousDate==='string'))throw Error('PNG finishing-place PB detail invalid');
+ }
+ for(const p of body.report.firstTrackedDetails){
+  if(typeof p.player!=='string'||!Number.isInteger(p.score))throw Error('PNG first-tracked detail invalid');
+ }
  for(const m of body.report.milestones){
   if(!Number.isInteger(m.threshold)||m.threshold<5000||!Number.isInteger(m.count)||m.count<1||typeof m.record!=='boolean')
    throw Error('PNG benchmark manifest invalid');

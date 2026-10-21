@@ -66,6 +66,7 @@ class BigPiggyV2Tests(unittest.TestCase):
             self.assertFalse(result["readyToPost"])
             self.assertFalse(result["discordPostingEnabled"])
             self.assertEqual(Image.open(dest).size,(2400,1500))
+            preview_sha=result["imageSHA256"]
         with tempfile.TemporaryDirectory() as tmp:
             dest=pathlib.Path(tmp)/"av2-piggy-final.png"
             result=renderer.render(data,"piggy","AV-2","piggy|2026-10-11",str(dest),
@@ -73,8 +74,7 @@ class BigPiggyV2Tests(unittest.TestCase):
             self.assertFalse(result["previewOnly"])
             self.assertTrue(result["readyToPost"])
             self.assertTrue(result["discordPostingEnabled"])
-            self.assertIn("FINAL SOURCE-VERIFIED REPORT",Image.open(dest).getpixel((1,1)) if False else
-                          "FINAL SOURCE-VERIFIED REPORT")
+            self.assertNotEqual(result["imageSHA256"],preview_sha)
 
 if __name__=="__main__":
     unittest.main()

@@ -10,15 +10,17 @@ const reports=path.join(root,'reports');
 const CLANS=['AVENGERS','AV-2'];
 const fail=m=>{throw Error(m)};
 function parseArg(name){const i=process.argv.indexOf(name);return i>=0?process.argv[i+1]:null;}
-function prepareReport(release,event,clan){
+function prepareReport(release,event,clan,publish=false){
  const rows=participatingRows(event,clan);
  if(!rows.length)return {decision:'no-participating-rows',clan,eventId:event.id};
  fs.mkdirSync(reports,{recursive:true});
  const stem='automatic-piggy-v2-'+event.date+'-'+clan.toLowerCase();
  const png=path.join(reports,stem+'.png');
  const releasePath=writeApprovedRelease('automatic-piggy-release.json');
- execFileSync('python3',['scripts/render-big-piggy-auto.py',releasePath,png,'--kind','piggy',
-   '--clan',clan,'--event-id',event.id,'--automatic-piggy-layout'],{cwd:root,stdio:'pipe'});
+ const renderArgs=['scripts/render-big-piggy-auto.py',releasePath,png,'--kind','piggy',
+   '--clan',clan,'--event-id',event.id,'--automatic-piggy-layout'];
+ if(publish)renderArgs.push('--automatic-piggy-publish');
+ execFileSync('python3',renderArgs,{cwd:root,stdio:'pipe'});
  const report=JSON.parse(fs.readFileSync(path.join(reports,stem+'.json'),'utf8'));
  const message=buildPiggyMessage(event,clan,report);
  fs.writeFileSync(path.join(reports,stem+'.txt'),message+'\n','utf8');
@@ -99,7 +101,7 @@ async function main(){
  const selected=selectLatestEligiblePiggy(projection,policy);
  if(!selected.event){console.log(JSON.stringify({decision:selected.decision,eventId:selected.eventId||null}));return;}
  for(const clan of CLANS){
-  const prepared=prepareReport(release,selected.event,clan);
+  const prepared=prepareReport(release,selected.event,clan,true);
   if(prepared.decision==='no-participating-rows'){
    console.log(JSON.stringify(prepared));
    continue;

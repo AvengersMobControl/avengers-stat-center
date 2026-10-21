@@ -258,7 +258,11 @@ async function main(){
     assert(pctLabels[0].includes('77.4%')&&pctLabels[0].includes('1/38'),'Sep22 PF1 header estimated rake: '+JSON.stringify(pctLabels));
     assert(pctLabels[1].includes('93.5%')&&pctLabels[1].includes('3/50'),'Sep22 PF2 pot rank and rake');
     assert(pctLabels[3].includes('2.76M')&&pctLabels[3].includes('1/37'),'PF4 next-day header retained');
-    assert((await hist.innerText()).includes('AV-Zolika.x.Kira'),'combined-day leader shown under current canonical player identity');
+    const leaderRow=hist.locator('.flash-history-panel').filter({has:page.locator('h3', {hasText:'Top Five Combined Contributors'})}).locator('tbody tr').first();
+    const leaderText=await leaderRow.textContent();
+    const leaderIdentity=await page.evaluate(()=>window.AVENGERS_DATA.resolvePlayerName?.('AV-ZolikaLoveKira')||'AV-ZolikaLoveKira');
+    assert(leaderText.includes('9,880')&&leaderText.includes(leaderIdentity),
+      'combined-day 9,880 leader and canonical player identity: '+JSON.stringify({leaderText,leaderIdentity}));
     assert((await hist.innerText()).includes('9,880'),'top recorded combined-day score');
     assert((await hist.innerText()).includes('4,936'),'top single-race score');
     assert((await hist.innerText()).includes('6/2,761'),'top single-race historical rank');

@@ -46,6 +46,7 @@ class BigPiggyV2Tests(unittest.TestCase):
         data=fixture()
         model=renderer.resolve_summary(data,"piggy","AV-2")
         self.assertEqual(model["displayedPotStars"],"2.0M")
+        self.assertEqual(model["lobbyLabel"],"av2-main")
         self.assertEqual(model["rakePercentDisplayedShareSum"],71.0)
         self.assertEqual([(x["previousRank"],x["newRank"]) for x in model["placementPBs"]],[(7,2)])
         self.assertEqual(model["participantRows"],5,"one-line placeholders are not participants")

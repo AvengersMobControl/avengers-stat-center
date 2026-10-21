@@ -44,6 +44,12 @@ async function main(){
     // The browser shows actual best finishing PLACES (not line-score rankings).
     // This value is fixed by the qualifying historic race, not the current clan roster.
     await page.click('.nav-btn[data-page="rosters"]');
+    await page.click('#rosterTabs button[data-roster="active"]');
+    assert.equal(await page.locator('#rostersContent [data-player="AV-Fred"]').innerText(),'AV-Fred');
+    assert.equal(await page.locator('#rostersContent [data-player="AV-TheOli"]').count(),0);
+    await page.click('#rosterTabs button[data-roster="av2"]');
+    assert.equal(await page.locator('#rostersContent [data-player="AV-TheOli"]').count(),1);
+    await page.click('#rosterTabs button[data-roster="active"]');
     const achievements=page.locator('#rostersContent button[data-roster-group="piggyAchievements"]');
     assert.equal(await achievements.count(),1,'Piggy Achievements group available');
     assert.equal(await achievements.getAttribute('aria-expanded'),'false','Piggy Achievements defaults collapsed');

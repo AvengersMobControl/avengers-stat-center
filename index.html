@@ -1930,8 +1930,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       : target==='all'
       ? 'Current membership from Oct 15 screenshots plus leader-confirmed AV-2 additions (DrDetroit and Starred); others retained as Inactive.'
       : target==='active'
-        ? '48 current AVENGERS members and lifetime Stars from the Oct 15 in-game screenshots.'
-        : '52 AV-2 roster entries: 50 from Oct 15 screenshot totals, plus DrDetroit and Starred added by clan-leader instruction (no new all-time screenshot totals for those two).';
+        ? `${rows.length} current AVENGERS members. Oct 15 screenshot totals are retained alongside leader-confirmed membership changes.`
+        : `${rows.length} current AV-2 members. Oct 15 screenshot totals are retained alongside leader-confirmed additions and transfers.`;
 
     root.innerHTML=`
       <div class="section-toolbar roster-toolbar">

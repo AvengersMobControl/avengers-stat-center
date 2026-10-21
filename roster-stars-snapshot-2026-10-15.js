@@ -78,7 +78,7 @@
   // current canonical/display name and retains ALL historical results.
   // October 21: Timmy joins AVENGERS. Frank already has the canonical
   // AV-Addicted account via AV-FrankAbagnale; confirm active without duplicating.
-  const activeCorrections=['AV-Lin','AV-JefhKintz05','AV-SiFra','AV-Timmy','AV-FrankAbagnale'];
+  const activeCorrections=['AV-Lin','AV-JefhKintz05','AV-SiFra','AV-Timmy','AV-FrankAbagnale','AV-Fred'];
   for(const correctName of activeCorrections){
     const profileName=canonical(correctName);
     const existing=rosterEntries.find(row=>row.profileName===profileName);
@@ -95,9 +95,13 @@
   const zibby=rosterEntries.find(row=>row.profileName===canonical('AV-ZIBBY'));
   if(!zibby)throw new Error('Unable to locate Zibby canonical profile');
   zibby.status='AV2';
+  // October 21 leader-directed transfer: current membership only.
+  const theOli=rosterEntries.find(row=>row.profileName===canonical('AV-TheOli'));
+  if(!theOli)throw new Error('Unable to locate TheOli canonical profile');
+  theOli.status='AV2';
   // Historical screenshot-only LT entry is removed at leader direction and
   // never gets a profile shell: zero known event rows or event rewards.
-  if(new Set(rosterEntries.map(row=>row.profileName)).size!==100)
+  if(new Set(rosterEntries.map(row=>row.profileName)).size!==101)
     throw new Error('October 19 roster identities unexpectedly overlap');
   const discordMembers=window.AVENGERS_DISCORD_UTC_ROSTER?.members||[];
   for(const member of discordMembers){
@@ -153,7 +157,7 @@
   byName['AV-Frenchie2']=fromRow(currentRows.find(r=>r.name==='AV-Frenchie2'));
   R.byName=byName;
   R.source='October 15 AVENGERS/AV-2 snapshots + October 21 leader identity and membership corrections';
-  R.precedence='October 15 source screenshots retained as dated provenance, except leader-removed LT shell; current changes: AV-2Lin → AV-Lin, Jeff canonical AV-JefhKintz05, SiFra and Timmy Active, Frank linked to existing Addicted account, Zibby AV-2; 50 Active and 50 AV-2; UTC/TZG/country retained.';
+  R.precedence='October 15 source screenshots retained as dated provenance, except leader-removed LT shell; current changes: AV-2Lin → AV-Lin, Jeff canonical AV-JefhKintz05, SiFra and Timmy Active, Fred Active, FrankAbagnale linked to existing Addicted account, Zibby and TheOli AV-2; 50 Active and 51 AV-2; UTC/TZG/country retained.';
 
   // Only current member status changes. Event history, clan attribution,
   // personal records, event totals, and rating math remain unchanged.

@@ -1,3 +1,7 @@
+## 2026-10-21 — Fred roster addition and TheOli transfer
+
+Leader clarified the requested addition is AV-Fred, not Frank. Activate existing AV-Fred profile with its source-backed result. AV-FrankAbagnale remains linked to AV-Addicted without display/identity changes or duplicate history. TheOli current status becomes AV2; historical event-time clans, scores, rewards, fixed Unlogged Sparks and dated snapshots remain unchanged. Current counts: 50 AVENGERS / 51 AV-2. Roster captions use current counts. Shared projection and browser checks required before claiming live; no Discord send, UTC synchronization or SAC change.
+
 ## 2026-10-21 — Timmy/Frank roster and one-line nonparticipation correction (PR #132, staged)
 
 Leader confirmed Timmy and Frank as AVENGERS roster members, excluded Tavito, and defined exactly one line in Piggy/Flash as NONPARTICIPATION. Add AV-Timmy; Frank already resolves AV-FrankAbagnale → AV-Addicted and remains Active with one history. Roster is now 50 AVENGERS / 50 AV-2; no invented screenshot balances, location, UTC or join dates.

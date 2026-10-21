@@ -1,3 +1,11 @@
+## Implementation checkpoint — 2026-10-21 (PR #138)
+
+A guarded publisher and hourly GitHub Actions runner are staged in [PR #138](https://github.com/AvengersMobControl/avengers-stat-center/pull/138). The runner will dispatch only the newest canonical Piggy event whose source status is explicitly final and whose date is later than the 2026-10-18 baseline. The source event must already be approved and committed to main; this automation does not collect/OCR screenshots, approve a candidate, or import unreviewed rows. A manual workflow dispatch defaults to preview, never send.
+
+The publisher verifies GitHub OIDC identity, repository/workflow/main ref, current GitHub main SHA and Vercel deployment SHA, source approval and active holds, exact report metrics and source-derived message, 2400×1500 PNG SHA-256, and the fixed Performance Statistics channel. It reserves a unique event+clan slot before sending and requires authenticated readback of the exact Discord message and PNG bytes. An uncertain send or changed edition is held for manual reconciliation. Automatic correction and deletion are disabled.
+
+The v2 Piggy layout is a separate renderer; the pinned v1 renderer remains unchanged. V2 adds independent finishing-place PBs, prior dates, AV-2 displayed-share RAKE % and whole-lobby pot distinction, top-three career podium snippets, and removes redundant Stars/Sparks/share/Sparks-per-line columns from Top 10. **Current state remains review-only:** PR #138 is not an activation, the policy is pending visual approval, migration 003 is unapplied, and production send/endpoint flags remain OFF. Do not describe automatic posting as live until visual approval, migration approval, production activation, and a real approved-report canary/readback are recorded.
+
 # Big Piggy Race Results — Operating Standard
 
 **Updated:** 2026-10-21  

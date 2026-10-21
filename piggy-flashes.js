@@ -69,6 +69,21 @@
       .flash-metric span{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.08em;opacity:.62;margin-bottom:6px}
       .flash-metric strong{font-size:22px;line-height:1}
       .flash-metric em{display:block;font-style:normal;font-size:10px;opacity:.55;margin-top:5px}
+      .flash-podiums{margin:16px 0}
+      .flash-podium-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;padding:14px 16px;border-bottom:1px solid var(--border,#2a3345)}
+      .flash-podium-kpi{padding:10px;background:rgba(90,110,150,.08);border:1px solid rgba(130,155,190,.18);border-radius:9px;min-width:0}
+      .flash-podium-kpi strong{font-size:13px;display:block;margin-bottom:6px}
+      .flash-podium-kpi span{font-size:12px;display:block;font-variant-numeric:tabular-nums;white-space:nowrap}
+      .flash-podium-kpi em{font-style:normal;font-size:10px;opacity:.68}
+      .flash-podium-table{width:100%;border-collapse:collapse;min-width:780px}
+      .flash-podium-table th,.flash-podium-table td{padding:9px 10px;border-bottom:1px solid rgba(130,155,190,.12)}
+      .flash-podium-table th{font-size:11px;white-space:nowrap}
+      .flash-podium-table td{font-size:12px;font-variant-numeric:tabular-nums}
+      .flash-podium-table .flash-podium-member{min-width:170px}
+      .flash-podium-table .flash-podium-total{font-weight:900;color:var(--accent,#85dffd)}
+      .flash-podium-table tr:last-child td{border-bottom:0}
+      .flash-podium-table tbody tr:hover{background:rgba(125,155,210,.08)}
+      @media(max-width:720px){.flash-podium-kpis{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.flash-podium-kpi{padding:8px}.flash-podium-kpi span{font-size:11px}}
       .flash-note{font-size:11px;opacity:.68;margin-top:8px}
       .flash-day-filter{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-4px 0 14px;padding:10px 12px;background:var(--panel,#151b27);border:1px solid var(--border,#2a3345);border-radius:10px}
       .flash-day-filter label{font-size:11px;font-weight:800;opacity:.72;text-transform:uppercase;letter-spacing:.06em}
@@ -130,6 +145,7 @@
         if(mode!=='all' && clan!==mode)return;
         out.push({
           ...r,
+          eventId:ev.id||String(ev.date||'')+'|PF'+String(ev.flash||''),
           name:resolveName(r.name),
           clan,
           eventDate:ev.date||'',
@@ -278,6 +294,44 @@
     return '<div class="flash-mini-bars">'+groups.map(x=>'<div class="flash-mini-row"><strong>PF'+x.flash+'</strong><div class="flash-mini-track"><div class="flash-mini-fill" style="width:'+Math.max(1,x.avgLines/max*100)+'%"></div></div><div style="text-align:right">'+fmt(Math.round(x.avgLines))+'</div></div>').join('')+'</div><div class="flash-note">Average player lines per recorded result.</div>';
   }
 
+  // Finishes always use original game-lobby places, NOT a sorting of clan lines.
+  // AVENGERS and AV-2 remain independent when the status filter says All.
+  function podiumsHtml(rows){
+    const api=window.AVENGERS_PIGGY_FLASH_PODIUMS;
+    if(!api||typeof api.tally!=='function')return '<div class="flash-note">Finishing-place summary unavailable.</div>';
+    const data=api.tally(rows);
+    const kpis=data.perFlash.concat([{flash:'Total',...data.overall}]);
+    const kpiHtml=kpis.map(x=>'<div class="flash-podium-kpi"><strong>'+
+      (x.flash==='Total'?'All four':'PF'+x.flash)+'</strong><span>'+fmt(x.wins)+' wins</span><span>'+fmt(x.podiums)+
+      ' podiums</span></div>').join('');
+    const showClan=clanMode()==='all';
+    const body=data.members.map((m,i)=>'<tr><td class="num">'+(i+1)+'</td><td class="flash-podium-member"><strong>'+
+      esc(m.player)+'</strong>'+(showClan?'<div class="flash-note">'+esc(m.clan)+'</div>':'')+'</td>'+
+      m.flashes.map(f=>'<td class="num" title="PF'+f.flash+': '+f.wins+' wins, '+f.podiums+' podium finishes">'+
+        fmt(f.wins)+' / '+fmt(f.podiums)+'</td>').join('')+
+      '<td class="num flash-podium-total">'+fmt(m.wins)+'</td>'+
+      '<td class="num flash-podium-total">'+fmt(m.podiums)+'</td>'+
+      '<td class="num">'+fmt(m.secondPlaces)+'</td>'+
+      '<td class="num">'+fmt(m.thirdPlaces)+'</td></tr>').join('');
+    const unranked=data.source.missingRank,invalid=data.source.ambiguousRank+data.source.conflictingAccount;
+    return '<div class="table-card flash-podiums">'+
+      '<div class="table-titlebar"><div><h2>⚡ Piggy Flash Wins &amp; Podium Finishes</h2>'+
+      '<div class="small-muted">Original recorded finishing positions: 1st = win, 1st–3rd = podium. '+
+      'PF1–PF4 columns show Wins / Podiums. Honors follow the Flash Set day, clan and PF tab selected above.</div></div></div>'+
+      '<div class="flash-podium-kpis">'+kpiHtml+'</div>'+
+      '<div class="table-wrap"><table class="flash-podium-table"><thead><tr>'+
+      '<th class="num">#</th><th>Member</th><th class="num">PF1 W / P</th><th class="num">PF2 W / P</th>'+
+      '<th class="num">PF3 W / P</th><th class="num">PF4 W / P</th>'+
+      '<th class="num">Total Wins</th><th class="num">Total Podiums</th>'+
+      '<th class="num">2nd</th><th class="num">3rd</th></tr></thead><tbody>'+
+      (body||'<tr><td colspan="10" class="empty">No source-verified first, second or third places in this view.</td></tr>')+
+      '</tbody></table></div>'+
+      '<div class="flash-note" style="padding:0 16px 14px">Only screenshot-backed ranks count; unknown finishing places are never inferred from lines. '+
+      (unranked?fmt(unranked)+' results have no verified rank. ':'')+
+      (invalid?fmt(invalid)+' ambiguous finishing-place rows excluded. ':'')+
+      'Totals are for the selected date range; filter to a single Flash Set day for its four-event report.</div></div>';
+  }
+
   function tabsHtml(){
     const tabs=[['all','All'],['pf1','PF1'],['pf2','PF2'],['pf3','PF3'],['pf4','PF4'],['daily','Daily Total']];
     return '<div class="flash-tabs">'+tabs.map(([id,label])=>'<button class="flash-tab '+(state.tab===id?'active':'')+'" data-flash-tab="'+id+'">'+label+'</button>').join('')+'</div>';
@@ -353,6 +407,8 @@
         ${isDaily?'<div class="flash-metric"><span>Best daily PB</span><strong>'+fmt(Math.max(0,...pbItems.map(x=>x.best)))+'</strong><em>combined flash lines</em></div>':''}
         <div class="flash-metric"><span>Avg pot</span><strong>${avgPot?fmtCompact(avgPot):'—'}</strong><em>AVENGERS-dominant lobbies</em></div>
       </div>
+
+      ${podiumsHtml(rows)}
 
       <div class="flash-grid">
         <div class="flash-chart-card">

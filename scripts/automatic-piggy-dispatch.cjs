@@ -34,11 +34,17 @@ async function getOidcToken(){
 async function verifyEndpoint(){
  const token=await getOidcToken();
  const endpoint=process.env.AVENGERS_PIGGY_DISPATCH_URL||'https://avengers-stat-center.vercel.app/api/dispatch-approved-piggy';
+ const tokenClaims=JSON.parse(Buffer.from(token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'),'base64').toString('utf8'));
+ if(!/^[a-f0-9]{40}$/i.test(tokenClaims.sha||''))fail('OIDC token lacks a valid commit SHA');
  const response=await fetch(endpoint,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
-  body:'{}',signal:AbortSignal.timeout(20000)});
+  body:JSON.stringify({sourceCommit:tokenClaims.sha.toLowerCase()}),signal:AbortSignal.timeout(20000)});
  let answer={};try{answer=await response.json();}catch{}
  if(response.status===423&&answer.decision==='automatic-piggy-dispatch-disabled'){
   console.log(JSON.stringify({decision:'oidc-endpoint-verified-disabled',endpoint,productionSendStillOff:true}));
+  return;
+ }
+ if(response.status===422&&answer.decision==='blocked'&&answer.reason==='Event kind or clan is not allowed'){
+  console.log(JSON.stringify({decision:'oidc-endpoint-and-deployment-verified',endpoint,sendAttempted:false}));
   return;
  }
  fail('OIDC endpoint check failed safely: HTTP '+response.status+' / '+(answer.decision||'unverified response'));

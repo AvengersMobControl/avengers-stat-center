@@ -3,6 +3,10 @@ on:
   pull_request:
     paths:
       - 'scripts/render-event-summary.py'
+      - 'scripts/render-big-piggy-auto.py'
+      - 'piggy-benchmarks.js'
+      - 'scripts/piggy-benchmarks.test.cjs'
+      - 'scripts/test_render_big_piggy_auto.py'
       - 'scripts/automatic-piggy-dispatch-core.cjs'
       - 'scripts/automatic-piggy-dispatch.cjs'
       - 'data/automatic-piggy-dispatch-policy.json'

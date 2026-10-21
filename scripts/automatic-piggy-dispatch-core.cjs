@@ -88,7 +88,9 @@ function buildPiggyMessage(event,clan,report,siteUrl){
  if(pbs!==null||rankPBs!==null||first!==null)
   lines.push('', 'Verified history: '+(pbs===null?'—':pbs)+' line PBs · '+(rankPBs===null?'—':rankPBs)+' qualifying finishing-place PBs · '+(first===null?'—':first)+' first tracked appearances.');
  lines.push('', 'Full history: '+siteUrl);
- return lines.join('\n');
+ const message=lines.join('\n');
+ if(message.length>1800)fail('Source-derived Piggy message exceeds the safe Discord length budget');
+ return message;
 }
 function verifyPngBytes(bytes){
  if(!Buffer.isBuffer(bytes)||bytes.length<24||bytes.length>3000000)fail('PNG size is outside the allowed range');

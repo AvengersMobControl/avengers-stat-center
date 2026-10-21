@@ -23,7 +23,8 @@ function prepareReport(release,event,clan,publish=false){
  execFileSync('python3',renderArgs,{cwd:root,stdio:'pipe'});
  const report=JSON.parse(fs.readFileSync(path.join(reports,stem+'.json'),'utf8'));
  const message=buildPiggyMessage(event,clan,report);
- fs.writeFileSync(path.join(reports,stem+'.txt'),message+'\n','utf8');
+ const messageFileText=publish?message:'[REVIEW PREVIEW — NOT FOR POSTING]\n\n'+message;
+ fs.writeFileSync(path.join(reports,stem+'.txt'),messageFileText+'\n','utf8');
  return {decision:'prepared',eventId:event.id,date:event.date,clan,png,reportPath:path.join(reports,stem+'.json'),
    messagePath:path.join(reports,stem+'.txt'),message,report};
 }

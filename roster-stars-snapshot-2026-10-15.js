@@ -76,7 +76,9 @@
   // captures intact as historical evidence, even for members since transferred.
   // Jeff's previous screenshot spelling is an alias; AV-JeffKintz05 is the
   // current canonical/display name and retains ALL historical results.
-  const activeCorrections=['AV-Lin','AV-JefhKintz05','AV-SiFra'];
+  // October 21: Timmy joins AVENGERS. Frank already has the canonical
+  // AV-Addicted account via AV-FrankAbagnale; confirm active without duplicating.
+  const activeCorrections=['AV-Lin','AV-JefhKintz05','AV-SiFra','AV-Timmy','AV-FrankAbagnale'];
   for(const correctName of activeCorrections){
     const profileName=canonical(correctName);
     const existing=rosterEntries.find(row=>row.profileName===profileName);
@@ -95,7 +97,7 @@
   zibby.status='AV2';
   // Historical screenshot-only LT entry is removed at leader direction and
   // never gets a profile shell: zero known event rows or event rewards.
-  if(new Set(rosterEntries.map(row=>row.profileName)).size!==99)
+  if(new Set(rosterEntries.map(row=>row.profileName)).size!==100)
     throw new Error('October 19 roster identities unexpectedly overlap');
   const discordMembers=window.AVENGERS_DISCORD_UTC_ROSTER?.members||[];
   for(const member of discordMembers){
@@ -150,8 +152,8 @@
   delete D.aliasMap['AV-Frenchie2'];
   byName['AV-Frenchie2']=fromRow(currentRows.find(r=>r.name==='AV-Frenchie2'));
   R.byName=byName;
-  R.source='October 15 AVENGERS/AV-2 snapshots + October 19 leader identity and membership corrections';
-  R.precedence='October 15 source screenshots retained as dated provenance, except leader-removed LT shell; current changes: AV-2Lin → AV-Lin, Jeff canonical AV-JefhKintz05, SiFra Active, Zibby AV-2; 49 Active and 50 AV-2; UTC/TZG/country retained.';
+  R.source='October 15 AVENGERS/AV-2 snapshots + October 21 leader identity and membership corrections';
+  R.precedence='October 15 source screenshots retained as dated provenance, except leader-removed LT shell; current changes: AV-2Lin → AV-Lin, Jeff canonical AV-JefhKintz05, SiFra and Timmy Active, Frank linked to existing Addicted account, Zibby AV-2; 50 Active and 50 AV-2; UTC/TZG/country retained.';
 
   // Only current member status changes. Event history, clan attribution,
   // personal records, event totals, and rating math remain unchanged.

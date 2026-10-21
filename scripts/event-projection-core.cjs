@@ -98,7 +98,15 @@ function rewards(rows){
 }
 function project(ledger,{aliases={},members=[],snapshots={},priorToLogging=null,arenaStart='2026-08-01'}={}){
   validate(ledger,aliases);requireThat(day(arenaStart),'Invalid arena start');
-  const events=ledger.events.map(e=>({...normalize(e,aliases),revision:e.revision})).sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
+  const originalRows=ledger.events.filter(e=>e.status!=='revoked').flatMap(e=>normalize(e,aliases).rows.map(r=>({...r,date:e.date,kind:e.kind})));
+  // Leader policy: a one-line Piggy/Flash placeholder is nonparticipation.
+  // Retain original evidence in the versioned ledger, but omit it from the
+  // projected event rows used by every statistic, history, export and report.
+  const events=ledger.events.map(e=>{
+    const normalized=normalize(e,aliases);
+    if(['piggy','flash'].includes(e.kind))normalized.rows=normalized.rows.filter(r=>r.score!==1);
+    return {...normalized,revision:e.revision};
+  }).sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
   // Ambiguous concurrent events for the same player/date/type require migration review;
   // Flash events legitimately have separate daily IDs, and are not coalesced.
   const seen=new Set();const rows=[];
@@ -123,9 +131,14 @@ function project(ledger,{aliases={},members=[],snapshots={},priorToLogging=null,
       const snapshot=amount(obj.amount,'snapshot'),beforeDate=obj.beforeDate??null,clan=obj.clan??null;
       if(beforeDate!==null)requireThat(day(beforeDate),'Invalid snapshot date');
       if(clan!==null)requireThat(['AVENGERS','AV-2'].includes(clan),'Invalid snapshot clan');
-      const loggedAtSnapshot=beforeDate?rewards(history.filter(r=>r.date<beforeDate)).sparks:earned.sparks;
+      // Snapshot audit evidence is historical, predating the participation
+      // policy. Preserve its original arithmetic without changing frozen gaps.
+      const snapshotRows=originalRows.filter(r=>r.player===m.name&&(!beforeDate||r.date<beforeDate));
+      const loggedAtSnapshot=beforeDate?rewards(snapshotRows).sparks:earned.sparks;
+      const archivalDiscardedSparks=snapshotRows.filter(r=>r.kind==='flash'&&r.metadata?.awardPolicy==='first-post-kraken-no-sparks')
+        .reduce((n,r)=>n+(Number(r.metadata.archivalDerivedSparksDiscarded)||0),0);
       const gap=snapshot===null?0:Math.max(0,snapshot-loggedAtSnapshot);
-      return {clan,beforeDate,amount:snapshot,loggedAtSnapshot,gap,sourceName:obj.sourceName||null,label:obj.label||null};
+      return {clan,beforeDate,amount:snapshot,loggedAtSnapshot,gap,archivalDiscardedSparks,sourceName:obj.sourceName||null,label:obj.label||null};
     });
     // Screenshots are observations, not additive transfer-stint balances.
     const calculatedGap=sources.length?Math.max(0,...snapshotBreakdown.map(s=>s.gap)):null;

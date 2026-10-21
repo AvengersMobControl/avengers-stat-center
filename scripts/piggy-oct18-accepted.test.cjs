@@ -34,5 +34,5 @@ test('Oct18 original AVENGERS 50 retained and leader-released AV-2 19 appended e
  assert.ok(!holds.holds.some(h=>h.eventId===event.id&&h.clan==='AV-2'));
  const published=create().projection.events.find(e=>e.id===event.id);
  assert.ok(published);assert.equal(published.rows.filter(r=>r.clan==='AVENGERS').length,50);
- assert.equal(published.rows.filter(r=>r.clan==='AV-2').length,19);
+ assert.equal(published.rows.filter(r=>r.clan==='AV-2').length,17,'Two one-line nonparticipants remain only in source evidence');
 });

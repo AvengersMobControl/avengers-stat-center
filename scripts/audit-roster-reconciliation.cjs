@@ -46,7 +46,7 @@ const B=w.AVENGERS_ROSTER_EVENT_BREAKDOWN;
 assert(D && R && S && L && B, 'Missing loaded roster/ledger data scripts');
 const currentAv=(R.rows||[]).filter(r=>r.status==='Active');
 const currentAv2=(R.rows||[]).filter(r=>r.status==='AV2');
-assert.equal(currentAv.length, 49, 'Expected 49 current AVENGERS after linking Lin, removing LT and moving Zibby');
+assert.equal(currentAv.length, 50, 'Expected 50 current AVENGERS after adding Timmy; Frank remains the existing Addicted account');
 assert.equal(currentAv2.length, 50, 'Expected 50 current AV-2 including transferred Zibby');
 assert.equal(S.currentAvengersStars.length, 47, 'LT excluded from site snapshot; no event history');
 assert.equal(S.currentAv2.length, 50);
@@ -66,7 +66,7 @@ const canonical=raw=>{
 assert.notEqual(canonical('AV-Frenchie2'),canonical('AV-Frenchie(-4)'));
 const current=[...currentAv,...currentAv2];
 const identityKeys=current.map(r=>canonical(r.name));
-assert.equal(current.length, 99, 'Expected 99 current identities with AV-2Lin merged into AV-Lin and LT removed');
+assert.equal(current.length, 100, 'Expected 100 current identities with Timmy added and no duplicate Frank account');
 assert.equal(new Set(identityKeys).size, current.length, 'Duplicate canonical identities in current rosters');
 const starRows=[...(S.currentAvengersStars||[]),...(S.currentAv2||[])];
 const stars=new Map();

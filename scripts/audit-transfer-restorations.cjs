@@ -3,7 +3,7 @@
 // later removal of incorrectly inferred zero-award Flash Sparks.
 // Never use this function to update the user-frozen Unlogged Sparks value.
 function originallyObservedGap(player,snapshot){
- const removed=player.history.filter(h=>h.kind==='flash'&&h.metadata?.awardPolicy==='first-post-kraken-no-sparks'&&
+ const removed=snapshot.archivalDiscardedSparks??player.history.filter(h=>h.kind==='flash'&&h.metadata?.awardPolicy==='first-post-kraken-no-sparks'&&
    (!snapshot.beforeDate||h.date<snapshot.beforeDate))
    .reduce((n,h)=>n+(Number(h.metadata.archivalDerivedSparksDiscarded)||0),0);
  return Math.max(0,snapshot.gap-removed);

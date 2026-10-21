@@ -9,6 +9,20 @@ function ev(kind,id,date,score,clan='AVENGERS',extra={}){
 }
 function put(l,e,expectedRevision=0,extra={}){return apply(l,e,{approved:true,expectedRevision,...extra}).ledger;}
 const person=(p,n='A')=>p.people.find(x=>x.name===n);
+test('one-line Piggy and Flash placeholders are excluded everywhere; one billion Space remains valid',()=>{
+  for(const kind of ['piggy','flash'])for(const clan of ['AVENGERS','AV-2']){
+    let l=put(empty(),ev(kind,'real','2026-09-12',100,clan));
+    l=put(l,ev(kind,'placeholder','2026-09-13',1,clan));
+    const p=project(l,options),a=person(p);
+    assert.equal(l.events.find(e=>e.id==='placeholder').rows[0].score,1,'Original evidence retained');
+    assert.equal(p.events.find(e=>e.id==='placeholder').rows.length,0);
+    assert.equal(a.history.length,1);assert.equal(a.kinds[kind].average,100);
+    assert.equal(a.kinds[kind].eventsRecorded,1);assert.equal(a.earned.events,1);
+    assert.equal(p.clans[clan].events,1);assert.equal(p.clans[clan].sparks,10);
+  }
+  const s=project(put(empty(),ev('space','one-billion','2026-09-12',1)),options);
+  assert.equal(person(s).kinds.space.eventsRecorded,1);assert.equal(person(s).kinds.space.average,1);
+});
 for(const kind of Object.keys(UNITS))for(const clan of ['AVENGERS','AV-2'])test(kind+' / '+clan+' insert, retry, lower former PB, revoke and restore',()=>{
   let l=put(empty(),ev(kind,'first','2026-09-12',10,clan));
   const before=project(l,options),untouched=person(before,'Untouched');
@@ -80,13 +94,13 @@ test('ratings, last three, PB ranks and Council observations rebuild from the sa
   assert.equal(period.observedEvents.find(r=>r.kind==='space').limit,50);
 });
 test('conflicting duplicates, ambiguous identities, bad units and concurrent corrections fail closed',()=>{
-  const e=ev('piggy','x','2026-10-01',1);
+  const e=ev('piggy','x','2026-10-01',2);
   assert.throws(()=>apply(empty(),e),/approval/);
   assert.throws(()=>put(empty(),{...e,unit:'damage'}),/unit/);
   assert.throws(()=>put(empty(),{...e,date:'2026-02-30'}),/date/);
   assert.throws(()=>put(empty(),{...e,rows:[{...e.rows[0],clan:null}]}),/clan/);
   assert.throws(()=>put(empty(),{...e,rows:[{...e.rows[0],sparks:-1}]}),/sparks/);
-  assert.throws(()=>put(empty(),{...e,rows:[e.rows[0],{...e.rows[0],score:2}]}),/Conflicting/);
+  assert.throws(()=>put(empty(),{...e,rows:[e.rows[0],{...e.rows[0],score:3}]}),/Conflicting/);
   const l=put(empty(),e);assert.throws(()=>put(l,{...e,rows:[]}),/Revision/);
   const overlap=put(l,{...e,id:'other'});assert.throws(()=>project(overlap,options),/Overlapping/);
   assert.throws(()=>project(l,{aliases:{A:'B',B:'A'}}),/cycle/);
@@ -123,7 +137,7 @@ test('dated lifetime Sparks gap persists after later earnings across a transfer'
 });
 
 test('pre-logging gap stays fixed after Space payout and transfer resets',()=>{
- let l=put(empty(),ev('piggy','old','2026-09-22',1,'AVENGERS'));
+ let l=put(empty(),ev('piggy','old','2026-09-22',2,'AVENGERS'));
  l=put(l,ev('space','oct16','2026-10-16',1,'AV-2'));
  const evidence={A:[{amount:500,beforeDate:'2026-09-30',clan:'AVENGERS'},
   {amount:0,beforeDate:'2026-10-16',clan:'AV-2'}]};
@@ -136,7 +150,7 @@ test('pre-logging gap stays fixed after Space payout and transfer resets',()=>{
  assert.equal(reversed.screenshotGap,490);
 });
 test('different clan screens never create additive historical Sparks',()=>{
- let l=put(empty(),ev('piggy','old','2026-09-22',1,'AVENGERS'));
+ let l=put(empty(),ev('piggy','old','2026-09-22',2,'AVENGERS'));
  l=put(l,ev('space','new','2026-10-12',1,'AV-2'));
  const evidence={A:[{amount:500,beforeDate:'2026-09-30',clan:'AVENGERS'},
    {amount:600,beforeDate:'2026-10-16',clan:'AV-2'}]};
@@ -147,7 +161,7 @@ test('different clan screens never create additive historical Sparks',()=>{
  assert.equal(p.snapshotBreakdown[1].gap,580);
 });
 test('smaller later same-clan screenshot never adds a second stint balance',()=>{
- let l=put(empty(),ev('piggy','old','2026-09-20',1));
+ let l=put(empty(),ev('piggy','old','2026-09-20',2));
  l=put(l,ev('space','new','2026-10-10',1));
  const evidence={A:[{amount:500,beforeDate:'2026-09-30',clan:'AVENGERS'},
   {amount:60,beforeDate:'2026-10-16',clan:'AVENGERS'}]};
@@ -157,7 +171,7 @@ test('smaller later same-clan screenshot never adds a second stint balance',()=>
  assert.equal(p.snapshotBreakdown[1].gap,40);
 });
 test('Oct 16 pre-Space screenshot excludes same-day Space reward',()=>{
- let l=put(empty(),ev('piggy','old','2026-10-12',1));
+ let l=put(empty(),ev('piggy','old','2026-10-12',2));
  l=put(l,ev('space','space','2026-10-16',1));
  const p=person(project(l,{members,snapshots:{A:{amount:60,beforeDate:'2026-10-16',clan:'AVENGERS'}}}));
  assert.equal(p.screenshotGap,50);

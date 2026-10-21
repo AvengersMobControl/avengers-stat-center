@@ -16,6 +16,7 @@
     const grouped=new Map();
     const rejected={missingRank:0,invalidScope:0,ambiguousRank:0,conflictingAccount:0};
     for(const row of Array.isArray(rows)?rows:[]){
+      if(row?.lines===1)continue; // Leader-defined nonparticipation on raw-source replay.
       if(!row||!row.name){rejected.invalidScope++;continue;}
       const clan=validClan(row.clan),flash=validFlash(row.flash);
       const id=String(row.eventId||'').trim();

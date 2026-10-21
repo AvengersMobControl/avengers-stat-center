@@ -3273,7 +3273,10 @@
             "1562400361371803688",
             "1562066500913733672"
           ],
-          "source": "Original Discord final-claim screenshots Oct 20-21, 2026; exact SHA-256 receipt archive"
+          "source": "Original Discord final-claim screenshots Oct 20-21, 2026; exact SHA-256 receipt archive",
+          "commissionerCorrection": "2026-10-21: exclude Tavito and one-line nonparticipants; original reviewed image transcription retained separately. Timmy confirmed AVENGERS; Frank uses existing canonical account.",
+          "excludedNonparticipants": 2,
+          "excludedOutOfScope": 1
         },
         "sources": [
           "reviewed-image-sha256:276aebea49e6e16ea71b75958d660f5a7dab71feaeb70c82dea9a1edbfe61290",
@@ -3284,17 +3287,6 @@
           "reviewed-image-sha256:a7eca6e6b028ab3c20309ffe7bd9480b33f841e2d64d5564bea250a7830a6819"
         ],
         "rows": [
-          {
-            "player": "AV-23",
-            "clan": "AVENGERS",
-            "score": 1,
-            "sparks": null,
-            "stars": null,
-            "metadata": {
-              "rank": 50,
-              "lobby": "main"
-            }
-          },
           {
             "player": "AV-7-STAR",
             "clan": "AVENGERS",
@@ -3450,17 +3442,6 @@
             }
           },
           {
-            "player": "AV-Rita",
-            "clan": "AVENGERS",
-            "score": 1,
-            "sparks": null,
-            "stars": null,
-            "metadata": {
-              "rank": 49,
-              "lobby": "main"
-            }
-          },
-          {
             "player": "AV-Royal",
             "clan": "AVENGERS",
             "score": 933,
@@ -3501,17 +3482,6 @@
             "stars": 100504,
             "metadata": {
               "rank": 8,
-              "lobby": "main"
-            }
-          },
-          {
-            "player": "AV-TAVITO-VICTORIA",
-            "clan": "AVENGERS",
-            "score": 67,
-            "sparks": 4074,
-            "stars": 40745,
-            "metadata": {
-              "rank": 25,
               "lobby": "main"
             }
           },
@@ -3586,7 +3556,10 @@
             "1562177073500655686",
             "1562156651958636616"
           ],
-          "source": "Original Discord final-claim screenshots Oct 20-21, 2026; exact SHA-256 receipt archive"
+          "source": "Original Discord final-claim screenshots Oct 20-21, 2026; exact SHA-256 receipt archive",
+          "commissionerCorrection": "2026-10-21: exclude Tavito and one-line nonparticipants; original reviewed image transcription retained separately. Timmy confirmed AVENGERS; Frank uses existing canonical account.",
+          "excludedNonparticipants": 0,
+          "excludedOutOfScope": 0
         },
         "sources": [
           "reviewed-image-sha256:13d810c323a1ddc061040a479755134a5478d210fd5fc675c22977fa922414ad",
@@ -3931,7 +3904,10 @@
             "1562248151631667363",
             "1562246875480985600"
           ],
-          "source": "Original Discord final-claim screenshots Oct 20-21, 2026; exact SHA-256 receipt archive"
+          "source": "Original Discord final-claim screenshots Oct 20-21, 2026; exact SHA-256 receipt archive",
+          "commissionerCorrection": "2026-10-21: exclude Tavito and one-line nonparticipants; original reviewed image transcription retained separately. Timmy confirmed AVENGERS; Frank uses existing canonical account.",
+          "excludedNonparticipants": 3,
+          "excludedOutOfScope": 1
         },
         "sources": [
           "corroborating-original-image-sha256:3a7c407ac1824f79a705b2782bd1600ba8ed9590187186509e54aedba368d936",
@@ -4043,17 +4019,6 @@
             }
           },
           {
-            "player": "AV-INTEN",
-            "clan": "AVENGERS",
-            "score": 1,
-            "sparks": null,
-            "stars": null,
-            "metadata": {
-              "rank": 50,
-              "lobby": "main"
-            }
-          },
-          {
             "player": "AV-KNAVEN",
             "clan": "AVENGERS",
             "score": 738,
@@ -4072,17 +4037,6 @@
             "stars": 88129,
             "metadata": {
               "rank": 10,
-              "lobby": "main"
-            }
-          },
-          {
-            "player": "AV-McNasty",
-            "clan": "AVENGERS",
-            "score": 1,
-            "sparks": null,
-            "stars": null,
-            "metadata": {
-              "rank": 48,
               "lobby": "main"
             }
           },
@@ -4186,28 +4140,6 @@
             }
           },
           {
-            "player": "AV-TAVITO-VICTORIA",
-            "clan": "AVENGERS",
-            "score": 179,
-            "sparks": 4406,
-            "stars": 44064,
-            "metadata": {
-              "rank": 25,
-              "lobby": "main"
-            }
-          },
-          {
-            "player": "AV-WolfLegend",
-            "clan": "AVENGERS",
-            "score": 1,
-            "sparks": null,
-            "stars": null,
-            "metadata": {
-              "rank": 49,
-              "lobby": "main"
-            }
-          },
-          {
             "player": "AV-Zolika.x.TheBoss",
             "clan": "AVENGERS",
             "score": 42,
@@ -4278,7 +4210,10 @@
             "1562340171519762534",
             "1562337421163630702"
           ],
-          "source": "Original Discord final-claim screenshots Oct 20-21, 2026; exact SHA-256 receipt archive"
+          "source": "Original Discord final-claim screenshots Oct 20-21, 2026; exact SHA-256 receipt archive",
+          "commissionerCorrection": "2026-10-21: exclude Tavito and one-line nonparticipants; original reviewed image transcription retained separately. Timmy confirmed AVENGERS; Frank uses existing canonical account.",
+          "excludedNonparticipants": 3,
+          "excludedOutOfScope": 0
         },
         "sources": [
           "reviewed-image-sha256:0c6f25d43cb6e8230e205a64f041becf12c5c2e2ea10c8c4a3166adcc0da1a89",
@@ -4433,17 +4368,6 @@
             }
           },
           {
-            "player": "AV-KNAVEN",
-            "clan": "AVENGERS",
-            "score": 1,
-            "sparks": null,
-            "stars": null,
-            "metadata": {
-              "rank": 50,
-              "lobby": "main"
-            }
-          },
-          {
             "player": "AV-MotherboardBeans",
             "clan": "AVENGERS",
             "score": 126,
@@ -4462,17 +4386,6 @@
             "stars": 35611,
             "metadata": {
               "rank": 16,
-              "lobby": "main"
-            }
-          },
-          {
-            "player": "AV-Rita",
-            "clan": "AVENGERS",
-            "score": 1,
-            "sparks": null,
-            "stars": null,
-            "metadata": {
-              "rank": 49,
               "lobby": "main"
             }
           },
@@ -4539,17 +4452,6 @@
             "stars": 28192,
             "metadata": {
               "rank": 21,
-              "lobby": "main"
-            }
-          },
-          {
-            "player": "AV<STAR-LORD>",
-            "clan": "AVENGERS",
-            "score": 1,
-            "sparks": null,
-            "stars": null,
-            "metadata": {
-              "rank": 48,
               "lobby": "main"
             }
           }

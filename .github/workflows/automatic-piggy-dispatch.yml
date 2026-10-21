@@ -42,7 +42,7 @@ jobs:
       - name: Run dispatch safety and projection tests
         run: |
           node --test scripts/automatic-piggy-dispatch-core.test.cjs scripts/automatic-dispatch-migration.test.cjs scripts/private-dispatch-readiness.test.cjs scripts/roster-piggy-pb-rank.test.cjs scripts/export-event-summary.test.cjs
-          python -m unittest scripts/test_render_event_summary.py
+          python -m unittest scripts/test_render_event_summary.py scripts/test_render_big_piggy_auto.py
       - name: Render review-only template preview
         if: github.event_name == 'workflow_dispatch' && inputs.mode == 'preview'
         env:

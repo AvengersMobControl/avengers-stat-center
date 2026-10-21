@@ -5,16 +5,20 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const {analyze,rank}=require('../piggy-flash-history.js');
 function fixture(){
  const window={AVENGERS_PIGGY_FLASH_DATA:{events:[]}};
- for(const name of ['piggy-flash1-data.js','piggy-flash2-data.js','piggy-flash3-data.js','piggy-flash4-data.js','av2-flash-results-2026.js']){
+ const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+ const sources=[...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map(m=>m[1]).filter(n=>
+  /^piggy-flash[1-4]-(data|backfill)/.test(n)||n==='av2-flash-results-2026.js'||/^piggy-flash-2026-/.test(n));
+ assert.equal(sources.length,12,'Fixture imports every Flash source script in exact published load order');
+ for(const name of sources){
   vm.runInNewContext(fs.readFileSync(path.join(__dirname,'..',name),'utf8'),{window},{filename:name,timeout:2500});
  }
  return window.AVENGERS_PIGGY_FLASH_DATA.events;
 }
-test('58 recorded pot headers, 1357 AVENGERS single Flash results and 870 recorded player-day lines',()=>{
- const h=analyze(fixture());assert.equal(h.coverage.potsRecorded,58);
- assert.equal(h.coverage.potsMissing,2);
- assert.equal(h.singles.length,1357);
- assert.equal(h.days.length,870);
+test('165 recorded pot headers, 2761 AVENGERS single Flash results and 1535 recorded player-day lines',()=>{
+ const h=analyze(fixture());assert.equal(h.coverage.potsRecorded,165);
+ assert.equal(h.coverage.potsMissing,13);
+ assert.equal(h.singles.length,2761);
+ assert.equal(h.days.length,1535);
  assert.ok(h.pots.every(x=>x.lobby.includes('source header')&&x.approximate===true));
  assert.ok(h.rows.every(x=>x.clan==='AVENGERS'));
 });
@@ -25,7 +29,7 @@ test('September 22 pot rankings and rake are grounded in existing header and sta
  assert.deepEqual(Array.from(sep,x=>x.potStars),[2500000,3310000,3090000,2760000]);
  assert.deepEqual(Array.from(sep,x=>x.pfRank),[1,3,1,1]);
  assert.deepEqual(Array.from(sep,x=>x.overallRank),[12,3,5,8]);
- assert.deepEqual(Array.from(sep,x=>x.pfCount),[9,31,9,9]);
+ assert.deepEqual(Array.from(sep,x=>x.pfCount),[38,50,40,37]);
  assert.ok(Math.abs(sep[0].rakePercent-(1935828/2500000)*100)<1e-8);
  assert.ok(Math.abs(sep[1].rakePercent-(3093736/3310000)*100)<1e-8);
  assert.ok(Math.abs(sep[2].rakePercent-(2915465/3090000)*100)<1e-8);
@@ -35,10 +39,10 @@ test('four Flash event-day historical rankings remain stable, actual day ranks a
  const h=analyze(fixture());
  const days=h.days.filter(x=>x.setId==='2026-09-22-A').sort((a,b)=>b.lines-a.lines);
  assert.equal(days[0].player,'AV-ZolikaLoveKira');assert.equal(days[0].lines,9880);
- assert.equal(days[0].allRank,7);assert.equal(days[0].allCount,870);
+ assert.equal(days[0].allRank,7);assert.equal(days[0].allCount,1535);
  const single=h.singles.filter(x=>x.setId==='2026-09-22-A').sort((a,b)=>b.lines-a.lines);
  assert.equal(single[0].player,'AV-Abu//npjp');assert.equal(single[0].lines,4936);
- assert.equal(single[0].allRank,6);assert.equal(single[0].allCount,1357);
+ assert.equal(single[0].allRank,6);assert.equal(single[0].allCount,2761);
  assert.ok(single.slice(0,10).filter(x=>x.player==='AV-ZolikaLoveKira').length===2,
    'Single race ranking permits the same player twice on one day');
  assert.equal(h.podiums.filter(x=>x.setId==='2026-09-22-A').length,11);

@@ -82,6 +82,19 @@ function buildPiggyMessage(event,clan,report,siteUrl){
   if(pot||rake!==null)lines.push('Whole-lobby displayed pot: **'+(pot||'unknown')+'** · RAKE: **'+(rake===null?'unknown':rake.toFixed(1)+'%')+'** (sum of displayed shares)');
  }
  if(top)lines.push('','**Top five by lines**',top);
+ const linePBDetails=Array.isArray(report.linePBDetails)?report.linePBDetails:[];
+ if(linePBDetails.length)lines.push('','**Top line PBs**',linePBDetails.slice(0,3).map(p=>
+  p.player+' '+Number(p.previousPB).toLocaleString('en-US')+' → '+Number(p.currentScore).toLocaleString('en-US')+
+  ' (prior '+(p.previousDate||'date unknown')+')').join('\n')+
+  (linePBDetails.length>3?'\n+'+(linePBDetails.length-3)+' more on PNG/site':''));
+ const placementPBDetails=Array.isArray(report.placementPBDetails)?report.placementPBDetails:[];
+ if(placementPBDetails.length)lines.push('','**Finishing-place PBs**',placementPBDetails.slice(0,3).map(p=>
+  p.player+' #'+p.previousRank+' → #'+p.newRank+' (prior '+(p.previousDate||'date unknown')+')').join('\n')+
+  (placementPBDetails.length>3?'\n+'+(placementPBDetails.length-3)+' more on PNG/site':''));
+ const firstTrackedDetails=Array.isArray(report.firstTrackedDetails)?report.firstTrackedDetails:[];
+ if(firstTrackedDetails.length)lines.push('','**First tracked appearances**',firstTrackedDetails.slice(0,3).map(p=>
+  p.player+' — '+Number(p.score).toLocaleString('en-US')+' lines').join('\n')+
+  (firstTrackedDetails.length>3?'\n+'+(firstTrackedDetails.length-3)+' more on PNG/site':''));
  if(typeof report.weekToWeekGrowthPercent==='number'&&Number.isFinite(report.weekToWeekGrowthPercent))
   lines.push('', 'Total lines vs prior final Piggy: '+(report.weekToWeekGrowthPercent>=0?'+':'')+report.weekToWeekGrowthPercent.toFixed(1)+'%.');
  const milestones=Array.isArray(report.milestones)?report.milestones:[];

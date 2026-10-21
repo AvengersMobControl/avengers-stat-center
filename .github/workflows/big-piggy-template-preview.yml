@@ -44,7 +44,9 @@ jobs:
           node --test scripts/automatic-piggy-dispatch-core.test.cjs scripts/automatic-dispatch-migration.test.cjs scripts/private-dispatch-readiness.test.cjs scripts/roster-piggy-pb-rank.test.cjs scripts/export-event-summary.test.cjs
           python -m unittest scripts/test_render_event_summary.py
       - name: Render AVENGERS and AV-2 review PNGs
-        run: node scripts/automatic-piggy-dispatch.cjs preview --event-id "${{ github.event.inputs.event_id || 'piggy|2026-10-18' }}"
+        env:
+          EVENT_ID: ${{ github.event.inputs.event_id || 'piggy|2026-10-18' }}
+        run: node scripts/automatic-piggy-dispatch.cjs preview --event-id "$EVENT_ID"
       - uses: actions/upload-artifact@v4
         with:
           name: big-piggy-v2-review-${{ github.run_id }}

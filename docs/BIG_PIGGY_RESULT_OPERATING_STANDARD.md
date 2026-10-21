@@ -1,3 +1,5 @@
+**Asset availability gate:** the current v2 review images are text-only. The approved original character PNGs remain in the personal Library, which the scheduled GitHub runner cannot access directly. Do not enable final PNG dispatch until the approved assets are made available through a deterministic, authorized runtime path or the leader explicitly approves a text-only template. Never substitute invented or unapproved characters.
+
 ## Implementation checkpoint — 2026-10-21 (PR #138)
 
 A guarded publisher and hourly GitHub Actions runner are staged in [PR #138](https://github.com/AvengersMobControl/avengers-stat-center/pull/138). The runner will dispatch only the newest canonical Piggy event whose source status is explicitly final and whose date is later than the 2026-10-18 baseline. The source event must already be approved and committed to main; this automation does not collect/OCR screenshots, approve a candidate, or import unreviewed rows. A manual workflow dispatch defaults to preview, never send.

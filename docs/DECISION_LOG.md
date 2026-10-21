@@ -1,3 +1,9 @@
+## 2026-10-21 — Big Piggy automatic posting: guarded implementation, activation held
+
+Leader explicitly requested automatic Big Piggy results posting. PR [#138](https://github.com/AvengersMobControl/avengers-stat-center/pull/138) stages an hourly GitHub Actions workflow and OIDC-authenticated Vercel publisher. It sends only source-derived final reports from the exact current main revision, verifies original PNG bytes and message text, reserves a durable event+clan slot before send, and records exact Discord message/attachment readback. Corrections, deletes, source screenshot OCR/import, and unapproved results are never automatic. Existing 2026-10-18 final data is a baseline, not an automatic backfill.
+
+The dedicated Piggy v2 layout is separate from the pinned v1 renderer. It distinguishes AV-2 earned Stars, whole-lobby pot and displayed-share RAKE %, shows independent finishing-place PBs with the AVENGERS 30+ / AV-2 5+ same-lobby cutoffs and prior dates, adds career podium context for the top three line leaders, and removes redundant reward/share/Sparks-per-line columns from the Top 10. **Production is still OFF:** policy is pending visual approval; automatic send/delete/publication flags remain unchanged; migration 003 is staged but unapplied. This PR must not be treated as an activation or as evidence that a real report has been posted.
+
 ## 2026-10-21 — Explicit Discord send instructions are authorization (standing operating rule)
 
 **When the leader directly tells the assistant to send, post, or push a specified item to Discord, treat that instruction as explicit authorization for that one-time publication and execute it immediately using the existing secured AVENGERS GitHub/Vercel/Neon/server-side Discord workflow. Do not ask the leader to approve the same send again, do not redirect them to perform it manually, and do not claim the integrations are unavailable without checking them.**

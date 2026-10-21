@@ -25,6 +25,22 @@ function prepareReport(release,event,clan){
  return {decision:'prepared',eventId:event.id,date:event.date,clan,png,reportPath:path.join(reports,stem+'.json'),
    messagePath:path.join(reports,stem+'.txt'),message,report};
 }
+async function getOidcToken(){
+ const token=await getOidcToken();
+ return token;
+}
+async function verifyEndpoint(){
+ const token=await getOidcToken();
+ const endpoint=process.env.AVENGERS_PIGGY_DISPATCH_URL||'https://avengers-stat-center.vercel.app/api/dispatch-approved-piggy';
+ const response=await fetch(endpoint,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
+  body:'{}',signal:AbortSignal.timeout(20000)});
+ let answer={};try{answer=await response.json();}catch{}
+ if(response.status===423&&answer.decision==='automatic-piggy-dispatch-disabled'){
+  console.log(JSON.stringify({decision:'oidc-endpoint-verified-disabled',endpoint,productionSendStillOff:true}));
+  return;
+ }
+ fail('OIDC endpoint check failed safely: HTTP '+response.status+' / '+(answer.decision||'unverified response'));
+}
 async function send(prepared,sourceCommit){
  const pngBytes=fs.readFileSync(prepared.png);
  const body={sourceCommit,eventId:prepared.eventId,kind:'piggy',clan:prepared.clan,
@@ -52,7 +68,8 @@ async function send(prepared,sourceCommit){
 }
 async function main(){
  const mode=process.argv[2]||'run';
- if(!['run','preview'].includes(mode))fail('Usage: node scripts/automatic-piggy-dispatch.cjs [run|preview] [--event-id piggy|YYYY-MM-DD]');
+ if(!['run','preview','verify-endpoint'].includes(mode))fail('Usage: node scripts/automatic-piggy-dispatch.cjs [run|preview|verify-endpoint] [--event-id piggy|YYYY-MM-DD]');
+ if(mode==='verify-endpoint'){await verifyEndpoint();return;}
  const release=exportRelease();
  const projection=release.projection;
  if(mode==='preview'){

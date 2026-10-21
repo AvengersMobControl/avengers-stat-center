@@ -256,20 +256,20 @@ async function main(){
     assert.equal(await hist.locator('.flash-history-card').count(),10,'4 header pot cards + 6 comparison metrics');
     const pctLabels=await hist.locator('.flash-history-grid .flash-history-card').allTextContents();
     assert(pctLabels[0].includes('77.4%')&&pctLabels[0].includes('1/9'),'Sep22 PF1 original earned-stars/pot estimate');
-    assert(pctLabels[1].includes('93.5%')&&pctLabels[1].includes('3/8'),'Sep22 PF2 pot rank and rake');
+    assert(pctLabels[1].includes('93.5%')&&pctLabels[1].includes('3/31'),'Sep22 PF2 pot rank and rake');
     assert(pctLabels[3].includes('2.76M')&&pctLabels[3].includes('1/9'),'PF4 next-day header retained');
     assert((await hist.innerText()).includes('AV-ZolikaLoveKira'),'combined-day leader shown');
     assert((await hist.innerText()).includes('9,880'),'top recorded combined-day score');
     assert((await hist.innerText()).includes('4,936'),'top single-race score');
-    assert((await hist.innerText()).includes('5/836'),'top single-race historical rank');
+    assert((await hist.innerText()).includes('6/1,357'),'top single-race historical rank');
     const potDetail=hist.locator('details[data-hist-open="pots"]');
     await potDetail.locator('summary').click();
-    assert.equal(await potDetail.locator('tbody tr[data-hist-row]').count(),35,'35 source header pots retained');
+    assert.equal(await potDetail.locator('tbody tr[data-hist-row]').count(),58,'58 recorded main lobby header pots retained');
     await potDetail.locator('input[data-hist-search]').fill('2026-09-22');
     assert.equal(await potDetail.locator('tbody tr[data-hist-row]:visible').count(),3,
       'Sep22 has three flash pot headers; PF4 is on Sep23');
     await potDetail.locator('button[data-hist-sort][data-hist-key="potStars"]').click();
-    assert((await hist.locator('details[data-hist-open="pots"] summary').innerText()).includes('35 tracked'),
+    assert((await hist.locator('details[data-hist-open="pots"] summary').innerText()).includes('58 tracked'),
       'sortable original archive persists');
 
     await page.selectOption('#globalStatusFilter','av2');

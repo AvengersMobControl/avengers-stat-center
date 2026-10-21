@@ -20,7 +20,9 @@ test('only newest event after baseline and explicitly final is eligible',()=>{
 test('source must be latest approved final, not held or pre-baseline',()=>{
  const e=event('2026-10-25','final',[{player:'A',clan:'AV-2',score:500,stars:20,sparks:2}]);
  const approvedUpdates={updates:[{approved:true,event:e}]};
- assert.equal(sourceEventForDispatch({approvedUpdates,holds:{holds:[]},eventId:e.id,clan:'AV-2',minimumEventDateExclusive:'2026-10-18'}).rows.length,1);
+ const source=sourceEventForDispatch({approvedUpdates,holds:{holds:[]},eventId:e.id,clan:'AV-2',minimumEventDateExclusive:'2026-10-18'});
+ assert.equal(source.rows.length,1);
+ assert.equal(source.lobbyLabel,'Not source-labeled');
  assert.throws(()=>sourceEventForDispatch({approvedUpdates,holds:{holds:[{eventId:e.id,clan:'AV-2'}]},eventId:e.id,clan:'AV-2',minimumEventDateExclusive:'2026-10-18'}),/hold/);
  assert.throws(()=>sourceEventForDispatch({approvedUpdates,holds:{holds:[]},eventId:'piggy|2026-10-18',clan:'AV-2',minimumEventDateExclusive:'2026-10-18'}),/approved final|baseline/);
 });
@@ -35,6 +37,7 @@ test('message is source-derived, clan-specific and leaves unknown rewards explic
   weekToWeekGrowthPercent:12.5,milestones:[{threshold:5000,count:2,record:true},{threshold:10000,count:1,record:false}],
   topThreeCareer:[{player:'A',careerPodiums:{wins:1,secondPlaces:2,thirdPlaces:0,podiums:3}}]};
  const m=buildPiggyMessage(e,'AV-2',report);
+ assert.match(m,/Event-time clan: AV-2 · Lobby: av2/);
  assert.match(m,/2 participating players · 1,600 lines/);
  assert.match(m,/RAKE: \*\*70.0%\*\*/);
  assert.match(m,/A — 900 lines/);

@@ -160,10 +160,13 @@ module.exports=async function handler(req,res){
   if(!auth)return respond(res,401,{ok:false,decision:'github-oidc-required'});
   const claims=await verifyGitHubOIDC(auth[1]);
   const body=req.body;
+  const mainSha=await githubMainSha();
+  if(!body||body.sourceCommit!==claims.sha||body.sourceCommit!==mainSha||
+     String(env.VERCEL_GIT_COMMIT_SHA||'').toLowerCase()!==mainSha)
+   throw Error('GitHub, payload and production deployment commits do not match');
   if(!policy.enabled||policy.status!=='approved'||env.AVENGERS_PIGGY_AUTO_DISPATCH_ENABLED!=='true')
    return respond(res,423,{ok:false,decision:'automatic-piggy-dispatch-disabled'});
   if(policy.automaticDelete!==false)return respond(res,423,{ok:false,decision:'automatic-delete-policy-invalid'});
-  const mainSha=await githubMainSha();
   const {bytes,imageSha}=validateBody(body,claims,mainSha,env);
   const source=sourceEventForDispatch({approvedUpdates:approved,holds,eventId:body.eventId,clan:body.clan,
    minimumEventDateExclusive:policy.minimumEventDateExclusive});

@@ -1,3 +1,7 @@
+## 2026-10-21 — AVENGERS Discord advice/strategy guide research (issue #135)
+
+Leader requested a comprehensive guide from historical clan discussion: tips/tricks, loadouts, return attacks and related advice. Proposed dedicated read-only, paginated Discord source collector with council-only/fresh-guild-member access and original Discord message provenance; tests staged on `feature/discord-strategy-research-20261021`. **No historical conversations pulled, no private store or guide deployed/published, no Discord messages sent.** Next: review/publish collector, verify reviewer credential and guild/channel scope, privately backfill with checkpoints, source-check recommendations, then member-only Vercel guide. Kraken and other confidential strategy must never enter the public repo/Pages or guest sessions, including permanent guest passes. See `docs/DISCORD_GUIDE_RESEARCH.md`, issue #135. Existing screenshot result and PNG holds unchanged.
+
 ## 2026-10-21 — Fred roster addition and TheOli transfer
 
 Leader clarified the requested addition is AV-Fred, not Frank. Activate existing AV-Fred profile with its source-backed result. AV-FrankAbagnale remains linked to AV-Addicted without display/identity changes or duplicate history. TheOli current status becomes AV2; historical event-time clans, scores, rewards, fixed Unlogged Sparks and dated snapshots remain unchanged. Current counts: 50 AVENGERS / 51 AV-2. Roster captions use current counts. Shared projection and browser checks required before claiming live; no Discord send, UTC synchronization or SAC change.

@@ -1,3 +1,7 @@
+## 2026-10-21 — Discord gameplay knowledge guide provenance and access
+
+User requested historical Discord discussion retrieval to consolidate tips/tricks, advised loadouts, return attacks and gameplay guidance. Decision: treat original Discord messages as attributable **evidence**, not automatic truth; preserve channel/message link, author/date, edit/reply context and patch conditions, distinguish disputed/outdated advice, require review before publication. The guide's strategy content and raw Discord messages belong in **private** storage and server-authenticated member-only delivery, never public GitHub/Pages assets or guest passes (including permanent). Staged read-only collector in issue #135; no messages retrieved or Discord sends/automation activated by the initial code. Existing result, UTC, AV-2 import and SAC boundaries unchanged.
+
 ## 2026-10-21 — Fred roster addition and TheOli transfer
 
 Leader clarified the requested addition is AV-Fred, not Frank. Activate existing AV-Fred profile with its source-backed result. AV-FrankAbagnale remains linked to AV-Addicted without display/identity changes or duplicate history. TheOli current status becomes AV2; historical event-time clans, scores, rewards, fixed Unlogged Sparks and dated snapshots remain unchanged. Current counts: 50 AVENGERS / 51 AV-2. Roster captions use current counts. Shared projection and browser checks required before claiming live; no Discord send, UTC synchronization or SAC change.

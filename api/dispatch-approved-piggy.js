@@ -61,6 +61,7 @@ function validateBody(body,claims,mainSha,env){
     !Number.isInteger(body.report.knownScoreSum)||body.report.knownScoreSum<0||
     !Number.isInteger(body.report.knownStars)||body.report.knownStars<0||
     !Number.isInteger(body.report.knownSparks)||body.report.knownSparks<0||
+    !Number.isInteger(body.report.unknownScoreRows)||body.report.unknownScoreRows<0||
     !Number.isInteger(body.report.unknownStarRows)||body.report.unknownStarRows<0||
     !Number.isInteger(body.report.unknownSparkRows)||body.report.unknownSparkRows<0||
     !Number.isInteger(body.report.linePBs)||body.report.linePBs<0||

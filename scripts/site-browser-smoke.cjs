@@ -255,7 +255,7 @@ async function main(){
     assert(await hist.isVisible(),'AVENGERS Flash historical report displayed');
     assert.equal(await hist.locator('.flash-history-card').count(),10,'4 header pot cards + 6 comparison metrics');
     const pctLabels=await hist.locator('.flash-history-grid .flash-history-card').allTextContents();
-    assert(pctLabels[0].includes('77.4%')&&pctLabels[0].includes('1/9'),'Sep22 PF1 original earned-stars/pot estimate');
+    assert(pctLabels[0].includes('77.4%')&&pctLabels[0].includes('1/9'),'Sep22 PF1 header estimated rake: '+JSON.stringify(pctLabels));
     assert(pctLabels[1].includes('93.5%')&&pctLabels[1].includes('3/31'),'Sep22 PF2 pot rank and rake');
     assert(pctLabels[3].includes('2.76M')&&pctLabels[3].includes('1/9'),'PF4 next-day header retained');
     assert((await hist.innerText()).includes('AV-ZolikaLoveKira'),'combined-day leader shown');

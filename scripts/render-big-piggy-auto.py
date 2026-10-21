@@ -487,6 +487,8 @@ def format_finish(place):
 
 
 def render(release, kind, clan, event_id, output, automatic_piggy_layout=False, automatic_piggy_publish=False):
+    if automatic_piggy_publish and not automatic_piggy_layout:
+        raise ValueError("Final Piggy report state requires the dedicated v2 layout")
     if automatic_piggy_layout and kind != "piggy":
         raise ValueError("Automatic Piggy layout is only available for Piggy Race")
     model=resolve_summary(release,kind,clan,event_id)

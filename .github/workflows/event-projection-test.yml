@@ -29,6 +29,9 @@ on:
       - 'scripts/test_render_weekly_event_review.py'
       - 'scripts/*site*.cjs'
       - 'scripts/export-event-summary*.cjs'
+      - 'piggy-flash-podiums.js'
+      - 'piggy-flashes.js'
+      - 'scripts/piggy-flash-podiums.test.cjs'
       - 'scripts/migrate-event-ledger.cjs'
       - 'scripts/post-kraken-flash-policy.test.cjs'
       - 'data/approved-event-updates.json'
@@ -62,6 +65,9 @@ on:
       - 'scripts/audit-result-pagination*.cjs'
       - 'scripts/hash-original-image*.cjs'
       - 'scripts/*site*.cjs'
+      - 'piggy-flash-podiums.js'
+      - 'piggy-flashes.js'
+      - 'scripts/piggy-flash-podiums.test.cjs'
       - 'scripts/migrate-event-ledger.cjs'
       - 'data/approved-event-updates.json'
       - 'data/approved-post-kraken-no-spark-sets.json'
@@ -86,7 +92,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test scripts/guest-pass-create.test.cjs scripts/guest-pass-atomic.test.cjs scripts/guest-pass-redeem.test.cjs scripts/member-profile-insights.test.cjs scripts/reward-metrics.test.cjs scripts/event-projection-core.test.cjs scripts/council-minimums-core.test.cjs scripts/roster-event-breakdown.test.cjs scripts/roster-piggy-pb-rank.test.cjs scripts/space-rank-history.test.cjs scripts/sparks-ui-source.test.cjs scripts/site-release.test.cjs scripts/fullsite-accepted-ingestion-gate.test.cjs scripts/report-ingest-candidate.test.cjs scripts/ingestion-source-holds.test.cjs scripts/reconcile-league-reference.test.cjs scripts/post-kraken-flash-policy.test.cjs scripts/piggy-oct18-accepted.test.cjs scripts/piggy-benchmarks.test.cjs scripts/stage-event-update.test.cjs scripts/assemble-result-review.test.cjs scripts/verify-result-image-proofs.test.cjs scripts/audit-result-pagination.test.cjs scripts/hash-original-image.test.cjs scripts/fetch-original-discord-image.test.cjs scripts/verify-live-pages.test.cjs scripts/export-event-summary.test.cjs scripts/export-weekly-review.test.cjs scripts/plan-event-summary-dispatch.test.cjs scripts/private-summary-publication-state.test.cjs scripts/private-dispatch-schema.test.cjs scripts/private-dispatch-role.test.cjs scripts/private-dispatch-readiness.test.cjs scripts/private-dispatch-ledger-adapter.test.cjs scripts/private-discord-authenticated-readback.test.cjs scripts/audit-six-clan-leagues.test.cjs
+      - run: node --test scripts/guest-pass-create.test.cjs scripts/guest-pass-atomic.test.cjs scripts/guest-pass-redeem.test.cjs scripts/member-profile-insights.test.cjs scripts/reward-metrics.test.cjs scripts/event-projection-core.test.cjs scripts/council-minimums-core.test.cjs scripts/roster-event-breakdown.test.cjs scripts/roster-piggy-pb-rank.test.cjs scripts/piggy-flash-podiums.test.cjs scripts/space-rank-history.test.cjs scripts/sparks-ui-source.test.cjs scripts/site-release.test.cjs scripts/fullsite-accepted-ingestion-gate.test.cjs scripts/report-ingest-candidate.test.cjs scripts/ingestion-source-holds.test.cjs scripts/reconcile-league-reference.test.cjs scripts/post-kraken-flash-policy.test.cjs scripts/piggy-oct18-accepted.test.cjs scripts/piggy-benchmarks.test.cjs scripts/stage-event-update.test.cjs scripts/assemble-result-review.test.cjs scripts/verify-result-image-proofs.test.cjs scripts/audit-result-pagination.test.cjs scripts/hash-original-image.test.cjs scripts/fetch-original-discord-image.test.cjs scripts/verify-live-pages.test.cjs scripts/export-event-summary.test.cjs scripts/export-weekly-review.test.cjs scripts/plan-event-summary-dispatch.test.cjs scripts/private-summary-publication-state.test.cjs scripts/private-dispatch-schema.test.cjs scripts/private-dispatch-role.test.cjs scripts/private-dispatch-readiness.test.cjs scripts/private-dispatch-ledger-adapter.test.cjs scripts/private-discord-authenticated-readback.test.cjs scripts/audit-six-clan-leagues.test.cjs
       - name: Verify six canonical event PNG previews
         run: |
           python3 -m pip install --disable-pip-version-check Pillow==11.3.0

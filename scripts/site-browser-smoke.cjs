@@ -252,6 +252,8 @@ async function main(){
     podiumCards=await page.locator('#page-piggyFlashes .flash-podium-kpi').allTextContents();
     assert(podiumCards[0].includes('1 wins')&&podiumCards[0].includes('2 podiums'),'AV-2 PF1 distinct lobby');
     assert(podiumCards[4].includes('2 wins')&&podiumCards[4].includes('4 podiums'),'AV-2 separate PF1–PF4 totals');
+    assert(podiumCards[2].includes('No source rows')&&podiumCards[3].includes('No source rows'),
+      'AV-2 unrecorded PF3/PF4 display missing coverage, not zero finishes');
     await page.selectOption('#globalStatusFilter','active');
 
     await page.selectOption('#globalStatusFilter','active');

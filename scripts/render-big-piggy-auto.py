@@ -523,6 +523,13 @@ def render(release, kind, clan, event_id, output, automatic_piggy_layout=False, 
         "weekToWeekGrowthPercent":model["weekToWeekGrowthPercent"],
         "averageTrend":model["averageTrend"],"milestones":model["milestones"],
         "topThreeCareer":[{"player":r["player"],"careerPodiums":r.get("careerPodiums")} for r in model["rows"][:3]],
+        "linePBDetails":[{"player":r["player"],"previousPB":numeric(r["transition"].get("previousPB")),
+                         "currentScore":r["score"],"previousDate":r["transition"].get("previousDate")}
+                        for r in model["pbs"][:8]],
+        "placementPBDetails":[{"player":p.get("player"),"previousRank":p.get("previousRank"),
+                               "newRank":p.get("newRank"),"previousDate":p.get("previousDate")}
+                              for p in model["placementPBs"][:8]],
+        "firstTrackedDetails":[{"player":r["player"],"score":r["score"]} for r in model["firstTracked"][:8]],
         "unknownScoreRows":model["unknownScoreRows"],
         "unknownSparkRows":model["unknownSparkRows"],
         "unknownStarRows":model["unknownStarRows"],

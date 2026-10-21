@@ -21,7 +21,7 @@
         if(row.clan!==clan)continue;
         const name=String(row.name||row.player||row.username||'').trim();
         const score=Number(row.lines??row.score);
-        if(!name||!Number.isFinite(score)||score<=0)continue;
+        if(!name||!Number.isFinite(score)||score<=1)continue;
         // A player appearing twice in one event still counts just once.
         distinct.set(name,Math.max(distinct.get(name)||0,score));
       }

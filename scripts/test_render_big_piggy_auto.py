@@ -23,12 +23,23 @@ def fixture():
              "metadata":{"av2DisplayedPotStars":"2.0M","av2RakePercentDisplayedShareSum":71.0},"rows":rows}
     people = [{"name":"AV-B","kinds":{"piggy":{"pbs":[{"eventId":event_id,"score":700,"firstRecorded":False,
               "newPB":True,"previousPB":500,"improvement":0.4}]}}}]
+    prior = {"id":"piggy|2026-10-04","date":"2026-10-04","kind":"piggy","status":"final","unit":"lines",
+             "metadata":{},"rows":[
+              {"player":"AV-A","clan":"AV-2","score":800,"stars":8,"sparks":3,"metadata":{"lobby":"av2-main","rank":1}},
+              {"player":"AV-B","clan":"AV-2","score":700,"stars":7,"sparks":2,"metadata":{"lobby":"av2-main","rank":2}},
+              {"player":"AV-C","clan":"AV-2","score":600,"stars":6,"sparks":1,"metadata":{"lobby":"av2-main","rank":3}},
+              {"player":"AV-D","clan":"AV-2","score":500,"stars":5,"sparks":1,"metadata":{"lobby":"av2-main","rank":4}},
+              {"player":"AV-E","clan":"AV-2","score":400,"stars":4,"sparks":1,"metadata":{"lobby":"av2-main","rank":5}}]}
     return {"schemaVersion":1,"source":"approved-event-ledger",
-            "projection":{"version":"a"*64,"events":[event],"people":people},
+            "projection":{"version":"a"*64,"events":[prior,event],"people":people},
             "piggyPlacementPBsByClan":{"AV-2":{event_id:[{"player":"AV-B","previousRank":7,"newRank":2,
               "improved":True,"previousDate":"2026-10-02"}]}},
             "piggyCareerPodiumsByClan":{"AV-2":{"AV-A":{"wins":3,"secondPlaces":1,"thirdPlaces":0,"podiums":4},
-              "AV-B":{"wins":1,"secondPlaces":2,"thirdPlaces":1,"podiums":4}}}}
+              "AV-B":{"wins":1,"secondPlaces":2,"thirdPlaces":1,"podiums":4}}},
+            "piggyBenchmarksByClan":{"AV-2":{"thresholds":[5000,10000],
+              "weekly":[{"date":"2026-10-11","counts":[2,1]}],
+              "records":[{"threshold":5000,"count":2,"tiedDates":["2026-10-11"]},
+                         {"threshold":10000,"count":1,"tiedDates":["2026-10-04"]}]}}}
 
 class BigPiggyV2Tests(unittest.TestCase):
     def test_av2_rake_and_rank_pb_metrics_are_explicit_and_separate(self):
@@ -40,6 +51,10 @@ class BigPiggyV2Tests(unittest.TestCase):
         self.assertEqual(model["participantRows"],5,"one-line placeholders are not participants")
         self.assertEqual(model["rows"][0]["careerPodiums"]["wins"],3)
         self.assertEqual(model["rows"][1]["careerPodiums"]["secondPlaces"],2)
+        self.assertEqual([(m["threshold"],m["count"],m["record"]) for m in model["milestones"]],
+                         [(5000,2,True),(10000,1,False)])
+        self.assertEqual(len(model["averageTrend"]),2)
+        self.assertIsNotNone(model["weekToWeekGrowthPercent"])
         with tempfile.TemporaryDirectory() as tmp:
             dest=pathlib.Path(tmp)/"av2-piggy-v2.png"
             result=renderer.render(data,"piggy","AV-2","piggy|2026-10-11",str(dest),automatic_piggy_layout=True)

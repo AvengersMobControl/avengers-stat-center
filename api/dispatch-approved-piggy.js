@@ -64,7 +64,18 @@ function validateBody(body,claims,mainSha,env){
     !Number.isInteger(body.report.unknownSparkRows)||body.report.unknownSparkRows<0||
     !Number.isInteger(body.report.linePBs)||body.report.linePBs<0||
     !Number.isInteger(body.report.placementPBs)||body.report.placementPBs<0||
-    !Number.isInteger(body.report.firstTracked)||body.report.firstTracked<0)throw Error('PNG manifest metrics invalid');
+    !Number.isInteger(body.report.firstTracked)||body.report.firstTracked<0||
+    !(body.report.weekToWeekGrowthPercent===null||(typeof body.report.weekToWeekGrowthPercent==='number'&&Number.isFinite(body.report.weekToWeekGrowthPercent)))||
+    !Array.isArray(body.report.averageTrend)||!Array.isArray(body.report.milestones)||!Array.isArray(body.report.topThreeCareer))
+  throw Error('PNG manifest metrics invalid');
+ for(const m of body.report.milestones){
+  if(!Number.isInteger(m.threshold)||m.threshold<5000||!Number.isInteger(m.count)||m.count<1||typeof m.record!=='boolean')
+   throw Error('PNG benchmark manifest invalid');
+ }
+ for(const p of body.report.averageTrend){
+  if(typeof p.date!=='string'||typeof p.average!=='number'||!Number.isFinite(p.average)||p.average<0)
+   throw Error('PNG average-trend manifest invalid');
+ }
  if(typeof body.imageBase64!=='string'||body.imageBase64.length>4000000||
     !/^[A-Za-z0-9+/]+={0,2}$/.test(body.imageBase64))throw Error('PNG payload missing or too large');
  const bytes=Buffer.from(body.imageBase64,'base64');

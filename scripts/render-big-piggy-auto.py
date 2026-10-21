@@ -275,9 +275,9 @@ def draw_png(model, dest, automatic_piggy_layout=False, automatic_piggy_publish=
     if automatic_piggy_layout and kind == "piggy" and model["clan"] == "AV-2":
         pot = model.get("displayedPotStars") or "unknown"
         rake = model.get("rakePercentDisplayedShareSum")
-        rake_text = (f"{rake:.1f}% displayed-share sum" if rake is not None else "displayed-share sum unknown")
+        rake_text = (f"{rake:.1f}% (displayed-share sum)" if rake is not None else "displayed-share sum unknown")
         top[3] = ("AV-2 EARNED STARS", format_number(model["knownStars"]),
-                  f"Whole-lobby pot {pot} · RAKE {rake_text.replace(' displayed-share sum',' (displayed-share sum)')}")
+                  f"Whole-lobby pot {pot} · RAKE {rake_text}")
     elif automatic_piggy_layout and kind == "piggy" and model["clan"] == "AVENGERS":
         pot = model.get("displayedPotStars") or "unknown"
         top[3] = ("CLAN EARNED STARS", format_number(model["knownStars"]),

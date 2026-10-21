@@ -1,6 +1,13 @@
 'use strict';
 const {test}=require('node:test'),assert=require('node:assert/strict');
+const Module=require('node:module');
+const originalLoad=Module._load;
+Module._load=function(request,parent,isMain){
+ if(request==='@neondatabase/serverless')return {neon:()=>{throw Error('DB must not be accessed in gate tests')}};
+ return originalLoad.call(this,request,parent,isMain);
+};
 const handler=require('../api/dispatch-approved-piggy.js');
+Module._load=originalLoad;
 function response(){
  return {statusCode:0,headers:{},body:'',setHeader(k,v){this.headers[k]=v;},end(s){this.body=s;}};
 }

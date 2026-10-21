@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "enabled": false,
+  "status": "pending-visual-approval",
+  "scope": "Piggy Race only; accepted final canonical results only",
+  "minimumEventDateExclusive": "2026-10-18",
+  "templateVersion": "piggy-auto-v2-20261021",
+  "allowedKinds": [
+    "piggy"
+  ],
+  "allowedClans": [
+    "AVENGERS",
+    "AV-2"
+  ],
+  "automaticCorrections": false,
+  "automaticDelete": false,
+  "destinationChannelId": "1470175579058999386",
+  "activationRequiresProductionEnvironmentSwitch": true,
+  "activationRequiresNeonSafetyFlags": true,
+  "note": "Enable only after leader visually approves the v2 Piggy template, migration and live dispatch checks pass. Never backfill the already-recorded 2026-10-18 event."
+}

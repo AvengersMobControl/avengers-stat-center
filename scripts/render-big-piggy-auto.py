@@ -255,7 +255,7 @@ def draw_png(model, dest, automatic_piggy_layout=False, automatic_piggy_publish=
     header_state=("APPROVED LEDGER · FINAL REPORT" if automatic_piggy_publish else "APPROVED LEDGER · REVIEW PREVIEW") if automatic_piggy_layout else "APPROVED LEDGER · REVIEW PREVIEW"
     txt(2352, 94, header_state, 22, "green", True, "ra")
     if automatic_piggy_layout:
-        fit(45,137,"Event-time clan: "+model["clan"]+" · Lobby: "+model["lobbyLabel"],1700,15,"muted")
+        fit(45,151,"Event-time clan: "+model["clan"]+" · Lobby: "+model["lobbyLabel"],1700,15,"muted")
     score = model["knownScoreSum"]
     count = model["participantRows"]
     prev = model["previousScoreSum"]

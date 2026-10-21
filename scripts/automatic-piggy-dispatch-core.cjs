@@ -58,7 +58,7 @@ function buildPiggyMessage(event,clan,report,siteUrl){
  if(report?.eventId!==event.id||report?.clan!==clan||report?.kind!=='piggy'||report?.eventStatus!=='final')
   fail('PNG manifest does not match the final source event and clan');
  const expected={participants:t.participants,knownScoreSum:t.knownScoreSum,knownStars:t.knownStars,
-  knownSparks:t.knownSparks,unknownStarRows:t.unknownStarRows,unknownSparkRows:t.unknownSparkRows};
+  knownSparks:t.knownSparks,unknownScoreRows:t.unknownScoreRows,unknownStarRows:t.unknownStarRows,unknownSparkRows:t.unknownSparkRows};
  for(const k of Object.keys(expected))if(report[k]!==expected[k])fail('PNG manifest/source mismatch: '+k);
  const sorted=rows.filter(r=>num(r.score)!==null&&r.score!==1)
   .sort((a,b)=>b.score-a.score||String(a.player||'').localeCompare(String(b.player||'')));
@@ -94,8 +94,8 @@ function buildPiggyMessage(event,clan,report,siteUrl){
   lines.push('', '**Top-three recorded career podiums (W / 2nd / 3rd / P)**',
    career.map(x=>x.player+' '+x.careerPodiums.wins+'/'+x.careerPodiums.secondPlaces+'/'+x.careerPodiums.thirdPlaces+'/'+x.careerPodiums.podiums).join(' · '));
  }
- if(t.unknownStarRows||t.unknownSparkRows)
-  lines.push('', 'Reward data: '+t.unknownStarRows+' unknown Star rows and '+t.unknownSparkRows+' unknown Spark rows; unknown values are not treated as zero.');
+ if(t.unknownScoreRows||t.unknownStarRows||t.unknownSparkRows)
+  lines.push('', 'Source gaps: '+t.unknownScoreRows+' unknown line-score rows, '+t.unknownStarRows+' unknown Star rows and '+t.unknownSparkRows+' unknown Spark rows; unknown values are not treated as zero.');
  const pbs=Number.isInteger(report.linePBs)?report.linePBs:null;
  const rankPBs=Number.isInteger(report.placementPBs)?report.placementPBs:null;
  const first=Number.isInteger(report.firstTracked)?report.firstTracked:null;

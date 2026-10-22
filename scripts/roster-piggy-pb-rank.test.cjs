@@ -3,7 +3,7 @@ const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const {readFileSync}=require('node:fs');
 const {join}=require('node:path');
-const {rankRows,bestFinishes,placementHistory,careerPodiums,formatFinish,MIN_AVENGERS_IN_LOBBY}=require('../roster-piggy-pb-rank.js');
+const {rankRows,bestFinishes,placementHistory,careerPodiums,formatFinish,MIN_AVENGERS_IN_LOBBY,MIN_AV2_IN_LOBBY}=require('../roster-piggy-pb-rank.js');
 function race(id,clan='AVENGERS',size=30,opts={}){
   const rows=Array.from({length:size},(_,i)=>({
     player:i===0?(opts.first||'Hero'):'Player '+i,
@@ -166,4 +166,40 @@ test('Piggy achievement group defaults collapsed with wins/podiums/PB rank under
   assert.match(html,/case 'piggyPBRank':return/);
   assert.match(html,/case 'piggyPodiums':return/);
   assert(!html.includes("{id:'effort',name:'Space Sparks/Effort'"));
+});
+
+
+test('AV-2 finishing-place PBs use an independent five-participant same-lobby threshold',()=>{
+  const av2race=(id,date,rank,size=5)=>({
+    id,kind:'piggy',date,status:'final',rows:Array.from({length:size},(_,i)=>({
+      player:i===0?'AV2Hero':'AV2 '+i,clan:'AV-2',score:1000-i*10,
+      metadata:{rank:i===0?rank:i+1,lobby:'AV-2-main'}
+    }))
+  });
+  const early=av2race('piggy|2026-09-20','2026-09-20',4,5);
+  const later=av2race('piggy|2026-10-11','2026-10-11',1,6);
+  const small=av2race('piggy|2026-10-18','2026-10-18',1,4);
+  const history=placementHistory([later,small,early],'AV-2');
+  assert.deepEqual(history.byEvent.get(early.id).filter(x=>x.player==='AV2Hero').map(x=>[
+    x.previousRank,x.newRank,x.firstQualified,x.improved,x.previousDate
+  ]),[[null,4,true,false,null]]);
+  assert.deepEqual(history.byEvent.get(later.id).filter(x=>x.player==='AV2Hero').map(x=>[
+    x.previousRank,x.newRank,x.firstQualified,x.improved,x.previousDate
+  ]),[[4,1,false,true,'2026-09-20']]);
+  assert.equal(history.byEvent.get(small.id).length,0);
+  assert.equal(MIN_AV2_IN_LOBBY,5);
+  assert.equal(placementHistory([later,early]).byEvent.get(later.id).some(x=>x.player==='AV2Hero'),false,
+    'AV-2 rank PBs never bleed into the AVENGERS qualifying stream');
+});
+
+test('AV-2 career podium counts are independent and require five distinct same-lobby members',()=>{
+ const av2race=(id,date,rank,size=5)=>({id,kind:'piggy',date,status:'final',rows:Array.from({length:size},(_,i)=>({
+  player:i===0?'AV2Hero':'AV2 '+i,clan:'AV-2',score:1000-i*10,metadata:{rank:i===0?rank:i+1,lobby:'av2-main'}
+ }))});
+ const {careerPodiums}=require('../roster-piggy-pb-rank.js');
+ const qualifying=av2race('piggy|2026-10-11','2026-10-11',1,5);
+ const small=av2race('piggy|2026-10-18','2026-10-18',1,4);
+ assert.deepEqual(careerPodiums([qualifying,small],'AV-2').byPlayer.get('AV2Hero'),
+  {wins:1,secondPlaces:0,thirdPlaces:0,podiums:1});
+ assert.equal(careerPodiums([qualifying],'AVENGERS').byPlayer.has('AV2Hero'),false);
 });

@@ -86,4 +86,13 @@ async function inspect(client){
      permitsAutomaticSend:false,permitsAutomaticDelete:false,permitsPublicEndpoint:false};
  }
 }
-module.exports={READ_ONLY_SQL,evaluate,inspect};
+function evaluateAutomaticDispatch(snapshot){
+ if(!snapshot||typeof snapshot!=='object'||Array.isArray(snapshot))
+  return {ready:false,failedChecks:['missing-database-evidence'],permitsAutomaticSend:false,permitsAutomaticDelete:false,permitsPublicEndpoint:false};
+ const automaticDesired={...desired,automaticSendEnabled:true,publicationEndpointEnabled:true,automaticDeleteEnabled:false};
+ const failedChecks=Object.entries(automaticDesired).filter(([key,value])=>snapshot[key]!==value).map(([key])=>key);
+ return {ready:failedChecks.length===0,failedChecks,
+  permitsAutomaticSend:failedChecks.length===0,permitsAutomaticDelete:false,
+  permitsPublicEndpoint:failedChecks.length===0};
+}
+module.exports={READ_ONLY_SQL,evaluate,evaluateAutomaticDispatch,inspect};

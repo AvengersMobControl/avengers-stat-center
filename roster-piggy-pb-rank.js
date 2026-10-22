@@ -5,6 +5,7 @@
 (function(root){
   'use strict';
   const MIN_AVENGERS_IN_LOBBY=30;
+  const MIN_AV2_IN_LOBBY=5;
   const validPlace=value=>{
     if(value===null||value===undefined||value==='') return null;
     const n=Number(value);
@@ -18,13 +19,13 @@
     const id=m.lobbyId??m.lobby??m.group??m.raceId??row.lobbyId??row.lobby??row.group??row.raceId;
     return id===null||id===undefined||id===''?'legacy-main':String(id);
   }
-  function bestFinishes(events){
+  function bestFinishes(events,{clan='AVENGERS',minParticipants=MIN_AVENGERS_IN_LOBBY}={}){
     const qualifying=new Map(),byPlayer=new Map();
     for(const event of Array.isArray(events)?events:[]){
       if(event?.kind!=='piggy'||event.status==='revoked')continue;
       const groups=new Map();
       for(const row of Array.isArray(event.rows)?event.rows:[]){
-        if(row?.clan!=='AVENGERS'||!row.player)continue;
+        if(row?.clan!==clan||!row.player)continue;
         // A qualifying racer needs a known positive result. Reward availability
         // is independent of finishing position.
         const effort=Number(row.score);
@@ -38,7 +39,7 @@
         groups.set(key,group);
       }
       for(const [key,group] of groups){
-        if(group.size<MIN_AVENGERS_IN_LOBBY)continue;
+        if(group.size<minParticipants)continue;
         qualifying.set(event.id+'|'+key,group.size);
         for(const [player,record] of group){
           if(record.invalid||record.rank===null)continue;
@@ -52,41 +53,47 @@
   // Independent historical PB stream: *best finishing place*, never lines.
   // First eligible finish and subsequent strictly better finishes are both
   // preserved for the event's PB page and the reviewed PNG export.
-  function placementHistory(events){
-    const bestByPlayer=new Map(),byEvent=new Map();
+  function placementHistory(events,clan='AVENGERS'){
+    if(!['AVENGERS','AV-2'].includes(clan))throw Error('Unsupported event-time clan');
+    const minParticipants=clan==='AV-2'?MIN_AV2_IN_LOBBY:MIN_AVENGERS_IN_LOBBY;
+    const bestByPlayer=new Map(),bestDateByPlayer=new Map(),byEvent=new Map();
     const ordered=(Array.isArray(events)?events:[])
       .filter(e=>e?.kind==='piggy'&&e.status!=='revoked')
       .slice().sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))
                          ||String(a.id||'').localeCompare(String(b.id||'')));
     for(const event of ordered){
-      const placements=bestFinishes([event]).byPlayer;
+      const placements=bestFinishes([event],{clan,minParticipants}).byPlayer;
       const transitions=[];
       for(const [player,finish] of placements){
         const previousRank=bestByPlayer.get(player)??null;
+        const previousDate=bestDateByPlayer.get(player)??null;
         // Ignore equal/worse finishes; first qualifying result is a PB baseline.
         if(previousRank!==null&&finish>=previousRank)continue;
         transitions.push({
-          player,eventId:event.id,date:event.date,previousRank,newRank:finish,
+          player,eventId:event.id,date:event.date,previousRank,previousDate,newRank:finish,
           firstQualified:previousRank===null,improved:previousRank!==null
         });
         bestByPlayer.set(player,finish);
+        bestDateByPlayer.set(player,event.date);
       }
       transitions.sort((a,b)=>a.newRank-b.newRank||a.player.localeCompare(b.player));
       byEvent.set(event.id,transitions);
     }
     return {byPlayer:bestByPlayer,byEvent};
   }
-  // Career podiums derived from literal finishing positions in qualifying
-  // AVENGERS Piggy lobbies. No score-based re-ranking or AV-2 bleed-through.
-  // Each event can contribute at most one placement per canonical account.
-  function careerPodiums(events){
+  // Career podiums derived from literal finishing positions in qualifying,
+  // event-time clan-specific Piggy lobbies. Each event contributes at most one
+  // placement per canonical account; AVENGERS and AV-2 remain independent.
+  function careerPodiums(events,clan='AVENGERS'){
+    if(!['AVENGERS','AV-2'].includes(clan))throw Error('Unsupported event-time clan');
+    const minParticipants=clan==='AV-2'?MIN_AV2_IN_LOBBY:MIN_AVENGERS_IN_LOBBY;
     const byPlayer=new Map(),byEvent=new Map();
     const ordered=(Array.isArray(events)?events:[])
       .filter(e=>e?.kind==='piggy'&&e.status!=='revoked')
       .slice().sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))
                          ||String(a.id||'').localeCompare(String(b.id||'')));
     for(const event of ordered){
-      const valid=bestFinishes([event]).byPlayer;
+      const valid=bestFinishes([event],{clan,minParticipants}).byPlayer;
       const records=[];
       for(const [player,place] of valid){
         if(place>3)continue;
@@ -128,7 +135,7 @@
     const suffix=n%100>=11&&n%100<=13?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th');
     return n+suffix;
   }
-  const api=Object.freeze({rankRows,bestFinishes,placementHistory,careerPodiums,formatFinish,MIN_AVENGERS_IN_LOBBY});
+  const api=Object.freeze({rankRows,bestFinishes,placementHistory,careerPodiums,formatFinish,MIN_AVENGERS_IN_LOBBY,MIN_AV2_IN_LOBBY});
   if(root)root.AVENGERS_ROSTER_PIGGY_PB_RANK=api;
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window==='undefined'?null:window);

@@ -1,7 +1,7 @@
 'use strict';
 /* AVENGERS Piggy line benchmark ledger.
- * Counts DISTINCT competitors at or above each threshold from the actual
- * AVENGERS event-time race rows (never current roster or AV-2 results).
+ * Counts DISTINCT competitors at or above each threshold from actual event-time
+ * race rows. AVENGERS and AV-2 are computed independently; default is AVENGERS.
  * Authoritative input: window.AVENGERS_DATA.piggy.events, derived from the
  * approved event ledger. No editable/manual record count declarations.
  */
@@ -21,7 +21,7 @@
         if(row.clan!==clan)continue;
         const name=String(row.name||row.player||row.username||'').trim();
         const score=Number(row.lines??row.score);
-        if(!name||!Number.isFinite(score)||score<=0)continue;
+        if(!name||!Number.isFinite(score)||score<=1)continue;
         // A player appearing twice in one event still counts just once.
         distinct.set(name,Math.max(distinct.get(name)||0,score));
       }

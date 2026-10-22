@@ -9,6 +9,12 @@ test('PNG input comes from exactly the accepted canonical projection; never a dr
  assert.equal(exported.source,'approved-event-ledger');
  assert.equal(exported.projection.version,canonical.projection.version);
  assert.equal(typeof exported.piggyPlacementPBs,'object');
+ assert.equal(typeof exported.piggyPlacementPBsByClan,'object');
+ assert.equal(typeof exported.piggyCareerPodiumsByClan,'object');
+ assert.equal(typeof exported.piggyBenchmarksByClan,'object');
+ assert.deepEqual(Object.keys(exported.piggyBenchmarksByClan).sort(),['AV-2','AVENGERS']);
+ assert.deepEqual(Object.keys(exported.piggyCareerPodiumsByClan).sort(),['AV-2','AVENGERS']);
+ assert.deepEqual(Object.keys(exported.piggyPlacementPBsByClan).sort(),['AV-2','AVENGERS']);
  assert(Array.isArray(exported.piggyPlacementPBs['piggy|2026-10-11']));
  for(const rows of Object.values(exported.piggyPlacementPBs))for(const pb of rows){
   assert(Number.isInteger(pb.newRank)&&pb.newRank>0);
@@ -52,4 +58,14 @@ test('Piggy PNG export classifies first AVENGERS event by clan, not first all-cl
  assert(lin.history.some(e=>e.kind==='piggy'&&e.clan==='AV-2'&&e.date<'2026-10-18'));
  assert.equal(exported.projection.people.filter(p=>['AV-2Lin','AV-JeffKintz05','LT'].includes(p.name)).length,0);
  assert(exported.projection.people.some(p=>p.name==='AV-JefhKintz05'));
+});
+
+test('AV-2 rank PB stream uses its independent 5+ same-lobby cutoff',()=>{
+ const exported=exportRelease();
+ assert(Array.isArray(exported.piggyPlacementPBsByClan['AV-2']['piggy|2026-10-18']));
+ for(const rows of Object.values(exported.piggyPlacementPBsByClan['AV-2']))for(const pb of rows){
+  assert(pb.eventId.startsWith('piggy|'));
+  assert(Number.isInteger(pb.newRank)&&pb.newRank>0);
+  assert(pb.previousRank===null||pb.newRank<pb.previousRank);
+ }
 });

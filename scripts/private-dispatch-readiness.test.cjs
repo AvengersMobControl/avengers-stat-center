@@ -1,6 +1,6 @@
 'use strict';
 const {test}=require('node:test'),assert=require('node:assert/strict');
-const {READ_ONLY_SQL,evaluate,inspect}=require('./private-dispatch-readiness.cjs');
+const {READ_ONLY_SQL,evaluate,evaluateAutomaticDispatch,inspect}=require('./private-dispatch-readiness.cjs');
 
 const safe=()=>({
  connectedRole:'avengers_dispatch_runtime',authenticatedRole:'avengers_dispatch_runtime',
@@ -81,4 +81,25 @@ test('historical Neon API-created app credential is explicitly rejected',()=>{
  assert.equal(r.ready,false);
  for(const item of ['connectedRole','hasInheritedMembership','slotDelete','safetyUpdate'])
   assert(r.failedChecks.includes(item));
+});
+
+test('automatic dispatch requires explicit send+endpoint flags and keeps deletion hard-off',()=>{
+ const automatic={...safe(),automaticSendEnabled:true,publicationEndpointEnabled:true};
+ const ready=evaluateAutomaticDispatch(automatic);
+ assert.equal(ready.ready,true);
+ assert.equal(ready.permitsAutomaticSend,true);
+ assert.equal(ready.permitsPublicEndpoint,true);
+ assert.equal(ready.permitsAutomaticDelete,false);
+ for(const bad of [
+  {...automatic,automaticSendEnabled:false},
+  {...automatic,publicationEndpointEnabled:false},
+  {...automatic,automaticDeleteEnabled:true},
+  {...automatic,slotDelete:true},
+  {...automatic,safetyUpdate:true}
+ ]){
+  const result=evaluateAutomaticDispatch(bad);
+  assert.equal(result.ready,false);
+  assert.equal(result.permitsAutomaticSend,false);
+  assert.equal(result.permitsAutomaticDelete,false);
+ }
 });

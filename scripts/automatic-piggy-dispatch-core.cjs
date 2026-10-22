@@ -19,6 +19,8 @@ function selectLatestEligiblePiggy(projection,policy){
  const event=events.at(-1);
  if(!event)return {decision:'no-new-piggy-event-after-baseline',event:null};
  if(event.status!=='final')return {decision:'latest-piggy-event-not-final',event:null,eventId:event.id,status:event.status};
+ if(event.metadata?.complete!==true||event.metadata?.coverageComplete!==true)
+  return {decision:'latest-piggy-source-coverage-not-complete',event:null,eventId:event.id};
  return {decision:'eligible-final-piggy-event',event};
 }
 function deriveLobbyLabel(event,clan){
@@ -39,6 +41,8 @@ function sourceEventForDispatch({approvedUpdates,holds,eventId,clan,minimumEvent
  if(!update||update.approved!==true||update.event.status!=='final')fail('Only the latest approved final Piggy source is dispatchable');
  const event=update.event;
  if(event.kind!=='piggy'||event.date<=minimumEventDateExclusive)fail('Event is before the automatic-dispatch baseline');
+ if(event.metadata?.complete!==true||event.metadata?.coverageComplete!==true)
+  fail('Automatic Discord publication requires explicitly complete verified screenshot coverage');
  if((holds?.holds||[]).some(h=>h.eventId===eventId&&(h.clan===clan||h.clan==='ALL')))fail('Event/clan has an active source hold');
  const rows=participatingRows(event,clan);
  if(!rows.length)fail('No verified participating rows for this event-time clan');

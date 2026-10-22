@@ -1,5 +1,12 @@
 name: Tall Space and Piggy layout review
 on:
+  push:
+    branches:
+      - 'feature/automatic-big-piggy-dispatch-20261021'
+    paths:
+      - 'scripts/render-vertical-space-piggy.py'
+      - 'scripts/test_render_vertical_space_piggy.py'
+      - '.github/workflows/vertical-space-piggy-preview.yml'
   pull_request:
     paths:
       - 'scripts/render-vertical-space-piggy.py'

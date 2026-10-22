@@ -33,17 +33,23 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+      # The hourly trigger stays cheap while unattended dispatch is disabled.
+      - name: Check activation policy (no network or publication)
+        id: policy
+        run: |
+          node -e "const p=require('./data/automatic-piggy-dispatch-policy.json'); require('node:fs').appendFileSync(process.env.GITHUB_OUTPUT,'enabled='+String(p.enabled === true && p.status === 'approved')+'\\n')"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - uses: actions/setup-python@v5
+        if: (github.event_name == 'schedule' && steps.policy.outputs.enabled == 'true') || (github.event_name == 'workflow_dispatch' && inputs.mode != 'verify')
         with:
           python-version: '3.12'
       - name: Install pinned renderer dependency
-        if: github.event_name != 'push'
+        if: (github.event_name == 'schedule' && steps.policy.outputs.enabled == 'true') || (github.event_name == 'workflow_dispatch' && inputs.mode != 'verify')
         run: python -m pip install Pillow==11.3.0
       - name: Run dispatch safety and projection tests
-        if: github.event_name != 'push'
+        if: (github.event_name == 'schedule' && steps.policy.outputs.enabled == 'true') || (github.event_name == 'workflow_dispatch' && inputs.mode != 'verify')
         run: |
           node --test scripts/automatic-piggy-dispatch-core.test.cjs scripts/dispatch-approved-piggy.test.cjs scripts/automatic-dispatch-migration.test.cjs scripts/private-dispatch-readiness.test.cjs scripts/roster-piggy-pb-rank.test.cjs scripts/export-event-summary.test.cjs
           python -m unittest scripts/test_render_event_summary.py scripts/test_render_big_piggy_auto.py
@@ -64,12 +70,12 @@ jobs:
           if-no-files-found: error
           retention-days: 7
       - name: Verify production OIDC endpoint without sending
-        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.mode == 'verify')
+        if: (github.event_name == 'push' && steps.policy.outputs.enabled == 'true') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'verify')
         env:
           AVENGERS_PIGGY_DISPATCH_URL: https://avengers-stat-center.vercel.app/api/dispatch-approved-piggy
         run: node scripts/automatic-piggy-dispatch.cjs verify-endpoint
       - name: Run guarded automatic dispatch
-        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.mode == 'dispatch')
+        if: (github.event_name == 'schedule' && steps.policy.outputs.enabled == 'true') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'dispatch')
         env:
           AVENGERS_PIGGY_DISPATCH_URL: https://avengers-stat-center.vercel.app/api/dispatch-approved-piggy
         run: node scripts/automatic-piggy-dispatch.cjs run

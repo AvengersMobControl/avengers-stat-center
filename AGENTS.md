@@ -1,3 +1,9 @@
+## 2026-10-22 — Clan event scope and Flash attribution correction
+
+Track AV-2 only for Space and Big Piggy (space/piggy). Disregard Piggy Flash screenshots in the AV-2 channel; AV-2 Flash and Kraken are outside the ingestion scope. Do not import or retain these as unresolved review exceptions, and do not repeat their notifications. The previously flagged AV-2 Flash is discarded as out of scope. This changes ingestion/review scope, not existing accepted historical records.
+
+For AVENGERS PF1–PF4, use each dedicated channel's most recent established large final-results posting as the event anchor. Attribute later final supplemental screenshots in that channel to that same event; lack of a date/PF label on the supplement alone does not block attribution. Flag contradictory evidence. Website imports remain independent of PNG/message automation.
+
 ## 2026-10-22 — Automatic WEBSITE result publication authorized; PNG/messages decoupled
 
 Leader explicitly instructed: "Automatically post them to the website. We will have the pngs/messages be a decoupled automation." This grants standing authorization for verified new final AVENGERS and AV-2 results to enter the canonical website ledger and complete the shared site release without another per-result commissioner approval. It supersedes earlier review-only/manual-parsed-approval wording **for this website workflow**. It does not authorize guessed results, changes to frozen Unlogged Sparks, paused UTC work or SAC changes.

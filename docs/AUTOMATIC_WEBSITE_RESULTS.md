@@ -1,3 +1,9 @@
+## 2026-10-22 — Clan event scope and Flash attribution correction
+
+Track AV-2 only for Space and Big Piggy (space/piggy). Disregard Piggy Flash screenshots in the AV-2 channel; AV-2 Flash and Kraken are outside the ingestion scope. Do not import or retain these as unresolved review exceptions, and do not repeat their notifications. The previously flagged AV-2 Flash is discarded as out of scope. This changes ingestion/review scope, not existing accepted historical records.
+
+For AVENGERS PF1–PF4, use each dedicated channel's most recent established large final-results posting as the event anchor. Attribute later final supplemental screenshots in that channel to that same event; lack of a date/PF label on the supplement alone does not block attribution. Flag contradictory evidence. Website imports remain independent of PNG/message automation.
+
 # Automatic website results
 
 ## Authorization and current runner
@@ -20,6 +26,6 @@ The source connector remains read-only. Website ingestion does not render PNGs, 
 10. Commit only sanitized canonical updates/proof references, release through GitHub with required tests/full-site projection, CI/browser checks and complete immutable publication. Check exact public source commit, projection/export version and rendered pages, and Vercel status. Do not claim published merely because a PR was opened or a preview is READY. No successful website change triggers Discord delivery.
 11. Checkpoint issue #4 with dates, counts and hashes only; no raw Discord identities, message payloads, attachment URLs, tokens or private IDs in public files/comments. Reuse existing accepted histories for PBs; first tracked appearance is not a PB. Notify only meaningful publication, a NEW unresolved source needing attention, or a real access/pipeline failure. If nothing changed, stay silent. Keep the task enabled until an independently live-verified replacement covers source discovery, automatic website publication, exceptions and notification delivery.
 
-## Current pending source
+## Previously flagged source
 
-The October 21 AV-2 final Flash screenshot reviewed October 22 remains unassigned: its event date and PF number are not visible, and original-byte download returned HTTP 403. Standing permission does not resolve either fact. Preserve it as pending rather than repeatedly announcing it or adding invented event metadata.
+The AV-2 Flash screenshot reviewed October 22 is excluded under the leader's AV-2 Space/Big Piggy-only scope. It is not a pending import or an attribution exception.

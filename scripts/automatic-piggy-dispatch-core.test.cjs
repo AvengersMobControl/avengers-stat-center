@@ -3,7 +3,7 @@ const {test}=require('node:test'),assert=require('node:assert/strict'),crypto=re
 const {participatingRows,selectLatestEligiblePiggy,sourceEventForDispatch,totals,buildPiggyMessage,
  verifyPngBytes,verifyGitHubOIDC,OIDC_AUDIENCE,WORKFLOW_REF,REPOSITORY_ID}=require('./automatic-piggy-dispatch-core.cjs');
 const policy={enabled:true,status:'approved',minimumEventDateExclusive:'2026-10-18'};
-const event=(date,status='final',rows=[])=>({id:'piggy|'+date,date,kind:'piggy',status,unit:'lines',metadata:{},rows});
+const event=(date,status='final',rows=[])=>({id:'piggy|'+date,date,kind:'piggy',status,unit:'lines',metadata:{complete:true,coverageComplete:true},rows});
 test('one-line placeholders are excluded from report participants and totals',()=>{
  const e=event('2026-10-25','final',[{player:'A',clan:'AVENGERS',score:1,stars:0,sparks:0},
   {player:'B',clan:'AVENGERS',score:10,stars:20,sparks:null}]);
@@ -15,6 +15,8 @@ test('only newest event after baseline and explicitly final is eligible',()=>{
  assert.equal(selectLatestEligiblePiggy(projection,policy).decision,'latest-piggy-event-not-final');
  const ready=selectLatestEligiblePiggy({events:projection.events.slice(0,2)},policy);
  assert.equal(ready.event.id,'piggy|2026-10-25');
+ const incomplete=event('2026-10-25'); incomplete.metadata.coverageComplete=false;
+ assert.equal(selectLatestEligiblePiggy({events:[incomplete]},policy).decision,'latest-piggy-source-coverage-not-complete');
  assert.equal(selectLatestEligiblePiggy(projection,{...policy,enabled:false}).event,null);
 });
 test('source must be latest approved final, not held or pre-baseline',()=>{
@@ -23,6 +25,8 @@ test('source must be latest approved final, not held or pre-baseline',()=>{
  const source=sourceEventForDispatch({approvedUpdates,holds:{holds:[]},eventId:e.id,clan:'AV-2',minimumEventDateExclusive:'2026-10-18'});
  assert.equal(source.rows.length,1);
  assert.equal(source.lobbyLabel,'Not source-labeled');
+ const incomplete={...e,metadata:{...e.metadata,coverageComplete:false}};
+ assert.throws(()=>sourceEventForDispatch({approvedUpdates:{updates:[{approved:true,event:incomplete}]},holds:{holds:[]},eventId:e.id,clan:'AV-2',minimumEventDateExclusive:'2026-10-18'}),/complete verified screenshot coverage/);
  assert.throws(()=>sourceEventForDispatch({approvedUpdates,holds:{holds:[{eventId:e.id,clan:'AV-2'}]},eventId:e.id,clan:'AV-2',minimumEventDateExclusive:'2026-10-18'}),/hold/);
  assert.throws(()=>sourceEventForDispatch({approvedUpdates,holds:{holds:[]},eventId:'piggy|2026-10-18',clan:'AV-2',minimumEventDateExclusive:'2026-10-18'}),/approved final|baseline/);
 });

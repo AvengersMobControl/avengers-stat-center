@@ -1,12 +1,32 @@
+## 2026-10-22 — Clan event scope and Flash attribution correction
+
+Track AV-2 only for Space and Big Piggy (space/piggy). Disregard Piggy Flash screenshots in the AV-2 channel; AV-2 Flash and Kraken are outside the ingestion scope. Do not import or retain these as unresolved review exceptions, and do not repeat their notifications. The previously flagged AV-2 Flash is discarded as out of scope. This changes ingestion/review scope, not existing accepted historical records.
+
+For AVENGERS PF1–PF4, use each dedicated channel's most recent established large final-results posting as the event anchor. Attribute later final supplemental screenshots in that channel to that same event; lack of a date/PF label on the supplement alone does not block attribution. Flag contradictory evidence. Website imports remain independent of PNG/message automation.
+
+## 2026-10-22 — Automatic WEBSITE result publication authorized; PNG/messages decoupled
+
+Leader explicitly instructed: "Automatically post them to the website. We will have the pngs/messages be a decoupled automation." This grants standing authorization for verified new final AVENGERS and AV-2 results to enter the canonical website ledger and complete the shared site release without another per-result commissioner approval. It supersedes earlier review-only/manual-parsed-approval wording **for this website workflow**. It does not authorize guessed results, changes to frozen Unlogged Sparks, paused UTC work or SAC changes.
+
+The existing daily ChatGPT results task is the runner being upgraded; no duplicate task or native GitHub/Vercel screenshot collector is claimed. Read-only Discord retrieval remains read-only; the scheduled agent separately performs source review, original-byte proof, exact event/identity resolution, deduplication, guarded canonical staging, CI/browser checks, merge and complete versioned publication. Ambiguous event dates/PF numbers/identities, conflicting accepted rows, unavailable proof and remaining explicit holds stay pending. Partial final coverage may publish known rows, never invented zeroes. Exactly-one-line Piggy/Flash rows are nonparticipants. PNG generation, messages and Discord dispatch are explicitly decoupled and are not triggered by website import.
+
+Operating instructions: [docs/AUTOMATIC_WEBSITE_RESULTS.md](docs/AUTOMATIC_WEBSITE_RESULTS.md). Configuration: `discord-ingest-config.json.websitePublication`; scheduled parsed-result approval is no longer required. Top-level manual_pull/autoImport=false/reviewRequired=true describes the READ-ONLY connector and existing manual review UI, not a veto of the standing-authorized scheduled website publisher. The import command's approved flag records this standing authorization only on an actual verified write, never on a dry-run; do not falsely label automated review as a new human approval.
+
 # AVENGERS Mob Control — Agent Operating Instructions
 
 These instructions apply to all work in `AvengersMobControl/avengers-stat-center`. Keep SAC / Lock It In (`sac-club`) separate.
 
-## 2026-10-21 — Explicit Discord send instructions are authorization (standing operating rule)
+## Current Discord authorization policy — 2026-10-22 (supersedes conflicting older manual-send wording)
 
-**When the leader directly tells the assistant to send, post, or push a specified item to Discord, treat that instruction as explicit authorization for that one-time publication and execute it immediately using the existing secured AVENGERS GitHub/Vercel/Neon/server-side Discord workflow. Do not ask the leader to approve the same send again, do not redirect them to perform it manually, and do not claim the integrations are unavailable without checking them.**
+**Leader-directed one-time publication:** If the leader explicitly says **"send," "post," or "push"** a specified item/report to Discord (including a clear follow-up such as "send it" or "go"), that instruction **IS the publication authorization** for that one-time item. **Act immediately through the connected AVENGERS GitHub/Vercel/Neon/server-side Discord tools, without requesting a second approval, asking for a repeated "approved," moving to another mode, or interpreting an old "do not send" instruction as a blanket prohibition.** A prior approved final image/content remains approved when the leader subsequently orders it sent.
 
-Before sending, perform the existing content/target checks and duplicate guard; then verify Discord accepted the post, the attachment is the intended artifact, and capture the message ID/receipt. A technical failure is not a reason to ask for authorization again: diagnose and continue through the supported tools, clearly reporting only a real blocker. This rule authorizes the requested one-time post only; it does not enable recurring/automatic dispatch, expand the destination, bypass data-integrity checks, or permit cross-posting between AVENGERS, AV-2, and SAC.
+**Separate controls, not conflicting bans:**
+- **Unsolicited posts and unattended/automatic event-summary dispatch stay disabled** until specifically activated. An explicitly ordered manual/one-shot publication is neither unsolicited nor unattended; the disabled automatic switches **do not prohibit** the authorized one-time send.
+- **Read-only screenshot review, analysis, preview generation, and website-only releases never send Discord posts on their own.** Historical notes such as "never post from this task," "no Discord sends," "requires separate posting approval," or "posting OFF" are **scoped to those tasks/at that time** and do **not** override a later explicit leader instruction to publish a specific report.
+- Keep event-specific **data integrity, valid final artwork/source, destination allowlist, pending/uncertain-send reconciliation, and at-most-once duplicate protection**. These are genuine verification requirements, not excuses to demand repeated user permission. Never enable global automatic dispatch, post to another channel, delete an old message, or cross AVENGERS/AV-2/SAC boundaries solely because one report was ordered sent.
+- **After every send attempt, tell the leader the outcome immediately.** On success, provide the live Discord link, message ID, channel, and attachment verification. On failure, explain the **exact observed technical blocker** and whether a send might have happened; never invent success or blindly retry an ambiguous send. Do not burn repeated hosting/CI usage on speculative paths.
+
+**Default event-summary destination:** Discord #Performance Statistics, channel `1470175579058999386`, for both AVENGERS and AV-2. This is the current operating policy and takes precedence over older *manual-post authorization* wording, while historical entries remain factual records of their original checkpoints.
 
 ## Mandatory startup — DO NOT falsely deny tool access
 

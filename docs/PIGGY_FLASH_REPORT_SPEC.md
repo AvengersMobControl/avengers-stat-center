@@ -37,7 +37,7 @@
 - User's instructions/rules are **NOT copy for the poster**. Put ONLY natural labels/explanations that help readers understand what metrics mean. No phrases like 'These flashes usually award sparks except post-Kraken' unless that fact is relevant to interpreting a displayed zero/missing Sparks metric, and even then explain as a user-facing metric annotation rather than reciting a commissioner directive.
 - **Piggy Flashes normally award Sparks; only those immediately following Kraken do not.** The first post-Kraken set of each five-week clan league is special; other Flashes show actual source-backed Sparks. Never silently wipe Sparks from normal Flash results or claim all Flashes award none. Apply the exception when interpreting recorded data.
 - Potential report sections under development: 4 flash-by-flash summaries; combined lines, Stars, Sparks, effort above average and contributors; each flash's winner; **4-flash wins and podium finishes plus totals**; source-backed PBs, first appearances and milestones. The content/layout should be agreed before decorative completion.
-- Manual PNG preview review remains separate from Discord release/automation approval. No PNG or Discord post is authorized by this website-only requirement.
+- Manual PNG preview review remains separate from unattended Discord automation activation. This website-only requirement does not itself authorize a post; **a later direct leader instruction to send/post/push an identified approved Flash PNG authorizes that one-time Discord post without an additional permission question.**
 
 ## Development checkpoint
 

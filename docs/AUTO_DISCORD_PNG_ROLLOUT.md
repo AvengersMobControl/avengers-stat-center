@@ -1,10 +1,18 @@
-## 2026-10-21 — Explicit Discord send instructions are authorization (standing operating rule)
-
-**When the leader directly tells the assistant to send, post, or push a specified item to Discord, treat that instruction as explicit authorization for that one-time publication and execute it immediately using the existing secured AVENGERS GitHub/Vercel/Neon/server-side Discord workflow. Do not ask the leader to approve the same send again, do not redirect them to perform it manually, and do not claim the integrations are unavailable without checking them.**
-
-Before sending, perform the existing content/target checks and duplicate guard; then verify Discord accepted the post, the attachment is the intended artifact, and capture the message ID/receipt. A technical failure is not a reason to ask for authorization again: diagnose and continue through the supported tools, clearly reporting only a real blocker. This rule authorizes the requested one-time post only; it does not enable recurring/automatic dispatch, expand the destination, bypass data-integrity checks, or permit cross-posting between AVENGERS, AV-2, and SAC.
-
 # AVENGERS automatic Discord summary PNGs — staged setup
+
+## Current Discord authorization policy — 2026-10-22 (supersedes conflicting older manual-send wording)
+
+**Leader-directed one-time publication:** If the leader explicitly says **"send," "post," or "push"** a specified item/report to Discord (including a clear follow-up such as "send it" or "go"), that instruction **IS the publication authorization** for that one-time item. **Act immediately through the connected AVENGERS GitHub/Vercel/Neon/server-side Discord tools, without requesting a second approval, asking for a repeated "approved," moving to another mode, or interpreting an old "do not send" instruction as a blanket prohibition.** A prior approved final image/content remains approved when the leader subsequently orders it sent.
+
+**Separate controls, not conflicting bans:**
+- **Unsolicited posts and unattended/automatic event-summary dispatch stay disabled** until specifically activated. An explicitly ordered manual/one-shot publication is neither unsolicited nor unattended; the disabled automatic switches **do not prohibit** the authorized one-time send.
+- **Read-only screenshot review, analysis, preview generation, and website-only releases never send Discord posts on their own.** Historical notes such as "never post from this task," "no Discord sends," "requires separate posting approval," or "posting OFF" are **scoped to those tasks/at that time** and do **not** override a later explicit leader instruction to publish a specific report.
+- Keep event-specific **data integrity, valid final artwork/source, destination allowlist, pending/uncertain-send reconciliation, and at-most-once duplicate protection**. These are genuine verification requirements, not excuses to demand repeated user permission. Never enable global automatic dispatch, post to another channel, delete an old message, or cross AVENGERS/AV-2/SAC boundaries solely because one report was ordered sent.
+- **After every send attempt, tell the leader the outcome immediately.** On success, provide the live Discord link, message ID, channel, and attachment verification. On failure, explain the **exact observed technical blocker** and whether a send might have happened; never invent success or blindly retry an ambiguous send. Do not burn repeated hosting/CI usage on speculative paths.
+
+**Default event-summary destination:** Discord #Performance Statistics, channel `1470175579058999386`, for both AVENGERS and AV-2. This is the current operating policy and takes precedence over older *manual-post authorization* wording, while historical entries remain factual records of their original checkpoints.
+
+
 
 ## 2026-10-20 — SUCCESS: single supervised Discord PNG transport canary (automatic sends STILL OFF)
 

@@ -1,13 +1,3 @@
-**Asset availability gate:** the current v2 review images are text-only. The approved original character PNGs remain in the personal Library, which the scheduled GitHub runner cannot access directly. Do not enable final PNG dispatch until the approved assets are made available through a deterministic, authorized runtime path or the leader explicitly approves a text-only template. Never substitute invented or unapproved characters.
-
-## Implementation checkpoint — 2026-10-21 (PR #138)
-
-A guarded publisher and hourly GitHub Actions runner are staged in [PR #138](https://github.com/AvengersMobControl/avengers-stat-center/pull/138). The runner will dispatch only the newest canonical Piggy event whose source status is explicitly final and whose date is later than the 2026-10-18 baseline. The source event must already be approved and committed to main; this automation does not collect/OCR screenshots, approve a candidate, or import unreviewed rows. A manual workflow dispatch defaults to preview, never send.
-
-The publisher verifies GitHub OIDC identity, repository/workflow/main ref, current GitHub main SHA and Vercel deployment SHA, source approval and active holds, exact report metrics and source-derived message, 2400×1500 PNG SHA-256, and the fixed Performance Statistics channel. It reserves a unique event+clan slot before sending and requires authenticated readback of the exact Discord message and PNG bytes. An uncertain send or changed edition is held for manual reconciliation. Automatic correction and deletion are disabled.
-
-The v2 Piggy layout is a separate renderer; the pinned v1 renderer remains unchanged. V2 adds independent finishing-place PBs, prior dates, AV-2 displayed-share RAKE % and whole-lobby pot distinction, top-three career podium snippets, and removes redundant Stars/Sparks/share/Sparks-per-line columns from Top 10. **Current state remains review-only:** PR #138 is not an activation, the policy is pending visual approval, migration 003 is unapplied, and production send/endpoint flags remain OFF. Do not describe automatic posting as live until visual approval, migration approval, production activation, and a real approved-report canary/readback are recorded.
-
 # Big Piggy Race Results — Operating Standard
 
 **Updated:** 2026-10-21  
@@ -89,9 +79,9 @@ Record the event date, event-time clan, lobby identity, original game rank, cano
 
 The one destination for both clans’ PNGs **and their accompanying written messages** is Discord **Performance Statistics**, channel **1470175579058999386**. Do not post the report to screenshot-intake channels or split its image and commentary across channels.
 
-**Current behavior:** no automatic sender or scheduled Piggy dispatch is enabled. The configured channel ID and successful synthetic canary do not override the false production safety switches. Do not send a report during source review or because a race has ended.
+**Current behavior:** no unattended/automatic sender or scheduled Piggy dispatch is enabled. The configured channel ID and successful synthetic canary do not override the false automatic-dispatch switches. Do not send a report merely because source review or a race ended. **The leader's explicit instruction to post a particular approved final report authorizes a supervised one-time send and does not require automatic dispatch to be enabled.**
 
-For a future supervised one-off, show the leader the final PNG and exact message first and use only the explicitly approved edition. For unattended posting, implement and verify all of the following before a separate activation:
+For a supervised one-off, use the leader-approved final PNG and exact message. When the leader has already reviewed the content and says send/post/push it, **proceed without another approval or redundant preview**. For unattended posting, implement and verify all of the following before a separate activation:
 
 - A verified event-completion trigger and source collector with timezone correctness, pagination checkpoints, retries, rate-limit handling, and explicit coverage reporting.
 - Final-result classification and original-CDN-byte proof; idempotent, approval-gated source import and full sitewide publication verification.

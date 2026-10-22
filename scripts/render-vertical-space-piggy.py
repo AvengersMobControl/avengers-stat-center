@@ -207,6 +207,28 @@ def individual_spotlights(release,model):
             "value":f"+{change*100:.1f}%",
             "detail":score_text(value,kind)+" now vs "+score_text(baseline,kind)+
                      f" prior average ({prior_count} logged earlier)"})
+    # Recognize individual production across this particular event type in
+    # the current five-week league, rather than only cumulative Sparks across
+    # every event type. Accepted partial events remain explicitly tracked.
+    league_kind_scores={}
+    league_kind_counts={}
+    for e in source:
+        if e.get("kind")!=kind or e.get("status") not in ("partial","final") or not (start<=e.get("date","")<=event_date):
+            continue
+        for r in e.get("rows",[]):
+            player=r.get("player")
+            value=number(r.get("score"))
+            if r.get("clan")!=clan or not player or value is None or value==1:
+                continue
+            league_kind_scores[player]=league_kind_scores.get(player,0)+value
+            league_kind_counts[player]=league_kind_counts.get(player,0)+1
+    if league_kind_scores:
+        player,total=max(league_kind_scores.items(),key=lambda x:(x[1],x[0]))
+        events=league_kind_counts[player]
+        spotlight["items"].append({
+            "label":"TRACKED LEAGUE "+("SPACE DISTANCE" if kind=="space" else "PIGGY LINES"),
+            "player":player,"value":score_text(total,kind),
+            "detail":f"{events} accepted {kind} event"+("s" if events!=1 else "")+" this league"})
     # Across event types for the current five-week clan league, as recorded in
     # the accepted projection. It is a tracked/known total, not a complete
     # event-coverage or payout assertion.

@@ -51,6 +51,8 @@ export default async function middleware(request){
     // Do NOT use a generic /api/discord prefix: only the exact one-off path.
     p==='/api/discord-canary' ||
     p==='/api/discord-publish-av2' ||
+    // Oct20 one-shot publisher performs its own expiring nonce + DB reservation checks.
+    p==='/api/discord-publish-oct20' ||
     p.startsWith('/api/guest/') ||
     p==='/mcp' ||
     p.startsWith('/.well-known/') ||

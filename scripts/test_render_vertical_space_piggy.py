@@ -54,6 +54,7 @@ class VerticalSpacePiggyTests(unittest.TestCase):
         self.assertEqual((compact["individualSpotlights"]["start"],compact["individualSpotlights"]["end"]),
                          ("2026-10-12","2026-11-15"))
         self.assertEqual(compact["individualSpotlights"]["items"][0]["label"],"EVENT SCORE LEADER")
+        self.assertTrue(any(item["label"]=="TRACKED LEAGUE SPACE DISTANCE" for item in compact["individualSpotlights"]["items"]))
         with tempfile.TemporaryDirectory() as tmp:
             a=pathlib.Path(tmp)/"space-small.png"
             b=pathlib.Path(tmp)/"space-large.png"
@@ -87,6 +88,9 @@ class VerticalSpacePiggyTests(unittest.TestCase):
                             for x in spotlight["items"]))
         tracked=next(x for x in spotlight["items"] if x["label"]=="TRACKED CLAN-LEAGUE SPARKS LEADER")
         self.assertNotEqual(tracked["value"],"10,000,000")
+        league_space=next(x for x in spotlight["items"] if x["label"]=="TRACKED LEAGUE SPACE DISTANCE")
+        self.assertEqual(league_space["player"],"AV-SpaceMember-00")
+        self.assertEqual(league_space["value"],"600.0B", "October 9 falls outside the new clan league")
 
     def test_big_piggy_rank_and_rake_are_preserved(self):
         m=vertical.make_model(fixture_mod.fixture(),"piggy","AV-2","piggy|2026-10-11")

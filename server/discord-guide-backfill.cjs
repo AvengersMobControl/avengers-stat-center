@@ -52,7 +52,7 @@ function makeStore(sql) {
       const rows=await sql.query(STATE_SQL,[channelId]);
       if(!Array.isArray(rows)||rows.length!==1)throw Error('Missing private channel state');
       const got=rows[0];
-      if((got.cutoff_at===null?null:new Date(got.cutoff_at).toISOString()) !== policy.since)
+      if((got.cutoff_at===null?null:Date.parse(String(got.cutoff_at))) !== (policy.since===null?null:Date.parse(policy.since)))
         throw Error('Source cutoff conflict; manual reconciliation required');
       return got;
     },

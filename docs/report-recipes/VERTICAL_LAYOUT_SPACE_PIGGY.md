@@ -8,7 +8,7 @@ The leader prefers the vertically expanding four-Flash design: a readable poster
 - Header shows actual event date, event-time clan, correct event ID and verified/unverified coverage. Four 2×2 headline KPI cards lead the design.
 - Full source-backed recognition lists reflow vertically; **no fixed four-person PB limit** or silent list truncation. An unfit name/number causes a validation error.
 - Separate historical comparison and previous-event baselines; do not assert percentage improvement from uncomparable coverage.
-- **Dedicated individual performance spotlights in EVERY report** immediately after the previous-event comparison: (a) actual current-event score leader, (b) strongest source-backed improvement over the player's earlier *same-clan/same-kind* personal average if one exists, (c) recorded five-week clan-league-to-date Sparks contributor, with explicit known/missing reward qualifiers. Show the count of returning players who beat their own earlier same-clan event average and the eligible denominator. Do not confuse personal-average improvement with PB improvements.
+- **Dedicated individual performance spotlights in EVERY report** immediately after the previous-event comparison: (a) actual current-event score leader, (b) strongest source-backed improvement over the player's earlier *same-clan/same-kind* personal average if one exists, (c) recorded five-week clan-league-to-date **same-event-type cumulative performance leader** (total Space distance or Piggy lines), plus tracked league Sparks contributor, with explicit known/missing reward qualifiers. Show the count of returning players who beat their own earlier same-clan event average and the eligible denominator. Do not confuse personal-average improvement with PB improvements.
 - Determine the five-week league window from the accepted site's 35-day Kraken-anchored cadence (latest certified completed league ended October 11, 2026). A future endpoint is cadence-derived and should be labeled as such. Attribution is by **event-time clan**; a member's prior AV-2 data does not silently become AVENGERS history. Incomplete projections yield **tracked** league contributions, never a claim of total actual rewards or complete ranks.
 - No generated player names, numerals, medal claims or dates. The website's frozen event export provides exact text/data and a separate compositor draws it.
 - The available CI preview has **no character originals**. A final template must integrate exact SHA-verified originals from the approved character Library; never introduce AI lookalikes. Until artwork is present and reviewed, preview-only and automatic Discord sending OFF.
@@ -17,7 +17,7 @@ The leader prefers the vertically expanding four-Flash design: a readable poster
 
 1. Total distance in billions, average distance per participant, known clan Stars, known Sparks; record participant and unknown reward counts.
 2. Prior accepted same-clan Space comparison: total and average changes, with prior date and coverage caution.
-3. Individual performance spotlight band for the given five-week clan league: current-event distance leader, strongest improvement over own prior average, tracked clan-league Sparks leader, above-prior-average count.
+3. Individual performance spotlight band for the given five-week clan league: current-event distance leader, strongest improvement over own prior average, tracked cumulative Space-distance leader in the clan league, tracked all-event clan-league Sparks leader, above-prior-average count.
 4. Top 10 by distance: exact distance, Stars, Sparks, screenshot share; source lobby rank may appear only when independently observed, never infer an actual game medal from score order.
 5. **All** returning-player distance PB transitions, including previous PB/date, new total and percentage increase.
 6. **All** first-tracked Space members, with actual distances.
@@ -29,7 +29,7 @@ The leader prefers the vertically expanding four-Flash design: a readable poster
 1. Total lines, average per participating player (one-line placeholders excluded), clan-earned Stars distinct from whole-lobby pot, known Sparks and participant count.
 2. **AV-2-only prominent rake card:** sum of screenshot-displayed shares for all AV-2 members in the same lobby; never substitute a calculated Stars/pot fraction.
 3. Change in **total lines** versus previous comparable Piggy, plus last five same-clan average trends.
-4. Individual performance spotlight band for that five-week clan league: current-event line leader, strongest improvement over own prior average, tracked league Sparks leader, above-prior-average count.
+4. Individual performance spotlight band for that five-week clan league: current-event line leader, strongest improvement over own prior average, tracked cumulative Piggy-lines leader in the clan league, tracked all-event league Sparks leader, above-prior-average count.
 5. Top 10 by lines only; do not call score order original game finish order.
 6. **All** returning-player line PBs: previous amount/date, new amount, percentage improvement.
 7. **All** qualifying actual finishing-rank PBs, separate from line PBs: original source ranks and prior dates, with independent 30+ AVENGERS / 5+ AV-2 single-lobby thresholds.

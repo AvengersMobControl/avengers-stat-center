@@ -79,9 +79,9 @@ Record the event date, event-time clan, lobby identity, original game rank, cano
 
 The one destination for both clans’ PNGs **and their accompanying written messages** is Discord **Performance Statistics**, channel **1470175579058999386**. Do not post the report to screenshot-intake channels or split its image and commentary across channels.
 
-**Current behavior:** no automatic sender or scheduled Piggy dispatch is enabled. The configured channel ID and successful synthetic canary do not override the false production safety switches. Do not send a report during source review or because a race has ended.
+**Current behavior:** no unattended/automatic sender or scheduled Piggy dispatch is enabled. The configured channel ID and successful synthetic canary do not override the false automatic-dispatch switches. Do not send a report merely because source review or a race ended. **The leader's explicit instruction to post a particular approved final report authorizes a supervised one-time send and does not require automatic dispatch to be enabled.**
 
-For a future supervised one-off, show the leader the final PNG and exact message first and use only the explicitly approved edition. For unattended posting, implement and verify all of the following before a separate activation:
+For a supervised one-off, use the leader-approved final PNG and exact message. When the leader has already reviewed the content and says send/post/push it, **proceed without another approval or redundant preview**. For unattended posting, implement and verify all of the following before a separate activation:
 
 - A verified event-completion trigger and source collector with timezone correctness, pagination checkpoints, retries, rate-limit handling, and explicit coverage reporting.
 - Final-result classification and original-CDN-byte proof; idempotent, approval-gated source import and full sitewide publication verification.

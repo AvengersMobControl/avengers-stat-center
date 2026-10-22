@@ -1,3 +1,7 @@
+## Portrait layout and individual spotlight revision — October 22, 2026
+
+For layout review use [the tall vertical Space/Piggy contract](VERTICAL_LAYOUT_SPACE_PIGGY.md). Include a dedicated source-backed **INDIVIDUAL PERFORMANCE SPOTLIGHTS** band for this event-time clan's five-week league: current-event score leader, strongest improvement over own earlier same-kind/same-clan average where there is prior evidence, tracked known Sparks contributor within that clan league, and a count/eligible denominator for members above their own earlier average. Keep all returning-player PBs, first tracked members, rankings and records separate; do not conflate a league-to-date known total with a complete all-lobby source. The review renderer is NOT an approved automated Discord template.
+
 # Recipe 3 — Space Race PNG and Discord message
 
 ## Scope and website pull

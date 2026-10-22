@@ -1,3 +1,7 @@
+## Vertical Space/Piggy preview and individual recognition — 2026-10-22
+
+The new [tall portrait specification](report-recipes/VERTICAL_LAYOUT_SPACE_PIGGY.md) uses readable, dynamically growing sections and a dedicated **individual performance spotlight** band (event leader, above personal prior average, tracked five-week clan-league contributor) for the correct event-time clan. Space and Piggy remain review-only until accepted; original approved characters cannot yet be reproduced by the current GitHub runner, and no automatic send or current production-template replacement is permitted.
+
 ## Source-locked four-event report recipes — 2026-10-22
 
 The reusable reporting contracts now live in [docs/report-recipes/README.md](report-recipes/README.md) and event-specific [Piggy Race](report-recipes/PIGGY_RACE.md), [Piggy Flash Set](report-recipes/PIGGY_FLASH_SET.md), [Space Race](report-recipes/SPACE_RACE.md), and [Kraken](report-recipes/KRAKEN.md). Their source-of-truth is the website's frozen event export with provenance, not image-model reading of screenshots. A generated image may assist **decorative artwork/layout only**: all data text, ranks, figures, names and badges must be overlaid deterministically from the verified fact pack. Companion text uses the same pack; visual QA and Discord hold rules are mandatory. No automatic Discord sends authorized yet. Legacy AV-2 Flash command examples in this file must not be used for current operations; AV-2 tracks Space Race and Big Piggy only.

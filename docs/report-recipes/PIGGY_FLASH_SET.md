@@ -1,3 +1,7 @@
+## Five-week league individual spotlights — October 22, 2026
+
+Add a dedicated panel for individual AVENGERS Flash performers: biggest **combined-day** contributor (sum of 1–4 PFs actually joined), strongest individual PF result, source-observed podiums where proved, eligible returning participants above their personal earlier same-clan Flash-day average, verified PBs, and known tracked five-week clan-league Sparks standouts. Do not infer complete 4/4 participation, medal ranks, or automatic no-Sparks status; the first Flash set after Kraken has no Sparks. Do not include AV-2.
+
 # Recipe 2 — Four-race Piggy Flash Set PNG and Discord message
 
 ## Scope and website pull

@@ -1,3 +1,7 @@
+## Five-week league individual spotlights — October 22, 2026
+
+Add a visible AVENGERS-only member-performance panel: top verified current Kraken damage, strongest genuine damage PB improvement, members above their own earlier same-clan Kraken average with an eligible denominator, and known tracked five-week clan-league contribution (estimated/unknown Sparks explicitly separated). Source-game podiums require source rank evidence; no Kraken Stars or private strategy. The Kraken closes that clan league; do not blend different five-week leagues or inferred payouts into exact rewards.
+
 # Recipe 4 — Kraken event results PNG and Discord message
 
 ## Scope and website pull

@@ -1,0 +1,51 @@
+name: Tall Space and Piggy layout review
+on:
+  pull_request:
+    paths:
+      - 'scripts/render-vertical-space-piggy.py'
+      - 'scripts/test_render_vertical_space_piggy.py'
+      - 'scripts/render-big-piggy-auto.py'
+      - 'scripts/export-event-summary.cjs'
+      - 'docs/report-recipes/VERTICAL_LAYOUT_SPACE_PIGGY.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: vertical-layout-review-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  tall-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned image renderer
+        run: python -m pip install Pillow==11.3.0
+      - name: Test tall layouts and source fixtures
+        run: python -m unittest scripts/test_render_vertical_space_piggy.py scripts/test_render_big_piggy_auto.py
+      - name: Export accepted website projection
+        run: node scripts/export-event-summary.cjs vertical-layout-source.json
+      - name: Render historical review pairs, with source truth preserved
+        run: |
+          python scripts/render-vertical-space-piggy.py reports/vertical-layout-source.json reports/vertical-space-AVENGERS.png --kind space --clan AVENGERS --event-id 'space|2026-10-16'
+          python scripts/render-vertical-space-piggy.py reports/vertical-layout-source.json reports/vertical-space-AV-2.png --kind space --clan AV-2 --event-id 'space|2026-10-16'
+          python scripts/render-vertical-space-piggy.py reports/vertical-layout-source.json reports/vertical-piggy-AVENGERS.png --kind piggy --clan AVENGERS --event-id 'piggy|2026-10-18'
+          python scripts/render-vertical-space-piggy.py reports/vertical-layout-source.json reports/vertical-piggy-AV-2.png --kind piggy --clan AV-2 --event-id 'piggy|2026-10-18'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vertical-space-piggy-review-${{ github.run_id }}
+          path: |
+            reports/vertical-space-*.png
+            reports/vertical-space-*.json
+            reports/vertical-piggy-*.png
+            reports/vertical-piggy-*.json
+          retention-days: 7
+          if-no-files-found: error

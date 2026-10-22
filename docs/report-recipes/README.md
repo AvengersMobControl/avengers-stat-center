@@ -1,3 +1,7 @@
+## Required individual spotlight section — October 22, 2026
+
+Each of the four report recipes includes a prominent individual recognition module, separate from Top 10 and PB tables. Compile event leaders, personal above-earlier-average performers (same event kind AND same event-time clan, with eligible denominator), valid PB/records, and tracked five-week-clan-league Sparks highlights. The website's known last completed Kraken endpoint is October 11, 2026; subsequent 35-day windows are cadence-derived and must be qualified. Transfers never cause one clan's prior results to be relabeled as another clan's personal history. Missing rows or reward amounts remain unknown, and no claim of complete league-wide ranks is allowed without full source coverage. See the Space/Piggy vertical layout contract and each event-specific recipe.
+
 # Source-locked automatic PNG and Discord message recipes
 
 Established 2026-10-22 for AVENGERS Mob Control. These four recipes are the input contracts for Piggy Race, the combined PF1–PF4 Piggy Flash Set, Space Race and Kraken. They are instructions, not evidence that an unattended renderer or sender is running. Issue #8 owns implementation and acceptance.

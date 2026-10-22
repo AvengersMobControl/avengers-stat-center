@@ -1,3 +1,11 @@
+## 2026-10-22 — Automatic WEBSITE result publication authorized; PNG/messages decoupled
+
+Leader explicitly instructed: "Automatically post them to the website. We will have the pngs/messages be a decoupled automation." This grants standing authorization for verified new final AVENGERS and AV-2 results to enter the canonical website ledger and complete the shared site release without another per-result commissioner approval. It supersedes earlier review-only/manual-parsed-approval wording **for this website workflow**. It does not authorize guessed results, changes to frozen Unlogged Sparks, paused UTC work or SAC changes.
+
+The existing daily ChatGPT results task is the runner being upgraded; no duplicate task or native GitHub/Vercel screenshot collector is claimed. Read-only Discord retrieval remains read-only; the scheduled agent separately performs source review, original-byte proof, exact event/identity resolution, deduplication, guarded canonical staging, CI/browser checks, merge and complete versioned publication. Ambiguous event dates/PF numbers/identities, conflicting accepted rows, unavailable proof and remaining explicit holds stay pending. Partial final coverage may publish known rows, never invented zeroes. Exactly-one-line Piggy/Flash rows are nonparticipants. PNG generation, messages and Discord dispatch are explicitly decoupled and are not triggered by website import.
+
+Operating instructions: [docs/AUTOMATIC_WEBSITE_RESULTS.md](docs/AUTOMATIC_WEBSITE_RESULTS.md). Configuration: `discord-ingest-config.json.websitePublication`; scheduled parsed-result approval is no longer required. Top-level manual_pull/autoImport=false/reviewRequired=true describes the READ-ONLY connector and existing manual review UI, not a veto of the standing-authorized scheduled website publisher. The import command's approved flag records this standing authorization only on an actual verified write, never on a dry-run; do not falsely label automated review as a new human approval.
+
 # AVENGERS Mob Control — Agent Operating Instructions
 
 These instructions apply to all work in `AvengersMobControl/avengers-stat-center`. Keep SAC / Lock It In (`sac-club`) separate.

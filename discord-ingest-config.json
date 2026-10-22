@@ -70,7 +70,32 @@
     "localTime": "08:00",
     "timing": "flexible morning window",
     "cadence": "daily",
-    "autoImport": false,
-    "parsedResultApprovalRequired": true
+    "autoImport": true,
+    "parsedResultApprovalRequired": false,
+    "purpose": "automatic-website-publication",
+    "authorization": "leader-standing-website-publication-2026-10-22",
+    "pngAndMessageDelivery": false
+  },
+  "websitePublication": {
+    "enabled": true,
+    "runner": "ChatGPT scheduled result check",
+    "authorization": {
+      "id": "leader-standing-website-publication-2026-10-22",
+      "date": "2026-10-22",
+      "scope": "AVENGERS and AV-2 source-backed final results to website only",
+      "perResultCommissionerApprovalRequired": false
+    },
+    "sourceReviewRequired": true,
+    "originalByteProofRequired": true,
+    "unresolvedEventAction": "hold",
+    "unresolvedIdentityAction": "hold",
+    "conflictingAcceptedResultAction": "hold",
+    "allowPartialCoverage": true,
+    "excludeOneLinePiggyFlash": true,
+    "preserveFrozenUnloggedSparks": true,
+    "publication": "shared-full-site-projection-ci-browser-versioned-release",
+    "pngGeneration": false,
+    "discordMessages": false,
+    "discordAutoSend": false
   }
 }

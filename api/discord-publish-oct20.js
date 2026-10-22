@@ -65,7 +65,7 @@ function checkSource(){
 }
 async function exactImage(){
  // The asset is included in the immutable deployment; never trust a caller-supplied URL.
- const url='https://'+process.env.VERCEL_URL+'/assets/reports/'+FILE;
+ const url='https://avengers-stat-center.vercel.app/assets/reports/'+FILE;
  if(!/^https:\/\/[a-zA-Z0-9.-]+\/assets\/reports\//.test(url))throw Error('Deployment URL missing');
  const response=await fetch(url,{signal:AbortSignal.timeout(16000)});
  if(!response.ok)throw Error('Approved report asset unavailable '+response.status);

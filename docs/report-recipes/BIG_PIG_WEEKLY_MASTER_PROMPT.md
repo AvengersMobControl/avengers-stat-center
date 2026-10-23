@@ -8,6 +8,21 @@ For **each clan independently**, AVENGERS and AV-2, select the most recent compl
 
 Produce an immutable **fact manifest**, a very detailed **stage-2 PNG composition prompt** derived ONLY from that manifest, a **Discord message draft**, and **review flags**. Attach the exact website event ID, data revision, historical evidence/references and known coverage. Validate arithmetic before building the prompt.
 
+### Mandatory canonical-identity and PB regression gate (2026-10-23 correction)
+
+**Resolve every source display name through the full, transitive canonical alias map BEFORE querying history or computing first-tracked, line PB, finishing-rank PB, own-history averages, or league leaders.** Merge prior results by canonical account and event date; preserve the *event-time clan* of every result. Do not accidentally treat a prior alias as a different person. PB calculations must use the entire accepted same-clan historical record and include legacy records prior to the current-release feed; looking only at the most recent two accepted events is prohibited.
+
+Hard regression fixture (must pass every weekly report before drawing ANY PB rows):
+
+- Canonical identity: `AV-Zolika.x.Kira`. Legacy aliases `AV-ZolikaLoveKira`, `ZolikaLoveKira`, and `AV-Zolika.x.TheBoss` map to this identity; `AV-KiraLoveZolika` is a separate person and must NOT be merged.
+- Weekly Big Pig PB for Zolika entering 2026-10-23: **57,985 lines (2026-09-20), recorded under `AV-ZolikaLoveKira`**. 2026-10-23 result **57,487** is **498 LOWER**, NOT a PB. A result naming Zolika in 2026-10-23 line-PB table or claiming +25.6% PB is an automatic FAIL.
+- `AV-JeffKintz05`, `AV-JefhKintz05`, and `AV-JeffHintz05` are one canonical account; do not falsely classify that player as first tracked. 
+- AV-2 `AV-KitKat`: previous same-clan line PB before 2026-10-23 was **5,156 (2026-09-25)**, not 2,817 (2026-10-18). His Oct 23 14,379 result is a PB but its increase is **+178.9%**, not +410.4%.
+- AV-2 `MayyaZ` and `AV2-MayyaZ` refer to one account: Oct 18 128 lines precedes Oct 23 724, a verified same-clan PB increase of **+465.6%**.
+- Distinguish **first tracked in this clan** from *first ever* and **confirmed new member**; being first tracked does not imply joining date.
+
+Before signing off, recompute historical PBs independently from the full merged ledger, compare every name and transition to the rendered PNG, and reject any output with an unexplained mismatch. These guards are independent of, and stricter than, an image model's text fidelity.
+
 ### Required fact manifest
 
 1. Identity: clan, weekly Big Pig event date and ID, release revision, source-coverage state, comparable previous accepted Big Pig date, current five-week league boundary.

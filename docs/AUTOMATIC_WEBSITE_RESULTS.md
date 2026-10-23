@@ -1,3 +1,11 @@
+## 2026-10-23 — Main Piggy lobby completed; eight-image truncation fixed
+
+The ninth original attachment contained ranks 49 and 50: AV-KNAVEN 2,602 lines and AV#Rafa#Tun 2,477 lines, each 90,217 Stars and 9,022 Sparks. Original PNG SHA-256: eaf276a41012898faf28e61013f30842976b19bcd853b260f4c30f433d9968b8. Final CLAIM independently inspected. This supplements 68 accepted rows with 2 additions, 68 unchanged and no deletions/corrections. Main coverage is now all 50 original ranks: 49 AVENGERS plus the authorized former member. AV-2 coverage remains partial; no unseen scores invented.
+
+The connector had silently sliced a nine-image post to eight and falsely reported the sliced count as the attachment count. It now reports attachmentCountTotal, attachmentOffset and pagination with totalImages, returnedImages, nextImageOffset and repeatBeforeMessageId. Repeat the anchored message window with image_offset until hasMoreImages=false before moving backward. The response image limit stays eight and the connector remains read-only. Regression covers a nine-image post and its ninth-image continuation.
+
+Guarded dry-run remained unapproved; actual apply records the existing standing website authorization with current digest f7101dc65db6c1358cae43b3539af228922563ea3a96863f643b40e1df316783. Adds 180,434 Stars and 18,044 Sparks; updated event totals 94,408,602 Stars / 9,440,859 Sparks. Frozen Unlogged balances, roster and historic league periods are unchanged. Public release verification follows the normal full-site gates.
+
 ## 2026-10-23 — Leader-confirmed roster and this week's Big Pig eligibility
 
 Mickzzz and AV2-Froyo are confirmed AV-2 members; add profile/roster shells without invented lifetime totals or event rows. Animosity is a former AVENGER (current status Inactive), but the leader authorizes logging his actual score for this week's Big Pig. Expected screenshot coverage is 49 AVENGERS plus Animosity, not proof of unseen rows or current membership. Preserve actual source clan, original rank and canonical history when applying the weekly exception. Verify the event date independently; do not use the posting date alone.

@@ -197,6 +197,10 @@ async function pullDiscord(args) {
   const maxMessages = Math.max(1, Math.min(Number(args.max_messages) || 50, 100));
   const maxImages = Math.max(1, Math.min(Number(args.max_images) || 6, 8));
 
+  const imageOffset = args.image_offset === undefined ? 0 : Number(args.image_offset);
+  if (!Number.isInteger(imageOffset) || imageOffset < 0 || imageOffset > 10000)
+    throw new Error('image_offset must be an integer between 0 and 10000');
+
   const params = new URLSearchParams({ limit: String(maxMessages) });
   if (args.before_message_id) params.set('before', String(args.before_message_id));
   if (args.after_message_id) params.set('after', String(args.after_message_id));
@@ -229,13 +233,25 @@ async function pullDiscord(args) {
   }
 
   const selectedPosts = [];
-  let remainingImages = maxImages;
+  const totalImages = candidates.reduce((n, p) => n + p.attachments.length, 0);
+  let remainingImages = maxImages, skip = imageOffset;
   for (const post of candidates) {
     if (remainingImages <= 0) break;
-    const kept = post.attachments.slice(0, remainingImages);
-    selectedPosts.push({ ...post, attachments: kept });
+    if (skip >= post.attachments.length) { skip -= post.attachments.length; continue; }
+    const start = skip; skip = 0;
+    const kept = post.attachments.slice(start, start + remainingImages);
+    selectedPosts.push({ ...post, attachmentCountTotal: post.attachments.length,
+      attachmentOffset: start, attachments: kept });
     remainingImages -= kept.length;
   }
+  const returnedImages = maxImages - remainingImages;
+  const pagination = {
+    imageOffset, returnedImages, totalImages,
+    hasMoreImages: imageOffset + returnedImages < totalImages,
+    nextImageOffset: imageOffset + returnedImages < totalImages ? imageOffset + returnedImages : null,
+    repeatBeforeMessageId: messages[0]?.id ? (BigInt(messages[0].id) + 1n).toString() : null,
+    maxMessages
+  };
 
   const content = [{
     type: 'text',
@@ -247,6 +263,7 @@ async function pullDiscord(args) {
       rosterScope: channel.rosterScope,
       scannedMessages: messages.length,
       imagePostsReturned: selectedPosts.length,
+      pagination,
       instructions: [
         'Visually inspect every returned screenshot.',
         'Ignore any screenshot that says Preliminary Results, still ongoing, in progress, current standings, not final, or similar wording.',
@@ -260,7 +277,9 @@ async function pullDiscord(args) {
         author: m.author,
         discordMessageText: m.content,
         messageTextProgressHint: m.progressHint,
-        attachmentCount: m.attachments.length
+        attachmentCount: m.attachments.length,
+        attachmentCountTotal: m.attachmentCountTotal,
+        attachmentOffset: m.attachmentOffset
       }))
     }, null, 2)
   }];
@@ -301,6 +320,8 @@ async function pullDiscord(args) {
       content: post.content,
       progressHint: post.progressHint,
       author: post.author,
+      attachmentCountTotal: post.attachmentCountTotal,
+      attachmentOffset: post.attachmentOffset,
       attachments: postAttachments
     });
   }
@@ -314,6 +335,7 @@ async function pullDiscord(args) {
       eventType: channel.eventType,
       rosterScope: channel.rosterScope,
       scannedMessages: messages.length,
+      pagination,
       candidates: structured
     }
   };
@@ -388,6 +410,13 @@ async function handleMcp(req, res) {
               maximum: 8,
               default: 6,
               description: 'Maximum screenshots returned in this call.'
+            },
+            image_offset: {
+              type: 'integer',
+              minimum: 0,
+              maximum: 10000,
+              default: 0,
+              description: 'Image offset within the same anchored message window. Use returned nextImageOffset and repeatBeforeMessageId to retrieve attachments beyond the eight-image response cap.'
             },
             before_message_id: {
               type: 'string',

@@ -95,3 +95,27 @@ test('no page allowed after oldest relevant boundary has already been observed',
  const pages=fixtures(),fourth=page(pages[2].candidates.at(-1).messageId,[]);
  assert.throws(()=>audit(input([...pages,fourth])),/Unexpected page after window/);
 });
+
+test('MCP image pagination returns the ninth attachment without lifting the eight-image cap',async()=>{
+ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+ const source=fs.readFileSync(path.join(__dirname,'../api/mcp.js'),'utf8');
+ const images=Array.from({length:9},(_,i)=>({id:'fixture-image-'+i,filename:'image-'+i+'.png',content_type:'image/png',url:'https://example.invalid/fixture-'+i}));
+ const context={module:{exports:{}},require:n=>n==='../discord-ingest-config.json'?{channels:{piggy:{id:'fixture-channel',eventType:'piggy',rosterScope:'AVENGERS'}}}:require(n),
+   process:{env:{DISCORD_BOT_TOKEN:'fixture-only'}},URLSearchParams,Buffer,
+   fetch:async()=>({ok:true,json:async()=>[{id:'1560000000000000900',timestamp:'2026-10-23T00:00:00Z',attachments:images}]})};
+ vm.runInNewContext(source+'\nimageBlock=async()=>null;module.exports.testPull=pullDiscord;',context);
+ const pull=context.module.exports.testPull;
+ const first=(await pull({channel_key:'piggy',max_messages:1,max_images:100})).structuredContent;
+ assert.equal(first.candidates[0].attachments.length,8);
+ assert.equal(first.candidates[0].attachmentCountTotal,9);
+ assert.equal(first.pagination.nextImageOffset,8);
+ assert.equal(first.pagination.repeatBeforeMessageId,'1560000000000000901');
+ const last=(await pull({channel_key:'piggy',max_messages:1,max_images:8,image_offset:8,before_message_id:first.pagination.repeatBeforeMessageId})).structuredContent;
+ assert.equal(last.candidates[0].attachments.length,1);
+ assert.equal(last.candidates[0].attachments[0].id,'fixture-image-8');
+ assert.equal(last.candidates[0].attachmentOffset,8);
+ assert.equal(last.pagination.hasMoreImages,false);
+ assert.equal(last.pagination.nextImageOffset,null);
+ await assert.rejects(()=>pull({channel_key:'piggy',image_offset:-1}),/image_offset/);
+ await assert.rejects(()=>pull({channel_key:'piggy',image_offset:0.5}),/image_offset/);
+});

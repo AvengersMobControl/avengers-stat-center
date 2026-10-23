@@ -5356,6 +5356,931 @@
         "id": "leader-standing-website-publication-2026-10-22",
         "date": "2026-10-22"
       }
+    },
+    {
+      "approved": true,
+      "expectedRevision": 1,
+      "event": {
+        "id": "piggy|2026-10-23",
+        "kind": "piggy",
+        "date": "2026-10-23",
+        "status": "partial",
+        "unit": "lines",
+        "metadata": {
+          "complete": false,
+          "coverageNote": "All 50 main-lobby results verified: 49 AVENGERS plus one authorized former member. AV-2 coverage remains partial; its unseen bottom rows remain unknown.",
+          "dateBasis": "Leader-identified current-week finished race; established Friday Piggy finish mapping; both final CLAIM source sets match this intake",
+          "lobbies": [
+            "AV-main",
+            "AV2-main"
+          ],
+          "displayedPotStars": "90.22M",
+          "av2DisplayedPotStars": "6.86M",
+          "starsProvenance": "Rounded main-lobby Stars on ranks 1-28 derived from exact visible Sparks x10; directly visible integer Stars otherwise retained",
+          "expectedMainLobbyRows": 50,
+          "observedMainLobbyRows": 50,
+          "oneLineNonparticipantsExcluded": 1,
+          "mainLobbyCoverageComplete": true
+        },
+        "sources": [
+          "reviewed-image-sha256:030a3593dc014c23e73cf73432702b8f651a19acc8bb104d0a6e6ec9fe9b0a5b",
+          "reviewed-image-sha256:07295256cb742235aee59ed147bc5ca7fbd66710761b8726487fcf1f9e2fb724",
+          "reviewed-image-sha256:348af2b170380e4417fe8933e1ead0cdc30dce9e9159b1f5eb41fc25b81a97f0",
+          "reviewed-image-sha256:44369b257aa73c2d8f4a4655c799a00b8db29449405c27cd2e8a42761d7cdd3a",
+          "reviewed-image-sha256:5174430b3eabb8e7d9f84af41ecfb27a644d895a0d249006e934b03b94d75366",
+          "reviewed-image-sha256:60e9b393c465bd762f53e338224c9af11f8d6213014b388d76b211655e9245dc",
+          "reviewed-image-sha256:79d93a8b29edc0232a4bf0a595570d9e680af45863c455e3d2f60a0b9b77bed5",
+          "reviewed-image-sha256:7c901249a4026942d04cae55c58bebfeacb6644edf893df875d1877af6b4f0d3",
+          "reviewed-image-sha256:80463dbfbb7741f2a2bb68680faa5ab9aa274fe9276cb5d127c343e44f864227",
+          "reviewed-image-sha256:887bad5cfaed4dd37fa0930728adc7250ec0596bc27a97ae5929398ad4ec0a89",
+          "reviewed-image-sha256:ce05c74be14ae18d5b54e67e3d783dd0caee86ccd1a4c0cff6dbb299f72445ff",
+          "reviewed-image-sha256:d024496ef0c4d9634aca6e964f4a06ad7a92c50e1dff0d36d435ca77467ab0c7",
+          "reviewed-image-sha256:d0c85c838a828a7ef68fdde0e0b26c4ca2f312958ba3dc3bb6943a5c1b4b140f",
+          "reviewed-image-sha256:d97e74eb610b6189e1a87943ed57806f4c79a48796c36aa563e7d0c9ca4bd7f4",
+          "reviewed-image-sha256:eaf276a41012898faf28e61013f30842976b19bcd853b260f4c30f433d9968b8",
+          "reviewed-image-sha256:efa5d9b2cee1f151befab67b1e9bda89583b8ca87ad2f817aa030d373f519ae9"
+        ],
+        "rows": [
+          {
+            "player": "AV-2(TAMIM)",
+            "clan": "AV-2",
+            "score": 32,
+            "sparks": 1377,
+            "stars": 13766,
+            "metadata": {
+              "rank": 38,
+              "share": 0.002,
+              "lobby": "AV2-main"
+            }
+          },
+          {
+            "player": "AV-23",
+            "clan": "AVENGERS",
+            "score": 10410,
+            "sparks": 72174,
+            "stars": 721735,
+            "metadata": {
+              "rank": 32,
+              "share": 0.008,
+              "lobby": "AV-main"
+            }
+          },
+          {
+            "player": "AV-7-STAR",
+            "clan": "AVENGERS",
+            "score": 42640,
+            "sparks": 451084,
+            "stars": 4510840,
+            "metadata": {
+              "rank": 4,
+              "share": 0.05,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-8!l...Bil",
+            "clan": "AVENGERS",
+            "score": 25035,
+            "sparks": 252607,
+            "stars": 2526070,
+            "metadata": {
+              "rank": 12,
+              "share": 0.027999999999999997,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-Abu//npjp",
+            "clan": "AVENGERS",
+            "score": 10762,
+            "sparks": 99239,
+            "stars": 992386,
+            "metadata": {
+              "rank": 29,
+              "share": 0.011000000000000001,
+              "lobby": "AV-main"
+            }
+          },
+          {
+            "player": "AV-Addicted",
+            "clan": "AVENGERS",
+            "score": 32537,
+            "sparks": 333803,
+            "stars": 3338030,
+            "metadata": {
+              "rank": 8,
+              "share": 0.037000000000000005,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-Adigarian",
+            "clan": "AVENGERS",
+            "score": 3513,
+            "sparks": 9022,
+            "stars": 90217,
+            "metadata": {
+              "rank": 48,
+              "share": 0.001,
+              "lobby": "AV-main"
+            }
+          },
+          {
+            "player": "AV-Animosity",
+            "clan": "American 50.0",
+            "score": 4626,
+            "sparks": 9022,
+            "stars": 90217,
+            "metadata": {
+              "rank": 46,
+              "share": 0.001,
+              "lobby": "AV-main",
+              "sourceDisplayName": "50.Animosity",
+              "eligibilityOverride": "leader-weekly-big-pig-2026-10-23"
+            }
+          },
+          {
+            "player": "AV-BigPapi",
+            "clan": "AVENGERS",
+            "score": 8394,
+            "sparks": 27065,
+            "stars": 270651,
+            "metadata": {
+              "rank": 37,
+              "share": 0.003,
+              "lobby": "AV-main"
+            }
+          },
+          {
+            "player": "AV-braa",
+            "clan": "AV-2",
+            "score": 17,
+            "sparks": 688,
+            "stars": 6883,
+            "metadata": {
+              "rank": 42,
+              "share": 0.001,
+              "lobby": "AV2-main"
+            }
+          },
+          {
+            "player": "AV-Brisket",
+            "clan": "AV-2",
+            "score": 8665,
+            "sparks": 55063,
+            "stars": 550634,
+            "metadata": {
+              "rank": 3,
+              "share": 0.08,
+              "lobby": "AV2-main"
+            }
+          },
+          {
+            "player": "AV-Caklet",
+            "clan": "AV-2",
+            "score": 296,
+            "sparks": 9636,
+            "stars": 96361,
+            "metadata": {
+              "rank": 26,
+              "share": 0.013999999999999999,
+              "lobby": "AV2-main"
+            }
+          },
+          {
+            "player": "AV-CHEN1972",
+            "clan": "AVENGERS",
+            "score": 28107,
+            "sparks": 261629,
+            "stars": 2616290,
+            "metadata": {
+              "rank": 11,
+              "share": 0.028999999999999998,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-Chuck",
+            "clan": "AVENGERS",
+            "score": 9178,
+            "sparks": 45108,
+            "stars": 451084,
+            "metadata": {
+              "rank": 35,
+              "share": 0.005,
+              "lobby": "AV-main"
+            }
+          },
+          {
+            "player": "AV-ColdCreeps",
+            "clan": "AVENGERS",
+            "score": 5197,
+            "sparks": 9022,
+            "stars": 90217,
+            "metadata": {
+              "rank": 42,
+              "share": 0.001,
+              "lobby": "AV-main"
+            }
+          },
+          {
+            "player": "AV-DaG",
+            "clan": "AVENGERS",
+            "score": 5148,
+            "sparks": 9022,
+            "stars": 90217,
+            "metadata": {
+              "rank": 43,
+              "share": 0.001,
+              "lobby": "AV-main"
+            }
+          },
+          {
+            "player": "AV-Deviantdan",
+            "clan": "AVENGERS",
+            "score": 7329,
+            "sparks": 9022,
+            "stars": 90217,
+            "metadata": {
+              "rank": 39,
+              "share": 0.001,
+              "lobby": "AV-main"
+            }
+          },
+          {
+            "player": "AV-EventHorizon",
+            "clan": "AV-2",
+            "score": 9738,
+            "sparks": 61946,
+            "stars": 619463,
+            "metadata": {
+              "rank": 2,
+              "share": 0.09,
+              "lobby": "AV2-main"
+            }
+          },
+          {
+            "player": "AV-EXCALIBUR",
+            "clan": "AV-2",
+            "score": 8203,
+            "sparks": 34414,
+            "stars": 344146,
+            "metadata": {
+              "rank": 4,
+              "share": 0.05,
+              "lobby": "AV2-main"
+            }
+          },
+          {
+            "player": "AV-Fahad",
+            "clan": "AV-2",
+            "score": 23,
+            "sparks": 688,
+            "stars": 6883,
+            "metadata": {
+              "rank": 41,
+              "share": 0.001,
+              "lobby": "AV2-main"
+            }
+          },
+          {
+            "player": "AV-Finnie",
+            "clan": "AVENGERS",
+            "score": 12726,
+            "sparks": 126304,
+            "stars": 1263040,
+            "metadata": {
+              "rank": 26,
+              "share": 0.013999999999999999,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-Fred",
+            "clan": "AVENGERS",
+            "score": 10000,
+            "sparks": 63152,
+            "stars": 631518,
+            "metadata": {
+              "rank": 33,
+              "share": 0.006999999999999999,
+              "lobby": "AV-main"
+            }
+          },
+          {
+            "player": "AV-HarryBallsagna",
+            "clan": "AVENGERS",
+            "score": 18528,
+            "sparks": 198477,
+            "stars": 1984770,
+            "metadata": {
+              "rank": 18,
+              "share": 0.022000000000000002,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-HN",
+            "clan": "AVENGERS",
+            "score": 5702,
+            "sparks": 9022,
+            "stars": 90217,
+            "metadata": {
+              "rank": 41,
+              "share": 0.001,
+              "lobby": "AV-main",
+              "sourceDisplayName": "AVS9-HN"
+            }
+          },
+          {
+            "player": "AV-Hoops",
+            "clan": "AV-2",
+            "score": 464,
+            "sparks": 13077,
+            "stars": 130776,
+            "metadata": {
+              "rank": 21,
+              "share": 0.019,
+              "lobby": "AV2-main"
+            }
+          },
+          {
+            "player": "AV-I.S.O",
+            "clan": "AVENGERS",
+            "score": 15048,
+            "sparks": 180434,
+            "stars": 1804340,
+            "metadata": {
+              "rank": 20,
+              "share": 0.02,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-INTEN",
+            "clan": "AVENGERS",
+            "score": 51525,
+            "sparks": 721735,
+            "stars": 7217350,
+            "metadata": {
+              "rank": 3,
+              "share": 0.08,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-ItsNospace",
+            "clan": "AV-2",
+            "score": 239,
+            "sparks": 6883,
+            "stars": 68829,
+            "metadata": {
+              "rank": 30,
+              "share": 0.01,
+              "lobby": "AV2-main"
+            }
+          },
+          {
+            "player": "AV-J",
+            "clan": "AV-2",
+            "score": 2342,
+            "sparks": 25467,
+            "stars": 254668,
+            "metadata": {
+              "rank": 8,
+              "share": 0.037000000000000005,
+              "lobby": "AV2-main",
+              "sourceDisplayName": "AV2-J"
+            }
+          },
+          {
+            "player": "AV-J1M",
+            "clan": "AVENGERS",
+            "score": 9833,
+            "sparks": 54130,
+            "stars": 541301,
+            "metadata": {
+              "rank": 34,
+              "share": 0.006,
+              "lobby": "AV-main"
+            }
+          },
+          {
+            "player": "AV-JAMO",
+            "clan": "AVENGERS",
+            "score": 19270,
+            "sparks": 207499,
+            "stars": 2074990,
+            "metadata": {
+              "rank": 17,
+              "share": 0.023,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-JefhKintz05",
+            "clan": "AVENGERS",
+            "score": 12991,
+            "sparks": 135325,
+            "stars": 1353250,
+            "metadata": {
+              "rank": 25,
+              "share": 0.015,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-KiraLoveZolika",
+            "clan": "AV-2",
+            "score": 1420,
+            "sparks": 19960,
+            "stars": 199605,
+            "metadata": {
+              "rank": 11,
+              "share": 0.028999999999999998,
+              "lobby": "AV2-main"
+            }
+          },
+          {
+            "player": "AV-KitKat",
+            "clan": "AV-2",
+            "score": 14379,
+            "sparks": 68829,
+            "stars": 688292,
+            "metadata": {
+              "rank": 1,
+              "share": 0.1,
+              "lobby": "AV2-main"
+            }
+          },
+          {
+            "player": "AV-KNAVEN",
+            "clan": "AVENGERS",
+            "score": 2602,
+            "stars": 90217,
+            "sparks": 9022,
+            "metadata": {
+              "rank": 49,
+              "share": 0.001,
+              "lobby": "AV-main"
+            }
+          },
+          {
+            "player": "AV-KO",
+            "clan": "AV-2",
+            "score": 1137,
+            "sparks": 18584,
+            "stars": 185839,
+            "metadata": {
+              "rank": 13,
+              "share": 0.027000000000000003,
+              "lobby": "AV2-main"
+            }
+          },
+          {
+            "player": "AV-Lin",
+            "clan": "AVENGERS",
+            "score": 23894,
+            "sparks": 234564,
+            "stars": 2345640,
+            "metadata": {
+              "rank": 14,
+              "share": 0.026000000000000002,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-McNasty",
+            "clan": "AVENGERS",
+            "score": 10702,
+            "sparks": 81195,
+            "stars": 811952,
+            "metadata": {
+              "rank": 31,
+              "share": 0.009000000000000001,
+              "lobby": "AV-main"
+            }
+          },
+          {
+            "player": "AV-Megalodon",
+            "clan": "AVENGERS",
+            "score": 14724,
+            "sparks": 171412,
+            "stars": 1714120,
+            "metadata": {
+              "rank": 21,
+              "share": 0.019,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-Mendoria",
+            "clan": "AVENGERS",
+            "score": 30019,
+            "sparks": 270651,
+            "stars": 2706510,
+            "metadata": {
+              "rank": 10,
+              "share": 0.03,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-MotherboardBeans",
+            "clan": "AVENGERS",
+            "score": 5061,
+            "sparks": 9022,
+            "stars": 90217,
+            "metadata": {
+              "rank": 44,
+              "share": 0.001,
+              "lobby": "AV-main"
+            }
+          },
+          {
+            "player": "AV-Mr.Mar.Berry",
+            "clan": "AVENGERS",
+            "score": 9150,
+            "sparks": 36087,
+            "stars": 360868,
+            "metadata": {
+              "rank": 36,
+              "share": 0.004,
+              "lobby": "AV-main"
+            }
+          },
+          {
+            "player": "AV-neez",
+            "clan": "AV-2",
+            "score": 44,
+            "sparks": 3441,
+            "stars": 34415,
+            "metadata": {
+              "rank": 35,
+              "share": 0.005,
+              "lobby": "AV2-main"
+            }
+          },
+          {
+            "player": "AV-Nicefellow",
+            "clan": "AVENGERS",
+            "score": 42359,
+            "sparks": 405976,
+            "stars": 4059760,
+            "metadata": {
+              "rank": 5,
+              "share": 0.045,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-no",
+            "clan": "AVENGERS",
+            "score": 4623,
+            "sparks": 9022,
+            "stars": 90217,
+            "metadata": {
+              "rank": 47,
+              "share": 0.001,
+              "lobby": "AV-main"
+            }
+          },
+          {
+            "player": "AV-Obajoba",
+            "clan": "AVENGERS",
+            "score": 13133,
+            "sparks": 144347,
+            "stars": 1443470,
+            "metadata": {
+              "rank": 24,
+              "share": 0.016,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-Pablin",
+            "clan": "AVENGERS",
+            "score": 32434,
+            "sparks": 315759,
+            "stars": 3157590,
+            "metadata": {
+              "rank": 9,
+              "share": 0.035,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-Rita",
+            "clan": "AVENGERS",
+            "score": 23835,
+            "sparks": 225542,
+            "stars": 2255420,
+            "metadata": {
+              "rank": 15,
+              "share": 0.025,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-RkHendrix",
+            "clan": "AVENGERS",
+            "score": 8030,
+            "sparks": 18043,
+            "stars": 180434,
+            "metadata": {
+              "rank": 38,
+              "share": 0.002,
+              "lobby": "AV-main"
+            }
+          },
+          {
+            "player": "AV-Royal",
+            "clan": "AVENGERS",
+            "score": 12345,
+            "sparks": 117282,
+            "stars": 1172820,
+            "metadata": {
+              "rank": 27,
+              "share": 0.013000000000000001,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-SB",
+            "clan": "AVENGERS",
+            "score": 21229,
+            "sparks": 216521,
+            "stars": 2165210,
+            "metadata": {
+              "rank": 16,
+              "share": 0.024,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-ShielDBreaker",
+            "clan": "AVENGERS",
+            "score": 14602,
+            "sparks": 162390,
+            "stars": 1623900,
+            "metadata": {
+              "rank": 22,
+              "share": 0.018000000000000002,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-SiFra",
+            "clan": "AVENGERS",
+            "score": 36055,
+            "sparks": 387933,
+            "stars": 3879330,
+            "metadata": {
+              "rank": 7,
+              "share": 0.043,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-SMILINGBANDIT",
+            "clan": "AVENGERS",
+            "score": 7041,
+            "sparks": 9022,
+            "stars": 90217,
+            "metadata": {
+              "rank": 40,
+              "share": 0.001,
+              "lobby": "AV-main"
+            }
+          },
+          {
+            "player": "AV-Squishy",
+            "clan": "AV-2",
+            "score": 2424,
+            "sparks": 29596,
+            "stars": 295966,
+            "metadata": {
+              "rank": 7,
+              "share": 0.043,
+              "lobby": "AV2-main"
+            }
+          },
+          {
+            "player": "AV-Supreeth",
+            "clan": "AVENGERS",
+            "score": 16020,
+            "sparks": 189456,
+            "stars": 1894560,
+            "metadata": {
+              "rank": 19,
+              "share": 0.021,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-SweetiePL",
+            "clan": "AVENGERS",
+            "score": 41553,
+            "sparks": 396954,
+            "stars": 3969540,
+            "metadata": {
+              "rank": 6,
+              "share": 0.044000000000000004,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-TigerMx",
+            "clan": "AV-2",
+            "score": 1136,
+            "sparks": 17895,
+            "stars": 178956,
+            "metadata": {
+              "rank": 14,
+              "share": 0.026000000000000002,
+              "lobby": "AV2-main"
+            }
+          },
+          {
+            "player": "AV-Timmy",
+            "clan": "AVENGERS",
+            "score": 24997,
+            "sparks": 243586,
+            "stars": 2435860,
+            "metadata": {
+              "rank": 13,
+              "share": 0.027000000000000003,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-UANGELES",
+            "clan": "AVENGERS",
+            "score": 4905,
+            "sparks": 9022,
+            "stars": 90217,
+            "metadata": {
+              "rank": 45,
+              "share": 0.001,
+              "lobby": "AV-main"
+            }
+          },
+          {
+            "player": "AV-Vadik-UA",
+            "clan": "AVENGERS",
+            "score": 10709,
+            "sparks": 90217,
+            "stars": 902169,
+            "metadata": {
+              "rank": 30,
+              "share": 0.01,
+              "lobby": "AV-main"
+            }
+          },
+          {
+            "player": "AV-WolfLegend",
+            "clan": "AVENGERS",
+            "score": 60216,
+            "sparks": 902169,
+            "stars": 9021690,
+            "metadata": {
+              "rank": 1,
+              "share": 0.1,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV-Zolika.x.Kira",
+            "clan": "AVENGERS",
+            "score": 57487,
+            "sparks": 811952,
+            "stars": 8119520,
+            "metadata": {
+              "rank": 2,
+              "share": 0.09,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV.Saberkong",
+            "clan": "AVENGERS",
+            "score": 11158,
+            "sparks": 108260,
+            "stars": 1082600,
+            "metadata": {
+              "rank": 28,
+              "share": 0.012,
+              "lobby": "AV-main",
+              "sourceDisplayName": "AVS9.Saberkong",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV#Rafa#Tun",
+            "clan": "AVENGERS",
+            "score": 2477,
+            "stars": 90217,
+            "sparks": 9022,
+            "metadata": {
+              "rank": 50,
+              "share": 0.001,
+              "lobby": "AV-main"
+            }
+          },
+          {
+            "player": "AV<STAR-LORD>",
+            "clan": "AVENGERS",
+            "score": 13310,
+            "sparks": 153369,
+            "stars": 1533690,
+            "metadata": {
+              "rank": 23,
+              "share": 0.017,
+              "lobby": "AV-main",
+              "starsProvenance": "exact Sparks x10; displayed Stars rounded"
+            }
+          },
+          {
+            "player": "AV2-Froyo",
+            "clan": "AV-2",
+            "score": 121,
+            "sparks": 5506,
+            "stars": 55063,
+            "metadata": {
+              "rank": 32,
+              "share": 0.008,
+              "lobby": "AV2-main"
+            }
+          },
+          {
+            "player": "AV2-MayyaZ",
+            "clan": "AV-2",
+            "score": 724,
+            "sparks": 15142,
+            "stars": 151424,
+            "metadata": {
+              "rank": 18,
+              "share": 0.022000000000000002,
+              "lobby": "AV2-main"
+            }
+          },
+          {
+            "player": "Mickzzz",
+            "clan": "AV-2",
+            "score": 877,
+            "sparks": 16519,
+            "stars": 165190,
+            "metadata": {
+              "rank": 16,
+              "share": 0.024,
+              "lobby": "AV2-main"
+            }
+          },
+          {
+            "player": "TheHemperor",
+            "clan": "AV-2",
+            "score": 607,
+            "sparks": 14454,
+            "stars": 144541,
+            "metadata": {
+              "rank": 19,
+              "share": 0.021,
+              "lobby": "AV2-main"
+            }
+          }
+        ]
+      },
+      "authorization": {
+        "kind": "standing-website-only",
+        "id": "leader-standing-website-publication-2026-10-22",
+        "date": "2026-10-22"
+      }
     }
   ]
 }

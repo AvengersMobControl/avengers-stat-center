@@ -1,3 +1,9 @@
+## 2026-10-23 — Leader-confirmed roster and this week's Big Pig eligibility
+
+Mickzzz and AV2-Froyo are confirmed AV-2 members; add profile/roster shells without invented lifetime totals or event rows. Animosity is a former AVENGER (current status Inactive), but the leader authorizes logging his actual score for this week's Big Pig. Expected screenshot coverage is 49 AVENGERS plus Animosity, not proof of unseen rows or current membership. Preserve actual source clan, original rank and canonical history when applying the weekly exception. Verify the event date independently; do not use the posting date alone.
+
+Ignore S9 display tags for identity matching where the underlying account is established: AVS9.Saberkong resolves to AV.Saberkong and AVS9-HN to AV-HN. Preserve source spelling; do not merge ambiguous accounts. Current roster is 49 AVENGERS / 53 AV-2. Original-byte proof and full-site publication gates still apply; this clarification does not itself import the event.
+
 ## 2026-10-22 — Automatic WEBSITE result publication authorized; PNG/messages decoupled
 
 Leader explicitly instructed: "Automatically post them to the website. We will have the pngs/messages be a decoupled automation." This grants standing authorization for verified new final AVENGERS and AV-2 results to enter the canonical website ledger and complete the shared site release without another per-result commissioner approval. It supersedes earlier review-only/manual-parsed-approval wording **for this website workflow**. It does not authorize guessed results, changes to frozen Unlogged Sparks, paused UTC work or SAC changes.

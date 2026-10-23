@@ -114,6 +114,23 @@
     "pngGeneration": false,
     "discordMessages": false,
     "discordAutoSend": false,
-    "flashAttribution": "dedicated PF channel + preceding established large final-results posting; later supplements inherit that event unless evidence conflicts"
+    "flashAttribution": "dedicated PF channel + preceding established large final-results posting; later supplements inherit that event unless evidence conflicts",
+    "displayTagPolicy": "Ignore S9 display tags when matching an independently established canonical account; preserve original source spelling and never merge ambiguous identities.",
+    "weeklyEligibilityExceptions": [
+      {
+        "kind": "piggy",
+        "reviewDate": "2026-10-23",
+        "eventDateRequiresSourceVerification": true,
+        "player": "AV-Animosity",
+        "currentRosterStatus": "Inactive",
+        "scope": "this week's Big Pig only",
+        "preserveActualSourceClan": true,
+        "expectedCoverage": {
+          "avengers": 49,
+          "formerMembers": 1
+        },
+        "authorization": "leader instruction 2026-10-23"
+      }
+    ]
   }
 }

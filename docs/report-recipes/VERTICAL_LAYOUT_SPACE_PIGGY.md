@@ -31,7 +31,7 @@ The leader prefers the vertically expanding four-Flash design: a readable poster
 3. Change in **total lines** versus previous comparable Piggy, plus last five same-clan average trends.
 4. Individual performance spotlight band for that five-week clan league: **Top Line Contributor** (most verified lines; name and exact total; ties disclosed), strongest improvement over own prior average, tracked cumulative Piggy-lines leader in the clan league, tracked all-event league Sparks leader, above-prior-average count.
 5. Top 10 by lines only; do not call score order original game finish order.
-6. **All** returning-player line PBs: previous amount/date, new amount, percentage improvement.
+6. **All** returning-player **career-wide** line PBs (resolve all canonical aliases, include Piggy scores across clan transfers): previous amount/date, new amount, percentage improvement. For Oct23 AV-2, KitKat's 14,379 and EventHorizon's 9,738 are NOT line PBs owing to prior all-clan scores 17,137 and 14,000, despite their independently valid clan-specific finishing-rank PBs.
 7. **All** qualifying actual finishing-rank PBs, separate from line PBs: original source ranks and prior dates, with independent 30+ AVENGERS / 5+ AV-2 single-lobby thresholds.
 8. **All** first-tracked Piggy appearances and their lines, separately identified from new PBs.
 9. **Notable new-member performances** as their own independently evidenced category, even if a member has prior tracked results; first tracked and new member are not synonymous.

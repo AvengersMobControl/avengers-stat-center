@@ -1,3 +1,11 @@
+## 2026-10-23 — Verified partial Piggy results published under standing website authorization
+
+Prepared 68 new final results from 15 visually verified final CLAIM originals: 47 AVENGERS, 20 AV-2 and the leader-authorized former-member exception. Source clan remains American 50.0 for that one score; no current membership change. Exactly-one-line nonparticipant excluded. Both bottom windows remain partial; no missing rows or rewards invented. Visible Stars retained; rounded Stars derived from exact Sparks x10 with provenance. Added totals: 94,228,168 Stars and 9,422,815 Sparks. Eight established line PB improvements; seven first tracked Piggy appearances. All 28 frozen Unlogged balances and the six historic league periods stay unchanged.
+
+Original CDN retrieval succeeded through a remote Vercel session using scripts/fetch-original-discord-image.cjs: HTTP 200 with original PNG/JPEG bytes and receipt SHA-256. Earlier HTTP 403 from another execution environment is not a continuing Discord source outage. Prefer the demonstrated remote retrieval path; private signed URLs, receipts and Discord metadata never enter public commits.
+
+The guarded dry-run stayed unapproved. Actual apply uses standing-website-only / leader-standing-website-publication-2026-10-22 and current review digest c0361058c1de9195c3dce4541d5eb1921762b798fb521314f7f46a6b4541f17e. Partial coverage may be supplemented later with independently verified originals. No Discord publication or dispatch activation accompanies website import. Production checks determine final live status.
+
 ## 2026-10-23 — Leader-confirmed roster and this week's Big Pig eligibility
 
 Mickzzz and AV2-Froyo are confirmed AV-2 members; add profile/roster shells without invented lifetime totals or event rows. Animosity is a former AVENGER (current status Inactive), but the leader authorizes logging his actual score for this week's Big Pig. Expected screenshot coverage is 49 AVENGERS plus Animosity, not proof of unseen rows or current membership. Preserve actual source clan, original rank and canonical history when applying the weekly exception. Verify the event date independently; do not use the posting date alone.

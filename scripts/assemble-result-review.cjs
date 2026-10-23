@@ -17,15 +17,24 @@ function safeMetadata(raw){
     if(key==='lobby')check(typeof value==='string'&&/^[A-Za-z0-9-]{1,12}$/.test(value),'Invalid public lobby label');
     out[key]=value;
   }
+  for(const key of ['sourceDisplayName','starsProvenance','eligibilityOverride']){
+    if(data[key]===undefined)continue;
+    check(typeof data[key]==='string'&&data[key].length>0&&data[key].length<=100&&
+      [...data[key]].every(ch=>ch.charCodeAt(0)>=32),'Invalid public '+key);
+    out[key]=data[key];
+  }
   return Object.keys(out).length?out:null;
 }
-function publicRow(raw,aliases){
+function publicRow(raw,aliases,event=null){
   check(raw&&typeof raw==='object'&&!Array.isArray(raw),'Invalid parsed result');
   // Unknown or ambiguous identities go to human review, never silently become
   // an invented member, a Discord user ID, or a different Frenchie account.
   check(typeof raw.player==='string'&&raw.player.trim(),'Unresolved player identity requires review');
   const player=canonical(raw.player,aliases);
-  check(raw.clan==='AVENGERS'||raw.clan==='AV-2','Unknown EVENT-TIME clan for '+player);
+  const weeklyFormerMember=event?.id==='piggy|2026-10-23'&&event?.date==='2026-10-23'&&
+    event?.kind==='piggy'&&player==='AV-Animosity'&&raw.clan==='American 50.0'&&
+    raw.metadata?.eligibilityOverride==='leader-weekly-big-pig-2026-10-23';
+  check(raw.clan==='AVENGERS'||raw.clan==='AV-2'||weeklyFormerMember,'Unknown EVENT-TIME clan for '+player);
   for(const field of ['score','sparks','stars']){
     check(Object.hasOwn(raw,field),'Missing '+field+' for '+player+'; use null if unknown');
     check(raw[field]===null||(typeof raw[field]==='number'&&Number.isFinite(raw[field])&&raw[field]>=0),
@@ -79,7 +88,7 @@ function assemble(review,{existingEvent=null,aliases={}}={}){
     check(Array.isArray(screen.rows)&&screen.rows.length>0,'Final screenshot has no parsed rows');
     // Hash is an evidence reference, not a replacement for visual inspection.
     const key=screen.imageSha256.toLowerCase();
-    const sanitized=screen.rows.map(row=>publicRow(row,aliases));
+    const sanitized=screen.rows.map(row=>publicRow(row,aliases,e));
     if(e.kind==='kraken')check(sanitized.every(r=>r.stars===null),'Kraken has no Stars');
     const signatures=sanitized.map(fingerprint).sort();
     const previous=seenImages.get(key);

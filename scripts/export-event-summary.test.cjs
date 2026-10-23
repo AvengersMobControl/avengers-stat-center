@@ -22,7 +22,9 @@ test('PNG input comes from exactly the accepted canonical projection; never a dr
  const people=new Set(exported.projection.people.map(p=>p.name));
  for(const event of exported.projection.events)if(event.status!=='revoked')for(const row of event.rows){
   if(row.player)assert(people.has(row.player),'canonical identity '+row.player);
-  assert(row.clan===null||row.clan==='AVENGERS'||row.clan==='AV-2','event-time clan');
+  assert(row.clan===null||row.clan==='AVENGERS'||row.clan==='AV-2'||
+    (event.id==='piggy|2026-10-23'&&row.player==='AV-Animosity'&&row.clan==='American 50.0'&&
+     row.metadata?.eligibilityOverride==='leader-weekly-big-pig-2026-10-23'),'event-time clan');
   assert.equal(event.kind==='kraken'?row.stars:null,event.kind==='kraken'?null:null,'Kraken has no Stars');
  }
 });

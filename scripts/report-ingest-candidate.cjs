@@ -33,6 +33,7 @@ function make(current,update,{enforceUnapproved=true}={}){
  const id=update.event.id,run=preview(current,update);
  const original=viewEvent(run.before.ledger,id),replacement=viewEvent(run.after.ledger,id);
  const oldRows=original?.rows||[],newRows=replacement?.rows||[];
+ const clans=[...new Set(['AVENGERS','AV-2','Unknown',...oldRows.map(r=>r.clan).filter(Boolean),...newRows.map(r=>r.clan).filter(Boolean)])];
  const before=new Map(oldRows.map(x=>[key(x),x])),after=new Map(newRows.map(x=>[key(x),x]));
  assert(before.size===oldRows.length&&after.size===newRows.length,'Ambiguous duplicate identities; refuse to produce approval sheet');
  const rows=[...new Set([...before.keys(),...after.keys()])].sort().map(k=>{

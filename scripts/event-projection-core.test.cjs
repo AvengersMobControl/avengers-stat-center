@@ -211,3 +211,20 @@ test('every event kind records first participation separately by historical clan
     assert.equal(p.clans['AV-2'].sparks,10);
   }
 });
+
+test('one weekly former-member exception retains source clan and cannot admit other events or competitors',()=>{
+ const row={player:'AV-Animosity',clan:'American 50.0',score:4626,sparks:9022,stars:90217,
+   metadata:{rank:46,eligibilityOverride:'leader-weekly-big-pig-2026-10-23'}};
+ const e={id:'piggy|2026-10-23',kind:'piggy',date:'2026-10-23',unit:'lines',status:'partial',sources:['fixture:weekly-former'],rows:[row]};
+ const ledger=put(empty(),e);
+ const p=project(ledger,{members:[{name:'AV-Animosity',status:'Inactive'}]});
+ assert.equal(p.people[0].status,'Inactive');
+ assert.equal(p.people[0].kinds.piggy.pb,4626);
+ assert.equal(p.people[0].earned.sparks,9022);
+ assert.equal(p.clans.AVENGERS.sparks,0);
+ assert.equal(p.clans['American 50.0'].sparks,9022);
+ assert.equal(ledger.events[0].rows[0].clan,'American 50.0');
+ assert.throws(()=>put(empty(),{...e,id:'piggy|2026-10-24',date:'2026-10-24'}),/clan/);
+ assert.throws(()=>put(empty(),{...e,rows:[{...row,player:'Other'}]}),/clan/);
+ assert.throws(()=>put(empty(),{...e,rows:[{...row,metadata:{rank:46}}]}),/clan/);
+});

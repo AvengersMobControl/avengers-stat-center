@@ -84,7 +84,7 @@ test('AV-2 Kraken FrenchieUSA source belongs exclusively to Frenchie2; totals an
   const person=p.people.find(x=>x.name==='AV-Frenchie2');
   assert.equal(person.history.find(r=>r.eventId==='kraken|oct').sparks,18100);
   const total=p.people.reduce((s,p)=>s+p.earned.sparks,0);
-  const clan=p.clans.AVENGERS.sparks+p.clans['AV-2'].sparks+p.coverage.unknownClanRewards.sparks;
+  const clan=Object.values(p.clans).reduce((s,c)=>s+c.sparks,0)+p.coverage.unknownClanRewards.sparks;
   assert(Math.abs(total-clan)<0.001);
   assert.equal(BASE.globals.AVENGERS_KRAKEN_DATA.octEventTotals['AV-2'].sparks,8197779.9);
 });
@@ -130,14 +130,14 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
     assert(r&&r.score===score&&r.clan==='AVENGERS',name+' event-time result unchanged');
   }
   const lin=people.find(p=>p.name==='AV-Lin');
-  assert.equal(lin.history.length,14,'one player: ten earlier AV-2 events, one Piggy and three newly approved AVENGERS flashes');
+  assert.equal(lin.history.filter(r=>r.date<='2026-10-21').length,14,'historic Lin results retained before the new race');
   assert.equal(lin.history.filter(r=>r.clan==='AV-2').length,10);
-  assert.equal(lin.history.filter(r=>r.clan==='AVENGERS').length,4);
+  assert.equal(lin.history.filter(r=>r.clan==='AVENGERS'&&r.date<='2026-10-21').length,4);
   assert(lin.snapshotBreakdown.some(r=>r.sourceName==='AV-2Lin'&&r.clan==='AV-2'));
   const linTransition=lin.kinds.piggy.pbs.find(p=>p.eventId==='piggy|2026-10-18');
   assert.equal(linTransition.firstRecorded,false,'previous AV-2 result retained');
   assert.equal(linTransition.firstClanRecorded,true,'AVENGERS first race still new member');
-  assert(D.piggy.latestNewMembers.some(r=>r.name==='AV-Lin'&&r.clan==='AVENGERS'));
+  assert.equal(linTransition.firstClanRecorded,true,'historical new-member designation remains source-backed');
   const jeff=people.find(p=>p.name==='AV-JefhKintz05');
   assert.equal(jeff.screenshotGap,0,'official sub-1% exclusion supersedes earlier frozen Jeff candidate; screenshot evidence survives rename');
   assert(jeff.snapshotBreakdown.some(r=>r.clan==='AV-2'&&r.sourceName==='AV-JefhKintz05'));
@@ -280,7 +280,7 @@ test('Fred active independently of Frank and TheOli transfer preserves event-tim
   assert.equal(R.rows.filter(r=>r.name==='AV-Fred'&&r.status==='Active').length,1);
   assert.equal(BASE.projection.people.filter(p=>p.name==='AV-Addicted').length,1);
   const fred=BASE.projection.people.find(p=>p.name==='AV-Fred');
-  assert.equal(fred.status,'Active');assert.equal(fred.history.length,1);
+  assert.equal(fred.status,'Active');assert.equal(fred.history.filter(r=>r.date<'2026-10-23').length,1);
   assert.equal(R.byName['AV-TheOli'].status,'AV2');
   assert.equal(BASE.projection.people.find(p=>p.name==='AV-TheOli').status,'AV2');
   const old=BASE.projection.people.find(p=>p.name==='AV-TheOli').history;
@@ -298,10 +298,28 @@ test('October 23 identities preserve former-member history and add only confirme
    assert.equal(R.byName[name].status,'AV2');
    const matches=BASE.projection.people.filter(p=>p.name===name);
    assert.equal(matches.length,1);
-   assert.equal(matches[0].history.length,0,'roster addition invents no event score');
-   assert.equal(matches[0].totalSparks,0);
+   assert.equal(matches[0].history.length,1,'only the verified new event is logged');
+   assert.equal(matches[0].history[0].eventId,'piggy|2026-10-23');
+   assert.equal(matches[0].totalSparks,name==='Mickzzz'?16519:5506);
  }
  assert.equal(resolve('AVS9.Saberkong'),'AV.Saberkong');
  assert.equal(resolve('AVS9-HN'),'AV-HN');
  assert.equal(resolve('AV-FrankAbagnale'),'AV-Addicted');
+});
+
+test('October 23 partial final Piggy is coherent across source, profiles and clan totals',()=>{
+ const e=BASE.ledger.events.find(e=>e.id==='piggy|2026-10-23');
+ assert.equal(e.status,'partial');assert.equal(e.rows.length,68);
+ assert.equal(e.rows.filter(r=>r.clan==='AVENGERS').length,47);
+ assert.equal(e.rows.filter(r=>r.clan==='AV-2').length,20);
+ assert.equal(e.rows.find(r=>r.player==='AV-Animosity').clan,'American 50.0');
+ assert.equal(e.rows.find(r=>r.player==='AV-Timmy').sparks,243586);
+ assert.equal(e.rows.find(r=>r.player==='AV-J').score,2342);
+ assert(!e.rows.some(r=>r.player==='AV2-J'||r.score===1));
+ const p=BASE.projection.people.find(p=>p.name==='AV-WolfLegend');
+ assert.equal(p.kinds.piggy.pb,60216);
+ assert.equal(p.kinds.piggy.pbs.find(r=>r.eventId===e.id).previousPB,50388);
+ assert.equal(e.rows.reduce((s,r)=>s+r.sparks,0),9422815);
+ assert.equal(e.rows.reduce((s,r)=>s+r.stars,0),94228168);
+ assert.equal(e.sources.length,15);assert(e.sources.every(s=>/^reviewed-image-sha256:[a-f0-9]{64}$/.test(s)));
 });

@@ -36,7 +36,13 @@ function normalize(event,aliases={}){
     // independently recorded AVENGERS Frenchie. Applies to every event type.
     const clanName=raw.clan==='AV-2'&&raw.player==='AV-FrenchieUSA'?'AV-Frenchie2':raw.player;
     const r={player:unassigned?null:canonical(clanName,aliases),...(unassigned?{sourceIdentity:raw.sourceIdentity}:{}),clan:raw.clan,score:amount(raw.score,'score'),sparks:amount(raw.sparks,'sparks'),stars:amount(raw.stars,'stars')};
-    requireThat(['AVENGERS','AV-2'].includes(r.clan)||(r.clan===null&&raw.clanAttribution==='unknown'),'Explicit event-time clan or marked unknown required');
+    // Explicit leader-authorized former-member score, scoped to one event.
+    // The source clan remains factual and never becomes AVENGERS membership.
+    const weeklyFormerMember=event.id==='piggy|2026-10-23'&&event.kind==='piggy'&&
+      event.date==='2026-10-23'&&r.player==='AV-Animosity'&&r.clan==='American 50.0'&&
+      raw.metadata?.eligibilityOverride==='leader-weekly-big-pig-2026-10-23';
+    requireThat(['AVENGERS','AV-2'].includes(r.clan)||(r.clan===null&&raw.clanAttribution==='unknown')||
+      weeklyFormerMember,'Explicit event-time clan or marked unknown required');
     if(r.clan===null)r.clanAttribution='unknown';
     if(raw.estimatedSparks===true)r.estimatedSparks=true;
     if(raw.metadata)r.metadata=clone(raw.metadata);
@@ -155,7 +161,8 @@ function project(ledger,{aliases={},members=[],snapshots={},priorToLogging=null,
       totalSparksComplete:earned.unknownSparks===0&&sources.length>0,
       ratingPB,ratingAvg,ratingTotal:ratingPB+ratingAvg,ratingComplete:['piggy','space','kraken'].every(k=>kinds[k].knownScores>0&&kinds[k].unknownScores===0)};
   });
-  const clans=Object.fromEntries(['AVENGERS','AV-2'].map(c=>[c,rewards(rows.filter(r=>r.clan===c))]));
+  const clanNames=[...new Set(['AVENGERS','AV-2',...rows.map(r=>r.clan).filter(Boolean)])];
+  const clans=Object.fromEntries(clanNames.map(c=>[c,rewards(rows.filter(r=>r.clan===c))]));
   const leagues=periods.map(p=>({...p,clans:Object.fromEntries(['AVENGERS','AV-2'].map(c=>[c,rewards(rows.filter(r=>r.clan===c&&r.date>=p.start&&r.date<=p.end))]))}));
   const rankings={};
   for(const metric of ['ratingTotal',...KINDS.map(k=>k+'PB')]){

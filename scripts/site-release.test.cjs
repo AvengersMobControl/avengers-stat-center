@@ -309,8 +309,8 @@ test('October 23 identities preserve former-member history and add only confirme
 
 test('October 23 partial final Piggy is coherent across source, profiles and clan totals',()=>{
  const e=BASE.ledger.events.find(e=>e.id==='piggy|2026-10-23');
- assert.equal(e.status,'partial');assert.equal(e.rows.length,68);
- assert.equal(e.rows.filter(r=>r.clan==='AVENGERS').length,47);
+ assert.equal(e.status,'partial');assert.equal(e.rows.length,70);
+ assert.equal(e.rows.filter(r=>r.clan==='AVENGERS').length,49);
  assert.equal(e.rows.filter(r=>r.clan==='AV-2').length,20);
  assert.equal(e.rows.find(r=>r.player==='AV-Animosity').clan,'American 50.0');
  assert.equal(e.rows.find(r=>r.player==='AV-Timmy').sparks,243586);
@@ -319,7 +319,20 @@ test('October 23 partial final Piggy is coherent across source, profiles and cla
  const p=BASE.projection.people.find(p=>p.name==='AV-WolfLegend');
  assert.equal(p.kinds.piggy.pb,60216);
  assert.equal(p.kinds.piggy.pbs.find(r=>r.eventId===e.id).previousPB,50388);
- assert.equal(e.rows.reduce((s,r)=>s+r.sparks,0),9422815);
- assert.equal(e.rows.reduce((s,r)=>s+r.stars,0),94228168);
- assert.equal(e.sources.length,15);assert(e.sources.every(s=>/^reviewed-image-sha256:[a-f0-9]{64}$/.test(s)));
+ assert.equal(e.rows.reduce((s,r)=>s+r.sparks,0),9440859);
+ assert.equal(e.rows.reduce((s,r)=>s+r.stars,0),94408602);
+ assert.equal(e.sources.length,16);assert(e.sources.every(s=>/^reviewed-image-sha256:[a-f0-9]{64}$/.test(s)));
+});
+
+test('October 23 main lobby includes every original rank with both final tail scores',()=>{
+ const e=BASE.ledger.events.find(e=>e.id==='piggy|2026-10-23');
+ const main=e.rows.filter(r=>r.metadata?.lobby==='AV-main');
+ assert.equal(main.length,50);
+ assert.deepEqual(main.map(r=>r.metadata.rank).sort((a,b)=>a-b),Array.from({length:50},(_,i)=>i+1));
+ assert.equal(e.metadata.mainLobbyCoverageComplete,true);
+ for(const [name,rank,score]of [['AV-KNAVEN',49,2602],['AV#Rafa#Tun',50,2477]]){
+   const r=main.find(r=>r.player===name);
+   assert.equal(r.metadata.rank,rank);assert.equal(r.score,score);
+   assert.equal(r.stars,90217);assert.equal(r.sparks,9022);
+ }
 });

@@ -1,3 +1,11 @@
+## 2026-10-23 — Main Piggy lobby completed; eight-image truncation fixed
+
+The ninth original attachment contained ranks 49 and 50: AV-KNAVEN 2,602 lines and AV#Rafa#Tun 2,477 lines, each 90,217 Stars and 9,022 Sparks. Original PNG SHA-256: eaf276a41012898faf28e61013f30842976b19bcd853b260f4c30f433d9968b8. Final CLAIM independently inspected. This supplements 68 accepted rows with 2 additions, 68 unchanged and no deletions/corrections. Main coverage is now all 50 original ranks: 49 AVENGERS plus the authorized former member. AV-2 coverage remains partial; no unseen scores invented.
+
+The connector had silently sliced a nine-image post to eight and falsely reported the sliced count as the attachment count. It now reports attachmentCountTotal, attachmentOffset and pagination with totalImages, returnedImages, nextImageOffset and repeatBeforeMessageId. Repeat the anchored message window with image_offset until hasMoreImages=false before moving backward. The response image limit stays eight and the connector remains read-only. Regression covers a nine-image post and its ninth-image continuation.
+
+Guarded dry-run remained unapproved; actual apply records the existing standing website authorization with current digest f7101dc65db6c1358cae43b3539af228922563ea3a96863f643b40e1df316783. Adds 180,434 Stars and 18,044 Sparks; updated event totals 94,408,602 Stars / 9,440,859 Sparks. Frozen Unlogged balances, roster and historic league periods are unchanged. Public release verification follows the normal full-site gates.
+
 ## 2026-10-23 — Verified partial Piggy results published under standing website authorization
 
 Prepared 68 new final results from 15 visually verified final CLAIM originals: 47 AVENGERS, 20 AV-2 and the leader-authorized former-member exception. Source clan remains American 50.0 for that one score; no current membership change. Exactly-one-line nonparticipant excluded. Both bottom windows remain partial; no missing rows or rewards invented. Visible Stars retained; rounded Stars derived from exact Sparks x10 with provenance. Added totals: 94,228,168 Stars and 9,422,815 Sparks. Eight established line PB improvements; seven first tracked Piggy appearances. All 28 frozen Unlogged balances and the six historic league periods stay unchanged.

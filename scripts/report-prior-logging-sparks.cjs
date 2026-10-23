@@ -19,7 +19,7 @@ const rows=(R.rows||[]).filter(r=>['Active','AV2'].includes(r.status)).map(r=>{
    categories:Object.fromEntries(Object.entries(p.categories).map(([k,v])=>[k,v.sparks])),
    screenshots:p.snapshotBreakdown||[]};
 });
-if(rows.length!==101||new Set(rows.map(r=>r.name)).size!==rows.length)throw Error('Expected 101 distinct current members after adding Fred; Frank remains one account');
+if(rows.length!==102||new Set(rows.map(r=>r.name)).size!==rows.length)throw Error('Expected 102 distinct current members after October 23 roster corrections');
 rows.sort((a,b)=>b.priorToLoggingSparks-a.priorToLoggingSparks||a.name.localeCompare(b.name));
 const positives=rows.filter(r=>r.priorToLoggingSparks>0);
 const summary={all:rows.length,positive:positives.length,over1000:positives.filter(r=>r.priorToLoggingSparks>=1000).length,

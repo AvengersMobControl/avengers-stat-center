@@ -32,7 +32,9 @@
     'AV-Abu//JPN':'AV-Abu//npjp',
     'AV-Zolika.x.TheBoss':'AV-Zolika.x.Kira',
     'AV-ZIBBY2.0':'AV-ZIBBY',
-    'AV-Neez':'AV-neez'
+    'AV-Neez':'AV-neez',
+    'AVS9.Saberkong':'AV.Saberkong',
+    'AVS9-HN':'AV-HN'
   };
   D.aliasMap=Object.assign({},D.aliasMap||{},extraAliases);
   delete D.aliasMap['AV-Frenchie2'];
@@ -99,10 +101,23 @@
   const theOli=rosterEntries.find(row=>row.profileName===canonical('AV-TheOli'));
   if(!theOli)throw new Error('Unable to locate TheOli canonical profile');
   theOli.status='AV2';
+  // October 23 leader correction: Animosity is a former member, with a
+  // one-week Big Pig eligibility exception documented in the intake policy.
+  // Preserve his profile, historical results and dated screenshot evidence.
+  const formerIndex=rosterEntries.findIndex(row=>row.profileName===canonical('AV-Animosity'));
+  if(formerIndex<0)throw new Error('Unable to locate Animosity canonical profile');
+  rosterEntries.splice(formerIndex,1);
+  for(const name of ['Mickzzz','AV2-Froyo']){
+    const profileName=canonical(name);
+    if(rosterEntries.some(row=>row.profileName===profileName))
+      throw new Error('New AV-2 identity already exists: '+name);
+    rosterEntries.push({name,profileName,status:'AV2'});
+    fixedIds.add(profileName);
+  }
   // Historical screenshot-only LT entry is removed at leader direction and
   // never gets a profile shell: zero known event rows or event rewards.
-  if(new Set(rosterEntries.map(row=>row.profileName)).size!==101)
-    throw new Error('October 19 roster identities unexpectedly overlap');
+  if(new Set(rosterEntries.map(row=>row.profileName)).size!==102)
+    throw new Error('October 23 roster identities unexpectedly overlap');
   const discordMembers=window.AVENGERS_DISCORD_UTC_ROSTER?.members||[];
   for(const member of discordMembers){
     const name=String(member.name||'').trim();
@@ -156,8 +171,8 @@
   delete D.aliasMap['AV-Frenchie2'];
   byName['AV-Frenchie2']=fromRow(currentRows.find(r=>r.name==='AV-Frenchie2'));
   R.byName=byName;
-  R.source='October 15 AVENGERS/AV-2 snapshots + October 21 leader identity and membership corrections';
-  R.precedence='October 15 source screenshots retained as dated provenance, except leader-removed LT shell; current changes: AV-2Lin → AV-Lin, Jeff canonical AV-JefhKintz05, SiFra and Timmy Active, Fred Active, FrankAbagnale linked to existing Addicted account, Zibby and TheOli AV-2; 50 Active and 51 AV-2; UTC/TZG/country retained.';
+  R.source='October 15 AVENGERS/AV-2 snapshots + October 23 leader identity and membership corrections';
+  R.precedence='October 15 source screenshots retained as dated provenance, except leader-removed LT shell; current changes: AV-2Lin → AV-Lin, Jeff canonical AV-JefhKintz05, SiFra and Timmy Active, Fred Active, FrankAbagnale linked to existing Addicted account, Zibby and TheOli AV-2; Animosity Inactive, Mickzzz and AV2-Froyo AV-2; 49 Active and 53 AV-2; UTC/TZG/country retained.';
 
   // Only current member status changes. Event history, clan attribution,
   // personal records, event totals, and rating math remain unchanged.

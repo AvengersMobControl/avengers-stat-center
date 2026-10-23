@@ -1,3 +1,9 @@
+## 2026-10-23 — Leader-confirmed roster and this week's Big Pig eligibility
+
+Mickzzz and AV2-Froyo are confirmed AV-2 members; add profile/roster shells without invented lifetime totals or event rows. Animosity is a former AVENGER (current status Inactive), but the leader authorizes logging his actual score for this week's Big Pig. Expected screenshot coverage is 49 AVENGERS plus Animosity, not proof of unseen rows or current membership. Preserve actual source clan, original rank and canonical history when applying the weekly exception. Verify the event date independently; do not use the posting date alone.
+
+Ignore S9 display tags for identity matching where the underlying account is established: AVS9.Saberkong resolves to AV.Saberkong and AVS9-HN to AV-HN. Preserve source spelling; do not merge ambiguous accounts. Current roster is 49 AVENGERS / 53 AV-2. Original-byte proof and full-site publication gates still apply; this clarification does not itself import the event.
+
 ## 2026-10-22 — Clan event scope and Flash attribution correction
 
 Track AV-2 only for Space and Big Piggy (space/piggy). Disregard Piggy Flash screenshots in the AV-2 channel; AV-2 Flash and Kraken are outside the ingestion scope. Do not import or retain these as unresolved review exceptions, and do not repeat their notifications. The previously flagged AV-2 Flash is discarded as out of scope. This changes ingestion/review scope, not existing accepted historical records.

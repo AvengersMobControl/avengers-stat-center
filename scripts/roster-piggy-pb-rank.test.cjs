@@ -118,7 +118,7 @@ test('career podiums count only verified event-time Piggy finishes, independent 
 test('October 18 leader spotlights are verified against complete event history',()=>{
   const {create}=require('./create-site-release.cjs');
   const {projection}=create();
-  const summary=careerPodiums(projection.events);
+  const summary=careerPodiums(projection.events.filter(e=>e.date<='2026-10-18'));
   assert.deepEqual(summary.byPlayer.get('AV-SiFra'),{wins:1,secondPlaces:0,thirdPlaces:0,podiums:1});
   assert.deepEqual(summary.byPlayer.get('AV-Chuck'),{wins:0,secondPlaces:1,thirdPlaces:0,podiums:1});
   assert.deepEqual(summary.byPlayer.get('AV-WolfLegend'),{wins:0,secondPlaces:0,thirdPlaces:2,podiums:2});

@@ -1,3 +1,12 @@
+## 2026-10-23 — Oct23 Big Pig graphics: corrected review, not approved
+
+- [x] Trace and prove the Zolika alias split in report history: Sep20 57,985, Oct23 57,487 (NOT PB).
+- [x] Add exact repeat-prevention fixture and alias-aware history instructions to the weekly Big Pig master prompt (PR #138).
+- [x] Rebuild both local review PNGs with corrected AVENGERS/AV-2 line PBs, verified rank PB transitions, verified original artwork and AV-2 PARTIAL status.
+- [ ] Obtain leader's aesthetic/content acceptance of revised graphics; current revisions remain review-only.
+- [ ] Integrate alias-aware PB comparison and its repeatable regression test in the shipped report generator (not just narrative instructions).
+- [ ] Keep unattended Discord posting OFF pending approved PNG template/permissions and dispatch validation.
+
 ## 2026-10-23 — Weekly Big Pig report spec refinements
 
 - [x] Save reusable [two-stage master prompt](docs/report-recipes/BIG_PIG_WEEKLY_MASTER_PROMPT.md) with explicit Top Line Contributor and separate first-tracked/new-member recognition.

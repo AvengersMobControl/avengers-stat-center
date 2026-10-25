@@ -14,7 +14,8 @@ Produce an immutable **fact manifest**, a very detailed **stage-2 PNG compositio
 
 Hard regression fixture (must pass every weekly report before drawing ANY PB rows):
 
-- Canonical identity: `AV-Zolika.x.Kira`. Legacy aliases `AV-ZolikaLoveKira`, `ZolikaLoveKira`, and `AV-Zolika.x.TheBoss` map to this identity; `AV-KiraLoveZolika` is a separate person and must NOT be merged.
+- **Leader-confirmed canonical identity: `AV-Zolika.x.TheBoss`.** Legacy aliases `AV-Zolika.x.Kira`, `AV-ZolikaLoveKira`, `ZolikaLoveKira`, and truncated `AV-Zolika.x.The...` resolve **to TheBoss, never the reverse**. `AV-KiraLoveZolika` is a separate person and must NOT be merged. Any report or image showing the old canonical name fails review.
+- Canonicalize source result rows AND all historical PB history through the site's canonical projection (not an independently reversed historical alias file) before creating the frozen PNG manifest.
 - Weekly Big Pig PB for Zolika entering 2026-10-23: **57,985 lines (2026-09-20), recorded under `AV-ZolikaLoveKira`**. 2026-10-23 result **57,487** is **498 LOWER**, NOT a PB. A result naming Zolika in 2026-10-23 line-PB table or claiming +25.6% PB is an automatic FAIL.
 - `AV-JeffKintz05`, `AV-JefhKintz05`, and `AV-JeffHintz05` are one canonical account; do not falsely classify that player as first tracked. 
 - AV-2 `AV-KitKat`: previous **career-wide** line PB entering 2026-10-23 was **17,137 on 2026-10-11 while he was in AVENGERS**. His AV-2 Oct23 score of 14,379 is **NOT a career line PB**. Although his separate prior AV-2-only score was 5,156 on 2026-09-25, this is relevant to his AV-2 average but **must not** be relabeled as a new line PB. His **finishing-place** PB is separately clan-specific and valid (#2 on Sep25 → #1 Oct23).

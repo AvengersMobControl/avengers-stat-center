@@ -1,26 +1,12 @@
-## 2026-10-23 — Leader-confirmed roster and this week's Big Pig eligibility
-
-Mickzzz and AV2-Froyo are confirmed AV-2 members; add profile/roster shells without invented lifetime totals or event rows. Animosity is a former AVENGER (current status Inactive), but the leader authorizes logging his actual score for this week's Big Pig. Expected screenshot coverage is 49 AVENGERS plus Animosity, not proof of unseen rows or current membership. Preserve actual source clan, original rank and canonical history when applying the weekly exception. Verify the event date independently; do not use the posting date alone.
-
-Ignore S9 display tags for identity matching where the underlying account is established: AVS9.Saberkong resolves to AV.Saberkong and AVS9-HN to AV-HN. Preserve source spelling; do not merge ambiguous accounts. Current roster is 49 AVENGERS / 53 AV-2. Original-byte proof and full-site publication gates still apply; this clarification does not itself import the event.
-
-## 2026-10-22 — Clan event scope and Flash attribution correction
-
-Track AV-2 only for Space and Big Piggy (space/piggy). Disregard Piggy Flash screenshots in the AV-2 channel; AV-2 Flash and Kraken are outside the ingestion scope. Do not import or retain these as unresolved review exceptions, and do not repeat their notifications. The previously flagged AV-2 Flash is discarded as out of scope. This changes ingestion/review scope, not existing accepted historical records.
-
-For AVENGERS PF1–PF4, use each dedicated channel's most recent established large final-results posting as the event anchor. Attribute later final supplemental screenshots in that channel to that same event; lack of a date/PF label on the supplement alone does not block attribution. Flag contradictory evidence. Website imports remain independent of PNG/message automation.
-
-## 2026-10-22 — Automatic WEBSITE result publication authorized; PNG/messages decoupled
-
-Leader explicitly instructed: "Automatically post them to the website. We will have the pngs/messages be a decoupled automation." This grants standing authorization for verified new final AVENGERS and AV-2 results to enter the canonical website ledger and complete the shared site release without another per-result commissioner approval. It supersedes earlier review-only/manual-parsed-approval wording **for this website workflow**. It does not authorize guessed results, changes to frozen Unlogged Sparks, paused UTC work or SAC changes.
-
-The existing daily ChatGPT results task is the runner being upgraded; no duplicate task or native GitHub/Vercel screenshot collector is claimed. Read-only Discord retrieval remains read-only; the scheduled agent separately performs source review, original-byte proof, exact event/identity resolution, deduplication, guarded canonical staging, CI/browser checks, merge and complete versioned publication. Ambiguous event dates/PF numbers/identities, conflicting accepted rows, unavailable proof and remaining explicit holds stay pending. Partial final coverage may publish known rows, never invented zeroes. Exactly-one-line Piggy/Flash rows are nonparticipants. PNG generation, messages and Discord dispatch are explicitly decoupled and are not triggered by website import.
-
-Operating instructions: [docs/AUTOMATIC_WEBSITE_RESULTS.md](docs/AUTOMATIC_WEBSITE_RESULTS.md). Configuration: `discord-ingest-config.json.websitePublication`; scheduled parsed-result approval is no longer required. Top-level manual_pull/autoImport=false/reviewRequired=true describes the READ-ONLY connector and existing manual review UI, not a veto of the standing-authorized scheduled website publisher. The import command's approved flag records this standing authorization only on an actual verified write, never on a dry-run; do not falsely label automated review as a new human approval.
-
 # AVENGERS Mob Control — Agent Operating Instructions
 
 These instructions apply to all work in `AvengersMobControl/avengers-stat-center`. Keep SAC / Lock It In (`sac-club`) separate.
+
+## Claude takeover — 2026-10-25
+
+On 2026-10-25 the leader moved day-to-day operation of this project from ChatGPT to Claude and paused the ChatGPT daily results pull/post task. Rules in this file, `docs/PROJECT_CONTINUITY.md`, `docs/DECISION_LOG.md` and `ROADMAP.md` carry over unchanged; GitHub stays the continuity source.
+
+Claude tooling, for discovery: Vercel and Neon MCP tools (`mcp__Vercel__*`, `mcp__Neon__*`), GitHub through `gh api` REST from the session (GraphQL and repository-settings writes are blocked there; merges need a human review), and the AVENGERS Discord Results connector once added in Claude's connector settings (`https://avengers-stat-center.vercel.app/mcp`, accepted for Claude since PR #145). Only one scheduled results runner may be active at a time.
 
 ## Current Discord authorization policy — 2026-10-22 (supersedes conflicting older manual-send wording)
 

@@ -30,7 +30,7 @@
   // AV-2 accounts, AV-Frenchie2 and AV-Frenchie(-4).
   const extraAliases={
     'AV-Abu//JPN':'AV-Abu//npjp',
-    'AV-Zolika.x.TheBoss':'AV-Zolika.x.Kira',
+    'AV-Zolika.x.Kira':'AV-Zolika.x.TheBoss',
     'AV-ZIBBY2.0':'AV-ZIBBY',
     'AV-Neez':'AV-neez',
     'AVS9.Saberkong':'AV.Saberkong',

@@ -1,3 +1,16 @@
+## 2026-10-25 — Handover to Claude; infrastructure audit and first hardening
+
+Leader moved day-to-day operation from ChatGPT to Claude and **paused the ChatGPT daily results pull/post task** (16:22 CT). Only one scheduled results runner may run at a time; a Claude daily task starts only after Claude can read the Discord result channels.
+
+Infrastructure audit (15 findings) recorded in the leader's audit doc. Actions this session:
+- PR #145 (open, CI green): Discord connector accepts Claude's OAuth client (fixed `https://claude.ai/api/mcp/auth_callback`), returns HTTP 401 to unauthenticated MCP calls, rotates refresh tokens; new always-run `Required checks` workflow for branch protection. Read-only behavior unchanged.
+- PR #139 closed as superseded (Oct 20 Flash one-shot already sent via #140).
+- Vercel production env: `AVENGERS_AV2_OCT18_SEND_ENABLED` and `AVENGERS_FLASH_OCT20_SEND_ENABLED` set to `false`; Oct18 signed PNG URL and retired Guide DB URL blanked; `DISCORD_BOT_TOKEN` and `DISCORD_PULL_SECRET` narrowed to Production only. Takes effect on next production deployment. Deletion of these retired variables is left to the dashboard.
+- Neon unchanged. Guide runtime role and leftover branch `mcp-migration-2026-10-21` await leader approval to delete.
+- Permanent guest passes are an intentional leader-approved feature; not changed.
+
+Pending on the leader: merge #145, add the connector in Claude, GitHub settings (branch protection requiring `unit-and-syntax`, secret scanning + push protection, Dependabot alerts, auto-delete merged branches). Lockfiles deferred: npm registry is unreachable from Claude's workspace.
+
 ## 2026-10-25 — Canonical Zolika name is AV-Zolika.x.TheBoss (per leader, repeated)
 
 **Mandatory canonical name for all UI, data exports, player profiles and weekly Big Pig PNGs: `AV-Zolika.x.TheBoss`.** Historical aliases `AV-Zolika.x.Kira`, `AV-ZolikaLoveKira`, `ZolikaLoveKira`, and truncated old spellings resolve INTO TheBoss, never the reverse. Do not collapse `AV-KiraLoveZolika`, which is a different account. The older `canonical-names-2026-09-29.js` and `normalization-map-final-2026-10-02.js` incorrectly reversed the rename even though `scripts/create-site-release.cjs` already corrects it. PR #144 fixes these underlying aliases and adds a regression verifying historic continuity, complete canonical profile, separate Kira and 2026-09-20 Piggy 57,985 lines vs 2026-10-23 57,487 lines (**not a PB**). The October 23 earlier PNG using Kira name and a PB label is **rejected**, and must not be posted. Reusable Big Pig prompt updated separately on existing PR #138. PR #144 must pass CI/merge/live verification before claiming deployment; Discord automatic posting remains OFF.

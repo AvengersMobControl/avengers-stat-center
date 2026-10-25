@@ -26,6 +26,11 @@ The leader's October 22, 2026 instruction authorizes automatic **website-only** 
 
 The source connector remains read-only. Website ingestion does not render PNGs, call publication/send endpoints, update dispatch switches, send Discord messages or change the separate reporting automation. No new automation is created by this rollout. Keep SAC separate and UTC synchronization paused.
 
+## Standing source rules (leader, 2026-10-25)
+
+- Lobby Star pots come from individual rewards divided by share %, never the screenshot's lobby header total (it can be out of sync).
+- Collapse duplicate posts to one source. Exclude AI-generated or AI-altered images; when a poster later reposts, use their latest genuine final screenshot.
+
 ## Each run
 
 1. Read live AGENTS.md, continuity, decision log, roadmap and issues #13/#4/#8/#42, current hold policy, published release manifest and versioned projection. Read the latest sanitized review checkpoint before pulling source. Do not repeat old review notifications.

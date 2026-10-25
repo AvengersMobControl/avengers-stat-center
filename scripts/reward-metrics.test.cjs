@@ -29,7 +29,9 @@ const {record,potTotals}=require('../event-reward-metrics.js');
 test('record date belongs to the actual PB, with corrected Oct 2 values never adjusted again',()=>{
  const D=require('./create-site-release.cjs').create().globals.AVENGERS_DATA;
  assert.deepEqual(record(D.space.history['AV-HarryBallsagna'],'yearsB'),{value:549.9,date:'2026-08-30'});
- assert.deepEqual(record(D.space.history['AV-JAMO'],'yearsB'),{value:439.3,date:'2026-10-09'});
+ // Oct 25 2026 Space (473.1B) superseded the earlier Oct 9 PB of 439.3B.
+ assert.deepEqual(record(D.space.history['AV-JAMO'],'yearsB'),{value:473.1,date:'2026-10-25'});
+ assert.deepEqual(record(D.space.history['AV-JAMO'].filter(r=>r.date<'2026-10-25'),'yearsB'),{value:439.3,date:'2026-10-09'});
  assert.deepEqual(record([{date:'2026-10-02',score:100},{date:'2026-08-30',score:100}]),{value:100,date:'2026-08-30'});
 });
 test('Oct 2 Space Records display actual distance only for a standing Oct 2 PB',()=>{

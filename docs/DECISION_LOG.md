@@ -1,3 +1,15 @@
+## 2026-10-25 — Space 2026-10-25 published (57 verified rows); lobby pots come from rewards ÷ share
+
+Leader asked for the Oct 25 Space results to be processed, with two standing rules:
+- **Lobby Star pots are determined from individual rewards and share %**, never the displayed lobby header, which can be stale when a player takes the screenshot. `event-reward-metrics.js` `potTotals` already derives pots this way; keep it as the source of truth.
+- **Duplicate posts collapse to one source; AI-made or AI-altered images are excluded.** For this event an AI-altered Zolika-lobby screenshot (duplicated AVS9-HN row) and an AI artwork post were ignored; the latest Zolika post is authoritative.
+
+Imported `space|2026-10-25` under standing website authorization: 48 AVENGERS across six lobbies and 9 AV-2 in one lobby, from 14 original Discord attachments (SHA-256 recorded in the event sources; retrieved through a Vercel sandbox because the CDN is blocked from Claude's workspace). Outside-clan rows excluded; preliminary screens excluded. Rounded Stars derived as Sparks x10; visible integer Stars kept with ratio delta. Totals added: AVENGERS 8,853,011 Sparks / 88,521,917 Stars; AV-2 283,936 Sparks / 2,832,240 Stars. S9 display tags ignored; AV-FrankAbagnale routes to AV-Addicted.
+
+**Attention:** AV-KitKat appears as clan AVENGERS in this race's final screenshot while the roster lists AV-2. Recorded under the screenshot clan; roster status unchanged pending the leader's confirmation. AV-JAMO's 473.1B is a new Space PB (prior 439.3B on Oct 9); two snapshot tests updated accordingly.
+
+Lockfile finding from the 2026-10-25 audit closed without change: `package-lock.json` is intentionally gitignored and the single dependency (`@neondatabase/serverless` 1.2.0) is exact-pinned with no transitive dependencies.
+
 ## 2026-10-25 — Handover to Claude; infrastructure audit and first hardening
 
 Leader moved day-to-day operation from ChatGPT to Claude and **paused the ChatGPT daily results pull/post task** (16:22 CT). Only one scheduled results runner may run at a time; a Claude daily task starts only after Claude can read the Discord result channels.

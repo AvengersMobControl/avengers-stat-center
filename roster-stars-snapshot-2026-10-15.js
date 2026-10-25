@@ -11,7 +11,7 @@
   if(!D||!R||!S||!Array.isArray(S.currentAv2))return;
 
   // Rows: current in-game display name, all-time Stars, historical canonical
-  // player identity when known. AV-Zolika.x.Kira retains sitewide chosen name.
+  // player identity when known. AV-Zolika.x.TheBoss is the canonical display; older Kira screenshot spelling remains source evidence.
   const avengers=[["AV-HarryBallsagna",400339498],["AV-INTEN",295354229],["AV-CHEN1972",210766659],["AV-Abu//JPN",191426769,"AV-Abu//npjp"],["AV-Rita",184944924],["AV-SweetiePL",172243399],["AV-FrankAbagnale",168758985,"AV-Addicted"],["AV-Zolika.x.Kira",154295001],["AV.Saberkong",141432133],["AV-Supreeth",129942683],["AV-J1M",126722897],["AV#Rafa#Tun",124802010],["AV-UANGELES",116808654],["AV-Nicefellow",110725222],["AV-8!\\...Bil",98147102,"AV-8!l...Bil"],["AV-Adigarian",94176442],["AV/<STAR-LORD>\\",93230935,"AV<STAR-LORD>"],["AV-7-STAR",91847646],["AV-DaG",91766832],["AV-WolfLegend",90310063],["AV-I.S.O",89811462],["AV-Animosity",82634334],["AV-SB",78041109],["AV-ColdCreeps",77597230],["AV-McNasty",74473253],["AV-ZIBBY2.0",67946378,"AV-ZIBBY"],["AV-MotherboardBeans",64609753],["AV-JAMO",63526777],["AV-Mr.Mar.Berry-USA",57617633,"AV-Mr.Mar.Berry"],["AV-Pablin",56912596],["AV-Obajoba",55047311],["AV-Finnie",53208603],["AV-Megalodon-",47461999,"AV-Megalodon"],["AV-Mendoria",47224732],["AV-SmiLiNgBaNDiT",46658755,"AV-SMILINGBANDIT"],["AV-RkHendrix-MX",44494571,"AV-RkHendrix"],["AV-ShielDBreaker",43105003],["AV-Vadik-UA",40009566],["AV-no",39398485],["AV-DeviantDan",34267316,"AV-Deviantdan"],["AV-HN",26010956],["AV-TheOli",22766791],["AV-BigPapi",22514173],["AV-Neez",21967962,"AV-neez"],["AV-Royal",19582308],["AV-KNAVEN",19336443],["AV-23",12598064]];
   const av2Stars=[["AV-J",157970485],["AV-Squishy",118435300],["AV-OblivX",115410535],["Av-TigerMx",95252050],["AV-SiFra",86755295],["AV-MONSTER.",83294098],["AV-KitKat",72664989],["AV-EventHorizon",60623212],["AV-Hoops",57704868],["AV-Jess-PT",56305141],["AV-JefhKintz05",55968184],["AV-Derya(OnVACATION)",51009356],["AV-JOKER",49492939],["AV-EXCALIBUR",44079911],["AV-Frenchie(-4)",42825753],["AV-CRISPIN.27",36863572],["AV-CHUCK",26639937],["AV-Caklet",24619901],["AV-CLJM",24451119],["AV-AC3",22072027],["AV-2Lin",15079352],["AV2-Brisket",11402244],["AV-Fahad",6770902],["AV2-Kira",5475845],["AV2-KO",2982415],["AV-HECKTO",2527230],["AV-LittleZ",1974899],["AV-braa",1493972],["Basecreature",1215393],["Jamaica",1209314],["Ibrahim",1101869],["AV-2(TAMIM)",811686],["Punchy",756979],["AV2-MayyaZ",655915],["DedHed",639115],["Blade",625924],["GANESH",591593],["AV-2Pipesis",549684],["AV-fueravini",429822],["uLTRaSLaN",428560],["Shelby",417889],["Creatureboost",359939],["Keyler",342737],["kayesie",313403],["AV-ItsNospace",273397],["Pro",249779],["GirlsOnly",181611],["AV-Frenchie2",179505],["yooossss",145128],["Piton",132536]];
   if(avengers.length!==47||av2Stars.length!==50||S.currentAv2.length!==50)
@@ -30,7 +30,7 @@
   // AV-2 accounts, AV-Frenchie2 and AV-Frenchie(-4).
   const extraAliases={
     'AV-Abu//JPN':'AV-Abu//npjp',
-    'AV-Zolika.x.TheBoss':'AV-Zolika.x.Kira',
+    'AV-Zolika.x.Kira':'AV-Zolika.x.TheBoss',
     'AV-ZIBBY2.0':'AV-ZIBBY',
     'AV-Neez':'AV-neez',
     'AVS9.Saberkong':'AV.Saberkong',

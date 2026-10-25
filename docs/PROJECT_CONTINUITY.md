@@ -1,3 +1,9 @@
+## 2026-10-25 — Event-time clan is binding; Space PNG renderer made date-driven (review candidate)
+
+Leader: players move back and forth between AVENGERS and AV-2; **always attribute each race's result to the clan shown for that particular race**. Roster status is separate and never rewrites event rows. AV-KitKat's Oct 25 Space row therefore stays under AVENGERS.
+
+`scripts/render-space-summary.py` (approved Space design) had the Oct 16 / Oct 9 dates hard-coded. Candidate `space-v2-20261025-candidate` keeps the visual design and changes only: dates from the event and prior same-clan event; a compact two-column PB list when more than 4 PBs (Oct 25 AVENGERS has 19), with "+N more" if it still overflows; "+N more" for first-tracked overflow; red text for negative week-over-week notes; singular "lobby"; and a sidecar JSON with readyToPost:false. Previews for Oct 25 rendered for leader review. **Nothing posted.**
+
 ## 2026-10-25 — Space 2026-10-25 published (57 verified rows); lobby pots come from rewards ÷ share
 
 Leader asked for the Oct 25 Space results to be processed, with two standing rules:

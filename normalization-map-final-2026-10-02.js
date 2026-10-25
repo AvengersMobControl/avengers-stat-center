@@ -10,7 +10,6 @@
 
   // Same long-term member identities, including historical Zolistar usernames.
   Object.assign(aliases,{
-    'AV-Zolika.x.TheBoss':'AV-Zolika.x.TheBoss',
     'AV-Zolika.x.The...':'AV-Zolika.x.TheBoss',
     'AV-Zolika.x.The':'AV-Zolika.x.TheBoss',
     'AV-Zolistar':'AV-7-STAR',

@@ -1,0 +1,51 @@
+name: Required checks
+# Runs on every pull request to main, whatever files change, so it can be a
+# required status check in branch protection. Path-filtered workflows
+# (projection/browser, roster audit) stay as additional advisory checks.
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: required-checks-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  unit:
+    name: unit-and-syntax
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax-check server functions
+        run: |
+          set -e
+          for f in middleware.js api/*.js api/*/*.js api/*/*/*.js server/*.cjs; do
+            [ -f "$f" ] || continue
+            node --check "$f"
+          done
+      - name: Discord connector OAuth and auth gate
+        run: node --test scripts/mcp-oauth-clients.test.cjs
+      - name: Unit test suite
+        run: >-
+          node --test
+          scripts/guest-pass-create.test.cjs scripts/guest-pass-atomic.test.cjs scripts/guest-pass-redeem.test.cjs
+          scripts/member-profile-insights.test.cjs scripts/reward-metrics.test.cjs scripts/event-projection-core.test.cjs
+          scripts/council-minimums-core.test.cjs scripts/roster-event-breakdown.test.cjs scripts/roster-piggy-pb-rank.test.cjs
+          scripts/piggy-flash-podiums.test.cjs scripts/piggy-flash-history.test.cjs scripts/space-rank-history.test.cjs
+          scripts/sparks-ui-source.test.cjs scripts/site-release.test.cjs scripts/fullsite-accepted-ingestion-gate.test.cjs
+          scripts/report-ingest-candidate.test.cjs scripts/ingestion-source-holds.test.cjs scripts/reconcile-league-reference.test.cjs
+          scripts/post-kraken-flash-policy.test.cjs scripts/piggy-oct18-accepted.test.cjs scripts/piggy-benchmarks.test.cjs
+          scripts/stage-event-update.test.cjs scripts/assemble-result-review.test.cjs scripts/verify-result-image-proofs.test.cjs
+          scripts/audit-result-pagination.test.cjs scripts/hash-original-image.test.cjs scripts/fetch-original-discord-image.test.cjs
+          scripts/verify-live-pages.test.cjs scripts/export-event-summary.test.cjs scripts/export-weekly-review.test.cjs
+          scripts/plan-event-summary-dispatch.test.cjs scripts/private-summary-publication-state.test.cjs
+          scripts/private-dispatch-schema.test.cjs scripts/private-dispatch-role.test.cjs scripts/private-dispatch-readiness.test.cjs
+          scripts/private-dispatch-ledger-adapter.test.cjs scripts/private-discord-authenticated-readback.test.cjs
+          scripts/audit-six-clan-leagues.test.cjs scripts/posthog-operations.test.cjs scripts/vercel-ignore-preview.test.cjs

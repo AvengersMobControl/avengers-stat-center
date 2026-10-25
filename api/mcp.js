@@ -98,14 +98,46 @@ function parseForm(req) {
   return params;
 }
 
-async function validateChatGPTClient(clientId, redirectUri) {
-  try {
-    const u = new URL(clientId);
-    if (u.protocol !== 'https:' || u.hostname !== 'chatgpt.com') return false;
+// OAuth clients allowed to connect through a Client ID Metadata Document (CIMD).
+// Each entry fixes the host the client_id document must live on and the exact
+// redirect URIs it may use; the redirect must also be listed in the fetched document.
+const CIMD_CLIENTS = [
+  {
+    name: 'chatgpt',
+    clientHosts: ['chatgpt.com'],
+    // ChatGPT publishes its own redirect list; any https chatgpt.com redirect in it is accepted.
+    redirectAllowed: u => u.protocol === 'https:' && u.hostname === 'chatgpt.com'
+  },
+  {
+    name: 'claude',
+    // Anthropic hosts Claude's client metadata document on its own domains.
+    clientHosts: ['claude.ai', 'claude.com'],
+    // Hosted Claude apps (web, desktop, mobile) use one fixed callback.
+    redirectAllowed: u => u.href === 'https://claude.ai/api/mcp/auth_callback'
+  }
+];
 
-    const r = await fetch(clientId, { headers: { accept: 'application/json' } });
+function cimdClientFor(clientId, redirectUri) {
+  let c, r;
+  try {
+    c = new URL(clientId);
+    r = new URL(redirectUri);
+  } catch {
+    return null;
+  }
+  if (c.protocol !== 'https:' || c.username || c.password || c.port) return null;
+  const entry = CIMD_CLIENTS.find(e => e.clientHosts.includes(c.hostname));
+  if (!entry || !entry.redirectAllowed(r)) return null;
+  return entry;
+}
+
+async function validateOAuthClient(clientId, redirectUri, fetchImpl = fetch) {
+  if (!cimdClientFor(clientId, redirectUri)) return false;
+  try {
+    const r = await fetchImpl(clientId, { headers: { accept: 'application/json' } });
     if (!r.ok) return false;
     const metadata = await r.json();
+    if (metadata && metadata.client_id && metadata.client_id !== clientId) return false;
     const redirects = Array.isArray(metadata.redirect_uris) ? metadata.redirect_uris : [];
     return redirects.includes(redirectUri);
   } catch {
@@ -360,6 +392,14 @@ async function handleMcp(req, res) {
   const id = body.id ?? null;
   const method = body.method;
 
+  // Every MCP call requires a valid AVENGERS Discord token. HTTP 401 with a
+  // resource_metadata pointer is how standard MCP clients (including Claude)
+  // discover the OAuth server and start sign-in.
+  if (!accessToken(req)) {
+    res.setHeader('WWW-Authenticate', oauthChallenge());
+    return res.status(401).json(rpcError(id, -32001, 'Connect your AVENGERS Discord account to use this read-only result pull.'));
+  }
+
   if (method === 'initialize') {
     return res.status(200).json(rpc(id, {
       protocolVersion: body.params?.protocolVersion || '2025-06-18',
@@ -497,7 +537,7 @@ async function handleAuthorize(req, res) {
     return res.status(400).send('Invalid OAuth authorization request');
   }
 
-  if (!(await validateChatGPTClient(clientId, redirectUri))) {
+  if (!(await validateOAuthClient(clientId, redirectUri))) {
     return res.status(400).send('Unrecognized OAuth client or redirect URI');
   }
 
@@ -653,7 +693,16 @@ async function handleToken(req, res) {
       access_token: access,
       token_type: 'Bearer',
       expires_in: 3600,
-      refresh_token: form.get('refresh_token'),
+      refresh_token: sign({
+        typ: 'mcp_refresh',
+        sub: refresh.sub,
+        username: refresh.username,
+        clientId,
+        aud: RESOURCE,
+        scope: SCOPE,
+        exp: now() + (60 * 60 * 24 * 30),
+        nonce: crypto.randomBytes(16).toString('base64url')
+      }),
       scope: SCOPE
     });
   }
@@ -686,7 +735,7 @@ function authorizationServer(res) {
   });
 }
 
-module.exports = async function handler(req, res) {
+async function handler(req, res) {
   const route = String(req.query.route || 'mcp');
 
   if (route === 'protected-resource') return protectedResource(res);
@@ -695,4 +744,7 @@ module.exports = async function handler(req, res) {
   if (route === 'discord-callback') return handleDiscordCallback(req, res);
   if (route === 'token') return handleToken(req, res);
   return handleMcp(req, res);
-};
+}
+
+module.exports = handler;
+module.exports._test = { cimdClientFor, validateOAuthClient, authorizationServer, handleMcp };

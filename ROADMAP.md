@@ -1,3 +1,12 @@
+## 2026-10-25 — Zolika canonical name regression / reporting blocker
+
+- [x] Identify discrepancy: raw legacy normalization files mapped TheBoss backward to Kira; production release builder already recognized TheBoss.
+- [x] Correct older site alias maps in [PR #144](https://github.com/AvengersMobControl/avengers-stat-center/pull/144), with explicit historical 57,985-line PB and separate Kira account regression.
+- [x] Correct PR #138 weekly Big Pig master prompt to require TheBoss, never reverse aliases.
+- [ ] Verify PR #144 CI, merge and GitHub Pages live projection before closing.
+- [ ] Regenerate and review October 23 AVENGERS / AV-2 PNGs without any obsolete Zolika name/false PBs; invalidate earlier review images.
+- [ ] Keep Discord automatic posting OFF pending approved report review.
+
 ## 2026-10-23 — Main Piggy lobby completed; eight-image truncation fixed
 
 The ninth original attachment contained ranks 49 and 50: AV-KNAVEN 2,602 lines and AV#Rafa#Tun 2,477 lines, each 90,217 Stars and 9,022 Sparks. Original PNG SHA-256: eaf276a41012898faf28e61013f30842976b19bcd853b260f4c30f433d9968b8. Final CLAIM independently inspected. This supplements 68 accepted rows with 2 additions, 68 unchanged and no deletions/corrections. Main coverage is now all 50 original ranks: 49 AVENGERS plus the authorized former member. AV-2 coverage remains partial; no unseen scores invented.

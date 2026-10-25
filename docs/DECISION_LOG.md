@@ -1,3 +1,7 @@
+## 2026-10-25 — Lock canonical identity AV-Zolika.x.TheBoss
+
+**Leader correction (repeated):** canonical name is **`AV-Zolika.x.TheBoss`**, not `AV-Zolika.x.Kira`. Alias resolution must flow older names → TheBoss in the site legacy normalizers, published projector and PNG fact manifest. Preserve all old score/date/reward evidence, show only canonical name in reports, and maintain distinct `AV-KiraLoveZolika` identity. Historic 57,985 lines on 2026-09-20 exceeds 57,487 on 2026-10-23, so **NO** October 23 Zolika line PB. PR #144 repairs contrary aliases, adds prevention tests; main site release builder already uses TheBoss. Existing October 23 PNG review files containing Kira-as-canonical are invalid. Neither source scoreboard figures nor Discord dispatch status changes.
+
 ## 2026-10-23 — Main Piggy lobby completed; eight-image truncation fixed
 
 The ninth original attachment contained ranks 49 and 50: AV-KNAVEN 2,602 lines and AV#Rafa#Tun 2,477 lines, each 90,217 Stars and 9,022 Sparks. Original PNG SHA-256: eaf276a41012898faf28e61013f30842976b19bcd853b260f4c30f433d9968b8. Final CLAIM independently inspected. This supplements 68 accepted rows with 2 additions, 68 unchanged and no deletions/corrections. Main coverage is now all 50 original ranks: 49 AVENGERS plus the authorized former member. AV-2 coverage remains partial; no unseen scores invented.

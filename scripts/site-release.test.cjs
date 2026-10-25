@@ -1,6 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),os=require('node:os'),path=require('node:path');
 const {create}=require('./create-site-release.cjs'),{build,browserSource}=require('./build-site.cjs'),{UNITS}=require('./event-projection-core.cjs');
+const {load}=require('./load-site-data.cjs');
 function boot(r){
   const sandbox={window:{},console};vm.createContext(sandbox);vm.runInContext(browserSource(r),sandbox);
   for(const file of ['community-highlights.js','clan-league-rewards.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'..',file),'utf8'),sandbox);
@@ -335,4 +336,34 @@ test('October 23 main lobby includes every original rank with both final tail sc
    assert.equal(r.metadata.rank,rank);assert.equal(r.score,score);
    assert.equal(r.stars,90217);assert.equal(r.sparks,9022);
  }
+});
+
+test('legacy alias feeds and final Big Pig recognize AV-Zolika.x.TheBoss without splitting history',()=>{
+  const boss='AV-Zolika.x.TheBoss',legacy=load().AVENGERS_DATA;
+  const resolve=name=>{
+    const seen=new Set();
+    while(legacy.aliasMap[name]&&legacy.aliasMap[name]!==name){
+      assert(!seen.has(name),'alias cycle: '+name);
+      seen.add(name);name=legacy.aliasMap[name];
+    }
+    return name;
+  };
+  for(const alias of [boss,'AV-Zolika.x.Kira','AV-ZolikaLoveKira','ZolikaLoveKira','AV-Zolika.x.The...','AV-Zolika.x.The']){
+    assert.equal(resolve(alias),boss,'historical Zolika alias: '+alias);
+    assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName(alias),boss,'published alias: '+alias);
+  }
+  assert.equal(resolve('AV-KiraLoveZolika'),'AV-KiraLoveZolika','Kira is a different account');
+  assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV-KiraLoveZolika'),'AV-KiraLoveZolika');
+  const P=BASE.projection;
+  assert.equal(P.people.filter(p=>p.name===boss).length,1,'exactly one Zolika profile');
+  for(const old of ['AV-Zolika.x.Kira','AV-ZolikaLoveKira'])
+    assert(!P.people.some(p=>p.name===old),'no duplicate profile for '+old);
+  const latest=P.events.find(e=>e.id==='piggy|2026-10-23');
+  assert(latest,'October 23 Big Pig is in canonical projection');
+  assert.equal(latest.rows.find(r=>r.player===boss)?.score,57487,'Oct23 lines preserved');
+  const historic=P.events.find(e=>e.id==='piggy|2026-09-20');
+  assert(historic,'September 20 historical Piggy preserved');
+  assert.equal(historic.rows.find(r=>r.player===boss)?.score,57985,'Sep20 PB retained under boss');
+  assert(57985>57487,'Oct23 must NOT be misreported as a career line PB');
+  assert(P.people.some(p=>p.name==='AV-KiraLoveZolika'),'Kira separate profile retained');
 });

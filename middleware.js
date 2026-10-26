@@ -55,6 +55,8 @@ export default async function middleware(request){
     p==='/api/discord-publish-oct20' ||
     // Allow only the SHA-pinned approved Oct20 static PNG fetched by the publisher.
     p==='/assets/reports/AVENGERS_Piggy_Flashes_October_20_2026_FINAL.png' ||
+    // Allow only the SHA-pinned approved Oct25 Space PNG fetched by its one-time publisher.
+    p==='/assets/reports/AVENGERS_Space_Race_October_25_2026.png' ||
     p.startsWith('/api/guest/') ||
     p==='/mcp' ||
     p.startsWith('/.well-known/') ||

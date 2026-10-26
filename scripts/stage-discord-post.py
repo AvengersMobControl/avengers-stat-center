@@ -5,7 +5,7 @@ Usage:
   python3 scripts/stage-discord-post.py --kind piggy --event-id 'piggy|2026-10-23' --clan AVENGERS \
       --png reports/bigpig-2026-10-23-AVENGERS.png --body-file /path/body.txt --template bigpig-poster-v3-...
 
-Flash Sets use --kind flash --event-id 'flashset|2026-10-20-A'.
+Flash Sets use --kind flash --event-id 'flash|2026-10-20-A' (the key the Oct 20 post already used).
 Copies the PNG to assets/reports/<CLAN>_<Event>_<Month>_<D>_<YYYY>.png (commit it with git add -f)
 and writes data/discord-posts.json. Refuses to change an existing entry. Never posts anything.
 """
@@ -28,8 +28,7 @@ def main():
     ap.add_argument('--date', help='Event (or first set) date YYYY-MM-DD for the file name; default from event id')
     a = ap.parse_args()
 
-    if a.kind == 'flash' and not a.event_id.startswith('flashset|'): raise SystemExit('Flash event ids look like flashset|<setId>')
-    if a.kind != 'flash' and not a.event_id.startswith(a.kind + '|'): raise SystemExit('Event id must start with kind|')
+    if not a.event_id.startswith(a.kind + '|'): raise SystemExit('Event id must start with kind| (Flash Sets: flash|<setId>)')
     body = Path(a.body_file).read_text(encoding='utf-8').strip()
     if not body or len(body) > 2000: raise SystemExit(f'Body must be 1-2000 characters (got {len(body)})')
     if not body.startswith('@everyone'): raise SystemExit('Leader rule: event write-ups start with @everyone')

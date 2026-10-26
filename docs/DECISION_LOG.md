@@ -1,3 +1,9 @@
+## 2026-10-25 — Space Lobby Pots view (all-time pot rank) and poster v2 candidate
+
+Leader asked for an all-time lobby pot rank on the poster and a site table of every logged lobby pot. Added `lobbyPots()` to `event-reward-metrics.js` (pot = a racer's reward ÷ their share %, highest-share row with a known reward; share ≥ 1 read as a percent) and a **Space → Lobby Pots** view ranking all 210 logged lobbies with a known pot (7 older lobbies have no reward recorded). This also corrects older lobbies whose share mixed 0.25 and 25 formats (e.g. Aug 13 2026), which previously skewed calculated pots. Oct 25 Lobby 2 (37.51M) is #1 all-time.
+
+Poster v2 (`space-poster-v2-20261025-candidate`): 1800px wide (was 2400) and ~40% shorter so Discord shows it sharper; PBs as a table (player, previous, previous date, new PB, gain); lobby cards show the all-time pot rank; New Faces enlarged with lobby, finishing place and Stars; bottom boxes balance into two equal columns. Fonts excluded from the public site build. Review only, nothing posted.
+
 ## 2026-10-25 — Space poster v1 candidate (Piggy Flash style, with characters)
 
 Leader confirmed PBs are site-wide (highest anywhere on the site, any clan) and approved `assets/characters/` for graphics (Hawkeye chicken added). New review renderer `scripts/render-space-poster.py` (`space-poster-v1-20261025-candidate`) follows the Oct 20 Piggy Flash poster: KPI row, lobby cards (pot = reward ÷ share), change vs last race, individual spotlights (from the PR #138 tall-layout spec), top 10 with all-time rank, every PB with previous value/date, above-own-average, first tracked, effort shoutout, distance milestones, character header/footer. Inter fonts vendored in `assets/fonts` (OFL) for identical renders. Preview only: readyToPost:false, nothing posted.

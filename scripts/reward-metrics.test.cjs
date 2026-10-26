@@ -67,3 +67,19 @@ test('partial player coverage does not erase calculable lobby pots; missing lobb
  const missing=potTotals(events.find(e=>e.id==='space|2026-09-18').rows.filter(r=>r.clan==='AVENGERS'));
  assert.equal(missing.groups,6);assert.equal(missing.coveredStarGroups,5);assert.equal(missing.potStars,null);assert.equal(missing.potSparks,null);
 });
+
+test('lobby pots: reward / share per lobby, percent shares normalized, ranked across all races',()=>{
+ const {lobbyPots}=require('../event-reward-metrics.js');
+ const D=require('./create-site-release.cjs').create().globals.AVENGERS_DATA;
+ const all=lobbyPots(D.space.events),ranked=all.filter(x=>x.rank).sort((a,b)=>a.rank-b.rank);
+ assert(ranked.length>=210);
+ assert.equal(ranked[0].date,'2026-10-25');assert.equal(ranked[0].potStars,37505480);
+ // Aug 13 2026 stored the 9th-place share as 1 (=1%); shares must still total 100%.
+ const aug=all.find(x=>x.date==='2026-08-13'&&x.lobby==='1');
+ assert.equal(aug.potStars,11920000);assert(Math.abs(aug.trackedShare-1)<1e-9);
+ // A lobby pot is independent of which clan raced in it, and ranks are 1..N by pot.
+ ranked.forEach((x,i)=>assert(x.rank<=i+1));
+ const synthetic=lobbyPots({'2030-01-01':[{name:'A',clan:'AVENGERS',group:1,share:0.25,stars:250,yearsB:5},{name:'B',clan:'AVENGERS',group:1,share:20,stars:200,yearsB:4},{name:'C',clan:'AV-2',group:2,share:0.25,stars:null,sparks:null,yearsB:1}]});
+ assert.equal(synthetic.find(x=>x.lobby==='1').potStars,1000);
+ assert.equal(synthetic.find(x=>x.lobby==='2').potStars,null);
+});

@@ -32,6 +32,8 @@ jobs:
           done
       - name: Discord connector OAuth and auth gate
         run: node --test scripts/mcp-oauth-clients.test.cjs
+      - name: Standing Discord event publisher guards
+        run: node --test scripts/discord-publish-event.test.cjs
       - name: Unit test suite
         run: >-
           node --test

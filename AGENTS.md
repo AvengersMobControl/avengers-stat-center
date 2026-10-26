@@ -6,7 +6,11 @@ These instructions apply to all work in `AvengersMobControl/avengers-stat-center
 
 On 2026-10-25 the leader moved day-to-day operation of this project from ChatGPT to Claude and paused the ChatGPT daily results pull/post task. Rules in this file, `docs/PROJECT_CONTINUITY.md`, `docs/DECISION_LOG.md` and `ROADMAP.md` carry over unchanged; GitHub stays the continuity source.
 
-Claude tooling, for discovery: Vercel and Neon MCP tools (`mcp__Vercel__*`, `mcp__Neon__*`), GitHub through `gh api` REST from the session (GraphQL and repository-settings writes are blocked there; merges need a human review), and the AVENGERS Discord Results connector once added in Claude's connector settings (`https://avengers-stat-center.vercel.app/mcp`, accepted for Claude since PR #145). Only one scheduled results runner may be active at a time.
+Claude tooling, for discovery: Vercel and Neon MCP tools (`mcp__Vercel__*`, `mcp__Neon__*`), GitHub through `gh api` REST from the session (GraphQL and repository-settings writes are blocked there; merges need a human review), and the AVENGERS Discord Results connector once added in Claude's connector settings (`https://avengers-stat-center.vercel.app/mcp`, accepted for Claude since PR #145). Scheduled results runs (Sunday evening, weekday mornings) never overlap; only one may run at a time.
+
+## Automatic event posting — 2026-10-26 (leader activation)
+
+The leader approved the Space, Big Pig and Flash Set poster templates and activated **automatic posting of AVENGERS Space Race, Big Pig and Piggy Flash Set summaries** to #Performance Statistics on a fixed schedule (Sun 7 PM CT: Big Pig, else Space; Tue–Fri 8 AM CT: Flash Sets; Wed–Fri 8 AM CT: Space, else Big Pig). The procedure is `docs/AUTOMATIC_DISCORD_POSTING.md`, using `api/discord/publish-event.js`. This supersedes "unattended/automatic event-summary dispatch stays disabled" below **for those three event types and AVENGERS only**. AV-2 posting stays on hold; Kraken is not included; Discord deletes are never automatic.
 
 ## Current Discord authorization policy — 2026-10-22 (supersedes conflicting older manual-send wording)
 

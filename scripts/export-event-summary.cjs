@@ -14,8 +14,10 @@ function exportRelease(){
  // It never modifies the accepted source projection or approved PNG artwork.
  const transitions=placementHistory(release.projection.events);
  const piggyPlacementPBs=Object.fromEntries([...transitions.byEvent].map(([eventId,rows])=>[eventId,rows]));
+ // Leader-recorded official Big Pig pot totals (AVENGERS) used by the site's Pot Totals view.
+ const officialPotTotals={...(release.globals?.AVENGERS_DATA?.piggy?.officialPotTotals||{})};
  return {schemaVersion:1,source:'approved-event-ledger',projection:release.projection,
-   piggyPlacementPBs};
+   piggyPlacementPBs,officialPotTotals};
 }
 function writeApprovedRelease(name){
  if(!/^[A-Za-z0-9][A-Za-z0-9_.-]*\.json$/.test(name||''))throw Error('Output must be a local JSON filename');

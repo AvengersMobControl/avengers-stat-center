@@ -365,6 +365,7 @@ tbody tr:last-child td{border-bottom:0}
             <button data-view="event">Event</button>
             <button data-view="last3">Last 3</button>
             <button data-view="pot">Pot Totals</button>
+            <button data-view="lobbies">Lobby Pots</button>
             <button data-view="pbs">PBs & New</button>
           </div>
           <div class="toolbar-right">
@@ -1182,6 +1183,27 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       </tr>`).join('');
       el.innerHTML=tableShell('Overall Space Performance','Sorted by Arena-era average; full-2026 average shown separately',
         [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Arena Avg'},{label:'2026 Avg',num:true},{label:'PB',num:true},{label:'Best Lobby Finish',num:true},{label:'Last 3',num:true},{label:'Avg Stars',num:true},{label:'Events',num:true}],body);
+    } else if(view==='lobbies'){
+      const av2Mode=state.status==='av2';
+      const all=window.AVENGERS_REWARD_METRICS.lobbyPots(D.space.events||{});
+      const shown=all.filter(x=>av2Mode?x.clans.includes('AV-2'):x.clans.some(c=>c!=='AV-2')).slice()
+        .sort((a,b)=>(a.rank??1e9)-(b.rank??1e9)||b.date.localeCompare(a.date));
+      const body=shown.map(x=>`<tr>
+        <td class="num">${x.rank?`${fmtNum(x.rank)} <span class="small-muted">/ ${fmtNum(x.of)}</span>`:'—'}</td>
+        <td>${fmtDate(x.date)}</td>
+        <td class="num">${escapeHtml(x.lobby)}</td>
+        <td>${escapeHtml(x.clans.join(' + '))}</td>
+        <td class="num event-total-highlight">${x.potStars==null?'—':fmtNum(x.potStars)}</td>
+        <td class="num">${x.potSparks==null?'—':fmtNum(x.potSparks)}</td>
+        <td class="num">${Math.round(x.trackedShare*100)}%</td>
+        <td class="num">${fmtNum(x.racers)}</td>
+        <td class="num">${fmtB(x.lightyearsB)}</td>
+        <td>${x.topPlayer?`<button class="linkish" data-player="${escapeHtml(x.topPlayer)}">${escapeHtml(x.topPlayer)}</button> <span class="small-muted">${fmtB(x.topScoreB)}</span>`:'—'}</td>
+      </tr>`).join('');
+      el.innerHTML=tableShell(av2Mode?'AV-2 Space Lobby Pots':'Space Lobby Pots',
+        `Every logged Space lobby, ranked by pot Stars across all ${fmtNum(all.filter(x=>x.rank).length)} lobbies with a known pot • pot = a racer\'s reward ÷ their share % (screenshot pot headers can be stale) • Our share = combined share of logged clan racers in that lobby • — means no reward was recorded for that lobby`,
+        [{label:'All-time Rank',num:true},{label:'Race'},{label:'Lobby #',num:true},{label:'Clan'},{label:'Pot Stars',num:true},{label:'Pot Sparks',num:true},{label:'Our Share',num:true},{label:'Racers Logged',num:true},{label:'Lightyears',num:true},{label:'Top Racer'}],
+        body||`<tr><td colspan="10" class="empty">No Space lobby pots recorded.</td></tr>`);
     } else if(view==='pot'){
       const av2Mode=state.status==='av2';
       const totals=Object.keys(D.space.events||{}).sort().reverse().map(date=>spaceRewardTotals(date,av2Mode?'AV-2':'AVENGERS')).filter(x=>x.participants>0);

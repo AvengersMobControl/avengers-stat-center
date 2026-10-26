@@ -1,3 +1,19 @@
+## 2026-10-25 — Space Lobby Pots view (all-time pot rank) and poster v2 candidate
+
+Leader asked for an all-time lobby pot rank on the poster and a site table of every logged lobby pot. Added `lobbyPots()` to `event-reward-metrics.js` (pot = a racer's reward ÷ their share %, highest-share row with a known reward; share ≥ 1 read as a percent) and a **Space → Lobby Pots** view ranking all 210 logged lobbies with a known pot (7 older lobbies have no reward recorded). This also corrects older lobbies whose share mixed 0.25 and 25 formats (e.g. Aug 13 2026), which previously skewed calculated pots. Oct 25 Lobby 2 (37.51M) is #1 all-time.
+
+Poster v2 (`space-poster-v2-20261025-candidate`): 1800px wide (was 2400) and ~40% shorter so Discord shows it sharper; PBs as a table (player, previous, previous date, new PB, gain); lobby cards show the all-time pot rank; New Faces enlarged with lobby, finishing place and Stars; bottom boxes balance into two equal columns. Fonts excluded from the public site build. Review only, nothing posted.
+
+## 2026-10-25 — Space poster v1 candidate (Piggy Flash style, with characters)
+
+Leader confirmed PBs are site-wide (highest anywhere on the site, any clan) and approved `assets/characters/` for graphics (Hawkeye chicken added). New review renderer `scripts/render-space-poster.py` (`space-poster-v1-20261025-candidate`) follows the Oct 20 Piggy Flash poster: KPI row, lobby cards (pot = reward ÷ share), change vs last race, individual spotlights (from the PR #138 tall-layout spec), top 10 with all-time rank, every PB with previous value/date, above-own-average, first tracked, effort shoutout, distance milestones, character header/footer. Inter fonts vendored in `assets/fonts` (OFL) for identical renders. Preview only: readyToPost:false, nothing posted.
+
+## 2026-10-25 — Event-time clan is binding; Space PNG renderer made date-driven (review candidate)
+
+Leader: players move back and forth between AVENGERS and AV-2; **always attribute each race's result to the clan shown for that particular race**. Roster status is separate and never rewrites event rows. AV-KitKat's Oct 25 Space row therefore stays under AVENGERS.
+
+`scripts/render-space-summary.py` (approved Space design) had the Oct 16 / Oct 9 dates hard-coded. Candidate `space-v2-20261025-candidate` keeps the visual design and changes only: dates from the event and prior same-clan event; a compact two-column PB list when more than 4 PBs (Oct 25 AVENGERS has 19), with "+N more" if it still overflows; "+N more" for first-tracked overflow; red text for negative week-over-week notes; singular "lobby"; and a sidecar JSON with readyToPost:false. Previews for Oct 25 rendered for leader review. **Nothing posted.**
+
 ## 2026-10-25 — Space 2026-10-25 published (57 verified rows); lobby pots come from rewards ÷ share
 
 Leader asked for the Oct 25 Space results to be processed, with two standing rules:

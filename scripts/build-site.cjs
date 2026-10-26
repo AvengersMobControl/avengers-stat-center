@@ -31,7 +31,8 @@ function build({destination=path.join(root,'dist'),updates}={}){
     if(entry.name.startsWith('.')||['dist','reports','scripts','docs','data','avengers-discord-mcp-connector'].includes(entry.name))continue;
     if(entry.isDirectory()&&entry.name!=='assets')continue;
     if(entry.isFile()&&!/\.(html|css|js|json|toml)$/.test(entry.name))continue;
-    fs.cpSync(path.join(root,entry.name),path.join(destination,entry.name),{recursive:true});
+    // Fonts are for the offline PNG renderers only; keep them out of the public site.
+    fs.cpSync(path.join(root,entry.name),path.join(destination,entry.name),{recursive:true,filter:src=>!src.startsWith(path.join(root,'assets','fonts'))});
   }
   const script=browserSource(release);
   const bundle='release-data.'+digest(script).slice(0,16)+'.js';fs.writeFileSync(path.join(destination,bundle),script);

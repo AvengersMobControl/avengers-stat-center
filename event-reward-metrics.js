@@ -43,7 +43,42 @@
     return {groups:groups.size,potStars:sum('stars'),potSparks:sum('sparks'),
       coveredStarGroups:pots.filter(p=>p.stars!==null).length,coveredSparkGroups:pots.filter(p=>p.sparks!==null).length};
   }
-  const api={efficiency,reconcile,summarize,record,spaceRecordDisplay,potTotals};
+
+  // Every logged Space lobby pot, ranked across all races. Pot = a racer's
+  // Stars (or Sparks) / their share %, from the highest-share row with a known
+  // reward (leader rule 2026-10-25: screenshot pot headers can be stale).
+  // Accepts {date: rows} with site rows (name/yearsB/flat fields) or
+  // projection rows (player/score/metadata). Share >= 1 is a percent.
+  function lobbyPots(eventsByDate){
+    const pick=(r,k)=>r[k]!==undefined&&r[k]!==null?r[k]:r.metadata?.[k];
+    const shareOf=r=>{let s=Number(pick(r,'share'));if(!(s>0))return null;if(s>=1)s/=100;return s;};
+    const out=[];
+    for(const [date,rows] of Object.entries(eventsByDate||{})){
+      const groups=new Map();
+      for(const r of rows||[]){
+        const g=pick(r,'group');if(g===undefined||g===null||g==='')continue;
+        const key=String(g);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(r);
+      }
+      for(const [lobby,rs] of groups){
+        const withShare=rs.map(r=>({r,share:shareOf(r)})).filter(x=>x.share).sort((a,b)=>b.share-a.share);
+        const starRow=withShare.find(x=>known(x.r.stars)&&x.r.stars>0);
+        const sparkRow=withShare.find(x=>known(x.r.sparks)&&x.r.sparks>0);
+        const score=r=>Number(r.score??r.yearsB)||0;
+        const top=rs.slice().sort((a,b)=>score(b)-score(a))[0];
+        const clans=[...new Set(rs.map(r=>r.clan||r.eventClan).filter(Boolean))].sort();
+        out.push({date,lobby,clans,racers:rs.length,
+          potStars:starRow?Math.round(starRow.r.stars/starRow.share):null,
+          potSparks:sparkRow?Math.round(sparkRow.r.sparks/sparkRow.share):null,
+          trackedShare:withShare.reduce((s,x)=>s+x.share,0),
+          lightyearsB:rs.reduce((s,r)=>s+score(r),0),
+          topPlayer:top?(top.player||top.name):null,topScoreB:top?score(top):null});
+      }
+    }
+    const ranked=out.filter(x=>x.potStars!==null).sort((a,b)=>b.potStars-a.potStars||a.date.localeCompare(b.date));
+    ranked.forEach((x,i)=>{x.rank=1+ranked.findIndex(y=>y.potStars===x.potStars);x.of=ranked.length;});
+    return out.sort((a,b)=>b.date.localeCompare(a.date)||(b.potStars??-1)-(a.potStars??-1));
+  }
+  const api={efficiency,reconcile,summarize,record,spaceRecordDisplay,potTotals,lobbyPots};
   if(typeof module==='object'&&module.exports)module.exports=api;
   else root.AVENGERS_REWARD_METRICS=api;
 })(typeof window==='object'?window:globalThis);

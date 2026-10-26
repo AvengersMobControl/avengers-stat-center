@@ -58,6 +58,8 @@ export default async function middleware(request){
     // Allow only the SHA-pinned approved Oct25 Space PNG fetched by its one-time publisher.
     p==='/assets/reports/AVENGERS_Space_Race_October_25_2026.png' ||
     p==='/assets/reports/AVENGERS_Big_Pig_October_23_2026.png' ||
+    // Standing event publisher (api/discord/publish-event.js): only event poster PNGs, which it SHA-checks.
+    /^\/assets\/reports\/(AVENGERS|AV2)_(Space_Race|Big_Pig|Piggy_Flashes)_[A-Z][a-z]+_\d{1,2}_\d{4}\.png$/.test(p) ||
     p.startsWith('/api/guest/') ||
     p==='/mcp' ||
     p.startsWith('/.well-known/') ||

@@ -1012,12 +1012,14 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       const av2Mode=state.status==='av2';
       const dates=(av2Mode?Object.keys(D.piggy.av2PotTotals||{}):Object.keys(D.piggy.events||{})).sort().reverse();
       const rows=dates.map(date=>({date,pot:av2Mode?(Number(D.piggy.av2PotTotals?.[date])||0):piggyPotTotal(date)})).filter(x=>x.pot>0);
+      const ranked=rows.map(x=>x.pot).sort((a,b)=>b-a);
       const body=rows.map(x=>`<tr>
+        <td class="num">${fmtNum(1+ranked.findIndex(v=>v<=x.pot+0.5))} <span class="small-muted">/ ${fmtNum(rows.length)}</span></td>
         <td>${fmtDate(x.date)}</td>
         <td class="num event-total-highlight"><strong>${fmtMillions2(x.pot)}</strong></td>
       </tr>`).join('');
       el.innerHTML=tableShell(av2Mode?'AV-2 Piggy Race Pot Totals':'Piggy Race Pot Totals',av2Mode?'AV-2 lobby pot totals verified from the AV-2 Discord results channel':'Workbook-derived pot total for each recorded race • calculated from reward/share values when available',
-        [{label:'Week'},{label:'Pot Stars',num:true}],body||`<tr><td colspan="2" class="empty">No Piggy pot totals recorded.</td></tr>`);
+        [{label:'All-time Rank',num:true},{label:'Week'},{label:'Pot Stars',num:true}],body||`<tr><td colspan="3" class="empty">No Piggy pot totals recorded.</td></tr>`);
     } else if(view==='event'){
       const eventAV=piggyRaceRows(state.piggyEvent,'AVENGERS')
         .sort((a,b)=>(Number(a.rank)||999)-(Number(b.rank)||999));

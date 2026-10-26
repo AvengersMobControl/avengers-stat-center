@@ -636,3 +636,13 @@ See [MONITORING_SETUP_CHECKPOINT.md](MONITORING_SETUP_CHECKPOINT.md), newest #78
 Add a new dated section at the top stating: **user decision**, **what was implemented**, **linked PR/issues/CI/deployment SHA**, **verification scope**, **outstanding blockers**, and **next recommended action**. Update [PROJECT_CONTINUITY.md](PROJECT_CONTINUITY.md) and [ROADMAP.md](../ROADMAP.md) when the standing policy or priority changed. Never overwrite older decisions without marking which are superseded.
 
 - Follow-up verification now covers all 13 navigation pages for both clans (26 views), including Flash and Trends, plus correction/revocation fixtures. Missing Flash result cells display a dash instead of zero. Main Pages deployment 38866482366 succeeded; public DOM release version matched 36ac833c2974c65129fbe24634e8556a261cbf471f6866951e22a5e882b4d5ad.
+
+## 2026-10-26 — Discord poster rules (leader, Big Pig v2 review)
+
+- Big Pig has one lobby per week per poster, so no lobby-pot panel. The pot appears as a one-line ribbon with its Arena-era rank (since 2026-08-01) and its all-time logged rank.
+- "Change vs last" compares with the previous **four** races of that event, plus a 4-race average, and tags weekday (non-weekend) races.
+- League leader spotlights on an event poster count **that event only** (for example, Big Pig lines and Big Pig Sparks).
+- Never show Sparks-per-line on a poster for any event other than Space (Space keeps Sparks per billion LY).
+- Top 10 tables: no duplicate columns (finish place equals the row rank). Show all-time 1st-place and podium finish counts (any clan, all time) and an "ALL TIME (ARENA ERA) RANK" column.
+- Line milestones are listed one per row with an Arena-era rank for that count among the clan's Arena-era races ("T-" marks ties). This applies to every event poster from now on.
+- Sign posters "— AV-HarryBallsagna". Keep fine print to a minimum.

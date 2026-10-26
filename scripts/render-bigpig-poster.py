@@ -12,6 +12,7 @@ Reads ONLY the approved canonical export. Rules (leader, 2026-10-25/26):
 Writes a sidecar JSON with readyToPost:false. Never posts anything.
 """
 import argparse, datetime as dt, hashlib, importlib.util, json
+from PIL import ImageFont
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -19,9 +20,10 @@ _spec = importlib.util.spec_from_file_location('space_poster', ROOT / 'scripts' 
 SP = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(SP)
 Poster, F, C, W, M = SP.Poster, SP.F, SP.C, SP.W, SP.M
 fmt, pct, shortdate, longdate, mill, ordinal = SP.fmt, SP.pct, SP.shortdate, SP.longdate, SP.mill, SP.ordinal
-TEMPLATE = 'bigpig-poster-v2-20261026-candidate'
+TEMPLATE = 'bigpig-poster-v3-20261026-candidate'
 ARENA_START = '2026-08-01'  # site meta.arenaStart
 SIGNATURE = 'AV-HarryBallsagna'
+SIG_FONT = ROOT / 'assets' / 'fonts' / 'GreatVibes-Regular.ttf'  # OFL, signature only
 TIERS = [5000, 10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000]
 def lines(v): return fmt(v)
 def klines(v): return f'{v/1000:g}K'
@@ -66,6 +68,9 @@ def build_model(R, clan, event_id=None):
             if r.get('score') is not None: hist.setdefault(r['player'], []).append((e['date'], r['score']))
     all_scores = sorted([r['score'] for e in pig if ARENA_START <= e['date'] <= event['date'] for r in e['rows'] if r.get('score') is not None], reverse=True)
     def alltime_rank(s): return 1 + sum(1 for x in all_scores if x > s)
+    # Every logged result counts (all clans, former and current members alike).
+    ever_scores = [r['score'] for e in pig if e['date'] <= event['date'] for r in e['rows'] if r.get('score') is not None]
+    def ever_rank(s): return 1 + sum(1 for x in ever_scores if x > s)
     # All-time (not arena-only) 1st-place and podium finishes, any clan, through this race.
     finishes = {}
     for e in pig:
@@ -158,6 +163,7 @@ def build_model(R, clan, event_id=None):
                         sum(1 for c in arena_counts if sum(1 for s in c if s >= t) == n) > 1)
                        for t in TIERS for n in [sum(1 for r in rows if r['score'] >= t)] if n],
                 allTimeRank={r['player']: alltime_rank(r['score']) for r in rows[:10]}, allTimeN=len(all_scores),
+                everRank={r['player']: ever_rank(r['score']) for r in rows[:10]}, everN=len(ever_scores),
                 projectionVersion=P.get('version'), complete=bool(event.get('metadata', {}).get('complete')))
 
 
@@ -188,7 +194,7 @@ def plan(m):
 def render(m, out):
     clan = m['clan']; ev = m['event']; L = plan(m)
     CH = 82 + 40 + 6 * 50 + 24
-    H = 370 + 160 + 96 + CH + 24 + 330 + (140 + 54 * L['n10'] + 30) + 30 + L['bottom'] + 30 + 230 + 40
+    H = 370 + 160 + 96 + CH + 24 + 330 + (140 + 54 * L['n10'] + 30) + 30 + L['bottom'] + 30 + 250 + 40
     p = Poster(H); d = p.d
 
     p.char('AV_ChickenHawkeye.png', (24, 16, 400, 340)); p.char('AV_GNHulk.png', (W - 400, 16, W - 24, 340))
@@ -271,11 +277,11 @@ def render(m, out):
 
     n10 = L['n10']; th = 140 + 54 * n10
     p.neon((M, y, W - M, y + th), 'cyan')
-    p.title(M + 32, y + 22, 'TOP 10  /  LINES', f'ALL TIME (ARENA ERA) RANK AMONG {fmt(m["allTimeN"])} BIG PIG RESULTS', W - M - 32, 34)
-    cols = [(M + 50, '#', 'ma'), (M + 96, 'PLAYER', 'la'), (800, 'LINES', 'ra'), (1040, 'STARS', 'ra'), (1170, 'SHARE', 'ra'),
-            (1330, 'ALL-TIME 1STS', 'ra'), (1530, 'ALL-TIME PODIUMS', 'ra'), (W - M - 36, 'ARENA RANK', 'ra')]
+    p.title(M + 32, y + 22, 'TOP 10  /  LINES', f'ALL TIME (ARENA ERA) RANK AMONG {fmt(m["everN"])} ({fmt(m["allTimeN"])}) BIG PIG RESULTS', W - M - 32, 34)
+    cols = [(M + 50, '#', 'ma'), (M + 96, 'PLAYER', 'la'), (655, 'LINES', 'ra'), (845, 'STARS', 'ra'), (945, 'SHARE', 'ra'),
+            (1105, 'ALL-TIME 1STS', 'ra'), (1300, 'ALL-TIME PODIUMS', 'ra'), (1515, 'ALL-TIME RANK', 'ra'), (W - M - 36, 'ARENA-ERA RANK', 'ra')]
     hy = y + 82; d.rectangle((M + 24, hy - 6, W - M - 24, hy + 32), fill=C['row'])
-    for x, lab, a in cols: p.text((x, hy), lab, 19, 'mut', 'semi', a)
+    for x, lab, a in cols: p.text((x, hy + 1), lab, 17, 'mut', 'semi', a)
     for i, r in enumerate(m['rows'][:10]):
         ry = y + 128 + i * 54
         if i % 2 == 0: d.rectangle((M + 24, ry - 8, W - M - 24, ry + 44), fill=C['row2'])
@@ -283,11 +289,12 @@ def render(m, out):
         if badge:
             d.rounded_rectangle((M + 30, ry - 2, M + 70, ry + 36), 7, fill=C[badge]); p.text((M + 50, ry + 2), i + 1, 26, '#0a1530', 'black', 'ma')
         else: p.text((M + 50, ry + 2), i + 1, 26, 'fg', 'bold', 'ma')
-        p.fit((M + 96, ry + 2), r['player'], 500, 28, 'gold' if i == 0 else 'fg', 'bold')
+        p.fit((M + 96, ry + 2), r['player'], 400, 28, 'gold' if i == 0 else 'fg', 'bold')
         sh = r['metadata'].get('share'); wins, pods = m['finishes'].get(r['player'], (0, 0))
-        vals = [(800, lines(r['score']), 'fg'), (1040, fmt(r['stars']) if r['stars'] is not None else '—', 'gold'),
-                (1170, f'{sh*100:g}%' if sh else '—', 'fg'), (1330, str(wins), 'gold' if wins else 'mut'),
-                (1530, str(pods), 'mag' if pods else 'mut'),
+        vals = [(655, lines(r['score']), 'fg'), (845, fmt(r['stars']) if r['stars'] is not None else '—', 'gold'),
+                (945, f'{sh*100:g}%' if sh else '—', 'fg'), (1105, str(wins), 'gold' if wins else 'mut'),
+                (1300, str(pods), 'mag' if pods else 'mut'),
+                (1515, f'{m["everRank"][r["player"]]} / {fmt(m["everN"])}', 'fg'),
                 (W - M - 36, f'{m["allTimeRank"][r["player"]]} / {fmt(m["allTimeN"])}', 'cyan')]
         for x, v, col in vals: p.text((x, ry + 4), v, 26, col, 'semi', 'ra')
     y += th + 30
@@ -359,14 +366,14 @@ def render(m, out):
         for name, w, h in L['cols'][c]: draw[name](x, yy, w, h); yy += h + 24
     y += L['bottom'] + 30
 
-    p.neon((M, y, W - M, y + 230), 'cyan')
-    p.char('AV_MZGroot.png', (M + 24, y + 14, M + 260, y + 216)); p.char('AV_RaccoonRocket.png', (W - M - 260, y + 14, W - M - 24, y + 216))
+    p.neon((M, y, W - M, y + 250), 'cyan')
+    p.char('AV_MZGroot.png', (M + 24, y + 18, M + 270, y + 232)); p.char('AV_RaccoonRocket.png', (W - M - 270, y + 18, W - M - 24, y + 232))
     cx = W // 2
     p.text((cx, y + 26), f'{clan}  /  BIG PIG', 34, 'mag', 'black', 'ma')
     p.text((cx, y + 74), f'{longdate(ev["date"])}  •  FINAL RESULTS', 22, 'fg', 'bold', 'ma')
-    p.text((cx, y + 116), f'— {SIGNATURE}', 34, 'cyan', 'xbold', 'ma')
-    p.text((cx, y + 172), 'AVENGERS STAT CENTER', 26, 'gold', 'black', 'ma')
-    fh = y + 230 + 30
+    d.text((cx, y + 104), SIGNATURE, font=ImageFont.truetype(str(SIG_FONT), 72), fill=C['cyan'], anchor='ma')
+    p.text((cx, y + 196), 'AVENGERS STAT CENTER', 26, 'gold', 'black', 'ma')
+    fh = y + 250 + 30
     im = p.im.crop((0, 0, W, fh)); im.save(out, optimize=True)
     sha = hashlib.sha256(Path(out).read_bytes()).hexdigest()
     side = dict(file=str(out), eventId=ev['id'], clan=clan, projectionVersion=m['projectionVersion'], templateVersion=TEMPLATE,

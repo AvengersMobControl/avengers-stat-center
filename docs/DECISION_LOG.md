@@ -1,3 +1,7 @@
+## 2026-10-25 — Space poster v1 candidate (Piggy Flash style, with characters)
+
+Leader confirmed PBs are site-wide (highest anywhere on the site, any clan) and approved `assets/characters/` for graphics (Hawkeye chicken added). New review renderer `scripts/render-space-poster.py` (`space-poster-v1-20261025-candidate`) follows the Oct 20 Piggy Flash poster: KPI row, lobby cards (pot = reward ÷ share), change vs last race, individual spotlights (from the PR #138 tall-layout spec), top 10 with all-time rank, every PB with previous value/date, above-own-average, first tracked, effort shoutout, distance milestones, character header/footer. Inter fonts vendored in `assets/fonts` (OFL) for identical renders. Preview only: readyToPost:false, nothing posted.
+
 ## 2026-10-25 — Event-time clan is binding; Space PNG renderer made date-driven (review candidate)
 
 Leader: players move back and forth between AVENGERS and AV-2; **always attribute each race's result to the clan shown for that particular race**. Roster status is separate and never rewrites event rows. AV-KitKat's Oct 25 Space row therefore stays under AVENGERS.

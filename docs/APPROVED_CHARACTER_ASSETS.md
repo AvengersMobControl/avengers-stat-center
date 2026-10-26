@@ -24,3 +24,7 @@
 | Stone Pig, Drax, Big Blob | `AV_BBDrax.png` | `f31c97adee29d56dfbb96b2956d275bdc80c09b74de55192f84de76e55ae063d` |
 
 **PNG reporting workflow:** verify approved event results, PBs, new entrants, historical rank PBs and benchmark record counts in structured data BEFORE compositing. User explicitly rejected a "locked" image design; editing the Piggy PNG is allowed in manual review. **Do not enable automatic Discord PNG dispatch until separately authorized.** Maintain AVENGERS/SAC separation.
+
+## 2026-10-25 — Leader approval: `assets/characters/` is the approved character set
+
+The leader confirmed the character PNGs in this repository's `assets/characters/` folder are approved for event graphics, and supplied the Hawkeye chicken, added as `AV_ChickenHawkeye.png` (SHA-256 `c85b6a62afbefe88c7f4dd55af948dcd35bab6f25832121348bc6fb06c606fe1`). These GitHub copies are now the working source for renderers; the older Library-hash table above is historical. Characters decorate around data and never cover numbers.

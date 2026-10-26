@@ -16,7 +16,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 ROOT = Path(__file__).resolve().parents[1]
 FONTS = ROOT / 'assets' / 'fonts'
 CHARS = ROOT / 'assets' / 'characters'
-TEMPLATE = 'space-poster-v3-20261026-candidate'
+TEMPLATE = 'space-poster-v4-20261026-candidate'
 ARENA_START = '2026-08-01'  # site meta.arenaStart
 SIGNATURE = 'AV-HarryBallsagna'
 SIG_FONT = Path(__file__).resolve().parents[1] / 'assets' / 'fonts' / 'GreatVibes-Regular.ttf'
@@ -188,9 +188,12 @@ def build_model(R, clan, event_id=None):
     shout = sorted([r for r in rows if r['score'] >= 100 and r.get('sparks') is not None],
                    key=lambda r: r['sparks'] / r['score'])[:3]
     tiers = []
-    for t in (100, 250, 500, 750, 1000):
-        n = sum(1 for r in rows if r['score'] >= t)
-        if not n: continue
+    # Every 100B, keeping a tier only when it holds more racers than the next one up
+    # (leader, 2026-10-26): e.g. 700B+, 800B+, 900B+ drop when they equal 1,000B+.
+    cnt = lambda t: sum(1 for r in rows if r['score'] >= t)
+    for t in range(100, int(max(r['score'] for r in rows) // 100) * 100 + 1, 100):
+        n = cnt(t)
+        if not n or n == cnt(t + 100): continue
         cnts = [sum(1 for v in c if v >= t) for c in arena_counts]
         tiers.append((t, n, 1 + sum(1 for c in cnts if c > n), len(arena_counts), sum(1 for c in cnts if c == n) > 1))
     return dict(event=event, clan=clan, rows=rows, prior=prior, priorRows=prior_rows, total=total,

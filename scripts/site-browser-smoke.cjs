@@ -41,6 +41,37 @@ async function main(){
         assert.deepEqual(errors,[],name+' has no browser errors');
       }
     }
+    // Ratings ties use displayed two-decimal totals, not array indices. This
+    // checks the built site across each roster scope, including the overview.
+    for(const status of ['active','av2','all']){
+      await page.selectOption('#globalStatusFilter',status);
+      await page.click('.nav-btn[data-page="ratings"]');
+      const rated=await page.locator('#ratingsContent tbody tr').evaluateAll(trs=>trs.map(tr=>({
+        rank:tr.cells[0].textContent.trim(),
+        sortRank:tr.cells[0].dataset.sortValue,
+        score:tr.cells[3].innerText.trim()
+      })));
+      assert(rated.length>0,status+' has rated players');
+      let expectedRank=0,numberOfTies=0;
+      for(let i=0;i<rated.length;i++){
+        if(i===0||rated[i].score!==rated[i-1].score) expectedRank=i+1;
+        const tied=(i>0&&rated[i].score===rated[i-1].score)||
+          (i+1<rated.length&&rated[i].score===rated[i+1].score);
+        if(tied)numberOfTies++;
+        assert.equal(rated[i].rank,(tied?'T-':'')+expectedRank,status+' rating rank '+i);
+        assert.equal(rated[i].sortRank,String(expectedRank),status+' numeric sort rank '+i);
+      }
+      if(status==='active') assert(numberOfTies>=2,'active players with equal displayed ratings share first place');
+      if(status==='active'){
+        await page.click('.nav-btn[data-page="overview"]');
+        const top=await page.locator('#overviewContent .rating-command-list tbody tr').evaluateAll(trs=>trs.map(tr=>({
+          rank:tr.cells[0].textContent.trim(),score:tr.cells[3].innerText.trim()
+        })));
+        assert.deepEqual(top.map(x=>x.rank),rated.slice(0,top.length).map(x=>x.rank),
+          'overview and Player Rating table share competition ranks');
+      }
+    }
+    await page.selectOption('#globalStatusFilter','active');
     // The browser shows actual best finishing PLACES (not line-score rankings).
     // This value is fixed by the qualifying historic race, not the current clan roster.
     await page.click('.nav-btn[data-page="rosters"]');

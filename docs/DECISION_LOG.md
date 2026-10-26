@@ -1,3 +1,7 @@
+## 2026-10-26 — Player Rating tied placements (staged)
+
+Leader requested ties in the Player Ratings table. The earlier direct `index.html` embedded workbook snapshot is stale and must not be cited as the current site's number of 6.00-rated players; release-data is generated from the current canonical event projection. Updated the Player Ratings table and Overview Top Rated Players to assign competition places from the **displayed two-decimal Total Rating**, with tied scores sharing `T-1`, `T-1` and the next rank `3` (or the analogous rank and skip for larger tie groups). Sorting stays numeric through `data-sort-value`; calculations, player identities, rosters, historical evidence and source rewards are unchanged. Added built-browser smoke verification for Active, AV-2 and All tracked scopes. Merge and exact published-site verification remain required before labeling LIVE.
+
 ## 2026-10-26 — October 19–25 weekly recap review graphic (NOT POSTED)
 
 Using the leader-approved 1440px neon blank master background, created a 1440×3915 review PNG with exact programmatic text overlays and an appended record-book section. Final local/persistent artifact basename: `AVENGERS_Weekly_Event_Recap_2026-10-19_to_25_REVIEW.png`; companion `...FACTS.json`, `...DISCORD_DRAFT.md`, `...QA.md`, and reproducible `render_avengers_weekly_recap.py` are retained in the leader's AVENGERS artifacts. This is **review-only**, not imported as a repository asset or dispatched to Discord.

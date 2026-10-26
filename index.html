@@ -736,9 +736,22 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       </svg></div>`;
   }
 
+  // Competition ranks use the same two-decimal Total Rating visible to players.
+  // Equal displayed scores share a rank, and the following rank skips places.
+  function ratingRankPositions(rows){
+    const scores=rows.map(r=>fmtNum(r.ratingTotal,2));
+    let rank=0;
+    return scores.map((score,i)=>{
+      if(i===0||scores[i-1]!==score) rank=i+1;
+      const tied=(i>0&&scores[i-1]===score)||(i+1<scores.length&&scores[i+1]===score);
+      return {rank,label:tied?'T-'+rank:String(rank)};
+    });
+  }
+
   function rankRows(rows, scoreKey, scoreFmt, metaFn=()=>'', count=5){
+    const ranks=scoreKey==='ratingTotal'?ratingRankPositions(rows):null;
     const body=rows.slice(0,count).map((r,i)=>`<tr>
-      <td class="num mini-rank-pos">${i+1}</td>
+      <td class="num mini-rank-pos" data-sort-value="${ranks?ranks[i].rank:i+1}">${ranks?ranks[i].label:i+1}</td>
       <td><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></td>
       <td class="mini-rank-meta">${metaFn(r)}</td>
       <td class="num mini-rank-score">${scoreFmt(r[scoreKey])}</td>
@@ -1353,8 +1366,9 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   function renderRatings(){
     const rows=currentMembers().filter(r=>Number(r.ratingTotal)>0).sort((a,b)=>b.ratingTotal-a.ratingTotal);
     const max=Math.max(...rows.map(r=>Number(r.ratingTotal)||0),1);
+    const ranks=ratingRankPositions(rows);
     const body=rows.map((r,i)=>`<tr>
-      <td class="num">${i+1}</td>
+      <td class="num" data-sort-value="${ranks[i].rank}">${ranks[i].label}</td>
       <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></div></td>
       <td>${statusBadge(r.status,r.name)}</td>
       <td>${barCell(r.ratingTotal,max,v=>fmtNum(v,2))}</td>
@@ -1376,6 +1390,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <br><strong>Average benchmarks:</strong> Piggy Race 25,000 lines • Space Race 200B lightyears • Kraken 2,800.
         Piggy and Space averages use results since August 1, 2026; Kraken uses the last 3 Kraken events.
         <br><strong>PB Rating</strong> and <strong>Avg Rating</strong> are each worth up to 3.00 points, for a maximum <strong>Total Rating of 6.00</strong>.
+        <br><strong>Ranking ties:</strong> Equal Total Ratings at the displayed two-decimal precision share the same rank (T-1, T-1, 3).
       </div>`;
     $('#ratingsContent').innerHTML = ratingExplanation + tableShell('Overall Player Rating','Personal Best performance + recent average performance',
       [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Total Rating'},{label:'PB Rating',num:true},{label:'Avg Rating',num:true},{label:'Piggy PB',num:true},{label:'Space PB',num:true},{label:'Kraken PB',num:true},{label:'Piggy Avg',num:true},{label:'Space Arena Avg',num:true},{label:'Kraken L3',num:true}],body);

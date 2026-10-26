@@ -646,3 +646,6 @@ Add a new dated section at the top stating: **user decision**, **what was implem
 - Top 10 tables: no duplicate columns (finish place equals the row rank). Show all-time 1st-place and podium finish counts (any clan, all time) and an "ALL TIME (ARENA ERA) RANK" column.
 - Line milestones are listed one per row with an Arena-era rank for that count among the clan's Arena-era races ("T-" marks ties). This applies to every event poster from now on.
 - Sign posters "— AV-HarryBallsagna". Keep fine print to a minimum.
+- (Later 2026-10-26) Every event write-up starts with `@everyone`. One-shot publishers must send `allowed_mentions: {parse: ["everyone"]}` for that message, otherwise Discord suppresses the ping (earlier publishers used `parse: []`).
+- Top 10 tables show both an ALL-TIME RANK and an ARENA-ERA RANK. Every rank counts all logged results: former and current members, all clans, with no active-member filter.
+- The signature uses Great Vibes (OFL, `assets/fonts/GreatVibes-Regular.ttf`), with no leading dash.

@@ -57,6 +57,7 @@ export default async function middleware(request){
     p==='/assets/reports/AVENGERS_Piggy_Flashes_October_20_2026_FINAL.png' ||
     // Allow only the SHA-pinned approved Oct25 Space PNG fetched by its one-time publisher.
     p==='/assets/reports/AVENGERS_Space_Race_October_25_2026.png' ||
+    p==='/assets/reports/AVENGERS_Big_Pig_October_23_2026.png' ||
     p.startsWith('/api/guest/') ||
     p==='/mcp' ||
     p.startsWith('/.well-known/') ||

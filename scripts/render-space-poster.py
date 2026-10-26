@@ -16,7 +16,10 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 ROOT = Path(__file__).resolve().parents[1]
 FONTS = ROOT / 'assets' / 'fonts'
 CHARS = ROOT / 'assets' / 'characters'
-TEMPLATE = 'space-poster-v2-20261025-candidate'
+TEMPLATE = 'space-poster-v3-20261026-candidate'
+ARENA_START = '2026-08-01'  # site meta.arenaStart
+SIGNATURE = 'AV-HarryBallsagna'
+SIG_FONT = Path(__file__).resolve().parents[1] / 'assets' / 'fonts' / 'GreatVibes-Regular.ttf'
 W, M = 1800, 44
 C = dict(bg='#070f24', bg2='#1a0f3a', panel='#0d1a36', row='#13244a', row2='#0f1d3d',
          fg='#f2f6ff', mut='#9fb2d6', cyan='#22d8f2', mag='#ff4fd8', gold='#ffd23f',
@@ -42,13 +45,13 @@ def shortdate(s): return dt.date.fromisoformat(s).strftime('%b %d').replace(' 0'
 def longdate(s): return dt.date.fromisoformat(s).strftime('%B %d, %Y').replace(' 0', ' ').upper()
 
 
-def lobby_pot_ranks(space, upto):
+def lobby_pot_ranks(space, upto, since=None):
     """Python port of event-reward-metrics.js lobbyPots(): pot = Stars / share of the
     highest-share row with known Stars; share >= 1 is a percent. Ranked across every
     logged lobby up to and including `upto`. Returns {(date, group): (rank, of)}."""
     pots = []
     for e in space:
-        if e['date'] > upto: continue
+        if e['date'] > upto or (since and e['date'] < since): continue
         groups = {}
         for r in e['rows']:
             g = (r.get('metadata') or {}).get('group')
@@ -96,6 +99,24 @@ def build_model(R, clan, event_id=None):
     all_scores = sorted([r['score'] for e in space if e['date'] <= event['date'] for r in e['rows']
                          if r.get('score') is not None], reverse=True)
     def alltime_rank(score): return 1 + sum(1 for s in all_scores if s > score)
+    arena_scores = [r['score'] for e in space if ARENA_START <= e['date'] <= event['date'] for r in e['rows'] if r.get('score') is not None]
+    def arena_rank(score): return 1 + sum(1 for s in arena_scores if s > score)
+    # All-time lobby wins and podiums (any clan), through this race.
+    finishes = {}
+    for e in space:
+        if e['date'] > event['date']: continue
+        for r in e['rows']:
+            k = (r.get('metadata') or {}).get('rank')
+            if isinstance(k, int) and 1 <= k <= 3:
+                w, pd_ = finishes.get(r['player'], (0, 0)); finishes[r['player']] = (w + (k == 1), pd_ + 1)
+    # This race plus the clan's previous four Space races.
+    recent = []
+    for e in [x for x in space if x['date'] <= event['date']][::-1]:
+        rr = [r['score'] for r in e['rows'] if r['clan'] == clan and r.get('score') is not None]
+        if rr: recent.append(dict(date=e['date'], n=len(rr), total=sum(rr), avg=sum(rr) / len(rr)))
+        if len(recent) == 5: break
+    arena_counts = [c for c in ([r['score'] for r in e['rows'] if r['clan'] == clan and r.get('score') is not None]
+                                for e in space if ARENA_START <= e['date'] <= event['date']) if c]
 
     people = {p['name']: p for p in P['people']}
     pbs, first = [], []
@@ -129,6 +150,7 @@ def build_model(R, clan, event_id=None):
         if r['clan'] == clan:
             lobbies.setdefault(r['metadata']['lobby'], []).append(r)
     pot_rank = lobby_pot_ranks(space, event['date'])
+    pot_rank_arena = lobby_pot_ranks(space, event['date'], ARENA_START)
     cards = []
     for L, rs in lobbies.items():
         known = [r for r in rs if r.get('stars') and r['metadata'].get('share')]
@@ -136,8 +158,9 @@ def build_model(R, clan, event_id=None):
         pot = top_share['stars'] / top_share['metadata']['share'] if top_share else None
         lead = max(rs, key=lambda r: r['score'])
         grp = str(rs[0]['metadata'].get('group'))
-        rk = pot_rank.get((event['date'], grp))
-        cards.append(dict(lobby=grp, potRank=rk[0] if rk else None, potOf=rk[1] if rk else None, pot=pot, share=sum(r['metadata'].get('share') or 0 for r in rs),
+        rk = pot_rank.get((event['date'], grp)); ra = pot_rank_arena.get((event['date'], grp))
+        cards.append(dict(lobby=grp, potRank=rk[0] if rk else None, potOf=rk[1] if rk else None,
+                          potRankArena=ra[0] if ra else None, potOfArena=ra[1] if ra else None, pot=pot, share=sum(r['metadata'].get('share') or 0 for r in rs),
                           dist=sum(r['score'] for r in rs), n=len(rs), leader=lead['player'],
                           leadScore=lead['score'], stars=sum(r['stars'] or 0 for r in rs)))
     cards.sort(key=lambda c: (int(c['lobby']) if str(c['lobby']).isdigit() else 99, c['lobby']))
@@ -155,7 +178,7 @@ def build_model(R, clan, event_id=None):
             if r['clan'] != clan: continue
             if e['kind'] == 'space' and r.get('score') is not None:
                 league_dist[r['player']] = league_dist.get(r['player'], 0) + r['score']
-            if r.get('sparks') is not None:
+            if e['kind'] == 'space' and r.get('sparks') is not None:  # Space only
                 league_sparks[r['player']] = league_sparks.get(r['player'], 0) + r['sparks']
     ld = max(league_dist.items(), key=lambda x: x[1]) if league_dist else None
     ls = max(league_sparks.items(), key=lambda x: x[1]) if league_sparks else None
@@ -164,15 +187,21 @@ def build_model(R, clan, event_id=None):
     ptotal = sum(r['score'] for r in prior_rows)
     shout = sorted([r for r in rows if r['score'] >= 100 and r.get('sparks') is not None],
                    key=lambda r: r['sparks'] / r['score'])[:3]
-    tiers = [(t, sum(1 for r in rows if r['score'] >= t)) for t in (100, 250, 500, 1000)]
+    tiers = []
+    for t in (100, 250, 500, 750, 1000):
+        n = sum(1 for r in rows if r['score'] >= t)
+        if not n: continue
+        cnts = [sum(1 for v in c if v >= t) for c in arena_counts]
+        tiers.append((t, n, 1 + sum(1 for c in cnts if c > n), len(arena_counts), sum(1 for c in cnts if c == n) > 1))
     return dict(event=event, clan=clan, rows=rows, prior=prior, priorRows=prior_rows, total=total,
                 avg=total / len(rows), ptotal=ptotal, pavg=ptotal / len(prior_rows) if prior_rows else None,
                 stars=sum(r['stars'] or 0 for r in rows), sparks=sum(r['sparks'] or 0 for r in rows),
                 derived=sum(1 for r in rows if r['metadata'].get('starsDerived')),
                 pbs=pbs, first=sorted(first, key=lambda r: -r['score']), above=above, eligible=eligible,
                 bestVsAvg=best_vs_avg, cards=cards, leagueStart=lstart.isoformat(), leagueEnd=lend.isoformat(),
-                leagueDist=ld, leagueSparks=ls, shout=shout, tiers=[t for t in tiers if t[1] > 0],
+                leagueDist=ld, leagueSparks=ls, shout=shout, tiers=tiers, recent=recent, finishes=finishes,
                 allTimeRank={r['player']: alltime_rank(r['score']) for r in rows[:10]}, allTimeN=len(all_scores),
+                arenaRank={r['player']: arena_rank(r['score']) for r in rows[:10]}, arenaN=len(arena_scores),
                 projectionVersion=P.get('version'), complete=bool(event.get('metadata', {}).get('complete')))
 
 
@@ -231,9 +260,9 @@ def plan(m):
     LW = 1010; RW = W - 2 * M - LW - 24
     nf = len(m['first'])
     def new_h(w): return 140 + max(1, nf if nf <= 4 or w > 900 else (nf + 1) // 2) * 118
-    boxes = [('pb', LW, 122 + 50 * max(1, len(m['pbs'])) + 54)]
+    boxes = [('pb', LW, 122 + 50 * max(1, len(m['pbs'])) + 20)]
     rest = [('new', None, None), ('avg', None, 170), ('effort', None, 110 + 52 * max(1, len(m['shout']))),
-            ('miles', None, 190)]
+            ('miles', None, 116 + max(1, len(m['tiers'])) * 48 + 16)]
     cols = {'L': [boxes[0]], 'R': []}; height = {'L': boxes[0][2], 'R': -24}
     for name, _, h in rest:
         c = 'R' if height['R'] <= height['L'] else 'L'
@@ -249,8 +278,9 @@ def plan(m):
 
 def render(model, out):
     m = model; clan = m['clan']; ev = m['event']; L = plan(m)
-    H = (360 + 160 + L['cards'] * 252 + 50 + 160 + 330 + (140 + 54 * L['n10'] + 30) + 30
-         + L['bottom'] + 30 + 300 + 40)
+    CH = 82 + 40 + 6 * 50 + 24
+    H = (370 + 160 + L['cards'] * 282 + 10 + CH + 24 + 330 + (140 + 54 * L['n10'] + 30) + 30
+         + L['bottom'] + 30 + 250 + 40)
     p = Poster(H); d = p.d
     lobby_chars = ['AV_ExplodonSpider.png', 'AV_KaboomStar.png', 'AV_NexusThor.png', 'AV_SirionGamora.png',
                    'AV_ExplodonTerrorist.png', 'AV_GCIron.png', 'AV_BBDrax.png', 'AV_LBCA.png']
@@ -281,45 +311,55 @@ def render(model, out):
     cw = (W - 2 * M - 22) // 2
     for i, c in enumerate(m['cards']):
         col = ['cyan', 'mag', 'green', 'purple', 'gold', 'cyan', 'mag', 'green'][i % 8]
-        x = M + (i % 2) * (cw + 22); yy = y + (i // 2) * 252
+        x = M + (i % 2) * (cw + 22); yy = y + (i // 2) * 282
         if i == len(m['cards']) - 1 and len(m['cards']) % 2 == 1: x = (W - cw) // 2
-        p.neon((x, yy, x + cw, yy + 232), col)
+        p.neon((x, yy, x + cw, yy + 262), col)
         p.text((x + 26, yy + 18), f'LOBBY {c["lobby"]}', 38, col, 'black')
         p.fit((x + 250, yy + 28), f'#1 {c["leader"]}', cw - 280, 26, 'fg', 'bold')
         d.line((x + 22, yy + 74, x + cw - 22, yy + 74), fill='#2a3f6e', width=2)
-        rank = f'#{c["potRank"]} of {fmt(c["potOf"])} all-time' if c.get('potRank') else ''
+        rank = (f'#{c["potRank"]} of {fmt(c["potOf"])} all time  ·  #{c["potRankArena"]} of {fmt(c["potOfArena"])} arena era'
+                if c.get('potRank') and c.get('potRankArena') else (f'#{c["potRank"]} of {fmt(c["potOf"])} all time' if c.get('potRank') else ''))
         p.text((x + 26, yy + 88), 'POT STARS', 18, 'mut', 'semi')
         p.text((x + 26, yy + 110), mill(c['pot']) if c['pot'] else '—', 44, col, 'black')
         if rank:
-            d.rounded_rectangle((x + 24, yy + 166, x + 26 + d.textlength(rank, font=F(19, 'xbold')) + 24, yy + 198), 9,
+            rank = 'POT RANK  ' + rank
+            d.rounded_rectangle((x + 24, yy + 214, x + 26 + d.textlength(rank, font=F(19, 'xbold')) + 24, yy + 246), 9,
                                 fill='#2a2410', outline=C['gold'], width=2)
-            p.text((x + 37, yy + 170), rank, 19, 'gold', 'xbold')
+            p.text((x + 37, yy + 218), rank, 19, 'gold', 'xbold')
         cells = [(f'{clan} SHARE', f'{c["share"]*100:.0f}%'), ('RACERS', f'{c["n"]} / 9'), ('LIGHTYEARS', ly(c['dist']))]
         for j, (lab, val) in enumerate(cells):
             cx = x + 330 + (j % 2) * 180 if j < 2 else x + 330; cy = yy + 88 + (j // 2) * 70
             p.text((cx, cy), lab, 17, 'mut', 'semi')
             p.text((cx, cy + 21), val, 28, 'fg', 'xbold')
-        p.char(lobby_chars[i % len(lobby_chars)], (x + cw - 210, yy + 82, x + cw - 18, yy + 222))
-    y += L['cards'] * 252
-    p.text((M + 6, y), 'Pot Stars = a racer\'s reward ÷ their share %. All-time rank compares every Space lobby logged on the site.',
-           20, 'mut', 'med')
-    y += 44
+        p.char(lobby_chars[i % len(lobby_chars)], (x + cw - 210, yy + 82, x + cw - 18, yy + 250))
+    y += L['cards'] * 282 + 10
 
-    # Change vs last race
-    p.neon((M, y, W - M, y + 136), 'mag')
-    p.text((M + 32, y + 22), 'CHANGE VS LAST RACE', 34, 'fg', 'black')
-    if m['prior']:
-        p.text((W - M - 32, y + 32), f'vs {shortdate(m["prior"]["date"])} · {len(m["rows"])} logged vs {len(m["priorRows"])}',
-               22, 'mut', 'semi', 'ra')
-        for j, (lab, now, was) in enumerate([('TOTAL LIGHTYEARS', m['total'], m['ptotal']),
-                                             ('AVG / PLAYER', m['avg'], m['pavg'])]):
-            x = M + 32 + j * 860; ch = now / was - 1 if was else 0
-            p.text((x, y + 84), lab, 22, 'mut', 'semi')
-            p.text((x + 300, y + 74), ly(now), 40, 'fg', 'black')
-            p.text((x + 790, y + 74), pct(ch), 40, 'green' if ch >= 0 else 'red', 'black', 'ra')
-    else:
-        p.text((M + 32, y + 84), 'First tracked race for this clan.', 26, 'mut', 'semi')
-    y += 160
+    # Change vs the previous four races
+    rec = m['recent']; cur = rec[0]
+    p.neon((M, y, W - M, y + CH), 'mag')
+    p.title(M + 32, y + 22, 'CHANGE VS LAST 4 SPACE RACES', None, None, 34)
+    lab = shortdate(cur['date']).upper()
+    hx = [(M + 40, 'RACE', 'la'), (720, 'PLAYERS', 'ra'), (980, 'TOTAL LIGHTYEARS', 'ra'), (1170, f'{lab} VS', 'ra'),
+          (1460, 'AVG / PLAYER', 'ra'), (W - M - 40, f'{lab} VS', 'ra')]
+    hy = y + 82; d.rectangle((M + 24, hy - 6, W - M - 24, hy + 30), fill=C['row'])
+    for cx, t, a in hx: p.text((cx, hy), t, 19, 'mut', 'semi', a)
+    prev = rec[1:]
+    avgrow = dict(label='4-RACE AVERAGE', n=sum(r['n'] for r in prev) / len(prev), total=sum(r['total'] for r in prev) / len(prev),
+                  avg=sum(r['total'] for r in prev) / sum(r['n'] for r in prev)) if prev else None
+    rows5 = [dict(r, label=shortdate(r['date']).upper()) for r in rec] + ([avgrow] if avgrow else [])
+    for i, r in enumerate(rows5):
+        ry = y + 128 + i * 50; this = i == 0; avgr = r is avgrow
+        if this: d.rounded_rectangle((M + 24, ry - 8, W - M - 24, ry + 40), 8, fill='#1d1240', outline=C['mag'], width=2)
+        elif i % 2 == 0: d.rectangle((M + 24, ry - 8, W - M - 24, ry + 40), fill=C['row2'])
+        if avgr: d.line((M + 24, ry - 9, W - M - 24, ry - 9), fill='#2a3f6e', width=2)
+        p.text((M + 40, ry + 2), ('THIS RACE · ' if this else '') + r['label'], 24, 'mag' if this else ('cyan' if avgr else 'fg'), 'black' if this or avgr else 'bold')
+        p.text((720, ry + 2), fmt(round(r['n'])) if not avgr else f'{r["n"]:.1f}', 24, 'fg', 'semi', 'ra')
+        p.text((980, ry + 2), ly(r['total']), 26, 'fg', 'black' if this else 'semi', 'ra')
+        p.text((1460, ry + 2), ly(r['avg']), 26, 'fg', 'black' if this else 'semi', 'ra')
+        if not this:
+            for cx, k in ((1170, 'total'), (W - M - 40, 'avg')):
+                ch = cur[k] / r[k] - 1; p.text((cx, ry + 2), pct(ch), 26, 'green' if ch >= 0 else 'red', 'xbold', 'ra')
+    y += CH + 24
 
     # Spotlights
     p.neon((M, y, W - M, y + 306), 'purple')
@@ -328,10 +368,10 @@ def render(model, out):
     spots = [('RACE LEADER', top['player'], ly(top['score']), 'Highest distance this race', 'gold'),
              ('BIGGEST JUMP VS OWN AVG', bva['name'] if bva else '—', pct(bva['gain']) if bva else '—',
               f'{ly(bva["score"])} vs {ly(bva["avg"])} avg ({bva["n"]} races)' if bva else 'Needs 3+ earlier races', 'green'),
-             ('LEAGUE DISTANCE LEADER', m['leagueDist'][0] if m['leagueDist'] else '—',
-              ly(m['leagueDist'][1]) if m['leagueDist'] else '—', 'Space distance this league', 'cyan'),
-             ('LEAGUE SPARKS LEADER', m['leagueSparks'][0] if m['leagueSparks'] else '—',
-              fmt(m['leagueSparks'][1]) if m['leagueSparks'] else '—', 'Sparks, all events this league', 'mag')]
+             ('LEAGUE SPACE DISTANCE LEADER', m['leagueDist'][0] if m['leagueDist'] else '—',
+              ly(m['leagueDist'][1]) if m['leagueDist'] else '—', 'Space distance only, this league', 'cyan'),
+             ('LEAGUE SPACE SPARKS LEADER', m['leagueSparks'][0] if m['leagueSparks'] else '—',
+              fmt(m['leagueSparks'][1]) if m['leagueSparks'] else '—', 'Space Sparks only, this league', 'mag')]
     sw = (W - 2 * M - 64 - 3 * 16) // 4
     for i, (lab, name, val, note, col) in enumerate(spots):
         x = M + 32 + i * (sw + 16); yy = y + 84
@@ -345,12 +385,13 @@ def render(model, out):
     # Top 10
     n10 = L['n10']; th = 140 + 54 * n10
     p.neon((M, y, W - M, y + th), 'cyan')
-    p.title(M + 32, y + 22, 'TOP 10  /  LIGHTYEARS', f'ALL-TIME RANK AMONG {fmt(m["allTimeN"])} SPACE RESULTS', W - M - 32, 34)
-    cols = [(M + 50, '#', 'ma'), (M + 96, 'PLAYER', 'la'), (820, 'LIGHTYEARS', 'ra'), (1030, 'STARS', 'ra'),
-            (1220, 'SPARKS', 'ra'), (1350, 'SHARE', 'ra'), (1520, 'SP / B', 'ra'), (W - M - 36, 'ALL-TIME', 'ra')]
+    p.title(M + 32, y + 22, 'TOP 10  /  LIGHTYEARS', f'ALL TIME (ARENA ERA) RANK AMONG {fmt(m["allTimeN"])} ({fmt(m["arenaN"])}) SPACE RESULTS', W - M - 32, 34)
+    cols = [(M + 50, '#', 'ma'), (M + 96, 'PLAYER', 'la'), (590, 'LIGHTYEARS', 'ra'), (770, 'STARS', 'ra'), (860, 'SHARE', 'ra'),
+            (985, 'SP / B', 'ra'), (1135, 'ALL-TIME 1STS', 'ra'), (1315, 'ALL-TIME PODIUMS', 'ra'), (1515, 'ALL-TIME RANK', 'ra'),
+            (W - M - 36, 'ARENA-ERA RANK', 'ra')]
     hy = y + 82
     d.rectangle((M + 24, hy - 6, W - M - 24, hy + 32), fill=C['row'])
-    for x, lab, a in cols: p.text((x, hy), lab, 19, 'mut', 'semi', a)
+    for x, lab, a in cols: p.text((x, hy + 1), lab, 17, 'mut', 'semi', a)
     for i, r in enumerate(m['rows'][:10]):
         ry = y + 128 + i * 54
         if i % 2 == 0: d.rectangle((M + 24, ry - 8, W - M - 24, ry + 44), fill=C['row2'])
@@ -360,13 +401,14 @@ def render(model, out):
             p.text((M + 50, ry + 2), i + 1, 26, '#0a1530', 'black', 'ma')
         else:
             p.text((M + 50, ry + 2), i + 1, 26, 'fg', 'bold', 'ma')
-        p.fit((M + 96, ry + 2), r['player'], 560, 28, 'gold' if i == 0 else 'fg', 'bold')
-        sh = r['metadata'].get('share')
-        vals = [(820, ly(r['score']), 'fg'), (1030, fmt(r['stars']) if r['stars'] is not None else '—', 'gold'),
-                (1220, fmt(r['sparks']) if r['sparks'] is not None else '—', 'green'),
-                (1350, f'{sh*100:g}%' if sh else '—', 'fg'),
-                (1520, fmt(r['sparks'] / r['score'], 1) if r.get('sparks') else '—', 'cyan'),
-                (W - M - 36, f'{m["allTimeRank"][r["player"]]} / {fmt(m["allTimeN"])}', 'cyan')]
+        p.fit((M + 96, ry + 2), r['player'], 320, 28, 'gold' if i == 0 else 'fg', 'bold')
+        sh = r['metadata'].get('share'); wins, pods = m['finishes'].get(r['player'], (0, 0))
+        vals = [(590, ly(r['score']), 'fg'), (770, fmt(r['stars']) if r['stars'] is not None else '—', 'gold'),
+                (860, f'{sh*100:g}%' if sh else '—', 'fg'),
+                (985, fmt(r['sparks'] / r['score'], 1) if r.get('sparks') else '—', 'green'),
+                (1135, str(wins), 'gold' if wins else 'mut'), (1315, str(pods), 'mag' if pods else 'mut'),
+                (1515, f'{m["allTimeRank"][r["player"]]} / {fmt(m["allTimeN"])}', 'fg'),
+                (W - M - 36, f'{m["arenaRank"][r["player"]]} / {fmt(m["arenaN"])}', 'cyan')]
         for x, v, col in vals: p.text((x, ry + 4), v, 26, col, 'semi', 'ra')
     y += th + 30
 
@@ -392,7 +434,6 @@ def render(model, out):
             p.text((x + 690, ry + 5), shortdate(b['oldDate']), 20, 'mut', 'med', 'ra')
             p.text((x + 860, ry + 1), ly(b['new']), 26, 'gold', 'black', 'ra')
             p.text((x + w - 28, ry + 2), pct(b['imp']), 24, 'green', 'xbold', 'ra')
-        p.text((x + 28, y0 + h - 34), "Compared with each player's best anywhere on the site.", 18, 'mut', 'med')
 
     def box_new(x, y0, w, h):
         nf = m['first']
@@ -438,13 +479,17 @@ def render(model, out):
         if not m['shout']: p.text((x + 26, y0 + 96), 'No racers at 100B+ this time.', 22, 'mut', 'semi')
 
     def box_miles(x, y0, w, h):
-        p.neon((x, y0, x + w, y0 + h), 'gold')
-        p.text((x + 26, y0 + 18), 'DISTANCE MILESTONES', 30, 'fg', 'black')
-        tiers = m['tiers'] or [(100, 0)]
-        for i, (t, n) in enumerate(tiers):
-            cx = x + 26 + (i % 2) * ((w - 52) // 2); cy = y0 + 70 + (i // 2) * 56
-            p.text((cx, cy), str(n), 42, ['cyan', 'mag', 'gold', 'green'][i % 4], 'black')
-            p.text((cx + d.textlength(str(n), font=F(42, 'black')) + 14, cy + 14), f'{fmt(t)}B+', 22, 'fg', 'semi')
+        p.neon((x, y0, x + w, y0 + h), 'gold'); p.text((x + 26, y0 + 18), 'DISTANCE MILESTONES', 30, 'fg', 'black')
+        hy = y0 + 70; d.rectangle((x + 18, hy - 6, x + w - 18, hy + 28), fill=C['row'])
+        p.text((x + 30, hy), 'DISTANCE', 18, 'mut', 'semi'); p.text((x + w * 0.52, hy), 'RACERS', 18, 'mut', 'semi', 'ra')
+        p.text((x + w - 30, hy), 'ARENA-ERA RANK', 18, 'mut', 'semi', 'ra')
+        if not m['tiers']: p.text((x + 30, y0 + 116), 'No racers at 100B+ this time.', 22, 'mut', 'semi')
+        for i, (t, n, r, of, tie) in enumerate(m['tiers']):
+            ry = y0 + 116 + i * 48
+            if i % 2 == 0: d.rectangle((x + 18, ry - 8, x + w - 18, ry + 38), fill=C['row2'])
+            p.text((x + 30, ry), f'{fmt(t)}B+', 26, 'fg', 'xbold')
+            p.text((x + w * 0.52, ry - 2), str(n), 30, ['cyan', 'mag', 'gold', 'green'][i % 4], 'black', 'ra')
+            p.text((x + w - 30, ry + 1), f'{"T-" if tie else ""}#{r} of {of}', 26, 'gold' if r == 1 else 'fg', 'xbold' if r <= 3 else 'semi', 'ra')
 
     draw = dict(pb=box_pb, new=box_new, avg=box_avg, effort=box_effort, miles=box_miles)
     for c, x in (('L', M), ('R', M + L['LW'] + 24)):
@@ -454,18 +499,15 @@ def render(model, out):
     y += L['bottom'] + 30
 
     # Footer
-    p.neon((M, y, W - M, y + 280), 'cyan')
-    p.char('AV_MZGroot.png', (M + 24, y + 20, M + 300, y + 262))
-    p.char('AV_RaccoonRocket.png', (W - M - 300, y + 20, W - M - 24, y + 262))
+    p.neon((M, y, W - M, y + 250), 'cyan')
+    p.char('AV_MZGroot.png', (M + 24, y + 18, M + 270, y + 232))
+    p.char('AV_RaccoonRocket.png', (W - M - 270, y + 18, W - M - 24, y + 232))
     cx = W // 2
-    p.text((cx, y + 30), f'{clan}  /  SPACE RACE', 34, 'cyan', 'black', 'ma')
-    p.text((cx, y + 78), f'{longdate(ev["date"])}  •  RECORDED RESULTS', 22, 'fg', 'bold', 'ma')
-    notes = ['Results count for the clan each player raced for in this race.',
-             'Rounded Star rewards use exact Sparks × 10.',
-             'Final screenshots only · coverage partial' if not m['complete'] else 'Final screenshots · full coverage']
-    for i, s in enumerate(notes): p.text((cx, y + 126 + i * 32), s, 20, 'mut', 'med', 'ma')
-    p.text((cx, y + 232), 'AVENGERS STAT CENTER', 26, 'gold', 'black', 'ma')
-    final_h = y + 280 + 30
+    p.text((cx, y + 26), f'{clan}  /  SPACE RACE', 34, 'cyan', 'black', 'ma')
+    p.text((cx, y + 74), f'{longdate(ev["date"])}  •  FINAL RESULTS', 22, 'fg', 'bold', 'ma')
+    d.text((cx, y + 104), SIGNATURE, font=ImageFont.truetype(str(SIG_FONT), 72), fill=C['mag'], anchor='ma')
+    p.text((cx, y + 196), 'AVENGERS STAT CENTER', 26, 'gold', 'black', 'ma')
+    final_h = y + 250 + 30
     im = p.im.crop((0, 0, W, final_h))
     im.save(out, optimize=True)
     sha = hashlib.sha256(Path(out).read_bytes()).hexdigest()

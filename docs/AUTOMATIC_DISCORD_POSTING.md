@@ -15,7 +15,7 @@ On 2026-10-26 the leader approved the Space, Big Pig and Flash Set poster templa
 ## Each posting run
 
 1. **Import results.** Follow `docs/AUTOMATIC_WEBSITE_RESULTS.md` for the event types this run checks. Merge the results PR and verify the Pages deploy first.
-2. **Find what's eligible.** Check that the event has no row yet in `avengers_dispatch_private.publication_slots` for kind / event id / clan. Event ids are `space|<date>` and `piggy|<date>`; for Flash they are `flashset|<setId>` with kind `flash`.
+2. **Find what's eligible.** Check that the event has no row yet in `avengers_dispatch_private.publication_slots` for kind / event id / clan. Event ids are `space|<date>` and `piggy|<date>`; for Flash they are `flash|<setId>` with kind `flash`.
 3. **Render the poster.**
    - Run `node scripts/export-event-summary.cjs approved-summary-release.json` to write `reports/approved-summary-release.json`.
    - Big Pig: `python3 scripts/render-bigpig-poster.py reports/approved-summary-release.json <out>.png --clan AVENGERS --event-id 'piggy|<date>'`

@@ -54,7 +54,7 @@ function mentions(body){
 }
 function sourceDigest(post){
  const ups=approved.updates.filter(u=>u.approved===true&&u.event&&u.event.kind===post.kind&&(
-   post.kind==='flash'?(u.event.metadata||{}).setId===post.eventId.replace(/^flashset\|/,''):u.event.id===post.eventId));
+   post.kind==='flash'?(u.event.metadata||{}).setId===post.eventId.replace(/^flash\|/,''):u.event.id===post.eventId));
  if(!ups.length)throw Error('Approved source event missing');
  const rows=ups.flatMap(u=>u.event.rows||[]).filter(r=>r.clan===post.clan);
  if(!rows.length)throw Error('No approved rows for clan');

@@ -1,3 +1,7 @@
+## 2026-10-27 — AV-Oakcliff added (new AVENGERS member) with his PF4 result
+
+Under the leader's new-member rule, AV-Oakcliff joins the AVENGERS roster (50 AVENGERS / 53 AV-2) and his PF4 row is added to `flash|2026-10-27|4`: main lobby rank 19, 220 lines, share 2.1%, 34,426 Stars, 3,443 Sparks (source image already hashed in the event's sources). Digest-gated apply `38e149d0…538f`. The already-posted Flash Set poster is unchanged.
+
 ## 2026-10-27 — Leader rules: new AV members, leaner runs
 
 - **New members:** a screenshot row whose name carries the AV prefix and whose clan line reads AVENGERS may be treated as a new AVENGERS member: add them to the website roster and import the result. (First case: AV-Oakcliff, PF4 2026-10-27, rank 19, 220 lines, currently held pending.)

@@ -8614,6 +8614,307 @@
           }
         ]
       }
+    },
+    {
+      "approved": true,
+      "expectedRevision": 1,
+      "authorization": {
+        "kind": "standing-website-only",
+        "id": "leader-standing-website-publication-2026-10-22",
+        "date": "2026-10-22"
+      },
+      "event": {
+        "id": "flash|2026-10-27|4",
+        "kind": "flash",
+        "date": "2026-10-27",
+        "status": "partial",
+        "unit": "lines",
+        "metadata": {
+          "flash": 4,
+          "complete": false,
+          "coverageNote": "Partial final coverage: main AVENGERS lobby ranks 1-24, 31-36 and 45-50 visible (19 AVENGERS imported) plus a secondary lobby ranks 1-7 visible (2 AVENGERS). Ranks 25-30 and 37-44 of the main lobby and any other lobbies remain unknown; outside-clan rows excluded.",
+          "setId": "2026-10-26-A",
+          "clan": "AVENGERS",
+          "potStars": 1607176,
+          "potStarsBasis": "Derived from individual reward / share (highest-share row); screenshot header not used (leader rule 2026-10-25).",
+          "secondaryPotStars": 227386,
+          "secondaryPotStarsBasis": "Secondary lobby pot derived from reward / share (highest-share row).",
+          "dateBasis": "Final CLAIM screens posted 2026-10-27 06:32 UTC (01:32 CT) and 12:23 UTC in the PF4 channel; fourth race of Flash Set 2026-10-26-A (PF4 falls on the set's second day).",
+          "reviewStatus": "standing-website-authorization",
+          "identityNotes": "AV-FrankAbagnale -> AV-Addicted; AV-DeviantDan -> AV-Deviantdan; truncated names resolved to established accounts (AV-Mr.Mar.Berry, AV-SMILINGBANDIT); AV-Abu//JPN -> AV-Abu//npjp; AV-8!\\...Bil -> AV-8!l...Bil; AV/<STAR-LORD>\\ -> AV<STAR-LORD>. AV-Oakcliff added 2026-10-27 as a new AVENGERS member (leader rule: AV prefix + AVENGERS clan line).",
+          "excludedNonparticipants": 2
+        },
+        "sources": [
+          "reviewed-image-sha256:01de64cd5a006467242ab7c6234655f5dd95b63d5176af9c5465e2880f401ddd",
+          "reviewed-image-sha256:353ac87746ea7b0a774eb153c657edc812607f7bf95119f8b5da598c0358f521",
+          "reviewed-image-sha256:6b5eaf476698726584a4e7a2a8d49d94c6ec1273e131b3e2ebf7ff3fce6a98e7",
+          "reviewed-image-sha256:a9469181bc0be6513a7d1d10d9708ab104bb1c66af98a375f2c4916046701d0f",
+          "reviewed-image-sha256:b64c487f99b6b09b8da1675aab4d693c176dbb1e4fbf2fdebe7fa6c3bd5ccf79",
+          "reviewed-image-sha256:b9f11dfdc12fcd34c81df7084dbebb304b982d640bd0b04b9c68ac4f9480855b",
+          "reviewed-image-sha256:e19aeaac35e4dfe48221df0fd1c8d15b2cb5fbcbd9964828e22664ed75eb8951"
+        ],
+        "rows": [
+          {
+            "player": "AV-7-STAR",
+            "clan": "AVENGERS",
+            "score": 3458,
+            "sparks": 14754,
+            "stars": 147539,
+            "metadata": {
+              "rank": 2,
+              "share": 0.092,
+              "lobby": "main"
+            }
+          },
+          {
+            "player": "AV-8!l...Bil",
+            "clan": "AVENGERS",
+            "score": 427,
+            "sparks": 4426,
+            "stars": 44262,
+            "metadata": {
+              "rank": 13,
+              "share": 0.027,
+              "lobby": "main",
+              "sourceDisplayName": "AV-8!\\...Bil"
+            }
+          },
+          {
+            "player": "AV-Abu//npjp",
+            "clan": "AVENGERS",
+            "score": 119,
+            "sparks": 3279,
+            "stars": 32786,
+            "metadata": {
+              "rank": 20,
+              "share": 0.02,
+              "lobby": "main",
+              "sourceDisplayName": "AV-Abu//JPN"
+            }
+          },
+          {
+            "player": "AV-Addicted",
+            "clan": "AVENGERS",
+            "score": 260,
+            "sparks": 3771,
+            "stars": 37704,
+            "metadata": {
+              "rank": 17,
+              "share": 0.023,
+              "lobby": "main",
+              "sourceDisplayName": "AV-FrankAbagnale"
+            }
+          },
+          {
+            "player": "AV-BigPapi",
+            "clan": "AVENGERS",
+            "score": 782,
+            "sparks": 4918,
+            "stars": 49180,
+            "metadata": {
+              "rank": 10,
+              "share": 0.03,
+              "lobby": "main"
+            }
+          },
+          {
+            "player": "AV-CHEN1972",
+            "clan": "AVENGERS",
+            "score": 2524,
+            "sparks": 13115,
+            "stars": 131146,
+            "metadata": {
+              "rank": 3,
+              "share": 0.081,
+              "lobby": "main"
+            }
+          },
+          {
+            "player": "AV-ColdCreeps",
+            "clan": "AVENGERS",
+            "score": 642,
+            "sparks": 4754,
+            "stars": 47540,
+            "metadata": {
+              "rank": 11,
+              "share": 0.029,
+              "lobby": "main"
+            }
+          },
+          {
+            "player": "AV-Deviantdan",
+            "clan": "AVENGERS",
+            "score": 11,
+            "sparks": 656,
+            "stars": 6557,
+            "metadata": {
+              "rank": 36,
+              "share": 0.004,
+              "lobby": "main",
+              "sourceDisplayName": "AV-DeviantDan"
+            }
+          },
+          {
+            "player": "AV-HarryBallsagna",
+            "clan": "AVENGERS",
+            "score": 802,
+            "sparks": 6066,
+            "stars": 60655,
+            "metadata": {
+              "rank": 8,
+              "share": 0.038,
+              "lobby": "main"
+            }
+          },
+          {
+            "player": "AV-HN",
+            "clan": "AVENGERS",
+            "score": 280,
+            "sparks": 3934,
+            "stars": 39344,
+            "metadata": {
+              "rank": 16,
+              "share": 0.024,
+              "lobby": "main"
+            }
+          },
+          {
+            "player": "AV-INTEN",
+            "clan": "AVENGERS",
+            "score": 3676,
+            "sparks": 16394,
+            "stars": 163932,
+            "metadata": {
+              "rank": 1,
+              "share": 0.102,
+              "lobby": "main"
+            }
+          },
+          {
+            "player": "AV-J1M",
+            "clan": "AVENGERS",
+            "score": 1408,
+            "sparks": 8197,
+            "stars": 81966,
+            "metadata": {
+              "rank": 4,
+              "share": 0.05,
+              "lobby": "main"
+            }
+          },
+          {
+            "player": "AV-JefhKintz05",
+            "clan": "AVENGERS",
+            "score": 370,
+            "sparks": 4262,
+            "stars": 42622,
+            "metadata": {
+              "rank": 14,
+              "share": 0.026,
+              "lobby": "main"
+            }
+          },
+          {
+            "player": "AV-Mr.Mar.Berry",
+            "clan": "AVENGERS",
+            "score": 325,
+            "sparks": 4098,
+            "stars": 40983,
+            "metadata": {
+              "rank": 15,
+              "share": 0.025,
+              "lobby": "main",
+              "sourceDisplayName": "AV-Mr.Mar.Berry..."
+            }
+          },
+          {
+            "player": "AV-Oakcliff",
+            "clan": "AVENGERS",
+            "score": 220,
+            "sparks": 3443,
+            "stars": 34426,
+            "metadata": {
+              "rank": 19,
+              "share": 0.021,
+              "lobby": "main"
+            }
+          },
+          {
+            "player": "AV-SB",
+            "clan": "AVENGERS",
+            "score": 1168,
+            "sparks": 7213,
+            "stars": 72130,
+            "metadata": {
+              "rank": 6,
+              "share": 0.045,
+              "lobby": "main"
+            }
+          },
+          {
+            "player": "AV-ShielDBreaker",
+            "clan": "AVENGERS",
+            "score": 1371,
+            "sparks": 7377,
+            "stars": 73770,
+            "metadata": {
+              "rank": 5,
+              "share": 0.046,
+              "lobby": "main"
+            }
+          },
+          {
+            "player": "AV-SMILINGBANDIT",
+            "clan": "AVENGERS",
+            "score": 802,
+            "sparks": 7049,
+            "stars": 70491,
+            "metadata": {
+              "rank": 7,
+              "share": 0.044,
+              "lobby": "main",
+              "sourceDisplayName": "AV-SmiLiNgBanDiT"
+            }
+          },
+          {
+            "player": "AV-Supreeth",
+            "clan": "AVENGERS",
+            "score": 798,
+            "sparks": 5738,
+            "stars": 57376,
+            "metadata": {
+              "rank": 9,
+              "share": 0.036,
+              "lobby": "main"
+            }
+          },
+          {
+            "player": "AV-UANGELES",
+            "clan": "AVENGERS",
+            "score": 346,
+            "sparks": 2067,
+            "stars": 20669,
+            "metadata": {
+              "rank": 2,
+              "share": 0.09,
+              "lobby": "secondary"
+            }
+          },
+          {
+            "player": "AV<STAR-LORD>",
+            "clan": "AVENGERS",
+            "score": 691,
+            "sparks": 2297,
+            "stars": 22966,
+            "metadata": {
+              "rank": 1,
+              "share": 0.101,
+              "lobby": "secondary",
+              "sourceDisplayName": "AV/<STAR-LORD>\\"
+            }
+          }
+        ]
+      }
     }
   ]
 }

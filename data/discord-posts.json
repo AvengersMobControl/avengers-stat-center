@@ -1,4 +1,18 @@
 {
   "schemaVersion": 1,
-  "posts": {}
+  "posts": {
+    "flash|flash|2026-10-26-A|AVENGERS": {
+      "kind": "flash",
+      "eventId": "flash|2026-10-26-A",
+      "clan": "AVENGERS",
+      "file": "AVENGERS_Piggy_Flashes_October_26_2026.png",
+      "sha256": "09def7bed4b7900b57da5e27b0dac28c1c867a44a0a116f5ac52430fc96ba49c",
+      "size": 1313258,
+      "template": "flash-poster-v2-20261026-candidate",
+      "body": "@everyone\n⚡ **AVENGERS Piggy Flashes — October 26–27** ⚡\n\n📊 **The Headline**\n40 racers piled up **103,948 lines** across the four Flashes — **2,599 per racer**, up **3.0%** on the last-4-set average. PF2 brought the biggest pot at **2.47M Stars**, #9 of 13 PF2 pots in the Arena era.\n\n🏆 **Flash Winners**\nPF1 — INTEN (4,727) · PF2 — INTEN (4,242) · PF3 — Addicted (3,431) · PF4 — INTEN (3,676)\nPlus second-lobby wins for STAR-LORD in PF2 and PF4!\n\n👑 **INTEN Rewrites the Record Book**\nINTEN's **12,645-line set** is the **#1 Flash Set total of all time**, topping his own 12,324 from Oct 6 — with three Flash wins along the way. CHEN1972 (7,906) and Lin (7,598) round out the podium.\n\n🚀 **Personal Bests**\n6 set-total PBs and 6 single-Flash PBs:\n• Timmy — 2,470 set (+213.5%) and 1,692 in PF1 (+114.7%)\n• 7-STAR — 3,458 in PF4 (+46.0%) and 5,037 set (+7.4%), a +236.1% jump on his own average\n• SiFra — 7,204 set (+27.3%)\n• Lin — 7,598 set (+15.6%) and 3,216 in PF1 (+14.3%)\n• CHEN1972 — 7,906 set (+14.9%) and 3,214 in PF2 (+5.3%)\n• no — 1,062 in PF3 (+4.6%)\n• Pablin — 2,308 in PF3 (+1.5%)\n23 of 39 set totals beat their own average.\n\n👋 **New Face**\nWelcome ShielDBreaker! 4,663 lines over three Flashes (best 1,695 in PF3) — #8 on the set board in his first Flash.\n\n🎯 **Milestones**\n5 racers cleared 5K, 3 cleared 7.5K and INTEN cleared 10K — the 7.5K+ and 10K+ counts tie for #3 in the Arena era.\n\nFull results and PBs: https://avengersmobcontrol.github.io/avengers-stat-center/",
+      "approved": true,
+      "authorization": "leader-standing-auto-discord-2026-10-26",
+      "description": "AVENGERS Piggy Flashes October 26 2026 results"
+    }
+  }
 }

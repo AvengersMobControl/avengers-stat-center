@@ -310,7 +310,7 @@ async function main(){
       'combined-day leader excludes one-line nonparticipation: '+JSON.stringify({leaderText,leaderIdentity}));
     assert((await hist.innerText()).includes('9,879'),'top recorded combined-day score');
     assert((await hist.innerText()).includes('4,936'),'top single-race score');
-    assert((await hist.innerText()).includes('8/2,888'),'top single-race historical rank excludes one-line nonparticipants and Tavito (2,888 after the Oct26-27 set): '+(await hist.innerText()).match(/\d+\/[\d,]+/g));
+    assert((await hist.innerText()).includes('8/2,889'),'top single-race historical rank excludes one-line nonparticipants and Tavito (2,889 after the Oct26-27 set and Oakcliff): '+(await hist.innerText()).match(/\d+\/[\d,]+/g));
     const potDetail=hist.locator('details[data-hist-open="pots"]');
     await potDetail.locator('summary').click();
     assert.equal(await potDetail.locator('tbody tr[data-hist-row]').count(),173,'173 recorded main lobby header pots retained (Oct26-27 PF1-PF4 added)');

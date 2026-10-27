@@ -46,7 +46,7 @@ const B=w.AVENGERS_ROSTER_EVENT_BREAKDOWN;
 assert(D && R && S && L && B, 'Missing loaded roster/ledger data scripts');
 const currentAv=(R.rows||[]).filter(r=>r.status==='Active');
 const currentAv2=(R.rows||[]).filter(r=>r.status==='AV2');
-assert.equal(currentAv.length, 49, 'Expected 49 current AVENGERS after Animosity departure');
+assert.equal(currentAv.length, 50, 'Expected 50 current AVENGERS after Animosity departure and Oakcliff joining');
 assert.equal(currentAv2.length, 53, 'Expected 53 current AV-2 including Mickzzz and AV2-Froyo');
 assert.equal(S.currentAvengersStars.length, 47, 'LT excluded from site snapshot; no event history');
 assert.equal(S.currentAv2.length, 50);
@@ -66,7 +66,7 @@ const canonical=raw=>{
 assert.notEqual(canonical('AV-Frenchie2'),canonical('AV-Frenchie(-4)'));
 const current=[...currentAv,...currentAv2];
 const identityKeys=current.map(r=>canonical(r.name));
-assert.equal(current.length, 102, 'Expected 102 current identities after October 23 corrections');
+assert.equal(current.length, 103, 'Expected 103 current identities after October 27 Oakcliff addition');
 assert.equal(new Set(identityKeys).size, current.length, 'Duplicate canonical identities in current rosters');
 const starRows=[...(S.currentAvengersStars||[]),...(S.currentAv2||[])];
 const stars=new Map();

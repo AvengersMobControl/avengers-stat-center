@@ -1,0 +1,11 @@
+/* Responsive tables: compact headers, user-adjustable column edges. */
+.table-wrap,.mini-table-wrap{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+.av-resizable-table{table-layout:auto}
+.av-resizable-table thead th{white-space:normal;overflow-wrap:normal;line-height:1.25;letter-spacing:.035em;padding:9px 15px 9px 7px;vertical-align:middle}
+.av-resizable-table tbody td{padding:9px 7px}
+.av-column-grip{position:absolute;right:0;top:0;bottom:0;width:12px;cursor:col-resize;touch-action:none;z-index:5}
+.av-column-grip:after{content:'';position:absolute;right:4px;top:24%;bottom:24%;border-right:2px solid rgba(112,210,255,.32)}
+.av-column-grip:hover:after,.av-column-grip:focus-visible:after{border-color:#43d7ff}
+.rating-command-score{cursor:pointer}
+.rating-command-score:hover,.rating-command-score:focus-visible{filter:brightness(1.12)}
+@media(max-width:640px){.mini-table th,.mini-table td{padding-left:5px;padding-right:5px}.mini-rank-meta{font-size:11px}.rating-method .table-wrap table{font-size:12px}.rating-method .table-wrap th{font-size:10px}.rating-command-list .card-body{padding:10px}}

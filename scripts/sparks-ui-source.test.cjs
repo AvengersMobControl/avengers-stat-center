@@ -40,7 +40,7 @@ test('roster Sparks totals show unadorned event totals, not stale snapshot warni
  assert.doesNotMatch(src,/Snapshot discrepancy/);
  assert.doesNotMatch(src,/snapshot comparison flags/);
  assert.doesNotMatch(src,/roster-reconciliation-warning.*⚠/);
- assert.match(src,/Total Sparks = Logged Sparks \+ Screenshot Gap/);
+ assert.match(src,/Total Sparks = Logged \+ Unlogged/);
  assert.match(src,/totalCombinedSparks:logged\+unlogged/);
  assert.match(src,/case 'totalCombinedSparks':return fmtNum\(r\.totalCombinedSparks\);/);
  assert(src.includes('eventBreakdown.screenshotGap'));

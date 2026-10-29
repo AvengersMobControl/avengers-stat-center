@@ -68,7 +68,7 @@ test('Rosters use approved event results and display sortable ordinal placement,
   assert.match(html,/piggyPBRank:\{label:'Piggy PB Rank',type:'number',get:r=>r\.piggyPBRank\}/);
   assert.match(html,/id:'piggyAchievements',name:'Piggy Achievements',keys:\['piggyWins','piggyPodiums','piggyPBRank'\],summary:'piggyPBRank'/);
   assert.match(html,/r\.piggyPBRank==null\?missing:window\.AVENGERS_ROSTER_PIGGY_PB_RANK\.formatFinish\(r\.piggyPBRank\)/);
-  assert.match(html,/Line totals do not determine this number/);
+  assert.match(html,/independent of line totals/);
 });
 
 test('rank PB improvements are recorded by event even without a higher line PB',()=>{

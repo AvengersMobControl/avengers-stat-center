@@ -299,6 +299,7 @@ tbody tr:last-child td{border-bottom:0}
   <link rel="stylesheet" href="kraken.css" />
   <link rel="stylesheet" href="community-highlights.css" />
   <link rel="stylesheet" href="character-art.css" />
+  <link rel="stylesheet" href="table-column-resize.css" />
 </head>
 <body>
   <div class="app-shell">
@@ -915,7 +916,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       </div>
 
       <div class="card rating-command-card" style="margin-top:16px">
-        <div class="rating-command-score">
+        <div class="rating-command-score" role="link" tabindex="0" aria-label="Open Player Ratings">
           <span>OVERALL PLAYER RATING</span>
           <strong>${topRating?fmtNum(topRating.ratingTotal,2):'—'}</strong>
           <small>11 metrics • out of 10</small>
@@ -2650,7 +2651,8 @@ const original=new WeakMap(),rendered=new WeakMap();
 let lang='en';try{const saved=localStorage.getItem('avengers-language');if(codes.includes(saved))lang=saved;}catch{}
 const select=document.getElementById('siteLanguageSelect');
 const skip='script,style,textarea,input,code,.notranslate,[translate="no"],.linkish,.compact-player,.snapshot-only-name,.avatar';
-const pattern=s=>s.replace(/[.*+?^\$\{\}()|[\]\\]/g,'\\</body>');
+const pattern=s=>s.replace(/[.*+?^\$\{\}()|[\]\\]/g,'\\<script src="table-column-resize.js"></script>
+</body>');
 const dictionary=phrases.slice().sort((a,b)=>b[0].length-a[0].length);
 function translate(value){
  if(lang==='en')return value;

@@ -46,12 +46,13 @@ async function main(){
     for(const status of ['active','av2','all']){
       await page.selectOption('#globalStatusFilter',status);
       await page.click('.nav-btn[data-page="ratings"]');
-      const rated=await page.locator('#ratingsContent tbody tr').evaluateAll(trs=>trs.map(tr=>({
+      const rated=await page.locator('#ratingsContent .table-card tbody tr').evaluateAll(trs=>trs.map(tr=>({
         rank:tr.cells[0].textContent.trim(),
         sortRank:tr.cells[0].dataset.sortValue,
         score:tr.cells[3].innerText.trim()
       })));
       assert(rated.length>0,status+' has rated players');
+      assert.equal(await page.locator('#ratingsContent .rating-method tbody tr').count(),11,'all eleven benchmark definitions are documented');
       let expectedRank=0,numberOfTies=0;
       for(let i=0;i<rated.length;i++){
         if(i===0||rated[i].score!==rated[i-1].score) expectedRank=i+1;
@@ -178,17 +179,21 @@ async function main(){
       assert(!currentRoster.names.includes(old),'obsolete canonical roster shell: '+old);
     await page.click('.nav-btn[data-page="eventTotals"]');
     const leagueFooter=page.locator('#page-eventTotals .league-rewards-footnote');
-    assert(await leagueFooter.count(),'historical league coverage summary is visible');
-    assert((await leagueFooter.innerText()).includes('partial screenshot coverage'),
-      'Incomplete historical event source coverage must be visible');
-    assert((await leagueFooter.innerText()).includes('unknown event-time clan'),
-      'Missing event-time clan attribution must not be hidden');
-    assert.equal(await page.locator('#page-eventTotals .league-source-status').count(),1,
-      'league known vs partial/estimated source scope must be prominent');
+    assert.equal(await leagueFooter.count(),1,'one expandable historical rewards explanation');
+    const leagueStatus=page.locator('#page-eventTotals .league-source-status');
+    assert.equal(await leagueStatus.count(),1,'coverage status is prominent without redundant footnotes');
+    const sourceStatus=await leagueStatus.innerText();
+    assert(sourceStatus.includes('partially captured event sets'),
+      'Incomplete historical event coverage stays visible');
+    assert(sourceStatus.includes('unknown event-time clan'),
+      'Unknown clan attribution stays visible');
+    await leagueFooter.locator('summary').click();
+    assert((await leagueFooter.innerText()).includes('Historical Flash rewards may be incomplete'),
+      'the detailed historical-source caveat is accessible on demand');
     const leagueText=await page.locator('#page-eventTotals').innerText();
     assert(leagueText.includes('Tracked results, not a certified complete pot.'),
       'league never claims missing source rows or unverified race pots');
-    assert(leagueText.includes('Tracked Sparks*')&&leagueText.includes('Tracked Stars*'),
+    assert(leagueText.includes('Tracked Sparks')&&leagueText.includes('Tracked Stars'),
       'recorded sums are explicitly scoped');
     assert(!leagueText.toLowerCase().includes('sparks/effort'),
       'Sparks/Effort is allowed ONLY in individual Space Event, not Clan League pages');

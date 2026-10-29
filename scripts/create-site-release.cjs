@@ -134,8 +134,8 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
     piggyPB:person.kinds.piggy.pb||0,spacePB:person.kinds.space.pb||0,krakenPB:person.kinds.kraken.pb||0,
     piggyAvg:person.kinds.piggy.arenaAverage||0,spaceAvg:person.kinds.space.arenaAverage||0,krakenAvg:person.kinds.kraken.average||0,krakenAvgL3:person.kinds.kraken.last3||0,
     krakenPBMonth:K.players.find(r=>r.name===person.name)?.pbMonth||'',rankingScore:(person.kinds.kraken.pb||0)+(person.kinds.kraken.last3||0),
-    ratingPB:person.ratingPB,ratingAvg:person.ratingAvg,ratingTotal:person.ratingTotal,eventsPlayed:person.earned.events,totalSparks:person.earned.sparks}));
-  D.meta.eventProjectionVersion=p.version;D.meta.latestResult=activeEvents.at(-1)?.date||null;D.aliasMap=aliases;
+    ratingPB:person.ratingPB,ratingAvg:person.ratingAvg,ratingTotal:person.ratingTotal,ratingMetrics:person.ratingMetrics,ratingPoints:person.ratingPoints,eventsPlayed:person.earned.events,totalSparks:person.earned.sparks}));
+  D.meta.eventProjectionVersion=p.version;D.meta.latestResult=activeEvents.at(-1)?.date||null;D.meta.source='Approved Event Ledger';D.aliasMap=aliases;
   const F={...copy(legacy.AVENGERS_PIGGY_FLASH_DATA),events:activeEvents.filter(e=>e.kind==='flash').map(e=>({...e.metadata,id:e.id.slice(6),date:e.date,complete:e.status==='final',entries:e.rows.map(r=>({...r.metadata,name:r.player,lines:r.score,sparks:r.sparks,stars:r.stars,clan:r.clan||'Unknown'}))}))};
   const breakdowns=Object.fromEntries(p.people.map(person=>{
     const c=person.categories,kraken=person.history.filter(r=>r.kind==='kraken'),oct=kraken.filter(r=>r.eventId==='kraken|oct'),june=kraken.filter(r=>r.eventId==='kraken|june'&&r.estimatedSparks),historic=kraken.filter(r=>r.estimatedSparks);

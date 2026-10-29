@@ -81,17 +81,59 @@ test('partial events and unknown fields remain explicit; known zero is distinct'
   assert.equal(a.totalSparksComplete,false);assert.deepEqual(p.coverage.partialEvents,['partial']);
   assert.equal(p.council.at(-1).observedEvents.length,0);
 });
-test('ratings, last three, PB ranks and Council observations rebuild from the same corrected rows',()=>{
+test('ten-point rating uses eleven leader-approved benchmarks and current event windows',()=>{
   let l=empty();for(const [i,v]of [1000,3500,7000,14000].entries())l=put(l,ev('piggy','p'+i,'2026-09-'+(12+i),v));
   l=put(l,ev('space','s','2026-09-27',49));l=put(l,ev('kraken','k','2026-10-11',1750));
   const p=project(l,options),a=person(p);
   assert.equal(a.kinds.piggy.last3,(3500+7000+14000)/3);
   assert.equal(a.ratingPB,14000/35000+49/350+0.5);
-  assert.equal(a.ratingAvg,6375/25000+49/200+1750/2800);
+  assert(Math.abs(a.ratingMetrics.piggyLast3-(3500+7000+14000)/3)<0.001);
+  assert(Math.abs(a.ratingAvg-(6375/25000+(3500+7000+14000)/3/20000+49/250+49/200+1750/2800+1750/2800))<1e-9);
+  assert.equal(a.ratingPoints.flashDailyPB,0);
+  assert.equal(a.ratingPoints.flashDailyArena,0);
+  assert(Math.abs(a.ratingTotal-(a.ratingPB+a.ratingAvg))<1e-9);
   assert.equal(p.rankings.piggyPB[0].name,'A');
   const period=p.council.find(x=>x.end==='2026-10-11');
   assert.equal(period.observedEvents.filter(r=>r.underMinimum).length,2);
   assert.equal(period.observedEvents.find(r=>r.kind==='space').limit,50);
+});
+test('recent Piggy and Space scores use fixed last-three-event windows with missed events worth zero',()=>{
+  let l=empty();
+  const entry=(kind,id,date,player,score)=>ev(kind,id,date,score,'AVENGERS',{rows:[{player,clan:'AVENGERS',score,sparks:10,stars:100}]});
+  for(const [kind,values]of [['piggy',[90000,30000,null,30000]],['space',[900,300,null,300]]]){
+    for(let i=0;i<4;i++)l=put(l,entry(kind,kind+i,'2026-09-'+String(12+i),values[i]===null?'B':'A',values[i]??5));
+  }
+  const a=person(project(l,options));
+  assert.equal(a.ratingMetrics.piggyLast3,20000,'not A last three appearances; oldest PB excluded');
+  assert.equal(a.ratingMetrics.spaceLast3,200);
+  assert.equal(a.ratingPoints.piggyLast3,1);
+  assert.equal(a.ratingPoints.spaceLast3,1);
+});
+test('Kraken last five averages only attended Krakens; latest Kraken missed is zero',()=>{
+  let l=empty();
+  for(let i=0;i<6;i++){
+    const plays=i===0||i===2||i===4;
+    l=put(l,ev('kraken','k'+i,'2026-'+(i<3?'05':'06')+'-'+String(10+i),plays?i*1000:100,
+      'AVENGERS',{rows:[{player:plays?'A':'B',clan:'AVENGERS',score:plays?i*1000:100,sparks:10,stars:null}]}));
+  }
+  const a=person(project(l,options));
+  assert.equal(a.ratingMetrics.krakenLast5,3000,'only attended k2 and k4 within latest five count');
+  assert.equal(a.ratingMetrics.krakenLatest,0,'absence in latest event is zero');
+  assert.equal(a.ratingPoints.krakenLast5,1);
+  assert.equal(a.ratingPoints.krakenLatest,0);
+});
+test('Flash metrics combine flashes by day/set, and older days are excluded from arena average',()=>{
+  let l=empty();
+  const make=(id,date,score,setId)=>ev('flash',id,date,score,'AVENGERS',{metadata:{setId}});
+  l=put(l,make('before','2026-07-31',8000,'2026-07-31-A'));
+  l=put(l,make('a1','2026-09-12',3000,'2026-09-12-A'));
+  l=put(l,make('a2','2026-09-12',2000,'2026-09-12-A'));
+  l=put(l,make('b1','2026-09-13',1000,'2026-09-13-A'));
+  const a=person(project(l,options));
+  assert.equal(a.ratingMetrics.flashDailyPB,8000);
+  assert.equal(a.ratingMetrics.flashDailyArena,3000);
+  assert.equal(a.ratingPoints.flashDailyPB,0.5);
+  assert.equal(a.ratingPoints.flashDailyArena,3000/3500*0.5);
 });
 test('conflicting duplicates, ambiguous identities, bad units and concurrent corrections fail closed',()=>{
   const e=ev('piggy','x','2026-10-01',2);

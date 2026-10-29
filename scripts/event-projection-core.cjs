@@ -77,6 +77,57 @@ function apply(ledger,event,{approved=false,expectedRevision=0,aliases={}}={}){
 }
 const sum=xs=>xs.reduce((a,b)=>a+b,0);
 const avg=xs=>xs.length?sum(xs)/xs.length:null;
+// The approved eleven-metric player rating adds to ten possible points.
+// Kraken scores are stored in millions; Space distances are stored in billions.
+const RATING_BENCHMARKS=Object.freeze({
+  piggyPB:{target:35000,weight:1}, piggyArena:{target:25000,weight:1},
+  piggyLast3:{target:20000,weight:1}, spacePB:{target:350,weight:1},
+  spaceArena:{target:250,weight:1}, spaceLast3:{target:200,weight:1},
+  krakenPB:{target:3500,weight:1}, krakenLast5:{target:2800,weight:1},
+  krakenLatest:{target:2800,weight:1},
+  flashDailyPB:{target:7000,weight:0.5}, flashDailyArena:{target:3500,weight:0.5}
+});
+const RATING_PB_KEYS=['piggyPB','spacePB','krakenPB','flashDailyPB'];
+function recentClanEvents(events,kind,count){
+  // One shared window per category, regardless of each player's attendance.
+  return events.filter(e=>e.kind===kind&&e.status!=='revoked'&&e.rows.some(r=>r.clan==='AVENGERS'))
+    .sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id)).slice(0,count);
+}
+function flashDailyTotals(history,eventById,arenaStart){
+  const bySet=new Map();
+  for(const r of history.filter(r=>r.kind==='flash'&&Number.isFinite(r.score)&&r.score>1)){
+    const id=eventById.get(r.eventId)?.metadata?.setId||r.date+'-A';
+    const prior=bySet.get(id)||{date:r.date,lines:0};
+    prior.lines+=r.score;
+    bySet.set(id,prior);
+  }
+  const days=[...bySet.values()];
+  return {pb:days.length?Math.max(...days.map(d=>d.lines)):null,
+    arenaAverage:avg(days.filter(d=>d.date>=arenaStart).map(d=>d.lines)),daysRecorded:days.length};
+}
+function calculateRating(history,kinds,windows,eventById,arenaStart){
+  const recent=(selected,zeroForAbsence)=>{
+    const scores=selected.map(e=>history.find(r=>r.eventId===e.id)?.score)
+      .filter(v=>!zeroForAbsence?v!==undefined&&v!==null:true)
+      .map(v=>Number.isFinite(v)?v:0);
+    return scores.length?avg(scores):null;
+  };
+  const flash=flashDailyTotals(history,eventById,arenaStart);
+  const ratingMetrics={
+    piggyPB:kinds.piggy.pb, piggyArena:kinds.piggy.arenaAverage,
+    piggyLast3:recent(windows.piggy3,true),
+    spacePB:kinds.space.pb,spaceArena:kinds.space.arenaAverage,
+    spaceLast3:recent(windows.space3,true),
+    krakenPB:kinds.kraken.pb,krakenLast5:recent(windows.kraken5,false),
+    krakenLatest:recent(windows.kraken1,true),
+    flashDailyPB:flash.pb,flashDailyArena:flash.arenaAverage
+  };
+  const ratingPoints=Object.fromEntries(Object.entries(RATING_BENCHMARKS).map(([key,{target,weight}])=>
+    [key,Math.min(1,Math.max(0,(ratingMetrics[key]??0)/target))*weight]));
+  const ratingPB=sum(RATING_PB_KEYS.map(key=>ratingPoints[key]));
+  const ratingTotal=sum(Object.values(ratingPoints));
+  return {ratingMetrics,ratingPoints,ratingPB,ratingAvg:ratingTotal-ratingPB,ratingTotal};
+}
 function summary(rows,arenaStart){
   const known=rows.filter(r=>r.score!==null),scores=known.map(r=>r.score),positive=known.filter(r=>r.score>0);
   let best=null,streak=0;const pbs=[],seenEventClans=new Set();
@@ -124,7 +175,9 @@ function project(ledger,{aliases={},members=[],snapshots={},priorToLogging=null,
   const memberMap=new Map();
   for(const m of members){const name=canonical(m.name,aliases);requireThat(!memberMap.has(name),'Duplicate current member');memberMap.set(name,{name,status:m.status});}
   for(const r of rows)if(r.player&&!memberMap.has(r.player))memberMap.set(r.player,{name:r.player,status:'Inactive'});
-  const cap=(v,b)=>Math.min(1,(v??0)/b);
+  const eventById=new Map(events.map(e=>[e.id,e]));
+  const windows={piggy3:recentClanEvents(events,'piggy',3),space3:recentClanEvents(events,'space',3),
+    kraken5:recentClanEvents(events,'kraken',5),kraken1:recentClanEvents(events,'kraken',1)};
   const people=[...memberMap.values()].sort((a,b)=>a.name.localeCompare(b.name)).map(m=>{
     const history=rows.filter(r=>r.player===m.name),kinds=Object.fromEntries(KINDS.map(k=>[k,summary(history.filter(r=>r.kind===k),arenaStart)]));
     const categories=Object.fromEntries(KINDS.map(k=>[k,rewards(history.filter(r=>r.kind===k))]));
@@ -155,11 +208,10 @@ function project(ledger,{aliases={},members=[],snapshots={},priorToLogging=null,
       ?amount(Object.hasOwn(priorToLogging,m.name)?priorToLogging[m.name]:0,'prior-to-logging Sparks')
       :calculatedGap;
     const loggedAtSnapshot=sources.length?snapshotBreakdown.at(-1).loggedAtSnapshot:earned.sparks;
-    const ratingPB=cap(kinds.piggy.pb,35000)+cap(kinds.space.pb,350)+cap(kinds.kraken.pb,3500);
-    const ratingAvg=cap(kinds.piggy.arenaAverage,25000)+cap(kinds.space.arenaAverage,200)+cap(kinds.kraken.last3,2800);
+    const rating=calculateRating(history,kinds,windows,eventById,arenaStart);
     return {...m,kinds,categories,history,earned,screenshotGap,loggedAtSnapshot,snapshotBreakdown,totalSparks:earned.sparks+(screenshotGap??0),
       totalSparksComplete:earned.unknownSparks===0&&sources.length>0,
-      ratingPB,ratingAvg,ratingTotal:ratingPB+ratingAvg,ratingComplete:['piggy','space','kraken'].every(k=>kinds[k].knownScores>0&&kinds[k].unknownScores===0)};
+      ...rating,ratingComplete:KINDS.every(k=>kinds[k].knownScores>0&&kinds[k].unknownScores===0)};
   });
   const clanNames=[...new Set(['AVENGERS','AV-2',...rows.map(r=>r.clan).filter(Boolean)])];
   const clans=Object.fromEntries(clanNames.map(c=>[c,rewards(rows.filter(r=>r.clan===c))]));
@@ -182,4 +234,4 @@ function project(ledger,{aliases={},members=[],snapshots={},priorToLogging=null,
   output.version=hash({ledger,aliases,members:[...members].sort((a,b)=>a.name.localeCompare(b.name)),snapshots,arenaStart,projection:output});
   return output;
 }
-module.exports={empty,apply,project,normalize,canonical,stable,UNITS,periods};
+module.exports={empty,apply,project,normalize,canonical,stable,UNITS,periods,RATING_BENCHMARKS};

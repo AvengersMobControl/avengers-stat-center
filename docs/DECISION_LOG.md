@@ -1,3 +1,10 @@
+## 2026-10-29 — Player Ratings /10 and site-wide disclosure cleanup
+
+- Leader-approved eleven rating metrics sum to **10.00**: Piggy PB/arena-era average/last three clan events (35k/25k/20k lines), Space PB/arena-era average/last three clan events (350B/250B/200B), Kraken PB/last five clan events/latest Kraken (3.5B/2.8B/2.8B damage), Flash daily PB/arena-era daily average (7k/3.5k lines; each Flash metric worth 0.5 point).
+- Piggy and Space recent-form use the **same three most recent clan events** for everyone and zero for missed events; latest Kraken is zero if missed. **Only** the Kraken last-five average excludes missed events from its denominator. Flash days sum all races in their canonical Flash Set; arena era starts August 1, 2026. Scores are proportional to the benchmark and capped; displayed ranking ties use two decimals.
+- Scoring derives from the approved event projection and is shown consistently in leaderboard, roster, profiles and an expandable 11-metric breakdown. Valid coverage caveats remain. Removed duplicate Kraken roster tab, outdated six-point explanation, stale Scorelog source label, legacy screenshot-gap naming, old membership snapshot language, and duplicated rewards caveats.
+- This is a website/data presentation change only; no Discord sends or event ledger mutation.
+
 ## 2026-10-27 — AV-Oakcliff added (new AVENGERS member) with his PF4 result
 
 Under the leader's new-member rule, AV-Oakcliff joins the AVENGERS roster (50 AVENGERS / 53 AV-2) and his PF4 row is added to `flash|2026-10-27|4`: main lobby rank 19, 220 lines, share 2.1%, 34,426 Stars, 3,443 Sparks (source image already hashed in the event's sources). Digest-gated apply `38e149d0…538f`. The already-posted Flash Set poster is unchanged.

@@ -135,6 +135,24 @@ tbody tr:last-child td{border-bottom:0}
 .mini-stat{padding:8px;background:#0c1829;border-radius:8px}
 .mini-stat strong{display:block;font-size:13px}
 .mini-stat span{font-size:9px;color:#778ca6;text-transform:uppercase}
+.roster-source-details{margin-bottom:14px}
+.roster-source-details summary{cursor:pointer;color:#77d9ff}
+.roster-source-details p{margin:9px 0 0;line-height:1.55}
+.rating-method{line-height:1.6}
+.rating-method details{margin-top:8px}
+.rating-method summary,.rating-breakdown summary{color:#63daff;cursor:pointer;font-weight:750}
+.rating-method .table-wrap{margin:12px 0 8px;overflow:auto;max-width:800px}
+.rating-method table{width:100%;border-collapse:collapse;font-size:12px}
+.rating-method th,.rating-method td{padding:6px 8px;border-bottom:1px solid #233a54;text-align:left}
+.rating-method th.num,.rating-method td.num{text-align:right}
+.rating-method p{margin:9px 0}
+.rating-method-foot{margin-top:6px;color:#a4b8cd}
+.rating-breakdown{min-width:115px}
+.rating-breakdown[open]{min-width:365px}
+.rating-detail-list{display:grid;gap:4px;margin-top:8px;min-width:340px}
+.rating-detail-list>div{display:flex;justify-content:space-between;gap:16px;font-size:11px;line-height:1.5;border-bottom:1px solid #233a54;padding:4px}
+.rating-detail-list>div span:last-child{text-align:right;white-space:nowrap;color:#c0d2e8}
+.rating-detail-list strong{color:#ffd77b}
 .records-note{margin:0 0 14px;padding:11px 13px;border:1px solid #263a57;border-left:3px solid #43d7ff;border-radius:10px;background:#0b192b;color:#9db2ca;font-size:12px}
 .records-note strong{color:#e9f2ff}
 .records-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start}
@@ -310,7 +328,7 @@ tbody tr:last-child td{border-bottom:0}
 
       <div class="sidebar-foot">
         <div class="small-label">DATA SOURCE</div>
-        <div class="source-name">Avengers Scorelog</div>
+        <div class="source-name">Approved Event Ledger</div>
         <div class="source-time" id="generatedAt"></div>
       </div>
     </aside>
@@ -517,7 +535,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     kraken:['Kraken','Monthly damage, personal bests and current-roster performance'],
     trends:['Trends','Clan trends, recent form and player comparisons'],
     eventTotals:['Event Totals','Historical totals for Piggy, Space and Kraken'],
-    ratings:['Player Ratings','Combined PB and average performance rating'],
+    ratings:['Player Ratings','11 performance metrics, weighted to 10 points'],
     players:['Players','Individual performance history and profiles'],
     records:['Records','Current AVENGERS benchmark board'],
     achievements:['Achievements','Earn badges and track your next personal milestone'],
@@ -900,13 +918,13 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         <div class="rating-command-score">
           <span>OVERALL PLAYER RATING</span>
           <strong>${topRating?fmtNum(topRating.ratingTotal,2):'—'}</strong>
-          <small>PB score + average score</small>
+          <small>11 metrics • out of 10</small>
         </div>
         <div class="rating-command-list">
           <div class="card-header">
             <div><div class="card-title">Top Rated Players</div><div class="card-sub">Current roster • master rating model</div></div>
           </div>
-          <div class="card-body">${rankRows([...cm].sort((a,b)=>b.ratingTotal-a.ratingTotal),'ratingTotal',v=>fmtNum(v,2),r=>`PB ${fmtNum(r.ratingPB,2)} • Avg ${fmtNum(r.ratingAvg,2)}`,8)}</div>
+          <div class="card-body">${rankRows([...cm].sort((a,b)=>b.ratingTotal-a.ratingTotal),'ratingTotal',v=>fmtNum(v,2),r=>`PB ${fmtNum(r.ratingPB,2)} • Form ${fmtNum(r.ratingAvg,2)}`,8)}</div>
         </div>
       </div>`;
     bindPlayerButtons($('#overviewContent'));
@@ -1367,6 +1385,23 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const rows=currentMembers().filter(r=>Number(r.ratingTotal)>0).sort((a,b)=>b.ratingTotal-a.ratingTotal);
     const max=Math.max(...rows.map(r=>Number(r.ratingTotal)||0),1);
     const ranks=ratingRankPositions(rows);
+    const defs=[
+      ['piggyPB','Piggy PB','35,000 lines',v=>fmtNum(v)],
+      ['piggyArena','Piggy arena-era average','25,000 lines',v=>fmtNum(v)],
+      ['piggyLast3','Piggy last three events','20,000 lines',v=>fmtNum(v)],
+      ['spacePB','Space PB','350B',v=>fmtB(v)],
+      ['spaceArena','Space arena-era average','250B',v=>fmtB(v)],
+      ['spaceLast3','Space last three events','200B',v=>fmtB(v)],
+      ['krakenPB','Kraken PB','3.5B',v=>fmtB(v==null?null:v/1000)],
+      ['krakenLast5','Kraken last five (participated)','2.8B',v=>fmtB(v==null?null:v/1000)],
+      ['krakenLatest','Latest Kraken','2.8B',v=>fmtB(v==null?null:v/1000)],
+      ['flashDailyPB','Flash daily PB','7,000 lines',v=>fmtNum(v)],
+      ['flashDailyArena','Flash arena-era daily average','3,500 lines',v=>fmtNum(v)]
+    ];
+    const details=r=>'<details class="rating-breakdown"><summary>11 metrics</summary><div class="rating-detail-list">'+
+      defs.map(([key,label,target,format])=>'<div><span>'+escapeHtml(label)+'</span><span>'+escapeHtml(format(r.ratingMetrics?.[key]??null))+
+        ' / '+target+' · <strong>'+fmtNum(r.ratingPoints?.[key]||0,2)+'</strong> pt</span></div>').join('')+
+      '</div></details>';
     const body=rows.map((r,i)=>`<tr>
       <td class="num" data-sort-value="${ranks[i].rank}">${ranks[i].label}</td>
       <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></div></td>
@@ -1374,26 +1409,27 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       <td>${barCell(r.ratingTotal,max,v=>fmtNum(v,2))}</td>
       <td class="num">${fmtNum(r.ratingPB,2)}</td>
       <td class="num">${fmtNum(r.ratingAvg,2)}</td>
-      <td class="num">${fmtNum(r.piggyPB)}</td>
-      <td class="num">${fmtB(r.spacePB)}</td>
-      <td class="num">${fmtNum(r.krakenPB,1)}</td>
-      <td class="num">${fmtNum(r.piggyAvg)}</td>
-      <td class="num">${fmtB(r.spaceAvg)}</td>
-      <td class="num">${fmtNum(r.krakenAvgL3)}</td>
+      <td>${details(r)}</td>
     </tr>`).join('');
-    const ratingExplanation = `
-      <div class="roster-separation-note">
-        <strong>How the Player Rating works:</strong>
-        Each event can contribute up to <strong>1.00 point</strong> to the Personal Best rating and up to <strong>1.00 point</strong> to the Average rating.
-        Scores below the benchmark earn a proportional share of that point; reaching or exceeding the benchmark earns the full 1.00.
-        <br><strong>Personal Best benchmarks:</strong> Piggy Race 35,000 lines • Space Race 350B lightyears • Kraken 3,500.
-        <br><strong>Average benchmarks:</strong> Piggy Race 25,000 lines • Space Race 200B lightyears • Kraken 2,800.
-        Piggy and Space averages use results since August 1, 2026; Kraken uses the last 3 Kraken events.
-        <br><strong>PB Rating</strong> and <strong>Avg Rating</strong> are each worth up to 3.00 points, for a maximum <strong>Total Rating of 6.00</strong>.
-        <br><strong>Ranking ties:</strong> Equal Total Ratings at the displayed two-decimal precision share the same rank (T-1, T-1, 3).
+    const methodRows=defs.map(([key,label,target])=>{
+      const half=key.startsWith('flash'),group=key.includes('PB')?'PB':key.includes('Last')||key==='krakenLatest'?'Recent':'Arena average';
+      return '<tr><td>'+escapeHtml(label)+'</td><td>'+escapeHtml(group)+'</td><td>'+target+'</td><td class="num">'+(half?'0.50':'1.00')+'</td></tr>';
+    }).join('');
+    const ratingExplanation=`
+      <div class="roster-separation-note rating-method">
+        <strong>Player Rating: 10 possible points across 11 metrics.</strong>
+        Each metric earns a proportional share of its points: actual result ÷ benchmark, capped at full credit. A zero earns zero.
+        <details><summary>View all 11 benchmarks and scoring rules</summary>
+          <div class="table-wrap"><table><thead><tr><th>Metric</th><th>Type</th><th>Full-credit benchmark</th><th class="num">Points</th></tr></thead><tbody>${methodRows}</tbody></table></div>
+          <p><strong>Recent Piggy and Space:</strong> Everyone is measured against the same latest three clan events. Missing an event earns zero for that event; all three count in the average.</p>
+          <p><strong>Kraken:</strong> The latest Kraken earns zero if missed. The five-Kraken average includes only Krakens actually played within those five events; earlier Krakens do not substitute.</p>
+          <p><strong>Flash:</strong> Daily totals combine all recorded flashes in the same Flash Set. PB uses the best day; arena-era average uses days since August 1, 2026.</p>
+          <p><strong>PB points</strong> have a 3.50 maximum; <strong>Averages &amp; recent points</strong> have a 6.50 maximum. Historical data may be incomplete where original event coverage is partial.</p>
+        </details>
+        <div class="rating-method-foot">Ties use the displayed two-decimal total; tied players share a rank (T-1, T-1, 3).</div>
       </div>`;
-    $('#ratingsContent').innerHTML = ratingExplanation + tableShell('Overall Player Rating','Personal Best performance + recent average performance',
-      [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Total Rating'},{label:'PB Rating',num:true},{label:'Avg Rating',num:true},{label:'Piggy PB',num:true},{label:'Space PB',num:true},{label:'Kraken PB',num:true},{label:'Piggy Avg',num:true},{label:'Space Arena Avg',num:true},{label:'Kraken L3',num:true}],body);
+    $('#ratingsContent').innerHTML=ratingExplanation+tableShell('Overall Player Rating','11 benchmarks • total out of 10 • select “11 metrics” for each player’s breakdown',
+      [{label:'#',num:true},{label:'Member'},{label:'Status'},{label:'Total / 10'},{label:'PB pts / 3.5',num:true},{label:'Avg + recent pts / 6.5',num:true},{label:'Breakdown'}],body);
     bindPlayerButtons($('#ratingsContent'));
   }
 
@@ -1690,7 +1726,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     piggyWins:'Wins',piggyPodiums:'Podiums',piggyPBRank:'PB Rank',
     utcOffset:'UTC',timeZoneGroup:'TZG',state:'State',country:'Country',
     piggySparks:'Piggy',spaceSparks:'Space',flashSparks:'Flash',krakenSparks:'Kraken',
-    loggedSparks:'Logged Sparks',unloggedSparks:'Screenshot Gap',totalCombinedSparks:'Total Sparks',
+    loggedSparks:'Logged Sparks',unloggedSparks:'Unlogged Sparks',totalCombinedSparks:'Total Sparks',
     piggyStars:'Piggy',spaceStars:'Space',flashStars:'Flash',
     loggedStars:'Logged Stars',unloggedStars:'Unlogged Stars',knownStars:'Total Stars',
     ratingTotal:'Rating',piggyPB:'Piggy PB',spacePB:'Space PB',spaceLobbyPBRank:'Space Lobby PB',krakenPB:'Kraken PB',
@@ -1895,7 +1931,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       krakenEvents:{label:'Kraken Events',type:'number',get:r=>r.krakenEvents},
       totalEvents:{label:'Total Events',type:'number',get:r=>r.totalEvents},
       loggedSparks:{label:'Logged Sparks',type:'number',get:r=>r.loggedSparks},
-      unloggedSparks:{label:'Screenshot Gap',type:'number',get:r=>r.unloggedSparks},
+      unloggedSparks:{label:'Unlogged Sparks',type:'number',get:r=>r.unloggedSparks},
       totalCombinedSparks:{label:'Total Sparks',type:'number',get:r=>r.totalCombinedSparks},
       ratingTotal:{label:'Rating',type:'number',get:r=>r.ratingTotal},
       piggyPB:{label:'Piggy PB',type:'number',get:r=>r.piggyPB},
@@ -1967,10 +2003,10 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const sourceNote=target==='kraken'
       ? 'Kraken lineup: 50 players from the Oct 9 in-game screenshots. Existing AVENGERS / AV-2 indicators and statuses are unchanged.'
       : target==='all'
-      ? 'Current membership from Oct 15 screenshots plus leader-confirmed AV-2 additions (DrDetroit and Starred); others retained as Inactive.'
+      ? 'Current membership reflects approved roster changes since the Oct 15 screenshot baseline; former members remain in tracked history.'
       : target==='active'
-        ? `${rows.length} current AVENGERS members. Oct 15 screenshot totals are retained alongside leader-confirmed membership changes.`
-        : `${rows.length} current AV-2 members. Oct 15 screenshot totals are retained alongside leader-confirmed additions and transfers.`;
+        ? `${rows.length} current AVENGERS members. Membership reflects approved updates; Oct 15 snapshot values remain separate.`
+        : `${rows.length} current AV-2 members. Membership reflects approved transfers and additions.`;
 
     root.innerHTML=`
       <div class="section-toolbar roster-toolbar">
@@ -1978,7 +2014,6 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
           <button data-roster="active" class="${target==='active'?'active':''}">AVENGERS</button>
           <button data-roster="av2" class="${target==='av2'?'active':''}">AV-2</button>
           <button data-roster="kraken" class="${target==='kraken'?'active':''}">🐙 Kraken</button>
-          <button data-roster="kraken" class="${target==='kraken'?'active':''}">Kraken</button>
           <button data-roster="all" class="${target==='all'?'active':''}">All Members</button>
         </div>
         <div class="small-muted">${sourceNote}</div>
@@ -1988,11 +2023,11 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         ${target==='kraken'?`
           <div class="kpi"><div class="kpi-label">In-game Sparks</div><div class="kpi-value">${fmtNum(inGameSparksTotal,0)}</div><div class="kpi-note">sum of Oct 9 screenshot values</div></div>
           <div class="kpi"><div class="kpi-label">Logged Sparks</div><div class="kpi-value">${fmtNum(loggedTotal,0)}</div><div class="kpi-note">tracked event history</div></div>
-          <div class="kpi"><div class="kpi-label">Total Sparks</div><div class="kpi-value">${fmtNum(combinedTotal,0)}</div><div class="kpi-note">logged + screenshot gap</div></div>`
+          <div class="kpi"><div class="kpi-label">Total Sparks</div><div class="kpi-value">${fmtNum(combinedTotal,0)}</div><div class="kpi-note">logged + unlogged Sparks</div></div>`
         :`
           <div class="kpi"><div class="kpi-label">Logged Sparks</div><div class="kpi-value">${fmtNum(loggedTotal,0)}</div><div class="kpi-note">captured in tracked events</div></div>
-          <div class="kpi"><div class="kpi-label">Screenshot Gap</div><div class="kpi-value">${fmtNum(unloggedTotal,0)}</div><div class="kpi-note">screenshot total above logged</div></div>
-          <div class="kpi"><div class="kpi-label">Total Sparks</div><div class="kpi-value">${fmtNum(combinedTotal,0)}</div><div class="kpi-note">logged + screenshot gap</div></div>`}
+          <div class="kpi"><div class="kpi-label">Unlogged Sparks</div><div class="kpi-value">${fmtNum(unloggedTotal,0)}</div><div class="kpi-note">screenshot total above logged</div></div>
+          <div class="kpi"><div class="kpi-label">Total Sparks</div><div class="kpi-value">${fmtNum(combinedTotal,0)}</div><div class="kpi-note">logged + unlogged Sparks</div></div>`}
       </div>
       <div class="tz-section">
         <div class="tz-section-head"><strong>Time Zone Groups</strong><span>Groups (TZG 1, 2, and 3) retained from supplied player metadata, never calculated from UTC.</span></div>
@@ -2001,16 +2036,13 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       ${target==='kraken'?`<div class="records-note"><strong>Kraken membership source:</strong>
         October 9, 2026 in-game roster screenshots. In-game Sparks are a separate point-in-time value; they are not Kraken damage or a replacement for tracked event Sparks. This view does not change any player's primary AVENGERS or AV-2 assignment.
       </div>`:''}
-      <div class="records-note roster-location-note"><strong>Roster location source:</strong>
-        Membership reflects the Oct 15, 2026 in-game AVENGERS and AV-2 screenshots. Known UTC, TZG, State, and Country metadata are retained from the earlier supplied roster; TZG is never derived from UTC. Blank values remain blank.
-      </div>
-      <div class="records-note"><strong>Star totals:</strong> For screenshot members, Total Stars comes from Oct 15 in-game all-time totals. DrDetroit and Starred were added to AV-2 separately by the clan leader; their new all-time Sparks and Stars are not available, so any displayed total is only a tracked minimum (≥). Logged Stars include recorded Piggy, Space and Flash rewards (Kraken Stars are not recorded); Unlogged Stars is the nonnegative difference from screenshot totals. Event counts represent recorded Piggy, Space, Flash and Kraken participation.
-      </div>
-      <div class="records-note"><strong>Piggy PB Rank:</strong> Best recorded finishing place (1st, 2nd, etc.) in a Piggy Race lobby with at least 30 recorded AVENGERS competitors. Line totals do not determine this number. AV-2 lobbies and smaller/solo lobbies are excluded; an unknown qualifying finish displays —. The same player's personal-best finish is shown across roster views (including after clan transfers).</div>
-      <div class="records-note"><strong>Sparks totals:</strong>
-        Logged Sparks = Piggy + Space + Flash + Kraken. Screenshot Gap is the nonnegative difference when the recorded all-time screenshot exceeds logged Sparks.
-        Total Sparks = Logged Sparks + Screenshot Gap. The historical gap compares an all-time screenshot with the rewards already tracked at that time; later rewards add to Logged without erasing the earlier gap.
-      </div>
+      <details class="records-note roster-source-details">
+        <summary><strong>Roster data sources and metric definitions</strong></summary>
+        <p><strong>Membership and location:</strong> Membership combines the Oct 15, 2026 roster baseline with approved changes. UTC, TZG, State and Country come from supplied player metadata; missing values remain blank. TZG is not inferred from UTC.</p>
+        <p><strong>Stars:</strong> Total Stars use verified all-time screenshots when available, or a tracked minimum (≥). Logged Stars are Piggy, Space and Flash awards; Unlogged Stars is the difference from a verified snapshot. Kraken has no Stars.</p>
+        <p><strong>Piggy PB Rank:</strong> Best source-confirmed lobby finish among races with at least 30 recorded AVENGERS; AV-2 and small lobbies are excluded. This is independent of line totals and follows the player across transfers.</p>
+        <p><strong>Sparks:</strong> Logged Sparks = Piggy + Space + Flash + Kraken. Unlogged Sparks is the frozen nonnegative historical snapshot gap; later awards increase Logged Sparks without erasing that gap. Total Sparks = Logged + Unlogged.</p>
+      </details>
       ${rosterGroupedTable(label,rows,sortDef,sortDir,sortHeader,playerNameCell,state.rosterGroups,target)}
     `;
 
@@ -2137,10 +2169,6 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const krRows=kr.map(x=>`<tr><td>${escapeHtml(x.label)} 2026</td><td class="num">${fmtNum(x.participants)}</td><td class="num event-total-highlight">${fmtNum(x.total,1)}</td><td class="num">${fmtNum(x.avg,1)}</td></tr>`).join('');
 
     root.innerHTML=`
-      <div class="records-note">
-        <strong>Historical event totals.</strong>
-        Piggy participant counts and line totals follow the historical AVENGERS race roster in the workbook, while Pot Stars use the workbook's reward/share values for the full race pot.
-      </div>
       <div id="clanLeagueRewards"></div>
       <div class="event-totals-grid">
         ${tableShell('Piggy Race Totals','Historical AVENGERS participants with workbook-derived pot totals',

@@ -222,15 +222,11 @@
       '<th>#</th><th>Member</th><th>Clan</th><th class="num">Flash Sparks</th><th class="num">Piggy Sparks</th><th class="num">Space Sparks</th>'+
       '<th class="num">Kraken Sparks</th><th class="num">Tracked Sparks*</th><th class="num">Tracked Stars*</th>'+
       '</tr></thead><tbody data-league-body></tbody></table></div>'+
-      '<div class="league-rewards-footnote"><strong>* Tracked Sparks and Stars are participant awards from verified recorded rows, including labeled historical Kraken estimates where present. They are not independently certified complete clan race-pot totals.</strong> '+
-      (Array.isArray(p.partialEventIds)&&p.partialEventIds.length?'<strong>'+num(p.partialEventIds.length)+' event sets have partial screenshot coverage.</strong> ':'')+
-      ((p.unknownClanRows||0)>0?'<strong>'+num(p.unknownClanRows)+' result rows have unknown event-time clan; not assigned to a clan.</strong> ':'')+
-      'Stars are member rewards (not total race pots). Flash, Piggy and Space Sparks/Stars come from recorded final results. '+
-      'Older Kraken Sparks marked * are estimates (damage × 750 for AVENGERS or × 500 for AV-2); clan is inferred from that league’s most recent recorded Piggy/Space event. '+
-      'Members without evidence of their historical Kraken clan are not assigned estimated Kraken Sparks. '+
-      'October Kraken Sparks are from the recorded event import. Historical Flash rewards can be incomplete where screenshots are missing. '+
-      (summary.missing?'<strong>'+num(summary.missing)+' event records have incomplete reward fields.</strong>':'')+
-      '</div></section>';
+      '<details class="league-rewards-footnote"><summary>Reward sources &amp; limitations</summary><p>'+
+      'Tracked Sparks and Stars are participant awards, not certified complete clan pots. Stars exclude Kraken. '+
+      'Older Kraken Sparks estimates use damage × 750 for AVENGERS or × 500 for AV-2, with event-time clan inferred from the league’s latest recorded Piggy/Space result; without that evidence no estimate is assigned. '+
+      'October Kraken rewards come from the recorded event import. Historical Flash rewards may be incomplete where screenshots were not captured.'+
+      '</p></details></section>';
     const select=host.querySelector('[data-league-clan]');
     select.value=clanFilter;
     host.querySelector('[data-league-sort]').value=sortBy;

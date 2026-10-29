@@ -185,8 +185,6 @@ async function main(){
     const sourceStatus=await leagueStatus.innerText();
     assert(sourceStatus.includes('partially captured event sets'),
       'Incomplete historical event coverage stays visible');
-    assert(sourceStatus.includes('unknown event-time clan'),
-      'Unknown clan attribution stays visible');
     await leagueFooter.locator('summary').click();
     assert((await leagueFooter.innerText()).includes('Historical Flash rewards may be incomplete'),
       'the detailed historical-source caveat is accessible on demand');

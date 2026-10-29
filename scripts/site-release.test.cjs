@@ -18,7 +18,10 @@ for(const kind of Object.keys(UNITS))for(const clan of ['AVENGERS','AV-2'])test(
     assert.equal(p.kinds[kind].pb,score===90000?90000:BASE.projection.people.find(p=>p.name===name).kinds[kind].pb);
     assert.equal(b[kind+'Sparks'],before[kind+'Sparks']+sparks);
     assert.equal(member(r,name).status,member(BASE,name).status,'historical clan cannot transfer current roster');
-    assert.deepEqual(member(r,'AV-INTEN'),member(BASE,'AV-INTEN'));
+    // A new global last-three/last-five event can change another player's
+    // rating even when their own history, membership and payouts do not change.
+    const withoutGlobalRating=({ratingMetrics,ratingPoints,ratingPB,ratingAvg,ratingTotal,...rest})=>rest;
+    assert.deepEqual(withoutGlobalRating(member(r,'AV-INTEN')),withoutGlobalRating(member(BASE,'AV-INTEN')));
     if(['piggy','space'].includes(kind)){
       assert.equal(member(r,name)[kind+'PB'],p.kinds[kind].pb);
       assert.equal(w.AVENGERS_DATA[kind].history[name].find(x=>x.date===event.date)[field],score);

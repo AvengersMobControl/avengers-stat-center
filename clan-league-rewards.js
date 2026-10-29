@@ -203,8 +203,8 @@
       '<button type="button" data-league-export class="ghost-btn">Export CSV</button></div></div>'+
       '<div class="league-period-list">'+summaryRows+'</div>'+
       '<div class="league-rewards-kpis">'+
-        '<div><small>Tracked Sparks*</small><strong>'+num(summary.sparks)+'</strong></div>'+
-        '<div><small>Tracked Stars*</small><strong>'+num(summary.stars)+'</strong></div>'+
+        '<div><small>Tracked Sparks</small><strong>'+num(summary.sparks)+'</strong></div>'+
+        '<div><small>Tracked Stars</small><strong>'+num(summary.stars)+'</strong></div>'+
         '<div><small>Flash Sparks</small><strong>'+num(summary.flashSparks)+'</strong></div>'+
         '<div><small>Kraken Sparks estimated</small><strong>'+num(summary.krakenEstimate)+'</strong></div>'+
       '</div>'+
@@ -220,7 +220,7 @@
       '<label>Rank by <select data-league-sort><option value="sparks">Sparks</option><option value="stars">Stars</option></select></label></div></div>'+
       '<div class="league-rewards-scroll"><table class="league-rewards-table"><thead><tr>'+
       '<th>#</th><th>Member</th><th>Clan</th><th class="num">Flash Sparks</th><th class="num">Piggy Sparks</th><th class="num">Space Sparks</th>'+
-      '<th class="num">Kraken Sparks</th><th class="num">Tracked Sparks*</th><th class="num">Tracked Stars*</th>'+
+      '<th class="num">Kraken Sparks</th><th class="num">Tracked Sparks</th><th class="num">Tracked Stars</th>'+
       '</tr></thead><tbody data-league-body></tbody></table></div>'+
       '<details class="league-rewards-footnote"><summary>Reward sources &amp; limitations</summary><p>'+
       'Tracked Sparks and Stars are participant awards, not certified complete clan pots. Stars exclude Kraken. '+

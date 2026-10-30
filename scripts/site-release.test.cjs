@@ -113,13 +113,16 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
   const R=BASE.globals.AVENGERS_MEMBER_TIMEZONES,D=BASE.globals.AVENGERS_DATA;
   const people=BASE.projection.people;
   const active=R.rows.filter(r=>r.status==='Active'),av2=R.rows.filter(r=>r.status==='AV2');
-  assert.equal(active.length,50);assert.equal(av2.length,53);
-  for(const name of ['AV-Lin','AV-JefhKintz05','AV-SiFra']){
+  assert.equal(active.length,48);assert.equal(av2.length,57);
+  for(const name of ['AV-Lin','AV-JefhKintz05','AV-TRINITY','AV-istanbuL','AV-KKD']){
     assert.equal(R.byName[name]?.status,'Active',name+' roster');
     assert.equal(D.members.filter(m=>m.name===name&&m.status==='Active').length,1,name+' unique profile');
     assert.equal(people.find(p=>p.name===name)?.status,'Active',name+' projection');
     assert(!av2.some(r=>r.name===name),name+' no current AV-2 listing');
   }
+  for(const name of ['AV#Rafa#Tun','AV-JAMO','AV-Royal','AV-SiFra','AV-KitKat','AV-Hoops'])assert.equal(R.byName[name]?.status,'AV2',name+' transferred or retained in AV-2');
+  assert.equal(R.byName['AV-WolfLegend']?.status||'Inactive','Inactive','WolfLegend inactive');
+  for(const name of ['AV-Nicefellow','AV-Neez'])assert.equal(R.byName[name]?.status,'Active',name+' status unchanged');
   assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV-JeffKintz05'),'AV-JefhKintz05');
   assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV-2Lin'),'AV-Lin');
   assert.equal(R.byName['AV-JeffKintz05'].canonicalName,'AV-JefhKintz05');
@@ -212,8 +215,8 @@ test('Adigarian does not get artificial gap from a reset returning-clan counter'
 const {audit:transferAudit}=require('./audit-transfer-restorations.cjs');
 test('transfer restoration reconciles every current member, not only Hoops',()=>{
  const result=transferAudit(BASE);
- assert.equal(result.summary.roster,103);
- assert.equal(result.rows.length,103);
+ assert.equal(result.summary.roster,105);
+ assert.equal(result.rows.length,105);
  for(const r of result.rows){
   const player=BASE.projection.people.find(p=>p.name===r.name);
   assert(player,'Missing member '+r.name);

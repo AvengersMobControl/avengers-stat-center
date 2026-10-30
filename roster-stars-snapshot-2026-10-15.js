@@ -92,6 +92,39 @@
       rosterEntries.push({name:correctName,profileName,status:'Active'});
     }
   }
+  // October 30 leader-confirmed current membership corrections from the Piggy lobby.
+  // These are STATUS changes only; October 15 Stars/Sparks screenshots and
+  // every historic event's clan and results remain unchanged.
+  for(const name of ['AV-TRINITY','AV-istanbuL','AV-KKD']){
+    const profileName=canonical(name);
+    const existing=rosterEntries.find(row=>row.profileName===profileName);
+    if(existing){
+      existing.status='Active';
+      existing.name=name;
+    }else{
+      rosterEntries.push({name,profileName,status:'Active'});
+    }
+  }
+  for(const name of ['AV#Rafa#Tun','AV-JAMO','AV-Royal','AV-SiFra']){
+    const entry=rosterEntries.find(row=>row.profileName===canonical(name));
+    if(!entry)throw new Error('Missing transferred member: '+name);
+    entry.status='AV2';
+  }
+  const inactiveWolf=rosterEntries.findIndex(row=>row.profileName===canonical('AV-WolfLegend'));
+  if(inactiveWolf<0)throw new Error('Missing former member AV-WolfLegend');
+  rosterEntries.splice(inactiveWolf,1);
+  // These two already belong to AV-2 and must not be duplicated.
+  for(const name of ['AV-KitKat','AV-Hoops']){
+    const matches=rosterEntries.filter(row=>row.profileName===canonical(name));
+    if(matches.length!==1||matches[0].status!=='AV2')
+      throw new Error('AV-2 membership mismatch for '+name);
+  }
+  // AV-Nicefellow and AV-Neez have no leader-directed change; remain Active.
+  for(const name of ['AV-Nicefellow','AV-Neez']){
+    const entry=rosterEntries.find(row=>row.profileName===canonical(name));
+    if(!entry||entry.status!=='Active')
+      throw new Error('Undirected member status changed: '+name);
+  }
   // Zibby transferred to AV-2. The historic Oct 15 main-clan screenshot
   // remains untouched; this changes CURRENT membership only.
   const zibby=rosterEntries.find(row=>row.profileName===canonical('AV-ZIBBY'));
@@ -116,7 +149,7 @@
   }
   // Historical screenshot-only LT entry is removed at leader direction and
   // never gets a profile shell: zero known event rows or event rewards.
-  if(new Set(rosterEntries.map(row=>row.profileName)).size!==103)
+  if(new Set(rosterEntries.map(row=>row.profileName)).size!==105)
     throw new Error('October 23 roster identities unexpectedly overlap');
   const discordMembers=window.AVENGERS_DISCORD_UTC_ROSTER?.members||[];
   for(const member of discordMembers){
@@ -171,8 +204,8 @@
   delete D.aliasMap['AV-Frenchie2'];
   byName['AV-Frenchie2']=fromRow(currentRows.find(r=>r.name==='AV-Frenchie2'));
   R.byName=byName;
-  R.source='October 15 AVENGERS/AV-2 snapshots + October 23 leader identity and membership corrections';
-  R.precedence='October 15 source screenshots retained as dated provenance, except leader-removed LT shell; current changes: AV-2Lin → AV-Lin, Jeff canonical AV-JefhKintz05, SiFra and Timmy Active, Fred Active, FrankAbagnale linked to existing Addicted account, Zibby and TheOli AV-2; Animosity Inactive, Mickzzz and AV2-Froyo AV-2; Oakcliff Active (new member Oct 27); 50 Active and 53 AV-2; UTC/TZG/country retained.';
+  R.source='October 15 AVENGERS/AV-2 snapshots + leader identity and membership corrections through October 30';
+  R.precedence='October 15 source screenshots retained as dated provenance, except leader-removed LT shell; current changes: AV-2Lin → AV-Lin, Jeff canonical AV-JefhKintz05, Timmy and Fred Active, FrankAbagnale linked to existing Addicted account, Zibby and TheOli AV-2; Animosity Inactive, Mickzzz and AV2-Froyo AV-2; Oakcliff Active (new member Oct 27); Oct 30: TRINITY, istanbuL, KKD Active; Rafa, JAMO, Royal, SiFra AV-2; WolfLegend Inactive; KitKat and Hoops remain AV-2; Nicefellow and Neez remain Active; 48 Active and 57 AV-2; UTC/TZG/country retained.';
 
   // Only current member status changes. Event history, clan attribution,
   // personal records, event totals, and rating math remain unchanged.

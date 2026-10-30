@@ -1,3 +1,7 @@
+## 2026-10-30 — Current Piggy lobby vs Stat Center roster reconciliation
+
+Leader-confirmed current-only changes from October 30 Piggy Race waiting-room screenshots (48/50 lobby participants): **Active additions:** AV-TRINITY, AV-istanbuL, AV-KKD. **Move Active to AV-2:** AV#Rafa#Tun, AV-JAMO, AV-Royal, AV-SiFra. **Move to Inactive:** AV-WolfLegend. **Already AV-2 / no change:** AV-KitKat and AV-Hoops. **Still Active pending further instruction:** AV-Nicefellow and AV-Neez. Result: **48 Active AVENGERS and 57 AV-2**. Membership-only correction in `roster-stars-snapshot-2026-10-15.js`; preserve October 15 all-time snapshots, canonical aliases, historical event-time clan attribution, prior player records, and event/Stars/Sparks ledgers. Do not infer nonparticipation from status changes or invent event results. Need validate automated build and deployed GitHub Pages roster before claiming live.
+
 ## 2026-10-29 — Player Ratings /10 and site-wide disclosure cleanup
 
 - Leader-approved eleven rating metrics sum to **10.00**: Piggy PB/arena-era average/last three clan events (35k/25k/20k lines), Space PB/arena-era average/last three clan events (350B/250B/200B), Kraken PB/last five clan events/latest Kraken (3.5B/2.8B/2.8B damage), Flash daily PB/arena-era daily average (7k/3.5k lines; each Flash metric worth 0.5 point).

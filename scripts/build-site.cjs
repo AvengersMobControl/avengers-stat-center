@@ -42,6 +42,15 @@ function build({destination=path.join(root,'dist'),updates}={}){
   // Show the fixed historical attribution explicitly in production, not a mutable screenshot remainder.
   html=html.replaceAll('Screenshot Gap','Unlogged Sparks')
     .replaceAll('Sparks Prior to Logging','Unlogged Sparks');
+  // Render the effective rating averages accurately for alumni and the
+  // three leader-approved AV-2 full-history exceptions. Keep the upstream
+  // rating component keys stable for exports and existing browser consumers.
+  html=html.replace("['piggyArena','Piggy arena-era average'",
+    "['piggyArena','Piggy average (Arena / approved historical)'")
+    .replace("['spaceArena','Space arena-era average'",
+      "['spaceArena','Space average (Arena / approved historical)'")
+    .replace('<p><strong>PB points</strong> have a 3.50 maximum;',
+      '<p><strong>Historical average exceptions:</strong> Inactive alumni with no Arena-era result in Piggy or Space use the average of their recorded older results for that category. Alumni with no Kraken result among the latest five clan Krakens use their average of recorded older Krakens. AV-CRISPIN.97, AV-JOKER, and AV-Starred use their full-history Piggy and Space averages, including pre- and post-Arena results. All other active and AV-2 players retain Arena-era averages. Recent-event missed-result penalties and personal bests are unchanged.</p>\n          <p><strong>PB points</strong> have a 3.50 maximum;');
   html=html.slice(0,first)+`<script src="${bundle}"></script>\n<script src="community-highlights.js"></script>\n<script src="member-profile-insights.js"></script>\n<script src="clan-league-rewards.js"></script>\n`+html.slice(boundary);
   // Preserve an immutable release marker on every page, whether or not an
   // unresolved-identity notice is necessary. Browser/Pages checks require it.

@@ -2651,8 +2651,7 @@ const original=new WeakMap(),rendered=new WeakMap();
 let lang='en';try{const saved=localStorage.getItem('avengers-language');if(codes.includes(saved))lang=saved;}catch{}
 const select=document.getElementById('siteLanguageSelect');
 const skip='script,style,textarea,input,code,.notranslate,[translate="no"],.linkish,.compact-player,.snapshot-only-name,.avatar';
-const pattern=s=>s.replace(/[.*+?^\$\{\}()|[\]\\]/g,'\\<script src="table-column-resize.js"></script>
-</body>');
+const pattern=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 const dictionary=phrases.slice().sort((a,b)=>b[0].length-a[0].length);
 function translate(value){
  if(lang==='en')return value;

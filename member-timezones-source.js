@@ -10,11 +10,11 @@ AV#Rafa#Tun\tActive\t1\t2\t\tTunisia
 AV.Saberkong\tActive\t-4\t1\tIN\tUSA-Eastern DST
 AV<STAR-LORD>\tActive\t-5\t1\tLA\tUSA-Central DST
 AV-7-STAR\tActive\t5\t3\t\tPakistan
-AV-8!l...Bil\tActive\t3\t2\t\tLebanon
+AV-8!l...Bil\tActive\t2\t2\t\tLebanon
 AV-Abu//npjp\tActive\t9\t3\t\tJapan
 AV-Addicted\tActive\t-4\t1\t\tCanada - Ontario
 AV-Animosity\tActive\t-4\t1\tNJ\tUSA-Eastern DST
-AV-BigPapi\tActive\t-4\t1\t\tUSA-Eastern DST
+AV-BigPapi\tActive\t-4\t1\tNJ\tUSA-Eastern DST
 AV-Bubba0816\tActive\t-4\t1\tVA\tUSA-Eastern DST
 AV-CHEN1972\tActive\t8\t3\t\tTaiwan
 AV-Chuck\tActive\t-5\t1\t\tUSA-Central DST
@@ -152,7 +152,7 @@ AV-STI44ERS\tInactive\t-5\t1\t\tUSA-Central DST
 AV-SupperMan\tInactive\t-4\t1\t\tUSA-Eastern DST
 AV-Suwair\tInactive\t3\t2\t\tQatar
 AV-Suwako\tInactive\t9\t3\t\tKorea
-AV-SweetiePL\tInactive\t2\t2\t\tPoland
+AV-SweetiePL\tInactive\t1\t2\t\tPoland
 AV-TheGreatCor\tInactive\t-4\t1\t\tUSA-Eastern DST
 AV-TiK$oN$\tInactive\t2\t2\t\tPoland
 AV-Tornado\tInactive\t1\t2\t\tEngland
@@ -174,10 +174,21 @@ AV-braa\tAV2\t\t\t\t
 AV+HOLLOWBORNs\tAV2\t\t\t\t
 Keyler\tAV2\t\t\t\t
 Hasansilin\tAV2\t\t\t\t
-AV-JAMO\tActive\t\t\t\t
-AV-Fahad\tActive\t\t\t\t
-AV-23\tActive\t\t\t\t
-AV-Brisket\tActive\t\t\t\t`;
+AV-JAMO\tAV2\t\t\t\tPhilippines
+AV-Fahad\tAV2\t3\t\t\tQatar
+AV-23\tActive\t-3\t\t\tChile
+AV-Brisket\tAV2\t\t\tTX\tUSA-Central Time
+AV-Rita\tActive\t-5\t\tTX\tUSA-Central DST
+AV-McNasty\tActive\t-5\t\t\tUSA-Central DST
+AV-KKD\tActive\t\t\tNY\tUSA-Eastern Time
+AV-Royal\tAV2\t\t\t\tIndia
+AV-ItsNospace\tAV2\t\t\t\tCanada - Eastern Time
+AV-ShielDBreaker\tActive\t\t\tFL\tUSA-Eastern Time
+AV-Timmy\tActive\t\t\t\tGermany
+AV-Fred\tActive\t\t\t\tFrance
+AV-Oakcliff\tActive\t\t\t\t
+AV-istanbuL\tActive\t3\t\t\tTürkiye
+AV-TRINITY\tActive\t8\t\t\tPhilippines`;
 
   const lines=tsv.split(/\r?\n/);
   const rows=lines.slice(1).filter(Boolean).map(line=>{
@@ -186,6 +197,25 @@ AV-Brisket\tActive\t\t\t\t`;
     const tzg=tzgRaw===''?null:Number(tzgRaw);
     return {name,status,utc,tzg,state,location};
   });
+
+  // Council-approved October 30, 2026 location details from supplied Discord
+  // screenshots. The TZG column above is independent of UTC/time zones and is
+  // deliberately NOT inferred or updated by these annotations.
+  // Time-zone IDs let the displayed UTC offset follow seasonal clock changes
+  // rather than freezing the October screenshot offset permanently.
+  const approvedLocationDetails={
+    'AV-BigPapi':{timeZoneId:'America/New_York'},
+    'AV-Rita':{timeZoneId:'America/Chicago'},
+    'AV-McNasty':{timeZoneId:'America/Chicago'},
+    'AV-KKD':{timeZoneId:'America/New_York'},
+    'AV-ShielDBreaker':{timeZoneId:'America/New_York',city:'Riverview'},
+    'AV-Brisket':{timeZoneId:'America/Chicago'},
+    'AV-8!l...Bil':{timeZoneId:'Asia/Beirut'},
+    'AV-SweetiePL':{timeZoneId:'Europe/Warsaw'},
+    // Oakcliff reported Central Time without a country or exact UTC offset.
+    'AV-Oakcliff':{timeZoneLabel:'Central Time'}
+  };
+  rows.forEach(row=>Object.assign(row,approvedLocationDetails[row.name]||{}));
 
   const formatUtc=value=>{
     if(value==null||value==='')return '';
@@ -272,8 +302,8 @@ AV-Brisket\tActive\t\t\t\t`;
   });
 
   window.AVENGERS_MEMBER_TIMEZONES={
-    source:'Authoritative AVENGERS / AV-2 roster updated 2026-10-01',
-    precedence:'This roster controls current status, UTC, TZG, State, and Location. TZG is never derived from UTC.',
+    source:'October 1 baseline + October 30, 2026 Council-approved location updates',
+    precedence:'Current membership is set by later roster snapshots; this record retains baseline UTC/TZG/location and October 30 confirmed updates. Seasonal time zones carry IANA IDs. TZG is never derived from UTC.',
     rows,
     byName,
     formatUtc

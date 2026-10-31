@@ -302,6 +302,14 @@ test('alumni fallbacks and three approved AV-2 full-history average exceptions',
   assert.equal(returned.ratingMetrics.piggyArena,5000,'Arena-era result overrides alumni fallback');
   assert.equal(returned.ratingMetrics.spaceArena,20);
   assert.equal(returned.ratingMetrics.krakenLast5,2000);
+  // Alumni must never lose rating points compared with normal calculation,
+  // even when some Arena-era performances already exist.
+  for(const n of ['Alum','Returned']){
+    const baseline=project(l,{members:Object.entries(status).map(([name,value])=>({
+      name,status:name===n?'Active':value
+    })),arenaStart:'2026-08-01'});
+    assert(person(p,n).ratingTotal>=person(baseline,n).ratingTotal,n+' cannot lose rating points');
+  }
   for(const n of ['Active','AV-2Normal']){
     const x=person(p,n);
     assert.equal(x.ratingMetrics.piggyArena,5000);

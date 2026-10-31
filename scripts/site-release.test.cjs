@@ -167,7 +167,7 @@ test('Council-approved October 30 location updates retain verified identities, i
     ['AV-ShielDBreaker',null,'USA-Eastern Time','FL'],
     ['AV-Timmy',null,'Germany',''],
     ['AV-Fred',null,'France',''],
-    ['AV-Oakcliff',null,'',''],
+    ['AV-Oakcliff',null,'USA',''],
     ['AV-istanbuL',3,'Türkiye',''],
     ['AV-TRINITY',8,'Philippines',''],
     ['AV-23',-3,'Chile',''],
@@ -187,7 +187,7 @@ test('Council-approved October 30 location updates retain verified identities, i
   assert.equal(D.aliasMap['AV2-Brisket'],'AV-Brisket','no duplicate Brisket profile');
   assert.equal(R.byName['AV-ShielDBreaker'].city,'Riverview');
   assert.equal(R.byName['AV-Oakcliff'].timeZoneLabel,'Central Time');
-  assert.equal(R.byName['AV-Oakcliff'].location,'','Oakcliff country remains unknown');
+  assert.equal(R.byName['AV-Oakcliff'].location,'USA','Oakcliff country confirmed by leader');
   assert.equal(R.byName['AV-Oakcliff'].utc,null,'Oakcliff UTC remains unknown');
   assert.equal(R.byName['AV-8!l...Bil'].timeZoneId,'Asia/Beirut');
   assert.equal(R.byName['AV-SweetiePL'].timeZoneId,'Europe/Warsaw');

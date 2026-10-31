@@ -270,3 +270,48 @@ test('one weekly former-member exception retains source clan and cannot admit ot
  assert.throws(()=>put(empty(),{...e,rows:[{...row,player:'Other'}]}),/clan/);
  assert.throws(()=>put(empty(),{...e,rows:[{...row,metadata:{rank:46}}]}),/clan/);
 });
+
+
+test('alumni fallbacks and three approved AV-2 full-history average exceptions',()=>{
+  const names=['Alum','Returned','Active','AV-2Normal','AV-CRISPIN.97','AV-JOKER','AV-Starred'];
+  const status={Alum:'Inactive',Returned:'Inactive',Active:'Active','AV-2Normal':'AV2',
+    'AV-CRISPIN.97':'AV2','AV-JOKER':'AV2','AV-Starred':'AV2',Anchor:'Active'};
+  const historical=(kind,id,date,score)=>({id,kind,date,unit:UNITS[kind],status:'final',sources:['fixture:'+id],
+    rows:names.map(player=>({player,clan:'AVENGERS',score,sparks:10,stars:kind==='kraken'?null:100}))});
+  const custom=(kind,id,date,players,score)=>({id,kind,date,unit:UNITS[kind],status:'final',sources:['fixture:'+id],
+    rows:players.map(player=>({player,clan:'AVENGERS',score,sparks:10,stars:kind==='kraken'?null:100}))});
+  let l=empty();
+  for(const [i,score] of [1000,3000].entries()){
+    l=put(l,historical('piggy','histPiggy'+i,'2026-0'+(4+i)+'-10',score));
+    l=put(l,historical('space','histSpace'+i,'2026-0'+(4+i)+'-11',score/100));
+    l=put(l,historical('kraken','histKraken'+i,'2026-0'+(2+i*2)+'-12',score));
+  }
+  const inArena=['Returned','Active','AV-2Normal','AV-CRISPIN.97','AV-JOKER','AV-Starred'];
+  l=put(l,custom('piggy','arenaPiggy','2026-09-20',inArena,5000));
+  l=put(l,custom('space','arenaSpace','2026-09-21',inArena,20));
+  for(const [i,date] of ['2026-05-24','2026-06-28','2026-08-02','2026-09-06','2026-10-11'].entries())
+    l=put(l,custom('kraken','recentKraken'+i,date,['Anchor'],3000));
+  const p=project(l,{members:Object.entries(status).map(([name,status])=>({name,status})),arenaStart:'2026-08-01'});
+  const alum=person(p,'Alum'),returned=person(p,'Returned');
+  assert.equal(alum.ratingMetrics.piggyPB,3000,'historical PB already counted');
+  assert.equal(alum.ratingMetrics.piggyArena,2000);
+  assert.equal(alum.ratingMetrics.spaceArena,20);
+  assert.equal(alum.ratingMetrics.krakenLast5,2000);
+  assert.equal(alum.ratingMetrics.krakenLatest,0);
+  assert.equal(alum.ratingMetrics.piggyLast3,(1000+3000+0)/3,'missing recent event counts zero');
+  assert.equal(returned.ratingMetrics.piggyArena,5000,'Arena-era result overrides alumni fallback');
+  assert.equal(returned.ratingMetrics.spaceArena,20);
+  assert.equal(returned.ratingMetrics.krakenLast5,2000);
+  for(const n of ['Active','AV-2Normal']){
+    const x=person(p,n);
+    assert.equal(x.ratingMetrics.piggyArena,5000);
+    assert.equal(x.ratingMetrics.spaceArena,20);
+    assert.equal(x.ratingMetrics.krakenLast5,null,'current players cannot use historical Kraken fallback');
+  }
+  for(const n of ['AV-CRISPIN.97','AV-JOKER','AV-Starred']){
+    const x=person(p,n);
+    assert.equal(x.ratingMetrics.piggyArena,3000,'overall average replaces Arena-era value');
+    assert.equal(x.ratingMetrics.spaceArena,20,'overall Space includes historical and Arena-era data');
+    assert.equal(x.ratingMetrics.krakenLast5,null,'only Piggy/Space exception for these accounts');
+  }
+});

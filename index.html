@@ -1753,7 +1753,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     switch(key){
       case 'piggyPBRank':return r.piggyPBRank==null?missing:window.AVENGERS_ROSTER_PIGGY_PB_RANK.formatFinish(r.piggyPBRank);
       case 'piggyPodiums':return `<span title="1st: ${r.piggyWins||0} • 2nd: ${r.piggySecondPlaces||0} • 3rd: ${r.piggyThirdPlaces||0}">${fmtNum(r.piggyPodiums||0)}</span>`;
-      case 'utcOffset':return r.utcOffset==null?missing:escapeHtml(String(r.utcOffset));
+      case 'utcOffset':return r.utcOffset==null?(r.timeZoneLabel?escapeHtml(r.timeZoneLabel):missing):escapeHtml(String(r.utcOffset));
       case 'timeZoneGroup':return r.timeZoneGroup?`<span class="tz-pill">${escapeHtml(r.timeZoneGroup)}</span>`:missing;
       case 'state':return r.state?escapeHtml(r.state):missing;
       case 'country':return r.country?escapeHtml(r.country):missing;
@@ -1840,6 +1840,21 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       return alias?tzByName[alias]||null:null;
     };
 
+    // Approved named time zones use today's actual local offset, including
+    // seasonal DST changes. This never alters the independent Council TZG.
+    const currentUtcOffset=tz=>{
+      const saved=tz?.utc==null?null:Number(tz.utc);
+      if(!tz?.timeZoneId)return saved;
+      try{
+        const token=new Intl.DateTimeFormat('en-US',{
+          timeZone:tz.timeZoneId,timeZoneName:'longOffset'
+        }).formatToParts(new Date()).find(p=>p.type==='timeZoneName')?.value||'';
+        if(token==='GMT')return 0;
+        const m=token.match(/^GMT([+-])(\\d{2}):(\\d{2})$/);
+        return m?(m[1]==='-'?-1:1)*(Number(m[2])+Number(m[3])/60):saved;
+      }catch{return saved;}
+    };
+
     const materialize=name=>{
       const canonical=canonicalPlayerName(name);
       const stored=baseMap.get(canonical)||baseMap.get(name);
@@ -1869,7 +1884,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         reconstructedJuneKrakenSparks:extraSparks.juneKrakenSparks||0,
         unloggedSparks:unlogged,totalCombinedSparks:logged+unlogged,snapshotTotal,
         sparkSnapshotDate,sparkReconciliationDelta,
-        state:tz?.state||'',location:tz?.location||'',utcOffset:tz?.utc==null?null:Number(tz.utc),
+        state:tz?.city?[tz.city,tz.state].filter(Boolean).join(', '):tz?.state||'',
+        location:tz?.location||'',utcOffset:currentUtcOffset(tz),timeZoneLabel:tz?.timeZoneLabel||'',
         utcLabel:tz?.utcLabel||'',timeZoneGroup:tz?.timeZoneGroup||'',
         country:String(tz?.location||'').replace(/^USA[- ].*$/i,'USA').replace(/^Canada\s*-.*/i,'Canada').trim(),
         ...eventBreakdown,

@@ -1,3 +1,7 @@
+## 2026-10-30 — AV-Oakcliff country confirmed
+
+Leader confirmed AV-Oakcliff is in the **USA**, supplementing his approved Central Time disclosure. Website location source now has **USA / Central Time**, while exact UTC and independent TZG remain unknown (not inferred). This is location metadata only, preserving past events, historical clan attribution, membership, records, Stars and Sparks. Test assertion updated. Exact GitHub Pages publication must be verified before claiming LIVE.
+
 ## 2026-10-30 — Council-approved location information and clarified AV-23 identity
 
 Leader approved the 14 previously reviewed Discord screenshot location updates: AV-BigPapi (New Jersey), AV-Fahad (Qatar UTC+3), AV-JAMO (Philippines), AV-Rita (Texas, Central Daylight), AV-McNasty (USA Central Daylight), AV-KKD (New York, Eastern), AV-Royal (India), AV-ItsNospace (Canada Eastern), AV-ShielDBreaker (Riverview, FL, Eastern), AV-Timmy (Germany), AV-Fred (France), AV-Oakcliff (Central Time only, no country/UTC inference), AV-istanbuL (Türkiye UTC+3), and AV-TRINITY (Philippines UTC+8). The leader separately confirmed that the Discord @1 reference means **AV-23**: Chile UTC−3, and approved Brisket's Texas/Central location **after identity verification**. Existing `AV2-Brisket` maps to one `AV-Brisket` canonical account; no duplicate is created.

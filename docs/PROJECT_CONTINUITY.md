@@ -1,3 +1,7 @@
+## 2026-10-30 — AV-Oakcliff country confirmed
+
+Leader confirmed AV-Oakcliff is in the **USA**, supplementing his approved Central Time disclosure. Website location source now has **USA / Central Time**, while exact UTC and independent TZG remain unknown (not inferred). This is location metadata only, preserving past events, historical clan attribution, membership, records, Stars and Sparks. Test assertion updated. Exact GitHub Pages publication must be verified before claiming LIVE.
+
 ## 2026-10-30 — Two-panel 100-account Power Ratings PNG layout (requested)
 - Produce a portrait graphic with the **current AVENGERS roster on the left** and approved AV-2 accounts plus top-scoring selected alumni on the right. User requested 50 active AVENGERS plus 50 right-side accounts and **100 total**. The authoritative current roster still contains **48 Active**, so the generated source-backed artifact uses **48 Active left + 32 approved/curated AV-2 right + 20 highest-rated selected alumni right = exactly 100 actual accounts**. Do not invent/reclassify two active members. Clearly mark the 48 active count and open roster-space clarification on the graphic.
 - Five separately requested AV-2 accounts included even if their ratings are low: AV-HECKTO, AV-KiraLoveZolika, AV-ItsNospace, AV-Frenchie2, AV-Squishy. Preserve independent FrenchieUSA/Frenchie2 game account scores. The 32 AV-2 choices consist of 23 from the previous approved 108-person PNG, four verified main-clan transfers (JAMO, SiFra, Rafa#Tun, Royal), and those five additions.

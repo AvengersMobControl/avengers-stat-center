@@ -153,6 +153,54 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
   assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAv2.length,50,'dated AV-2 raw snapshot intact');
   assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAvengersStars.length,47,'removed LT not published');
 });
+test('Council-approved October 30 location updates retain verified identities, independent TZG and snapshots',()=>{
+  const R=BASE.globals.AVENGERS_MEMBER_TIMEZONES,D=BASE.globals.AVENGERS_DATA;
+  const verified=[
+    ['AV-BigPapi',-4,'USA-Eastern DST','NJ'],
+    ['AV-Fahad',3,'Qatar',''],
+    ['AV-JAMO',null,'Philippines',''],
+    ['AV-Rita',-5,'USA-Central DST','TX'],
+    ['AV-McNasty',-5,'USA-Central DST',''],
+    ['AV-KKD',null,'USA-Eastern Time','NY'],
+    ['AV-Royal',null,'India',''],
+    ['AV-ItsNospace',null,'Canada - Eastern Time',''],
+    ['AV-ShielDBreaker',null,'USA-Eastern Time','FL'],
+    ['AV-Timmy',null,'Germany',''],
+    ['AV-Fred',null,'France',''],
+    ['AV-Oakcliff',null,'',''],
+    ['AV-istanbuL',3,'Türkiye',''],
+    ['AV-TRINITY',8,'Philippines',''],
+    ['AV-23',-3,'Chile',''],
+    ['AV2-Brisket',null,'USA-Central Time','TX'],
+    ['AV-8!l...Bil',2,'Lebanon',''],
+    ['AV-SweetiePL',1,'Poland','']
+  ];
+  for(const [name,utc,location,state] of verified){
+    const row=R.byName[name];
+    assert(row,'missing current identity '+name);
+    assert.equal(row.utc,utc,name+' UTC');
+    assert.equal(row.location,location,name+' location');
+    assert.equal(row.state,state,name+' state');
+  }
+  assert.equal(R.byName['AV2-Brisket'].canonicalName,'AV-Brisket','Brisket AV-2 screenshot matches existing player profile');
+  assert.equal(R.byName['AV-Brisket'].location,'USA-Central Time');
+  assert.equal(D.aliasMap['AV2-Brisket'],'AV-Brisket','no duplicate Brisket profile');
+  assert.equal(R.byName['AV-ShielDBreaker'].city,'Riverview');
+  assert.equal(R.byName['AV-Oakcliff'].timeZoneLabel,'Central Time');
+  assert.equal(R.byName['AV-Oakcliff'].location,'','Oakcliff country remains unknown');
+  assert.equal(R.byName['AV-Oakcliff'].utc,null,'Oakcliff UTC remains unknown');
+  assert.equal(R.byName['AV-8!l...Bil'].timeZoneId,'Asia/Beirut');
+  assert.equal(R.byName['AV-SweetiePL'].timeZoneId,'Europe/Warsaw');
+  assert.equal(R.byName['AV-8!l...Bil'].timeZoneGroup,'2','Bil TZG is independent of UTC');
+  assert.equal(R.byName['AV-SweetiePL'].timeZoneGroup,'2','Sweetie TZG is independent of UTC');
+  assert.equal(R.byName['AV-BigPapi'].timeZoneGroup,'1','BigPapi TZG unchanged');
+  assert.equal(R.byName['AV-23'].timeZoneGroup,'','AV-23 TZG not inferred from UTC');
+  assert.equal(R.byName['AV-TRINITY'].timeZoneGroup,'','TRINITY TZG not inferred from UTC');
+  assert.equal(R.byName['AV-istanbuL'].timeZoneGroup,'','istanbuL TZG not inferred from UTC');
+  assert.equal(R.byName['AV-Zolika.x.TheBoss'].location,'Netherlands','Zolika residence retained; nationality not inferred');
+  assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAv2.length,50,'dated raw AV-2 snapshot unchanged');
+  assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAvengersStars.length,47,'dated raw AVENGERS screenshot unchanged');
+});
 test('current roster and every materialized PB/reward agree with independent canonical source sums',()=>{
   const D=BASE.globals.AVENGERS_DATA,R=BASE.globals.AVENGERS_MEMBER_TIMEZONES;
   assert.equal(R.rows.filter(r=>r.status==='Active').length,48);assert.equal(R.rows.filter(r=>r.status==='AV2').length,57);

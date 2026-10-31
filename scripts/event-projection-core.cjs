@@ -105,7 +105,10 @@ function flashDailyTotals(history,eventById,arenaStart){
   return {pb:days.length?Math.max(...days.map(d=>d.lines)):null,
     arenaAverage:avg(days.filter(d=>d.date>=arenaStart).map(d=>d.lines)),daysRecorded:days.length};
 }
-function calculateRating(history,kinds,windows,eventById,arenaStart){
+// Leader-approved exceptions: these three current AV-2 accounts use complete
+// recorded Piggy and Space career averages, including pre-Arena results.
+const HISTORICAL_AVERAGE_EXCEPTIONS=new Set(['AV-CRISPIN.97','AV-JOKER','AV-Starred']);
+function calculateRating(history,kinds,windows,eventById,arenaStart,{name,status}={}){
   const recent=(selected,zeroForAbsence)=>{
     const scores=selected.map(e=>history.find(r=>r.eventId===e.id)?.score)
       .filter(v=>!zeroForAbsence?v!==undefined&&v!==null:true)
@@ -113,12 +116,25 @@ function calculateRating(history,kinds,windows,eventById,arenaStart){
     return scores.length?avg(scores):null;
   };
   const flash=flashDailyTotals(history,eventById,arenaStart);
+  const alumnus=status==='Inactive';
+  const allTimeAverage=HISTORICAL_AVERAGE_EXCEPTIONS.has(name)&&status==='AV2';
+  // Alumni use historical averages only if no Arena-era result exists in that
+  // category. These three named AV-2 accounts instead use overall averages.
+  const categoryAverage=kind=>allTimeAverage
+    ?kinds[kind].average
+    :alumnus&&kinds[kind].arenaAverage===null
+      ?kinds[kind].average:kinds[kind].arenaAverage;
+  const lastFiveKraken=recent(windows.kraken5,false);
+  // Alumni absent from the five most recent clan Krakens use their recorded
+  // career Kraken average. Latest-Kraken absence still awards zero.
+  const krakenAverage=alumnus&&lastFiveKraken===null
+    ?kinds.kraken.average:lastFiveKraken;
   const ratingMetrics={
-    piggyPB:kinds.piggy.pb, piggyArena:kinds.piggy.arenaAverage,
+    piggyPB:kinds.piggy.pb, piggyArena:categoryAverage('piggy'),
     piggyLast3:recent(windows.piggy3,true),
-    spacePB:kinds.space.pb,spaceArena:kinds.space.arenaAverage,
+    spacePB:kinds.space.pb,spaceArena:categoryAverage('space'),
     spaceLast3:recent(windows.space3,true),
-    krakenPB:kinds.kraken.pb,krakenLast5:recent(windows.kraken5,false),
+    krakenPB:kinds.kraken.pb,krakenLast5:krakenAverage,
     krakenLatest:recent(windows.kraken1,true),
     flashDailyPB:flash.pb,flashDailyArena:flash.arenaAverage
   };
@@ -208,7 +224,7 @@ function project(ledger,{aliases={},members=[],snapshots={},priorToLogging=null,
       ?amount(Object.hasOwn(priorToLogging,m.name)?priorToLogging[m.name]:0,'prior-to-logging Sparks')
       :calculatedGap;
     const loggedAtSnapshot=sources.length?snapshotBreakdown.at(-1).loggedAtSnapshot:earned.sparks;
-    const rating=calculateRating(history,kinds,windows,eventById,arenaStart);
+    const rating=calculateRating(history,kinds,windows,eventById,arenaStart,m);
     return {...m,kinds,categories,history,earned,screenshotGap,loggedAtSnapshot,snapshotBreakdown,totalSparks:earned.sparks+(screenshotGap??0),
       totalSparksComplete:earned.unknownSparks===0&&sources.length>0,
       ...rating,ratingComplete:KINDS.every(k=>kinds[k].knownScores>0&&kinds[k].unknownScores===0)};

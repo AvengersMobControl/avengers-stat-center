@@ -13,7 +13,9 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  # Finish an active verified Pages release even when another main commit arrives.
+  # Newer pushes queue; they must not repeatedly cancel publication mid-browser-check.
+  cancel-in-progress: false
 
 jobs:
   deploy:

@@ -138,11 +138,19 @@ function calculateRating(history,kinds,windows,eventById,arenaStart,{name,status
     krakenLatest:recent(windows.kraken1,true),
     flashDailyPB:flash.pb,flashDailyArena:flash.arenaAverage
   };
-  const ratingPoints=Object.fromEntries(Object.entries(RATING_BENCHMARKS).map(([key,{target,weight}])=>
-    [key,Math.min(1,Math.max(0,(ratingMetrics[key]??0)/target))*weight]));
-  const ratingPB=sum(RATING_PB_KEYS.map(key=>ratingPoints[key]));
-  const ratingTotal=sum(Object.values(ratingPoints));
-  return {ratingMetrics,ratingPoints,ratingPB,ratingAvg:ratingTotal-ratingPB,ratingTotal};
+  const score=metrics=>{
+    const points=Object.fromEntries(Object.entries(RATING_BENCHMARKS).map(([key,{target,weight}])=>
+      [key,Math.min(1,Math.max(0,(metrics[key]??0)/target))*weight]));
+    const pb=sum(RATING_PB_KEYS.map(key=>points[key])),total=sum(Object.values(points));
+    return {ratingMetrics:metrics,ratingPoints:points,ratingPB:pb,ratingAvg:total-pb,ratingTotal:total};
+  };
+  const proposed=score(ratingMetrics);
+  if(!alumnus)return proposed;
+  // A historical-data accommodation must NEVER reduce an alumnus's score.
+  // Compare the complete ten-point score, rather than a single component.
+  const normal=score({...ratingMetrics,piggyArena:kinds.piggy.arenaAverage,
+    spaceArena:kinds.space.arenaAverage,krakenLast5:lastFiveKraken});
+  return proposed.ratingTotal>normal.ratingTotal?proposed:normal;
 }
 function summary(rows,arenaStart){
   const known=rows.filter(r=>r.score!==null),scores=known.map(r=>r.score),positive=known.filter(r=>r.score>0);

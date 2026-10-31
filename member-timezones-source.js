@@ -186,7 +186,7 @@ AV-ItsNospace\tAV2\t\t\t\tCanada - Eastern Time
 AV-ShielDBreaker\tActive\t\t\tFL\tUSA-Eastern Time
 AV-Timmy\tActive\t\t\t\tGermany
 AV-Fred\tActive\t\t\t\tFrance
-AV-Oakcliff\tActive\t\t\t\t
+AV-Oakcliff\tActive\t\t\t\tUSA
 AV-istanbuL\tActive\t3\t\t\tTürkiye
 AV-TRINITY\tActive\t8\t\t\tPhilippines`;
 
@@ -212,7 +212,7 @@ AV-TRINITY\tActive\t8\t\t\tPhilippines`;
     'AV-Brisket':{timeZoneId:'America/Chicago'},
     'AV-8!l...Bil':{timeZoneId:'Asia/Beirut'},
     'AV-SweetiePL':{timeZoneId:'Europe/Warsaw'},
-    // Oakcliff reported Central Time without a country or exact UTC offset.
+    // Oakcliff reported Central Time; leader confirmed USA on October 30. Exact UTC remains unknown.
     'AV-Oakcliff':{timeZoneLabel:'Central Time'}
   };
   rows.forEach(row=>Object.assign(row,approvedLocationDetails[row.name]||{}));

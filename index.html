@@ -1850,7 +1850,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
           timeZone:tz.timeZoneId,timeZoneName:'longOffset'
         }).formatToParts(new Date()).find(p=>p.type==='timeZoneName')?.value||'';
         if(token==='GMT')return 0;
-        const m=token.match(/^GMT([+-])(\\d{2}):(\\d{2})$/);
+        const m=token.match(/^GMT([+-])(\d{2}):(\d{2})$/);
         return m?(m[1]==='-'?-1:1)*(Number(m[2])+Number(m[3])/60):saved;
       }catch{return saved;}
     };

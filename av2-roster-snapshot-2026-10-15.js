@@ -34,7 +34,8 @@
     utc:r.utc==null?null:r.utc,
     utcLabel:R.formatUtc?.(r.utc)||'',
     timeZoneGroup:r.tzg==null?'':String(r.tzg),
-    state:r.state||'',location:r.location||''
+    state:r.state||'',location:r.location||'',
+    city:r.city||'',timeZoneId:r.timeZoneId||'',timeZoneLabel:r.timeZoneLabel||''
   });
   const byName={};
   R.rows.forEach(r=>{byName[r.name]=build(r);});

@@ -171,7 +171,8 @@
     return {
       name:row.name,status:row.status,
       utc:p?.utc??null,tzg:p?.tzg??null,
-      state:p?.state||'',location:p?.location||''
+      state:p?.state||'',location:p?.location||'',
+      city:p?.city||'',timeZoneId:p?.timeZoneId||'',timeZoneLabel:p?.timeZoneLabel||''
     };
   });
   const inactiveRows=[...priorRows.entries()]
@@ -186,7 +187,8 @@
     status:row.status,utc:row.utc,
     utcLabel:R.formatUtc?.(row.utc)||'',
     timeZoneGroup:row.tzg==null?'':String(row.tzg),
-    state:row.state||'',location:row.location||''
+    state:row.state||'',location:row.location||'',
+    city:row.city||'',timeZoneId:row.timeZoneId||'',timeZoneLabel:row.timeZoneLabel||''
   });
   const byName={};
   R.rows.forEach(row=>{byName[row.name]=fromRow(row);});

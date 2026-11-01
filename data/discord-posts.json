@@ -13,6 +13,19 @@
       "approved": true,
       "authorization": "leader-standing-auto-discord-2026-10-26",
       "description": "AVENGERS Piggy Flashes October 26 2026 results"
+    },
+    "space|space|2026-10-30|AVENGERS": {
+      "kind": "space",
+      "eventId": "space|2026-10-30",
+      "clan": "AVENGERS",
+      "file": "AVENGERS_Space_Race_October_30_2026.png",
+      "sha256": "7d8446a25337b8c168aadc611ea500ddfe028935801062e159804081bf4dd3ea",
+      "size": 1302107,
+      "template": "space-poster-v4-20261026-candidate",
+      "body": "@everyone\n🚀 **AVENGERS Space Race — October 30** 🚀\n\n**📊 The Numbers**\n40 racers covered **8,104.4B lightyears** — averaging **202.6B** per racer, up **+9.4%** on our last-4-race pace. Lobby 2 ran away with the week's standout pot: **15.74M Stars** (#12 all-time, #12 this Arena era)!\n\n**🏆 Podium**\n🥇 SweetiePL — 600.0B\n🥈 Lin — 517.6B\n🥉 7-STAR — 421.4B\n\n**✨ Standout Stories**\nLin blew past his own PB by **+110.4%**, rocketing from 246.0B to **517.6B** (now #15 all-time, #15 this Arena era)! SweetiePL topped the race AND set a new PB at 600.0B (+25.0%, #7 all-time, #7 this Arena era). And I.S.O posted the single biggest jump over his own average tonight: **+219.3%**!\n\n**🆕 New Face**\nWelcome ShieldBreaker, debuting at 96.6B (Lobby 3, 8th place)!\n\n**💪 Personal Bests**\n6 new PBs, and 30 of 39 returning racers beat their own average:\n1. Lin +110.4%\n2. SweetiePL +25.0%\n3. JefhKintz05 +13.4%\n4. McNasty +11.8%\n5. KNAVEN +4.5%\n6. Fred +3.1%\n\n**🎖️ Milestones**\n600B+ this race: 1 racer — ties for the **2nd-best** Arena-era count ever in that tier! 500B+: 2 racers, tying for **3rd-best**.\n\n**🙌 Effort Shoutout**\nBiggest grind-for-less-reward: **no**, covering 141.1B at just **111.6 Sparks/B**!\n\nFull results and PBs: https://avengersmobcontrol.github.io/avengers-stat-center/",
+      "approved": true,
+      "authorization": "leader-standing-auto-discord-2026-10-26",
+      "description": "AVENGERS Space Race October 30 2026 results"
     }
   }
 }

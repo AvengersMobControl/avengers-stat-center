@@ -1,0 +1,18 @@
+{
+  "file": "assets/reports/AVENGERS_Space_Race_2026-10-30.png",
+  "eventId": "space|2026-10-30",
+  "clan": "AVENGERS",
+  "projectionVersion": "a3a7686e8f2dbe10330fa7e636e8af4c3eee3ba0377a84dfe20dd553f385f620",
+  "templateVersion": "space-poster-v4-20261026-candidate",
+  "imageSHA256": "7d8446a25337b8c168aadc611ea500ddfe028935801062e159804081bf4dd3ea",
+  "dimensions": [
+    1800,
+    4102
+  ],
+  "players": 40,
+  "pbs": 6,
+  "firstTracked": 1,
+  "readyToPost": false,
+  "discordPostingEnabled": false,
+  "charactersSource": "assets/characters (leader-approved 2026-10-25)"
+}

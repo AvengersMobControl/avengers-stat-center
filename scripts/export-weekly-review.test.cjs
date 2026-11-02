@@ -36,11 +36,21 @@ test('first flashes after Sunday Kraken have ZERO weekly sparks even with stale 
  assert.equal(m.events.find(e=>e.kind==='space').aboveAverage,1);
  assert.equal(m.events.find(e=>e.kind==='space').benchmarkEligible,1);
  assert.equal(m.events.find(e=>e.kind==='piggy').aboveAverage,1);
- assert.equal(m.newMilestones,2,'first new 250B and 350B Space explorer badges for AV-A');
+ assert.equal(m.newMilestones,1,'300B Space badge is the only new milestone for AV-A');
  assert.equal(m.scorePBs,2);assert.equal(m.piggyFinishRankImproved,1);
  assert.equal(m.top5Sparks[0].player,'AV-A');
  assert(m.discordDraft.includes('NO SPARKS'));
  assert(m.discordDraft.includes('DRAFT ONLY'));assert.equal(m.readyToPost,false);
+});
+test('expanded Piggy and Space milestone ladders recognize top 111K / 1,111B targets',()=>{
+ const r=fake();
+ r.projection.events.find(e=>e.id==='space|2026-10-16').rows[0].score=1111;
+ r.projection.events.find(e=>e.id==='piggy|2026-10-18').rows[0].score=111000;
+ const m=buildWeekly(r,{week:'2026-10-12'});
+ const milestones=m.milestones.filter(b=>b.player==='AV-A');
+ assert.deepEqual(milestones.filter(b=>b.category==='piggy').map(b=>b.threshold),[20000,30000,40000,50000,60000,70000,80000,90000,100000,111000]);
+ assert.deepEqual(milestones.filter(b=>b.category==='space').map(b=>b.threshold),[300,400,500,600,700,800,900,1000,1111]);
+ assert.equal(m.newMilestones,19);
 });
 test('weekly packet cannot invent missing events, members, payouts or official averages',()=>{
  const r=fake();r.projection.events=r.projection.events.filter(e=>e.id!=='flash|PF3-2026-10-13');

@@ -9,6 +9,19 @@ function boot(r){
 }
 const APPROVED=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/approved-event-updates.json'))).updates;
 const BASE=create(),BASEW=boot(BASE),member=(r,name)=>r.globals.AVENGERS_DATA.members.find(m=>m.name===name);
+test('approved achievement thresholds are exact across all five categories',()=>{
+ const expected={
+  piggy:[10000,20000,30000,40000,50000,60000,70000,80000,90000,100000,111000],
+  space:[100,200,300,400,500,600,700,800,900,1000,1111],
+  kraken:[1000,2000,3000,4000,5000,6000,7000],
+  sparks:[1000000,5000000,10000000,15000000,20000000,30000000,40000000,50000000],
+  streak:[3,5,10]
+ };
+ const actual=Object.fromEntries(BASEW.AVENGERS_COMMUNITY.definitions.map(d=>[d.id,Array.from(d.tiers)]));
+ assert.deepEqual(actual,expected);
+ const profile=BASEW.AVENGERS_COMMUNITY.achievementProfile('AV-HarryBallsagna');
+ assert.equal(profile.badges.length,40,'11 Piggy + 11 Space + 7 Kraken + 8 Sparks + 3 streak tiers');
+});
 for(const kind of Object.keys(UNITS))for(const clan of ['AVENGERS','AV-2'])test(kind+' / '+clan+' reaches histories, summary, PB/achievements, rewards, leagues and recap after correction/revocation',()=>{
   const name='AV-HarryBallsagna',id=kind+'|fixture',field=kind==='space'?'yearsB':'lines';
   const event={id,kind,date:'2026-10-10',status:'final',unit:UNITS[kind],sources:['fixture:source'],metadata:kind==='flash'?{flash:1}:kind==='kraken'?{monthKey:'fixture',monthLabel:'Fixture'}:{},rows:[{player:name,clan,score:90000,sparks:50,stars:kind==='kraken'?null:500}]};

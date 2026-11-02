@@ -93,11 +93,11 @@
     });
   });
   const definitions=[
-    {id:'piggy',title:'Piggy powerhouse',icon:'🐷',tiers:[10000,25000,50000,75000,100000],unit:'lines',format:v=>num(v)},
-    {id:'space',title:'Space explorer',icon:'🚀',tiers:[100,250,350,500,750],unit:'B lightyears',format:v=>num(v,1)+'B'},
-    {id:'kraken',title:'Kraken conqueror',icon:'🐙',tiers:[1000,2000,3500,5000,6000],unit:'score',format:v=>num(v,1)},
-    {id:'sparks',title:'Spark collector',icon:'✨',tiers:[1000000,5000000,10000000,25000000,50000000],unit:'logged sparks',format:compact},
-    {id:'streak',title:'PB streak',icon:'🔥',tiers:[3,5],unit:'consecutive PBs',format:v=>num(v)}
+    {id:'piggy',title:'Piggy powerhouse',icon:'🐷',tiers:[10000,20000,30000,40000,50000,60000,70000,80000,90000,100000,111000],unit:'lines',format:v=>num(v)},
+    {id:'space',title:'Space explorer',icon:'🚀',tiers:[100,200,300,400,500,600,700,800,900,1000,1111],unit:'B lightyears',format:v=>num(v,1)+'B'},
+    {id:'kraken',title:'Kraken conqueror',icon:'🐙',tiers:[1000,2000,3000,4000,5000,6000,7000],unit:'score',format:v=>num(v,1)},
+    {id:'sparks',title:'Spark collector',icon:'✨',tiers:[1000000,5000000,10000000,15000000,20000000,30000000,40000000,50000000],unit:'logged sparks',format:compact},
+    {id:'streak',title:'PB streak',icon:'🔥',tiers:[3,5,10],unit:'consecutive PBs',format:v=>num(v)}
   ];
   const profiles=new Map();
   function achievementProfile(name){

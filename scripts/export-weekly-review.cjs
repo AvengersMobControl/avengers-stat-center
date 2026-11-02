@@ -13,7 +13,7 @@ function sumKnown(rows,key){return rows.reduce((a,x)=>a+(num(x[key])??0),0)}
 function isoMonday(s){return new Date(s+'T12:00:00Z').getUTCDay()===1}
 function flashNo(e){let n=Number(e.metadata?.flash);if(!Number.isInteger(n))n=Number(String(e.id).match(/PF([1-4])/)?.[1]);return n>=1&&n<=4?n:null}
 const sorted=(xs)=>xs.slice().sort((a,b)=>b.value-a.value||a.player.localeCompare(b.player));
-const TIER={piggy:[10000,25000,50000,75000,100000],space:[100,250,350,500,750]};
+const TIER={piggy:[10000,20000,30000,40000,50000,60000,70000,80000,90000,100000,111000],space:[100,200,300,400,500,600,700,800,900,1000,1111]};
 function buildWeekly(release,{week='2026-10-12',clan='AVENGERS'}={}){
  ok(release?.schemaVersion===1&&release.source==='approved-event-ledger'&&release.projection?.version&&Array.isArray(release.projection.events),'Accepted canonical projection required');
  ok(ISO.test(week)&&isoMonday(week),'Week start must be an ISO Monday');

@@ -1,3 +1,13 @@
+## 2026-11-02 — Approved achievement milestone refresh
+
+- Piggy line-PB badges: **10K, 20K, 30K, 40K, 50K, 60K, 70K, 80K, 90K, 100K, 111K**.
+- Space distance-PB badges (billions of lightyears): **100B, 200B, 300B, 400B, 500B, 600B, 700B, 800B, 900B, 1,000B, 1,111B**.
+- Kraken damage-score PB badges: **1K, 2K, 3K, 4K, 5K, 6K, 7K**.
+- Logged-Sparks lifetime-earned badges: **1M, 5M, 10M, 15M, 20M, 30M, 40M, 50M**.
+- Consecutive PB-improvement streak badges: **3, 5, 10**. Initial recorded result remains a baseline, not a PB improvement.
+- Update the existing Achievements page and weekly Piggy/Space milestone exporter together; retain canonical source values, player identities, PB calculations, historic dates, event-time clan, rewards and player ratings. Achievement counts and next-milestone progress follow these tiers. Source-only change requires CI, GitHub Pages and exact live version verification before claiming published.
+- Future Overview seasonal-leader title: use **Piggy Queen** for a member explicitly recorded as **she/her**, **Piggy King** for confirmed he/him, and a neutral title when pronouns are unknown; do not infer pronouns from names or locations. Pronouns are not currently verified in published roster fields. Do not implement the broader badges-beside-names, new seasonal leaderboard, or calendar-month totals as part of this milestone-only release.
+
 ## 2026-11-02 — AVENGERS Big Pig November 1 posted to Discord (Sunday scheduled job)
 
 Sunday 7 PM CT posting job found `piggy|2026-11-01` (49 AVENGERS main-lobby finishers, `mainLobbyCoverageComplete: true`) with no row yet in Neon `publication_slots`. Checked Big Pig first per the weekend-first rule; Space (`space|2026-10-30`) and the latest Flash Set (`flash|2026-10-26-A`) were already posted, so only Big Pig was waiting. Rendered with `bigpig-poster-v3-20261026-candidate`, inspected the PNG (no clipping/overlap), staged and merged in PR #170, armed the one-time publisher token, and sent via the short-lived sandbox flow. Posted to Discord channel `1470175579058999386`, message `1566622181704863754`; receipt verified in Neon `message_receipts` (`avengers-bot-readback`, `authenticated_discord_png_sha256`). Token burned and sandbox stopped after send. AV-2 untouched (stays on hold). The leader's weekly-recap instructions for this job were reported overwritten on 2026-11-01; no recap spec was found in `AGENTS.md` or this log beyond the 2026-10-26 review-only/leader-approval-gated entries below, so no recap was generated or posted this run — flagged to the leader for restoration.

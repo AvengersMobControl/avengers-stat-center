@@ -122,6 +122,24 @@
     const profile={name,status:m.status,categories,badges:categories.flatMap(c=>c.badges),earned:categories.flatMap(c=>c.badges).filter(b=>b.earned)};
     profiles.set(name,profile);return profile;
   }
+  // Surface each player's highest earned badge beside leaderboard names.
+  // No badge appears until the corresponding approved milestone is earned.
+  function nameBadges(name,categoryIds=['piggy','space']){
+    const profile=achievementProfile(name);
+    if(!profile)return '';
+    const labels={piggy:'Piggy Lines',space:'Space Distance',kraken:'Kraken Damage',sparks:'Sparks Earned',streak:'PB Streak'};
+    const compactTarget=(id,target)=>id==='piggy'||id==='kraken'?(target/1000)+'K':
+      id==='space'?num(target)+'B':id==='sparks'?(target/1000000)+'M':num(target);
+    const parts=categoryIds.flatMap(id=>{
+      const category=profile.categories.find(c=>c.id===id);
+      const earned=category?.badges.filter(b=>b.earned).at(-1);
+      if(!earned)return [];
+      const label=labels[id]+': '+earned.label;
+      return ['<span class="name-achievement-chip name-achievement-'+esc(id)+'" title="'+esc(label)+'" aria-label="'+esc(label)+'">'+
+        achievementArt(earned,'name-achievement-art')+'<span>'+esc(compactTarget(id,earned.target))+'</span></span>'];
+    });
+    return parts.length?'<span class="name-achievements" aria-label="Earned milestone badges">'+parts.join('')+'</span>':'';
+  }
   const weeks=[...new Set(records.map(r=>weekStart(r.date)))].sort().reverse();
   const recapState={week:weeks[0]||weekStart(new Date().toISOString().slice(0,10)),clan:'AVENGERS'};
   const achievementState={name:null};
@@ -234,5 +252,5 @@
     });
   }
   if(typeof document!=='undefined')document.addEventListener('click',e=>{const button=e.target.closest('[data-community-profile]');if(button)openProfile(button.dataset.communityProfile);});
-  window.AVENGERS_COMMUNITY={records,streams,weeks,definitions,achievementProfile,weeklyRecap,profileHtml,recapText,renderAchievements,renderWeekly,configure(options){if(options.openProfile)openProfile=options.openProfile;}};
+  window.AVENGERS_COMMUNITY={records,streams,weeks,definitions,achievementProfile,nameBadges,weeklyRecap,profileHtml,recapText,renderAchievements,renderWeekly,configure(options){if(options.openProfile)openProfile=options.openProfile;}};
 })();

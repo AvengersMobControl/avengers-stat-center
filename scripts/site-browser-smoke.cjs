@@ -32,6 +32,36 @@ async function main(){
         tavito:P.events.filter(e=>e.metadata?.setId==='2026-10-20-A').flatMap(e=>e.rows).filter(r=>/tavito/i.test(r.player||'')).length};
     });
     assert.deepEqual(participation,{timmy:'Active',frank:'Active',placeholders:0,tavito:0});
+    // Leader-requested name badges + monthly/current 35-day league totals.
+    assert.equal(await page.locator('#overviewContent .overview-period-group').count(),2,'Overview displays month and current league');
+    assert.equal(await page.locator('#overviewContent .period-total-card').count(),4,'Piggy and Space totals each appear twice');
+    assert((await page.locator('#overviewContent [data-total-period="season"]').innerText()).includes('35-day season after Kraken'));
+    assert(await page.locator('#overviewContent .piggy-board .name-achievement-chip').count()>0,'latest Piggy names display earned piggy badges');
+    assert(await page.locator('#overviewContent .space-board .name-achievement-chip').count()>0,'latest Space names display earned space badges');
+    const periodExpected=await page.evaluate(()=>{
+      const I=window.AVENGERS_MEMBER_PROFILE_INSIGHTS,P=window.AVENGERS_EVENT_PROJECTION,D=window.AVENGERS_DATA;
+      const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).map(x=>[x.type,x.value]));
+      const asOf=parts.year+'-'+parts.month+'-'+parts.day,season=I.periodFor(asOf);
+      const month=document.querySelector('#overviewMonthSelect').value;
+      const monthly=I.rankMemberTotals(P.people,D.members,month+'-01',asOf,'active');
+      const seasonal=I.rankMemberTotals(P.people,D.members,season.start,asOf,'active');
+      return {monthly,seasonal,season};
+    });
+    for(const [scope,expected] of [['month',periodExpected.monthly],['season',periodExpected.seasonal]]){
+      for(const kind of ['piggy','space']){
+        const shown=await page.locator('#overviewContent [data-total-period="'+scope+'"] .period-total-'+kind+' .mini-table tbody tr [data-player]').evaluateAll(buttons=>buttons.map(b=>b.dataset.player));
+        assert.deepEqual(shown,expected[kind].slice(0,10).map(row=>row.name),scope+' '+kind+' totals use approved event scores');
+      }
+    }
+    const monthOptions=await page.locator('#overviewMonthSelect option').evaluateAll(options=>options.map(o=>o.value));
+    assert(monthOptions.length>1,'monthly totals can switch to historic calendar months');
+    await page.selectOption('#overviewMonthSelect',monthOptions[1]);
+    assert.equal(await page.locator('#overviewMonthSelect').inputValue(),monthOptions[1],'month selection survives the rerender');
+    await page.selectOption('#overviewMonthSelect',monthOptions[0]);
+    await page.selectOption('#globalStatusFilter','current');
+    const joint=await page.locator('#overviewContent [data-total-period="season"] .period-total-piggy .mini-table tbody tr').count();
+    assert(joint>=Math.min(10,periodExpected.seasonal.piggy.length)&&joint>0,'combined roster totals contain at least active scores');
+    await page.selectOption('#globalStatusFilter','active');
     for(const status of ['active','av2']){
       await page.selectOption('#globalStatusFilter',status);
       for(const name of ['overview','rosters','piggy','piggyFlashes','space','kraken','trends','eventTotals','ratings','players','records','achievements','weeklyRecap']){
@@ -225,6 +255,7 @@ async function main(){
       assert(rankOk,'Records ranks restart at one for '+scope);
     }
     await page.selectOption('#globalStatusFilter','all');
+    assert(await page.locator('#recordsContent .record-card .name-achievement-chip').count()>0,'Records names display peak earned milestone badges');
     const record=page.locator('#page-records .record-card').filter({hasText:'Space Records'}).locator('.record-row').filter({hasText:'AV-HarryBallsagna'});
     assert((await record.innerText()).includes('8/30/26'),'Space record date comes from PB event');
     const spaceCard=page.locator('#page-records .record-card').filter({hasText:'Space Records'});

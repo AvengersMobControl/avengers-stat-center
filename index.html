@@ -526,7 +526,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         return Object.fromEntries(Object.entries(saved).filter(([key,width])=>/^[A-Za-z]+$/.test(key)&&Number.isFinite(width)&&width>=72&&width<=420));
       } catch { return {}; }
     })(),
-    playerSearch: ''
+    playerSearch: '',
+    overviewMonth: null
   };
 
   const PAGE_META = {
@@ -768,15 +769,65 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     });
   }
 
-  function rankRows(rows, scoreKey, scoreFmt, metaFn=()=>'', count=5){
+  function nameBadges(name,kinds=['piggy','space']){
+    return window.AVENGERS_COMMUNITY?.nameBadges(name,kinds)||'';
+  }
+  function rankRows(rows, scoreKey, scoreFmt, metaFn=()=>'', count=5,badgeKinds=['piggy','space']){
     const ranks=scoreKey==='ratingTotal'?ratingRankPositions(rows):null;
     const body=rows.slice(0,count).map((r,i)=>`<tr>
       <td class="num mini-rank-pos" data-sort-value="${ranks?ranks[i].rank:i+1}">${ranks?ranks[i].label:i+1}</td>
-      <td><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></td>
+      <td><span class="rank-member-with-badges"><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button>${nameBadges(r.name,badgeKinds)}</span></td>
       <td class="mini-rank-meta">${metaFn(r)}</td>
       <td class="num mini-rank-score">${scoreFmt(r[scoreKey])}</td>
     </tr>`).join('');
     return `<div class="mini-table-wrap"><table class="mini-table"><thead><tr><th class="num">#</th><th>Member</th><th>Details</th><th class="num">Value</th></tr></thead><tbody>${body}</tbody></table></div>`;
+  }
+  function centralTodayISO(){
+    const pieces=new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+    const parts=Object.fromEntries(pieces.map(p=>[p.type,p.value]));
+    return parts.year+'-'+parts.month+'-'+parts.day;
+  }
+  function periodTotalCard(kind,rows){
+    const isPiggy=kind==='piggy',label=isPiggy?'Piggy Lines':'Space Distance',fmt=isPiggy?fmtNum:fmtB;
+    const winner=rows[0]||null;
+    const pronouns=winner?MEMBERS.get(winner.name)?.pronouns:null;
+    const title=isPiggy?window.AVENGERS_MEMBER_PROFILE_INSIGHTS.piggyLeaderTitle(pronouns):'Space Leader';
+    return `<div class="card period-total-card period-total-${kind}">
+      <div class="card-header"><div>
+        <div class="card-title"><img class="period-total-art" src="assets/achievements/${kind}.webp" alt="" aria-hidden="true"> ${label}</div>
+        <div class="card-sub">Ranked by combined recorded event results</div>
+      </div></div>
+      <div class="period-total-champion">${winner?'<span>'+escapeHtml(title)+'</span><strong>'+escapeHtml(winner.name)+'</strong><small>'+fmt(winner.total)+' total • '+eventCountText(winner.events)+'</small>':'<span>No recorded results</span>'}</div>
+      <div class="card-body">${rows.length?rankRows(rows,'total',fmt,r=>eventCountText(r.events),10,[kind]):'<div class="empty">No recorded '+label.toLowerCase()+' results for this period.</div>'}</div>
+    </div>`;
+  }
+  function overviewPeriodTotals(){
+    const insights=window.AVENGERS_MEMBER_PROFILE_INSIGHTS,projection=window.AVENGERS_EVENT_PROJECTION;
+    if(!insights||!projection)return '<section class="overview-periods"><div class="empty">Approved period totals are not available.</div></section>';
+    const today=centralTodayISO(),currentMonth=today.slice(0,7);
+    const available=[...new Set([currentMonth,...(projection.events||[]).filter(e=>e.status!=='revoked'&&['piggy','space'].includes(e.kind)).map(e=>String(e.date||'').slice(0,7)).filter(m=>/^\d{4}-\d{2}$/.test(m)&&m<=currentMonth)])].sort().reverse();
+    if(!available.includes(state.overviewMonth))state.overviewMonth=currentMonth;
+    const month=state.overviewMonth,year=Number(month.slice(0,4)),monthNumber=Number(month.slice(5,7));
+    const monthEnd=new Date(Date.UTC(year,monthNumber,0)).toISOString().slice(0,10);
+    const selectedMonthEnd=month===currentMonth?today:monthEnd;
+    const league=insights.periodFor(today),people=projection.people||[];
+    const monthly=insights.rankMemberTotals(people,D.members,month+'-01',selectedMonthEnd,state.status);
+    const seasonal=insights.rankMemberTotals(people,D.members,league.start,today,state.status);
+    const monthLabel=new Date(month+'-01T12:00:00Z').toLocaleDateString('en-US',{timeZone:'UTC',month:'long',year:'numeric'});
+    const choices=available.map(m=>'<option value="'+escapeHtml(m)+'" '+(m===month?'selected':'')+'>'+escapeHtml(new Date(m+'-01T12:00:00Z').toLocaleDateString('en-US',{timeZone:'UTC',month:'long',year:'numeric'}))+'</option>').join('');
+    return `<section class="overview-periods" aria-label="Member monthly and current season totals">
+      <div class="overview-periods-heading"><div><h2>Member Totals</h2><p>Approved Piggy and Space results • ${fmtDate(today)} as of date • follows the roster selector</p></div></div>
+      <div class="overview-period-group" data-total-period="month">
+        <div class="overview-period-heading"><div><h3>Monthly Totals</h3><p>${escapeHtml(monthLabel)} • calendar month</p></div>
+          <label>Month <select id="overviewMonthSelect" aria-label="Month for member totals">${choices}</select></label></div>
+        <div class="overview-period-grid">${periodTotalCard('piggy',monthly.piggy)}${periodTotalCard('space',monthly.space)}</div>
+      </div>
+      <div class="overview-period-group" data-total-period="season">
+        <div class="overview-period-heading"><div><h3>Current Clan League</h3><p>${fmtDate(league.start)} – ${fmtDate(league.end)} • 35-day season after Kraken</p></div></div>
+        <div class="overview-period-grid">${periodTotalCard('piggy',seasonal.piggy)}${periodTotalCard('space',seasonal.space)}</div>
+      </div>
+      <p class="overview-period-footnote">Individual totals count each approved event once, including historical event-time clan results for the selected current members. Partial source coverage remains partial; these are tracked scores, not official full-clan totals. Queen/King labels require verified member pronouns.</p>
+    </section>`;
   }
 
   function renderOverview(){
@@ -901,7 +952,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
             </div>
             <span class="event-chip">LINES</span>
           </div>
-          <div class="card-body">${rankRows(topPig,'lines',v=>fmtNum(v),r=>`${fmtCompact(r.stars)} stars • ${fmtPct(r.share)}`,6)}</div>
+          <div class="card-body">${rankRows(topPig,'lines',v=>fmtNum(v),r=>`${fmtCompact(r.stars)} stars • ${fmtPct(r.share)}`,6,['piggy'])}</div>
         </div>
 
         <div class="card leaderboard-card space-board">
@@ -912,9 +963,11 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
             </div>
             <span class="event-chip">LIGHTYEARS</span>
           </div>
-          <div class="card-body">${rankRows(topSp,'yearsB',v=>fmtB(v),r=>`${fmtCompact(r.stars)} stars • ${fmtPct(r.share)}`,6)}</div>
+          <div class="card-body">${rankRows(topSp,'yearsB',v=>fmtB(v),r=>`${fmtCompact(r.stars)} stars • ${fmtPct(r.share)}`,6,['space'])}</div>
         </div>
       </div>
+
+      ${overviewPeriodTotals()}
 
       <div class="card rating-command-card" style="margin-top:16px">
         <div class="rating-command-score" role="link" tabindex="0" aria-label="Open Player Ratings">
@@ -930,6 +983,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         </div>
       </div>`;
     bindPlayerButtons($('#overviewContent'));
+    $('#overviewMonthSelect')?.addEventListener('change',e=>{state.overviewMonth=e.target.value;renderOverview();});
   }
 
   function tableShell(title, sub, headers, rowsHtml){
@@ -2254,6 +2308,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
             <div class="record-badge">${i+1}</div>
             <div class="record-player">
               <button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}${marked?'*':''}</button>
+              ${nameBadges(r.name,[g.kind])}
               ${statusBadge(r.status,r.name)}
             </div>
             <div class="record-value"${marked?' title="Oct 2 actual distance; normalized Stat Center PB: '+escapeHtml(fmtB(r.spacePB))+'"':''}>${value}<span class="record-date">${recordDate(r,g.kind)}</span></div>

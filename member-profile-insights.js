@@ -55,5 +55,39 @@
       leagueClans:[...new Set(active.map(r=>r.clan).filter(c=>c==='AVENGERS'||c==='AV-2'))].sort(),
       source:'approved event-time player history, tracked participant rewards only'};
   }
-  return {periodFor,summarize,KINDS};
+  // Current membership controls which leaderboard a player appears in;
+  // recorded scores stay attached to the original event-time clan.
+  function rankMemberTotals(people,members,start,end,scope='active'){
+    if(!validDate(start)||!validDate(end)||start>end)throw Error('A valid ordered date range is required');
+    const statuses=new Map((members||[]).map(m=>[m.name,String(m.status||'').toLowerCase().replace(/[-\s]/g,'')]));
+    const allowed=name=>{
+      const status=statuses.get(name);
+      return !!status&&(scope==='all'||status===scope||(scope==='current'&&(status==='active'||status==='av2')));
+    };
+    const totals={piggy:[],space:[]};
+    for(const person of people||[]){
+      if(!person?.name||!allowed(person.name))continue;
+      const unique=new Map();
+      for(const row of person.history||[]){
+        if(!row||!['piggy','space'].includes(row.kind)||!validDate(row.date)||row.date<start||row.date>end)continue;
+        const score=Number(row.score);
+        if(!Number.isFinite(score)||score<=0)continue;
+        const key=[row.kind,row.eventId||row.kind+'|'+row.date,row.clan||''].join('|');
+        if(!unique.has(key)||score>unique.get(key).score)unique.set(key,{kind:row.kind,score});
+      }
+      for(const kind of ['piggy','space']){
+        const values=[...unique.values()].filter(row=>row.kind===kind);
+        if(values.length)totals[kind].push({name:person.name,total:values.reduce((sum,row)=>sum+row.score,0),events:values.length});
+      }
+    }
+    for(const kind of ['piggy','space'])totals[kind].sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name));
+    return totals;
+  }
+  function piggyLeaderTitle(pronouns){
+    const value=String(pronouns||'').toLowerCase().replace(/\s+/g,'');
+    if(value==='she/her'||value==='she/her/hers')return 'Piggy Queen';
+    if(value==='he/him'||value==='he/him/his')return 'Piggy King';
+    return 'Piggy Leader';
+  }
+  return {periodFor,summarize,rankMemberTotals,piggyLeaderTitle,KINDS};
 });

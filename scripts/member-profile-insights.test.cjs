@@ -53,3 +53,36 @@ test('empty histories do not manufacture performance data',()=>{
  for(const k of s.kinds){assert.equal(k.careerAverage,null);assert.equal(k.consistency,null);assert.equal(k.recentVersusPrior,null);}
  assert.throws(()=>I.periodFor('2026-02-30'),/real YYYY-MM-DD/);
 });
+
+test('calendar-month and 35-day league totals use unique projected member events and roster scopes',()=>{
+ const members=[{name:'AV-A',status:'Active'},{name:'AV-B',status:'AV2'},{name:'AV-C',status:'Inactive'}];
+ const people=[
+  {name:'AV-A',history:[
+   row('piggy|oct18','2026-10-18','piggy',21000,0,0,'AV-2'),
+   row('piggy|nov1','2026-11-01','piggy',24000,0,0),
+   row('piggy|nov1','2026-11-01','piggy',24000,0,0),
+   row('space|oct30','2026-10-30','space',350,0,0),
+   row('space|nov6','2026-11-06','space',430,0,0)
+  ]},
+  {name:'AV-B',history:[row('piggy|nov1','2026-11-01','piggy',27000,0,0,'AV-2'),row('space|nov1','2026-11-01','space',150,0,0,'AV-2')]},
+  {name:'AV-C',history:[row('piggy|nov1','2026-11-01','piggy',50000,0,0)]}
+ ];
+ const before=JSON.stringify(people);
+ const month=I.rankMemberTotals(people,members,'2026-11-01','2026-11-02','current');
+ assert.deepEqual(month.piggy.map(x=>[x.name,x.total,x.events]),[['AV-B',27000,1],['AV-A',24000,1]]);
+ assert.deepEqual(month.space.map(x=>[x.name,x.total]),[['AV-B',150]]);
+ const season=I.rankMemberTotals(people,members,'2026-10-12','2026-11-02','active');
+ assert.deepEqual(season.piggy.map(x=>[x.name,x.total,x.events]),[['AV-A',45000,2]]);
+ assert.deepEqual(season.space.map(x=>[x.name,x.total]),[['AV-A',350]]);
+ const all=I.rankMemberTotals(people,members,'2026-11-01','2026-11-02','all');
+ assert.equal(all.piggy[0].name,'AV-C');
+ assert.equal(I.rankMemberTotals(people,members,'2026-11-01','2026-11-02','av2').piggy.length,1);
+ assert.equal(JSON.stringify(people),before,'source history remains immutable');
+ assert.throws(()=>I.rankMemberTotals(people,members,'2026-11-02','2026-11-01','all'),/ordered date range/);
+});
+test('Piggy Queen/King titles require explicitly recorded pronouns',()=>{
+ assert.equal(I.piggyLeaderTitle('she/her'),'Piggy Queen');
+ assert.equal(I.piggyLeaderTitle(' He / Him '),'Piggy King');
+ assert.equal(I.piggyLeaderTitle('she/her/hers'),'Piggy Queen');
+ for(const unverified of [null,'','they/them','she/they','female','unknown'])assert.equal(I.piggyLeaderTitle(unverified),'Piggy Leader');
+});

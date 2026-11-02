@@ -1,3 +1,8 @@
+## 2026-11-02 — Fix Playwright verification runner compatibility
+
+- The first achievement-tier source release passed required unit and syntax checks but both Pages and projection workflows failed at `npx playwright install --with-deps chromium`: GitHub's `ubuntu-latest` resolved to Ubuntu 26.04 while pinned Playwright 1.56.1 explicitly rejected Chromium on `ubuntu26.04-x64`. This failure is not a badge logic regression.
+- Pin only the two Playwright-dependent workflows (`pages.yml`, `event-projection-test.yml`) to GitHub's supported `ubuntu-24.04` hosted image; leave other workflow runners unchanged. Require fresh full tests and Pages exact-version/browser proof before claiming public release.
+
 ## 2026-11-02 — Approved achievement milestone refresh
 
 - Piggy line-PB badges: **10K, 20K, 30K, 40K, 50K, 60K, 70K, 80K, 90K, 100K, 111K**.

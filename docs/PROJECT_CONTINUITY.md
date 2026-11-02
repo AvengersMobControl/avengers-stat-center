@@ -1,3 +1,7 @@
+## 2026-11-01 Big Pig canonical revision
+
+Final main-lobby result: 49 AVENGERS, 931999 lines, 9300913 Sparks. Rank 41 AV-Megalodon- uses the established roster mapping to AV-Megalodon (4650 lines, 9310 Sparks, 93102 Stars). Rank 12 AV-Nicefellow corrected from 260886 to 260686 Sparks and derived 2606860 Stars. Original two source SHA proofs reused, standing website authorization, event partial for other lobbies, no Discord send.
+
 ## 2026-10-30 — AV-Oakcliff country confirmed
 
 Leader confirmed AV-Oakcliff is in the **USA**, supplementing his approved Central Time disclosure. Website location source now has **USA / Central Time**, while exact UTC and independent TZG remain unknown (not inferred). This is location metadata only, preserving past events, historical clan attribution, membership, records, Stars and Sparks. Test assertion updated. Exact GitHub Pages publication must be verified before claiming LIVE.

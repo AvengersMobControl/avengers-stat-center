@@ -45,7 +45,7 @@ test('records and date are derived from approved 2026 historical Piggy event dat
   ]);
   assert.deepEqual(x.records[0].tiedDates,['2026-09-20','2026-10-18']);
   const nov=x.weekly.find(w=>w.date==='2026-11-01');
-  assert.equal(nov.players,48,'Nov 1 main-lobby import excludes held identity and outsider');
+  assert.equal(nov.players,49,'Nov 1 final main-lobby import includes canonical rank 41 and excludes outsider');
   assert.deepEqual(nov.counts,[39,35,16,9,7,4,2,0]);
   const sep=x.weekly.find(w=>w.date==='2026-09-13');
   assert.deepEqual(sep.counts.slice(-4),[6,2,1,1]);

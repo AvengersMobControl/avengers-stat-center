@@ -26,6 +26,19 @@
       "approved": true,
       "authorization": "leader-standing-auto-discord-2026-10-26",
       "description": "AVENGERS Space Race October 30 2026 results"
+    },
+    "piggy|piggy|2026-11-01|AVENGERS": {
+      "kind": "piggy",
+      "eventId": "piggy|2026-11-01",
+      "clan": "AVENGERS",
+      "file": "AVENGERS_Big_Pig_November_1_2026.png",
+      "sha256": "80d416ea06d517e9ec4880aeb91f0842b048b9b2a53076f820e96d36272f4fba",
+      "size": 1056601,
+      "template": "bigpig-poster-v3-20261026-candidate",
+      "body": "@everyone\n\n🐷 **AVENGERS Big Pig — November 1** 🐷\n\n**📊 Headline**\n49 racers banked 931,999 lines (avg 19,020 lines/racer) — up **+12.7%** on our last-4 average! The AVENGERS lobby pot landed at 93.10M Stars, #4 of 14 lobby pots in the Arena era.\n\n**🏆 Podium**\n🥇 INTEN — 65,184 lines\n🥈 Addicted — 60,666 lines\n🥉 SB — 59,556 lines\n\n**🌟 Standout Stories**\nINTEN's 65,184 lines is now the **#2 Big Pig performance of all time** (2/2,085) and #2 of the Arena era! Addicted and SB both locked in brand-new best-ever finishes too — 2nd and 3rd place.\n\n**💥 Personal Bests**\n10 new line PBs this race! Top gains:\n1. Addicted — 60,666 (+61.8%)\n2. SB — 59,556 (+55.1%)\n3. JefhKintz05 — 25,485 (+34.8%)\n4. Fred — 13,267 (+32.7%)\n5. Lin — 40,648 (+28.0%)\n6. Abu//npjp — 51,445 (+27.6%)\n7. INTEN — 65,184 (+26.5%)\n26 of 45 returning racers beat their own average this race!\n\n**👋 Welcome to the Clan**\nKKD — 43,687 lines, 5th place!\nistanbuL — 20,008 lines, 16th place!\nTRINITY — 10,115 lines, 35th place!\nOakcliff — 4,537 lines, 42nd place!\n\n**🚩 Milestones**\nArena-era bests: most racers EVER to clear 40K+ (7), 50K+ (4) and 60K+ (2) lines in one Big Pig — #1 of 14 on all three!\n\nFull results and PBs: https://avengersmobcontrol.github.io/avengers-stat-center/",
+      "approved": true,
+      "authorization": "leader-standing-auto-discord-2026-10-26",
+      "description": "AVENGERS Big Pig November 1 2026 results"
     }
   }
 }

@@ -1,0 +1,769 @@
+{
+  "schemaVersion": 1,
+  "createdFromUserScreenshots": "2026-11-02",
+  "purpose": "Image-only catalog for a future Mob Control loadout recommendation matrix",
+  "items": [
+    {
+      "id": "cannon:single-shot",
+      "category": "cannons",
+      "name": "Single Shot",
+      "slug": "single-shot",
+      "image": "cannons/single-shot.png",
+      "sourceScreenshot": "IMG_4661.jpeg",
+      "sourceGrid": {
+        "row": 1,
+        "column": 1
+      },
+      "sourceCrop": {
+        "x": 20,
+        "y": 350,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "cannon:rapid-fire",
+      "category": "cannons",
+      "name": "Rapid Fire",
+      "slug": "rapid-fire",
+      "image": "cannons/rapid-fire.png",
+      "sourceScreenshot": "IMG_4661.jpeg",
+      "sourceGrid": {
+        "row": 1,
+        "column": 2
+      },
+      "sourceCrop": {
+        "x": 188,
+        "y": 350,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "cannon:shotgun",
+      "category": "cannons",
+      "name": "Shotgun",
+      "slug": "shotgun",
+      "image": "cannons/shotgun.png",
+      "sourceScreenshot": "IMG_4661.jpeg",
+      "sourceGrid": {
+        "row": 1,
+        "column": 3
+      },
+      "sourceCrop": {
+        "x": 356,
+        "y": 350,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "cannon:lucky-shot",
+      "category": "cannons",
+      "name": "Lucky Shot",
+      "slug": "lucky-shot",
+      "image": "cannons/lucky-shot.png",
+      "sourceScreenshot": "IMG_4661.jpeg",
+      "sourceGrid": {
+        "row": 1,
+        "column": 4
+      },
+      "sourceCrop": {
+        "x": 524,
+        "y": 350,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "cannon:big-bertha",
+      "category": "cannons",
+      "name": "Big Bertha",
+      "slug": "big-bertha",
+      "image": "cannons/big-bertha.png",
+      "sourceScreenshot": "IMG_4661.jpeg",
+      "sourceGrid": {
+        "row": 2,
+        "column": 1
+      },
+      "sourceCrop": {
+        "x": 20,
+        "y": 641,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "cannon:double",
+      "category": "cannons",
+      "name": "Double",
+      "slug": "double",
+      "image": "cannons/double.png",
+      "sourceScreenshot": "IMG_4661.jpeg",
+      "sourceGrid": {
+        "row": 2,
+        "column": 2
+      },
+      "sourceCrop": {
+        "x": 188,
+        "y": 641,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "cannon:sniper",
+      "category": "cannons",
+      "name": "Sniper",
+      "slug": "sniper",
+      "image": "cannons/sniper.png",
+      "sourceScreenshot": "IMG_4661.jpeg",
+      "sourceGrid": {
+        "row": 2,
+        "column": 3
+      },
+      "sourceCrop": {
+        "x": 356,
+        "y": 641,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "cannon:flamethrower",
+      "category": "cannons",
+      "name": "Flamethrower",
+      "slug": "flamethrower",
+      "image": "cannons/flamethrower.png",
+      "sourceScreenshot": "IMG_4661.jpeg",
+      "sourceGrid": {
+        "row": 2,
+        "column": 4
+      },
+      "sourceCrop": {
+        "x": 524,
+        "y": 641,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "cannon:railshot",
+      "category": "cannons",
+      "name": "Railshot",
+      "slug": "railshot",
+      "image": "cannons/railshot.png",
+      "sourceScreenshot": "IMG_4661.jpeg",
+      "sourceGrid": {
+        "row": 3,
+        "column": 1
+      },
+      "sourceCrop": {
+        "x": 20,
+        "y": 932,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "cannon:blinky",
+      "category": "cannons",
+      "name": "Blinky",
+      "slug": "blinky",
+      "image": "cannons/blinky.png",
+      "sourceScreenshot": "IMG_4661.jpeg",
+      "sourceGrid": {
+        "row": 3,
+        "column": 2
+      },
+      "sourceCrop": {
+        "x": 188,
+        "y": 932,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "cannon:triple",
+      "category": "cannons",
+      "name": "Triple",
+      "slug": "triple",
+      "image": "cannons/triple.png",
+      "sourceScreenshot": "IMG_4661.jpeg",
+      "sourceGrid": {
+        "row": 3,
+        "column": 3
+      },
+      "sourceCrop": {
+        "x": 356,
+        "y": 932,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "mob:normie",
+      "category": "mobs",
+      "name": "Normie",
+      "slug": "normie",
+      "image": "mobs/normie.png",
+      "sourceScreenshot": "IMG_4663.jpeg",
+      "sourceGrid": {
+        "row": 1,
+        "column": 1
+      },
+      "sourceCrop": {
+        "x": 20,
+        "y": 315,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "mob:ninja",
+      "category": "mobs",
+      "name": "Ninja",
+      "slug": "ninja",
+      "image": "mobs/ninja.png",
+      "sourceScreenshot": "IMG_4663.jpeg",
+      "sourceGrid": {
+        "row": 1,
+        "column": 2
+      },
+      "sourceCrop": {
+        "x": 188,
+        "y": 315,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "mob:chicken",
+      "category": "mobs",
+      "name": "Chicken",
+      "slug": "chicken",
+      "image": "mobs/chicken.png",
+      "sourceScreenshot": "IMG_4663.jpeg",
+      "sourceGrid": {
+        "row": 1,
+        "column": 3
+      },
+      "sourceCrop": {
+        "x": 356,
+        "y": 315,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "mob:bear",
+      "category": "mobs",
+      "name": "Bear",
+      "slug": "bear",
+      "image": "mobs/bear.png",
+      "sourceScreenshot": "IMG_4663.jpeg",
+      "sourceGrid": {
+        "row": 1,
+        "column": 4
+      },
+      "sourceCrop": {
+        "x": 524,
+        "y": 315,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "mob:alien",
+      "category": "mobs",
+      "name": "Alien",
+      "slug": "alien",
+      "image": "mobs/alien.png",
+      "sourceScreenshot": "IMG_4663.jpeg",
+      "sourceGrid": {
+        "row": 2,
+        "column": 1
+      },
+      "sourceCrop": {
+        "x": 20,
+        "y": 607,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "mob:paper-bag",
+      "category": "mobs",
+      "name": "Paper Bag",
+      "slug": "paper-bag",
+      "image": "mobs/paper-bag.png",
+      "sourceScreenshot": "IMG_4663.jpeg",
+      "sourceGrid": {
+        "row": 2,
+        "column": 2
+      },
+      "sourceCrop": {
+        "x": 188,
+        "y": 607,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "mob:soldier",
+      "category": "mobs",
+      "name": "Soldier",
+      "slug": "soldier",
+      "image": "mobs/soldier.png",
+      "sourceScreenshot": "IMG_4663.jpeg",
+      "sourceGrid": {
+        "row": 2,
+        "column": 3
+      },
+      "sourceCrop": {
+        "x": 356,
+        "y": 607,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "mob:knight",
+      "category": "mobs",
+      "name": "Knight",
+      "slug": "knight",
+      "image": "mobs/knight.png",
+      "sourceScreenshot": "IMG_4663.jpeg",
+      "sourceGrid": {
+        "row": 2,
+        "column": 4
+      },
+      "sourceCrop": {
+        "x": 524,
+        "y": 607,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "mob:bat",
+      "category": "mobs",
+      "name": "Bat",
+      "slug": "bat",
+      "image": "mobs/bat.png",
+      "sourceScreenshot": "IMG_4663.jpeg",
+      "sourceGrid": {
+        "row": 3,
+        "column": 1
+      },
+      "sourceCrop": {
+        "x": 20,
+        "y": 899,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "mob:caveman",
+      "category": "mobs",
+      "name": "Caveman",
+      "slug": "caveman",
+      "image": "mobs/caveman.png",
+      "sourceScreenshot": "IMG_4663.jpeg",
+      "sourceGrid": {
+        "row": 3,
+        "column": 2
+      },
+      "sourceCrop": {
+        "x": 188,
+        "y": 899,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "mob:mini-blob",
+      "category": "mobs",
+      "name": "Mini Blob",
+      "slug": "mini-blob",
+      "image": "mobs/mini-blob.png",
+      "sourceScreenshot": "IMG_4663.jpeg",
+      "sourceGrid": {
+        "row": 3,
+        "column": 3
+      },
+      "sourceCrop": {
+        "x": 356,
+        "y": 899,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "mob:raccoon",
+      "category": "mobs",
+      "name": "Raccoon",
+      "slug": "raccoon",
+      "image": "mobs/raccoon.png",
+      "sourceScreenshot": "IMG_4663.jpeg",
+      "sourceGrid": {
+        "row": 3,
+        "column": 4
+      },
+      "sourceCrop": {
+        "x": 524,
+        "y": 899,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "champion:great-normie",
+      "category": "champions",
+      "name": "Great Normie",
+      "slug": "great-normie",
+      "image": "champions/great-normie.png",
+      "sourceScreenshot": "IMG_4662.jpeg",
+      "sourceGrid": {
+        "row": 1,
+        "column": 1
+      },
+      "sourceCrop": {
+        "x": 20,
+        "y": 296,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "champion:nexus",
+      "category": "champions",
+      "name": "Nexus",
+      "slug": "nexus",
+      "image": "champions/nexus.png",
+      "sourceScreenshot": "IMG_4662.jpeg",
+      "sourceGrid": {
+        "row": 1,
+        "column": 2
+      },
+      "sourceCrop": {
+        "x": 188,
+        "y": 296,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "champion:sirion",
+      "category": "champions",
+      "name": "Sirion",
+      "slug": "sirion",
+      "image": "champions/sirion.png",
+      "sourceScreenshot": "IMG_4662.jpeg",
+      "sourceGrid": {
+        "row": 1,
+        "column": 3
+      },
+      "sourceCrop": {
+        "x": 356,
+        "y": 296,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "champion:explodon",
+      "category": "champions",
+      "name": "Explodon",
+      "slug": "explodon",
+      "image": "champions/explodon.png",
+      "sourceScreenshot": "IMG_4662.jpeg",
+      "sourceGrid": {
+        "row": 1,
+        "column": 4
+      },
+      "sourceCrop": {
+        "x": 524,
+        "y": 296,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "champion:big-blob",
+      "category": "champions",
+      "name": "Big Blob",
+      "slug": "big-blob",
+      "image": "champions/big-blob.png",
+      "sourceScreenshot": "IMG_4662.jpeg",
+      "sourceGrid": {
+        "row": 2,
+        "column": 1
+      },
+      "sourceCrop": {
+        "x": 20,
+        "y": 585,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "champion:captain-kaboom",
+      "category": "champions",
+      "name": "Captain Kaboom",
+      "slug": "captain-kaboom",
+      "image": "champions/captain-kaboom.png",
+      "sourceScreenshot": "IMG_4662.jpeg",
+      "sourceGrid": {
+        "row": 2,
+        "column": 2
+      },
+      "sourceCrop": {
+        "x": 188,
+        "y": 585,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "champion:mobzilla",
+      "category": "champions",
+      "name": "Mobzilla",
+      "slug": "mobzilla",
+      "image": "champions/mobzilla.png",
+      "sourceScreenshot": "IMG_4662.jpeg",
+      "sourceGrid": {
+        "row": 2,
+        "column": 3
+      },
+      "sourceCrop": {
+        "x": 356,
+        "y": 585,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "champion:lootboxer",
+      "category": "champions",
+      "name": "Lootboxer",
+      "slug": "lootboxer",
+      "image": "champions/lootboxer.png",
+      "sourceScreenshot": "IMG_4662.jpeg",
+      "sourceGrid": {
+        "row": 2,
+        "column": 4
+      },
+      "sourceCrop": {
+        "x": 524,
+        "y": 585,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "champion:stack-troopers",
+      "category": "champions",
+      "name": "Stack Troopers",
+      "slug": "stack-troopers",
+      "image": "champions/stack-troopers.png",
+      "sourceScreenshot": "IMG_4662.jpeg",
+      "sourceGrid": {
+        "row": 3,
+        "column": 1
+      },
+      "sourceCrop": {
+        "x": 20,
+        "y": 876,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "champion:giga-chicken",
+      "category": "champions",
+      "name": "Giga Chicken",
+      "slug": "giga-chicken",
+      "image": "champions/giga-chicken.png",
+      "sourceScreenshot": "IMG_4662.jpeg",
+      "sourceGrid": {
+        "row": 3,
+        "column": 2
+      },
+      "sourceCrop": {
+        "x": 188,
+        "y": 876,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "ultimate:rocket-barrage",
+      "category": "ultimates",
+      "name": "Rocket Barrage",
+      "slug": "rocket-barrage",
+      "image": "ultimates/rocket-barrage.png",
+      "sourceScreenshot": "IMG_4664.jpeg",
+      "sourceGrid": {
+        "row": 1,
+        "column": 1
+      },
+      "sourceCrop": {
+        "x": 20,
+        "y": 310,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "ultimate:mass-abduction",
+      "category": "ultimates",
+      "name": "Mass Abduction",
+      "slug": "mass-abduction",
+      "image": "ultimates/mass-abduction.png",
+      "sourceScreenshot": "IMG_4664.jpeg",
+      "sourceGrid": {
+        "row": 1,
+        "column": 2
+      },
+      "sourceCrop": {
+        "x": 188,
+        "y": 310,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "ultimate:rainbow-rage",
+      "category": "ultimates",
+      "name": "Rainbow Rage",
+      "slug": "rainbow-rage",
+      "image": "ultimates/rainbow-rage.png",
+      "sourceScreenshot": "IMG_4664.jpeg",
+      "sourceGrid": {
+        "row": 1,
+        "column": 3
+      },
+      "sourceCrop": {
+        "x": 356,
+        "y": 310,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "ultimate:summon-gate",
+      "category": "ultimates",
+      "name": "Summon Gate",
+      "slug": "summon-gate",
+      "image": "ultimates/summon-gate.png",
+      "sourceScreenshot": "IMG_4664.jpeg",
+      "sourceGrid": {
+        "row": 1,
+        "column": 4
+      },
+      "sourceCrop": {
+        "x": 524,
+        "y": 310,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "ultimate:mobcopter",
+      "category": "ultimates",
+      "name": "MobCopter",
+      "slug": "mobcopter",
+      "image": "ultimates/mobcopter.png",
+      "sourceScreenshot": "IMG_4664.jpeg",
+      "sourceGrid": {
+        "row": 2,
+        "column": 1
+      },
+      "sourceCrop": {
+        "x": 20,
+        "y": 602,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "ultimate:champion-overdrive",
+      "category": "ultimates",
+      "name": "Champion Overdrive",
+      "slug": "champion-overdrive",
+      "image": "ultimates/champion-overdrive.png",
+      "sourceScreenshot": "IMG_4664.jpeg",
+      "sourceGrid": {
+        "row": 2,
+        "column": 2
+      },
+      "sourceCrop": {
+        "x": 188,
+        "y": 602,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "ultimate:rainbow1",
+      "category": "ultimates",
+      "name": "Rainbow1",
+      "slug": "rainbow1",
+      "image": "ultimates/rainbow1.png",
+      "sourceScreenshot": "IMG_4664.jpeg",
+      "sourceGrid": {
+        "row": 2,
+        "column": 3
+      },
+      "sourceCrop": {
+        "x": 356,
+        "y": 602,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "ultimate:pinata-party",
+      "category": "ultimates",
+      "name": "Piñata Party",
+      "slug": "pinata-party",
+      "image": "ultimates/pinata-party.png",
+      "sourceScreenshot": "IMG_4664.jpeg",
+      "sourceGrid": {
+        "row": 2,
+        "column": 4
+      },
+      "sourceCrop": {
+        "x": 524,
+        "y": 602,
+        "width": 160,
+        "height": 190
+      }
+    },
+    {
+      "id": "ultimate:lucky-roll",
+      "category": "ultimates",
+      "name": "Lucky Roll",
+      "slug": "lucky-roll",
+      "image": "ultimates/lucky-roll.png",
+      "sourceScreenshot": "IMG_4664.jpeg",
+      "sourceGrid": {
+        "row": 3,
+        "column": 1
+      },
+      "sourceCrop": {
+        "x": 20,
+        "y": 894,
+        "width": 160,
+        "height": 190
+      }
+    }
+  ],
+  "categoryCounts": {
+    "cannons": 11,
+    "mobs": 12,
+    "champions": 10,
+    "ultimates": 9
+  }
+}

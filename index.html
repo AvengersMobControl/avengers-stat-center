@@ -346,6 +346,7 @@ tbody tr:last-child td{border-bottom:0}
           <select id="globalStatusFilter" title="Roster filter">
             <option value="active" selected>AVENGERS</option>
             <option value="av2">AV-2</option>
+            <option value="current">AV &amp; AV-2</option>
             <option value="all">All tracked</option>
           </select>
           <button class="ghost-btn" id="printBtn">Print View</button>
@@ -668,7 +669,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   }
   function piggyRowsForSelectedEventRoster(date){
     if(state.status==='av2') return piggyRaceRows(date,'AV2');
-    if(state.status==='all') return piggyRaceRows(date,'all');
+    if(state.status==='all'||state.status==='current') return piggyRaceRows(date,'all');
     return piggyRaceRows(date,'AVENGERS');
   }
   function fmtMillions2(v){
@@ -797,7 +798,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
         const rows=(D[kind].events[date]||[]).filter(r=>{
           if(!r || r.name==='Total' || r.name==='#N/A' || !(Number(r[key])||0)) return false;
           if(kind==='piggy'){
-            if(state.status==='all') return true;
+            if(state.status==='all'||state.status==='current') return true;
             return piggyEventClan(r)===(state.status==='av2'?'AV2':'AVENGERS');
           }
           return allowedEventMetricRow(r);
@@ -2199,7 +2200,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   }
 
   function renderRecords(){
-    const rows=[...D.members];
+    const rows=currentMembers();
+    const scope={active:'AVENGERS only',av2:'AV-2 only',current:'AVENGERS and AV-2',all:'all tracked players, including inactive'}[state.status]||'AVENGERS and AV-2';
     const K=window.AVENGERS_KRAKEN_DATA||{months:[],players:[]};
     const krakenBy=new Map((K.players||[]).map(p=>[canonicalPlayerName(p.name),p]));
     const monthShort={march:'Mar',april:'Apr',may:'May',june:'Jun',july:'Jul',aug:'Aug',august:'Aug',sept:'Sep',september:'Sep',oct:'Oct',october:'Oct',nov:'Nov',november:'Nov',dec:'Dec',december:'Dec',jan:'Jan',january:'Jan',feb:'Feb',february:'Feb'};
@@ -2237,8 +2239,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     ];
     $('#recordsContent').innerHTML=`
       <div class="records-note">
-        <strong>Full tracked record lists.</strong>
-        Rankings include Active, AV-2 and Inactive players; each player's current status and record date are shown beside their record.
+        <strong>${escapeHtml(scope)} records.</strong>
+        Only players in the selected roster filter are ranked; each player's current status and record date are shown beside their record.
       </div>
       <div class="records-grid">${groups.map(g=>{
         const ranked=[...rows].filter(r=>Number(r[g.key])>0).sort((a,b)=>(Number(b[g.key])||0)-(Number(a[g.key])||0));

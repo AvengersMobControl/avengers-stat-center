@@ -1,3 +1,14 @@
+## 2026-11-02 — Records roster selector applies to all record boards
+
+- The global roster dropdown now offers four choices: **AVENGERS** (Active), **AV-2**, **AV & AV-2** (both current rosters), and **All tracked** (including Inactive). The Records page applies the selection consistently to the Piggy, Space, and Kraken record boards, including each ranked member, row number, and player count; record scores/dates and stored history do not change.
+- Browser smoke checks compare each visible Records board against the authoritative member statuses and PB values under all four scopes. Historical Piggy overview/event aggregate displays use both clans in combined mode.
+
+## 2026-11-02 — Leader-supplied artwork for all five Achievements categories
+
+- The leader supplied five transparent PNG cutouts for the website: **golden glass piggy bank → Piggy**, **silver ice-blue rocket → Space**, **angry pink Kraken → Kraken**, **polished blue spark → logged Sparks**, and **glossy flame → PB streak**. Preserve the supplied art's appearance and alpha; use optimized 512px WebP copies under `assets/achievements/{piggy,space,kraken,sparks,streak}.webp` (about 120 KB total), not generated substitutes.
+- Show the matching artwork in each Achievements category card, earned milestone tier, next/latest Achievement board indicator, unified player profile, and website Weekly Recap milestones. Keep Unicode emoji in plain-text Discord/export drafts where image tags cannot render. The five existing categories and 40 tier thresholds from the previous approved change remain untouched, as do source events, player records, ratings and rewards.
+- The leader has **not yet resumed** the separate proposed badges-beside-leaderboard-names / monthly-season Overview project; do not conflate this visual swap with those future features. Verify browser asset loading, small-screen display, coherent site build and exact live GitHub Pages publication before calling it deployed.
+
 ## 2026-11-02 — Approved achievement milestone refresh
 
 - Piggy line-PB badges: **10K, 20K, 30K, 40K, 50K, 60K, 70K, 80K, 90K, 100K, 111K**.

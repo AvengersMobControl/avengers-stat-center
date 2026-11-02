@@ -205,6 +205,26 @@ async function main(){
     assert.equal(await page.locator('#page-eventTotals .league-rewards-table thead th').count(),9,
       'all six historical league tables use the same concise layout');
     await page.click('.nav-btn[data-page="records"]');
+    for(const scope of ['active','av2','current','all']){
+      await page.selectOption('#globalStatusFilter',scope);
+      const expected=await page.evaluate(filter=>{
+        const allow=s=>{
+          const n=String(s||'').toLowerCase().replace(/[-\s]/g,'');
+          return filter==='all'||n===filter||(filter==='current'&&(n==='active'||n==='av2'));
+        };
+        return ['piggyPB','spacePB','krakenPB'].map(key=>window.AVENGERS_DATA.members
+          .filter(m=>allow(m.status)&&Number(m[key])>0)
+          .sort((a,b)=>Number(b[key])-Number(a[key]))
+          .map(m=>m.name));
+      },scope);
+      const shown=await page.locator('#recordsContent .record-card').evaluateAll(cards=>cards.map(card=>[...card.querySelectorAll('.record-row [data-player]')].map(b=>b.dataset.player)));
+      assert.deepEqual(shown,expected,'Records ranks and membership follow '+scope+' roster filter');
+      const counts=await page.locator('#recordsContent .record-card .card-sub').allTextContents();
+      for(let i=0;i<expected.length;i++)assert(counts[i].includes(expected[i].length+' tracked players'),'Records counts follow '+scope+' filter');
+      const rankOk=await page.locator('#recordsContent .record-card').evaluateAll(cards=>cards.every(card=>[...card.querySelectorAll('.record-badge')].every((badge,i)=>Number(badge.textContent.trim())===i+1)));
+      assert(rankOk,'Records ranks restart at one for '+scope);
+    }
+    await page.selectOption('#globalStatusFilter','all');
     const record=page.locator('#page-records .record-card').filter({hasText:'Space Records'}).locator('.record-row').filter({hasText:'AV-HarryBallsagna'});
     assert((await record.innerText()).includes('8/30/26'),'Space record date comes from PB event');
     const spaceCard=page.locator('#page-records .record-card').filter({hasText:'Space Records'});
@@ -418,6 +438,11 @@ async function main(){
     // same canonical modal, without inventing duplicate Explorer identities.
     await page.selectOption('#globalStatusFilter','all');
     await page.click('.nav-btn[data-page="achievements"]');
+    await page.waitForFunction(()=>{const images=[...document.querySelectorAll('#achievementsContent .ach-card-art')];return images.length===5&&images.every(img=>img.complete);});
+    const categoryArt=await page.locator('#achievementsContent .ach-card-art').evaluateAll(imgs=>imgs.map(img=>({path:new URL(img.src).pathname,loaded:img.naturalWidth>0})));
+    assert.equal(categoryArt.length,5,'five approved achievement artworks displayed');
+    assert(categoryArt.every(img=>img.loaded),'each achievement art loaded from the published site');
+    for(const file of ['piggy','space','kraken','sparks','streak'])assert(categoryArt.some(img=>img.path.endsWith('/assets/achievements/'+file+'.webp')),'missing '+file+' achievement art');
     await page.selectOption('#achievementMember','AV-Lin');
     assert.equal(await page.locator('#achievementsContent [data-community-profile="AV-Lin"]').count(),2,
       'selected badges and achievement-board name both link to canonical profile');

@@ -22,6 +22,20 @@ test('approved achievement thresholds are exact across all five categories',()=>
  const profile=BASEW.AVENGERS_COMMUNITY.achievementProfile('AV-HarryBallsagna');
  assert.equal(profile.badges.length,40,'11 Piggy + 11 Space + 7 Kraken + 8 Sparks + 3 streak tiers');
 });
+test('approved achievement art maps to all five badges without changing scores',()=>{
+ const images={piggy:'piggy.webp',space:'space.webp',kraken:'kraken.webp',sparks:'sparks.webp',streak:'streak.webp'};
+ const defs=BASEW.AVENGERS_COMMUNITY.definitions;
+ for(const definition of defs){
+  assert.equal(definition.image,'assets/achievements/'+images[definition.id]);
+  const art=path.join(__dirname,'..',definition.image);
+  assert(fs.existsSync(art),'missing site achievement asset '+definition.id);
+  assert(fs.statSync(art).size<100000,'optimized achievement asset should stay lightweight: '+definition.id);
+ }
+ const html=BASEW.AVENGERS_COMMUNITY.profileHtml('AV-HarryBallsagna');
+ for(const name of Object.values(images))assert(html.includes('src="assets/achievements/'+name+'"'),'profile contains '+name);
+ const badge=BASEW.AVENGERS_COMMUNITY.achievementProfile('AV-HarryBallsagna').categories[0].badges[0];
+ assert.equal(badge.image,defs[0].image,'earned badge carries the parent category art');
+});
 for(const kind of Object.keys(UNITS))for(const clan of ['AVENGERS','AV-2'])test(kind+' / '+clan+' reaches histories, summary, PB/achievements, rewards, leagues and recap after correction/revocation',()=>{
   const name='AV-HarryBallsagna',id=kind+'|fixture',field=kind==='space'?'yearsB':'lines';
   const event={id,kind,date:'2026-10-10',status:'final',unit:UNITS[kind],sources:['fixture:source'],metadata:kind==='flash'?{flash:1}:kind==='kraken'?{monthKey:'fixture',monthLabel:'Fixture'}:{},rows:[{player:name,clan,score:90000,sparks:50,stars:kind==='kraken'?null:500}]};

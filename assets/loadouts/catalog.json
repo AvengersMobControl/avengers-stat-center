@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "createdFromUserScreenshots": "2026-11-02",
-  "purpose": "Image-only catalog for a future Mob Control loadout recommendation matrix",
+  "purpose": "Image catalog and leader-selected recommended loadout matrix source",
   "items": [
     {
       "id": "cannon:single-shot",
@@ -19,7 +19,9 @@
         "y": 350,
         "width": 160,
         "height": 190
-      }
+      },
+      "timeSeconds": 7.3,
+      "timeSource": "Leader supplied 2026-11-02 timing list (one-decimal rounding; Big Bertha, Triple, Blinky leader overrides)"
     },
     {
       "id": "cannon:rapid-fire",
@@ -37,7 +39,9 @@
         "y": 350,
         "width": 160,
         "height": 190
-      }
+      },
+      "timeSeconds": 7.9,
+      "timeSource": "Leader supplied 2026-11-02 timing list (one-decimal rounding; Big Bertha, Triple, Blinky leader overrides)"
     },
     {
       "id": "cannon:shotgun",
@@ -55,7 +59,9 @@
         "y": 350,
         "width": 160,
         "height": 190
-      }
+      },
+      "timeSeconds": 8.5,
+      "timeSource": "Leader supplied 2026-11-02 timing list (one-decimal rounding; Big Bertha, Triple, Blinky leader overrides)"
     },
     {
       "id": "cannon:lucky-shot",
@@ -73,7 +79,9 @@
         "y": 350,
         "width": 160,
         "height": 190
-      }
+      },
+      "timeSeconds": 9.6,
+      "timeSource": "Leader supplied 2026-11-02 timing list (one-decimal rounding; Big Bertha, Triple, Blinky leader overrides)"
     },
     {
       "id": "cannon:big-bertha",
@@ -91,7 +99,9 @@
         "y": 641,
         "width": 160,
         "height": 190
-      }
+      },
+      "timeSeconds": 9,
+      "timeSource": "Leader supplied 2026-11-02 timing list (one-decimal rounding; Big Bertha, Triple, Blinky leader overrides)"
     },
     {
       "id": "cannon:double",
@@ -109,7 +119,9 @@
         "y": 641,
         "width": 160,
         "height": 190
-      }
+      },
+      "timeSeconds": 9.5,
+      "timeSource": "Leader supplied 2026-11-02 timing list (one-decimal rounding; Big Bertha, Triple, Blinky leader overrides)"
     },
     {
       "id": "cannon:sniper",
@@ -127,7 +139,9 @@
         "y": 641,
         "width": 160,
         "height": 190
-      }
+      },
+      "timeSeconds": 9.3,
+      "timeSource": "Leader supplied 2026-11-02 timing list (one-decimal rounding; Big Bertha, Triple, Blinky leader overrides)"
     },
     {
       "id": "cannon:flamethrower",
@@ -145,7 +159,9 @@
         "y": 641,
         "width": 160,
         "height": 190
-      }
+      },
+      "timeSeconds": 11.1,
+      "timeSource": "Leader supplied 2026-11-02 timing list (one-decimal rounding; Big Bertha, Triple, Blinky leader overrides)"
     },
     {
       "id": "cannon:railshot",
@@ -163,7 +179,9 @@
         "y": 932,
         "width": 160,
         "height": 190
-      }
+      },
+      "timeSeconds": 9.7,
+      "timeSource": "Leader supplied 2026-11-02 timing list (one-decimal rounding; Big Bertha, Triple, Blinky leader overrides)"
     },
     {
       "id": "cannon:blinky",
@@ -181,7 +199,9 @@
         "y": 932,
         "width": 160,
         "height": 190
-      }
+      },
+      "timeSeconds": 10.5,
+      "timeSource": "Leader supplied 2026-11-02 timing list (one-decimal rounding; Big Bertha, Triple, Blinky leader overrides)"
     },
     {
       "id": "cannon:triple",
@@ -199,7 +219,9 @@
         "y": 932,
         "width": 160,
         "height": 190
-      }
+      },
+      "timeSeconds": 10.5,
+      "timeSource": "Leader supplied 2026-11-02 timing list (one-decimal rounding; Big Bertha, Triple, Blinky leader overrides)"
     },
     {
       "id": "mob:normie",
@@ -765,5 +787,6 @@
     "mobs": 12,
     "champions": 10,
     "ultimates": 9
-  }
+  },
+  "metadataUpdated": "2026-11-02"
 }

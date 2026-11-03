@@ -81,3 +81,22 @@ test('Space rank module is wired into the site and event table differentiates ra
   assert.match(html,/Lobby Finish/);
   assert.match(html,/Verified Clan #/);
 });
+
+test('October 30 final source supplement retains exactly two new original lobby finishes',()=>{
+  const {create}=require('./create-site-release.cjs');
+  const e=create().ledger.events.find(x=>x.id==='space|2026-10-30');
+  assert(e,'October 30 Space event exists');
+  assert.equal(e.rows.length,48,'46 previously accepted rows + two independently reviewed supplement rows');
+  assert.equal(e.status,'partial','additional unobserved lobbies remain unknown');
+  const byName=new Map(e.rows.map(r=>[r.player,r]));
+  for(const [name,rank,score,stars,sparks] of [
+    ['AV-RkHendrix',8,43,148204,14835],
+    ['AV-Oakcliff',9,35,74102,7418]
+  ]){
+    const r=byName.get(name);assert(r,name+' included once');
+    assert.equal(r.clan,'AVENGERS');assert.equal(r.metadata.lobby,'A');
+    assert.equal(r.metadata.rank,rank);assert.equal(r.score,score);
+    assert.equal(r.stars,stars);assert.equal(r.sparks,sparks);
+  }
+  assert(e.sources.includes('reviewed-image-sha256:958105ddbf655d33ecc8d5fbcaa77cd8b7c5daac0332b083c4043f838033f57f'));
+});

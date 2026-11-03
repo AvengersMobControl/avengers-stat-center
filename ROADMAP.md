@@ -1,3 +1,8 @@
+## 2026-11-02 — October 30 Space Race screenshot supplement: two new lobby A places
+
+- A newly posted pair of original October 30 final CLAIM screenshots supplies previously missing **rank 8 AV-RkHendrix (43B distance, 148,204 directly visible Stars, 14,835 Sparks, 2% share)** and **rank 9 AV-Oakcliff (35B distance, 74,102 directly visible Stars, 7,418 Sparks, 1% share)**. The second genuine original JPEG was retrieved through the authorized Discord CDN route and independently SHA-256 hashed; it overlaps correctly with the previously accepted ranks 3–7. The first new JPEG similarly confirmed ranks 1–7 and the cropped rank 8; neither is used to fabricate other results.
+- Applied a guarded canonical `space|2026-10-30` revision **2**, raising documented final CLAIM coverage from **46 to 48 distinct rows** (AVENGERS 42, AV-2 6) and adding **22,253 Sparks** and **222,306 Stars**. Existing 46 rows, original ranks, event-time clans, canonical aliases, frozen Unlogged, and other events are unchanged. The source event remains **partial** for missing lobbies/ranks. Authorization: existing leader standing website-only approval `leader-standing-website-publication-2026-10-22`; this is not authorization to post Discord messages or PNGs. Follow full site-versioned CI/browser and exact live Pages verification.
+
 ## 2026-11-02 — Remove selected green checkmarks from four loadout card images
 
 - Leader requested direct editing of the existing crops, **not** regenerating the art. Corrected **Railshot, Raccoon, Lootboxer, Lucky Roll** by removing the upper-right green check icon and the lime selected-card outline; retained original characters, card labels, and Railshot's embedded 9.7s timing.

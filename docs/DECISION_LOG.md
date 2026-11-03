@@ -1,3 +1,11 @@
+## 2026-11-02 — Cannon timing labels approved and completed in saved asset pack
+
+- Leader approved the Single Shot prototype with **white text and dark outline**, 19px DejaVu Sans Condensed Bold, aligned directly under Max, lowered by half the text's height (at 160×190 crop scale, centered at x=116, y≈45.4). Apply the same to all eleven cannon cards.
+- Finished and verified the 11 composited cannon PNGs: Single Shot 7.3s; Rapid Fire 7.9s; Shotgun 8.5s; Lucky Shot 9.6s; Big Bertha 9.0s; Double 9.5s; Sniper 9.3s; Railshot 9.7s; Flamethrower 11.1s; Triple 10.5s; Blinky 10.5s. The Single Shot composite matches the leader-approved sample pixel-for-pixel.
+- **Artifact location:** ChatGPT Library `/AVENGERS Mob Control/MobControl_Loadout_Asset_Library_Timed.zip`, plus downloadable chat attachment. Contains all 42 original named positions (11 timed cannon cards + 31 unchanged mobs/champions/ultimates), one `unknown` placeholder (43 displayed assets), unchanged original cannon source backups, structured catalog, current cannon review sheet, and existing two-row matrix data. Stale earlier matrix preview deliberately excluded.
+- **GitHub status:** `assets/loadouts/cannons/*.png` are still untimed originals; do **not** claim the GitHub PNG binaries were replaced. Source timing metadata and starter rows are already present. Before building/publishing a website matrix, sync approved timed card PNGs from the new Library ZIP into GitHub and verify visually. No website or Discord changes.
+- Future matrix is grouped **Piggies / Space Race / Other** with possible multiple rows per group; use narrower columns, card images without redundant text captions, and even-purpose text color. Await leader's next matrix design instructions.
+
 ## 2026-11-02 — Initial Mob Control recommended loadouts and cannon times
 
 - Stored the leader's two approved rows in `assets/loadouts/recommended-loadouts.json`: **Piggy with GigaChicken** = Single Shot / Chicken / Giga Chicken / Champion Overdrive; **Space Race** = Big Bertha / Raccoon / Explodon / Summon Gate.

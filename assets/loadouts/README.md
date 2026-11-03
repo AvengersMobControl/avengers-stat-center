@@ -2,8 +2,8 @@
 
 **42 individual card images** extracted from four armory screenshots on November 2, 2026.
 
-This is a 42-card image inventory with a **leader-selected two-row starter matrix** in `recommended-loadouts.json`. Do not infer any additional strategies or endorsements.
-All images are direct crops of the user-provided in-game card artwork; no AI re-creations.
+This is a 42-card image inventory with 20 leader-selected loadouts (7 Big Pig & Flashes, 3 Space Races, 10 Other) in `recommended-loadouts.json`. Do not infer additional strategies.
+The GitHub cards remain original cropped game art. Approved timing labels are present in the separate saved Library ZIP; GitHub PNG binaries have not yet been synced.
 The visible card levels and rarity badges are snapshot details, not a source of current player levels.
 
 Use `catalog.json` for machine-readable IDs, names, image paths, screenshot coordinates, and slot categories.
@@ -79,14 +79,15 @@ Use `catalog.csv` for spreadsheet imports. Categories are `cannons`, `mobs`, `ch
 - The crop rectangle and source screenshot filename for each card are recorded in `catalog.json`.
 - `Rainbow1` is transcribed as displayed on its screenshot; confirm the game label if used as a public-facing recommendation.
 - For loadout recommendations, reference the stable IDs rather than hardcoding filenames.
-- No strategy ratings, recommended pairings, account upgrades, or event-specific rules have been assigned yet.
+- The leader supplied 20 recommended pairings. No other pairings, account upgrades or event-specific rules were inferred.
 
-## Leader-selected matrix starter
+## Leader-selected 20-row matrix
 
-| INTENDED PURPOSE | CANNON | MOB | CHAMPION | ULTIMATE |
-|---|---|---|---|---|
-| Piggy with GigaChicken | Single Shot (7.3 s) | Chicken | Giga Chicken | Champion Overdrive |
-| Space Race | Big Bertha (9.0 s) | Raccoon | Explodon | Summon Gate |
+All 20 user-provided loadouts are recorded in [recommended-loadouts.json](recommended-loadouts.json), grouped as Big Pig & Flashes, Space Races and Other (slow mobs interchangeable).
+
+The review PNG shows compact columns, unchanged card artwork, uniform intended-purpose text and no redundant names below the cards. Cannon seconds are embedded in the leader-approved timing-overlay artwork; GitHub source PNGs are not yet synced.
+
+The unknown `?` card is a placeholder only. The complete rendered review pack is saved in ChatGPT Library as `AVENGERS_Recommended_Loadouts_Matrix_v2_Review_Pack.zip`. This has not been published to the Stat Center.
 
 ## Cannon timings (seconds, one decimal)
 

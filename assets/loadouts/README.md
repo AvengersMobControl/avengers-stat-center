@@ -2,7 +2,7 @@
 
 **42 individual card images** extracted from four armory screenshots on November 2, 2026.
 
-This is an image inventory, **not** an endorsed or ranked loadout matrix.
+This is a 42-card image inventory with a **leader-selected two-row starter matrix** in `recommended-loadouts.json`. Do not infer any additional strategies or endorsements.
 All images are direct crops of the user-provided in-game card artwork; no AI re-creations.
 The visible card levels and rarity badges are snapshot details, not a source of current player levels.
 
@@ -80,3 +80,28 @@ Use `catalog.csv` for spreadsheet imports. Categories are `cannons`, `mobs`, `ch
 - `Rainbow1` is transcribed as displayed on its screenshot; confirm the game label if used as a public-facing recommendation.
 - For loadout recommendations, reference the stable IDs rather than hardcoding filenames.
 - No strategy ratings, recommended pairings, account upgrades, or event-specific rules have been assigned yet.
+
+## Leader-selected matrix starter
+
+| INTENDED PURPOSE | CANNON | MOB | CHAMPION | ULTIMATE |
+|---|---|---|---|---|
+| Piggy with GigaChicken | Single Shot (7.3 s) | Chicken | Giga Chicken | Champion Overdrive |
+| Space Race | Big Bertha (9.0 s) | Raccoon | Explodon | Summon Gate |
+
+## Cannon timings (seconds, one decimal)
+
+| Cannon | Time |
+|---|---:|
+| Single Shot | 7.3 |
+| Rapid Fire | 7.9 |
+| Shotgun | 8.5 |
+| Lucky Shot | 9.6 |
+| Big Bertha | 9.0 |
+| Double | 9.5 |
+| Sniper | 9.3 |
+| Railshot | 9.7 |
+| Flamethrower | 11.1 |
+| Triple | 10.5 |
+| Blinky | 10.5 |
+
+The leader explicitly overrode Big Bertha, Triple, and Blinky; original timing screenshot otherwise rounded to one decimal place. Machine-readable values live in `catalog.json` and the selected rows are in `recommended-loadouts.json`.

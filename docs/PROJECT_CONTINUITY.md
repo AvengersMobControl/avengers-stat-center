@@ -1,3 +1,9 @@
+## 2026-11-02 — Initial Mob Control recommended loadouts and cannon times
+
+- Stored the leader's two approved rows in `assets/loadouts/recommended-loadouts.json`: **Piggy with GigaChicken** = Single Shot / Chicken / Giga Chicken / Champion Overdrive; **Space Race** = Big Bertha / Raccoon / Explodon / Summon Gate.
+- Updated all 11 cannon entries in `assets/loadouts/catalog.json` with one-decimal timing values (seconds): Single Shot 7.3; Rapid Fire 7.9; Shotgun 8.5; Lucky Shot 9.6; Big Bertha 9.0 (override); Double 9.5; Sniper 9.3; Railshot 9.7; Flamethrower 11.1; Triple 10.5 (override); Blinky 10.5 (override).
+- User-supplied recommendations only. Preserve 42 original cropped card images and stable IDs, no added strategies, no website rendering changes, no Discord posts. A local review preview and zipped source are available from chat.
+
 ## 2026-11-02 — Council-confirmed she/her roster metadata (14 existing members)
 
 - The leader provided a she/her roster screenshot listing AV-Derya, AV-GNSK, AV-Jess-PT, AV-KitKat, AV-Megalodon, AV-Mendoria, AV-MotherboardBeans, AV-neez, AV-SiFra, AV-SweetiePL, AV-Rita and AV-KKD, and separately specified AV-Lin and AV-TRINITY. AV-KKD was already present; the verified source therefore contains **14 unique members**.

@@ -586,6 +586,68 @@ async function main(){
     assert(mobileSize.overflow<=2,'no profile-league horizontal overflow on narrow mobile');
     assert.equal(mobileSize.columns,1,'category metrics stack for phone width');
     await page.keyboard.press('Escape');
+    // Universal table controls: real tables from every section (including lazy modal tables)
+    // must expose resizable leaf columns. The roster's pre-existing sort buttons remain native.
+    await page.setViewportSize({width:1440,height:1000});
+    await page.goto(origin,{waitUntil:'networkidle'});
+    for(const section of ['overview','rosters','piggy','piggyFlashes','space','kraken','trends','eventTotals','ratings','records','achievements','weeklyRecap']){
+      await page.click('.nav-btn[data-page="'+section+'"]');
+      await page.waitForFunction(name=>{
+        const tables=[...document.querySelectorAll('#page-'+name+' table')];
+        return tables.every(t=>!t.tHead||!t.tBodies.length||t.dataset.globalSortable==='true');
+      },section);
+      const audit=await page.evaluate(name=>{
+        const tables=[...document.querySelectorAll('#page-'+name+' table')];
+        return {count:tables.length,missing:tables.filter(t=>t.tHead&&t.tBodies.length&&
+          ([...t.tHead.querySelectorAll('th')].some(h=>h.colSpan===1&&!h.classList.contains('roster-group-heading')&&
+          h.getAttribute('scope')!=='colgroup'&&!h.querySelector('[data-roster-resize],[data-rating-resize],.av-table-resize')))).length};
+      },section);
+      assert.equal(audit.missing,0,section+' table columns all provide a resize handle');
+    }
+    // Grouped rating subtotal and underlying individual points are independently sortable.
+    await page.click('.nav-btn[data-page="ratings"]');
+    const piggyGroupHead=page.locator('#ratingsContent th[data-rating-col-head="piggyTotal"]');
+    assert(await piggyGroupHead.count(),'collapsed Piggy total header exists');
+    assert.equal(await piggyGroupHead.locator('.av-table-resize').count(),1,'rating subtotals are resizable');
+    await piggyGroupHead.click();
+    const ratingPoints=await page.locator('#ratingsContent td[data-rating-col="piggyTotal"]').evaluateAll(
+      cells=>cells.map(c=>Number(c.dataset.ratingValue)));
+    assert(ratingPoints.every((v,i)=>i===0||v<=ratingPoints[i-1]+1e-8),'Big Pig points numeric-sort descending');
+    await page.click('#ratingsContent button[data-rating-group="piggy"]');
+    assert.equal(await page.locator('#ratingsContent th[data-rating-col-head="piggyPB"] .av-table-resize').count(),1,
+      'expanded rating metric has an adjustable column');
+    // Native roster resizing + sorting coexist with the shared enhancement.
+    await page.click('.nav-btn[data-page="rosters"]');
+    assert.equal(await page.locator('#rostersContent button[data-roster-sort="totalCombinedSparks"]').count(),1);
+    assert.equal(await page.locator('#rostersContent button[data-roster-resize="name"]').count(),1);
+    // Small Overview tables use numeric (not lexicographic) sorting, and widths survive reloads.
+    await page.click('.nav-btn[data-page="overview"]');
+    const mini=page.locator('#overviewContent .period-total-piggy .mini-table').first();
+    const metricHeading=mini.locator('thead th.global-sortable-th').last();
+    await metricHeading.click();
+    const desc=await mini.locator('tbody tr').evaluateAll(rows=>rows.map(r=>Number(r.cells[3].textContent.replace(/,/g,''))));
+    assert(desc.every((v,i)=>i===0||v<=desc[i-1]),'Overview values sorted numerically descending');
+    await metricHeading.click();
+    const asc=await mini.locator('tbody tr').evaluateAll(rows=>rows.map(r=>Number(r.cells[3].textContent.replace(/,/g,''))));
+    assert(asc.every((v,i)=>i===0||v>=asc[i-1]),'Overview values sorted numerically ascending');
+    const grip=mini.locator('thead th').first().locator('.av-table-resize');
+    const prior=await mini.locator('col').first().evaluate(c=>parseFloat(c.style.width));
+    await grip.focus();await page.keyboard.press('ArrowRight');
+    assert.equal(await mini.locator('col').first().evaluate(c=>parseFloat(c.style.width)),prior+16,
+      'Overview column width changes by keyboard');
+    await page.reload({waitUntil:'networkidle'});
+    assert.equal(await page.locator('#overviewContent .period-total-piggy .mini-table col').first().evaluate(c=>parseFloat(c.style.width)),
+      prior+16,'Overview width retained after reload');
+    await page.click('.nav-btn[data-page="players"]');
+    await page.locator('#page-players [data-player]').first().click();
+    const profileTables=page.locator('#playerModalContent table');
+    if(await profileTables.count())assert(await profileTables.first().locator('.av-table-resize').count()>0,
+      'player profile history tables are adjustable');
+    await page.keyboard.press('Escape');
+    await page.setViewportSize({width:390,height:844});
+    const scrollCheck=await page.locator('#overviewContent .period-total-piggy .mini-table').count();
+    assert(scrollCheck>0,'small-screen table remains present with horizontal scrolling');
+    assert.deepEqual(errors,[],'universal table controls introduce no page exceptions');
     let fixtureCases=0;
     if(!process.env.AVENGERS_SMOKE_URL){
       const {UNITS}=require('./event-projection-core.cjs');

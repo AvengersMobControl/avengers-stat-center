@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "createdDate": "2026-11-02",
+  "columns": [
+    "INTENDED PURPOSE",
+    "CANNON",
+    "MOB",
+    "CHAMPION",
+    "ULTIMATE"
+  ],
+  "rows": [
+    {
+      "id": "piggy-giga-chicken",
+      "intendedPurpose": "Piggy with GigaChicken",
+      "cannon": "cannon:single-shot",
+      "mob": "mob:chicken",
+      "champion": "champion:giga-chicken",
+      "ultimate": "ultimate:champion-overdrive",
+      "source": "Leader supplied 2026-11-02"
+    },
+    {
+      "id": "space-race",
+      "intendedPurpose": "Space Race",
+      "cannon": "cannon:big-bertha",
+      "mob": "mob:raccoon",
+      "champion": "champion:explodon",
+      "ultimate": "ultimate:summon-gate",
+      "source": "Leader supplied 2026-11-02"
+    }
+  ],
+  "notes": "User-specified starter rows; no other loadout recommendations implied. Cannon times are tracked in catalog.json."
+}

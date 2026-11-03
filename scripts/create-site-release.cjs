@@ -135,6 +135,16 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
     piggyAvg:person.kinds.piggy.arenaAverage||0,spaceAvg:person.kinds.space.arenaAverage||0,krakenAvg:person.kinds.kraken.average||0,krakenAvgL3:person.kinds.kraken.last3||0,
     krakenPBMonth:K.players.find(r=>r.name===person.name)?.pbMonth||'',rankingScore:(person.kinds.kraken.pb||0)+(person.kinds.kraken.last3||0),
     ratingPB:person.ratingPB,ratingAvg:person.ratingAvg,ratingTotal:person.ratingTotal,ratingMetrics:person.ratingMetrics,ratingPoints:person.ratingPoints,eventsPlayed:person.earned.events,totalSparks:person.earned.sparks}));
+  // 2026-11-02: Only council-confirmed she/her identities; never infer pronouns
+  // from names, avatars, clans, locations, or historical results.
+  const pronounSource=JSON.parse(fs.readFileSync(path.join(root,'data/member-pronouns-2026-11-02.json'),'utf8'));
+  const sheHer=new Set(pronounSource.sheHer.map(resolve));
+  assert.equal(sheHer.size,pronounSource.sheHer.length,'Verified pronoun source must have unique canonical members');
+  const assigned=new Set();
+  for(const m of D.members){
+    if(sheHer.has(m.name)){m.pronouns='she/her';assigned.add(m.name);}
+  }
+  assert.deepEqual([...assigned].sort(),[...sheHer].sort(),'All verified pronoun members must resolve to an existing canonical profile');
   D.meta.eventProjectionVersion=p.version;D.meta.latestResult=activeEvents.at(-1)?.date||null;D.meta.source='Approved Event Ledger';D.aliasMap=aliases;
   const F={...copy(legacy.AVENGERS_PIGGY_FLASH_DATA),events:activeEvents.filter(e=>e.kind==='flash').map(e=>({...e.metadata,id:e.id.slice(6),date:e.date,complete:e.status==='final',entries:e.rows.map(r=>({...r.metadata,name:r.player,lines:r.score,sparks:r.sparks,stars:r.stars,clan:r.clan||'Unknown'}))}))};
   const breakdowns=Object.fromEntries(p.people.map(person=>{

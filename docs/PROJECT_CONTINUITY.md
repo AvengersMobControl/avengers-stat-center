@@ -1,3 +1,10 @@
+## 2026-11-02 — Council-confirmed she/her roster metadata (14 existing members)
+
+- The leader provided a she/her roster screenshot listing AV-Derya, AV-GNSK, AV-Jess-PT, AV-KitKat, AV-Megalodon, AV-Mendoria, AV-MotherboardBeans, AV-neez, AV-SiFra, AV-SweetiePL, AV-Rita and AV-KKD, and separately specified AV-Lin and AV-TRINITY. AV-KKD was already present; the verified source therefore contains **14 unique members**.
+- `data/member-pronouns-2026-11-02.json` is the bounded, attributed metadata source. `scripts/create-site-release.cjs` maps these identities onto existing canonical `D.members` profiles during every release and fails validation if an identity is missing or duplicates another canonical member. No other pronoun assignments are inferred.
+- The existing Overview monthly/current-season Piggy title logic displays **Piggy Queen** for these confirmed she/her members if they lead, **Piggy King** only for a separately confirmed he/him member, and **Piggy Leader** otherwise. Clan statuses, historical event-time affiliations, scores, PBs, rewards and alias identities are left unchanged.
+- Source/release tests assert exactly 14 canonical matches, unchanged member status, no inferred pronouns, and Queen/King/neutral title behavior. This is website-only metadata; no Discord posts.
+
 ## 2026-11-02 — Resume leader-requested leaderboard badges, monthly/current-season totals, and pronoun-aware Piggy titles
 
 - The leader resumed the three enhancements deferred during the earlier achievement-milestone/artwork releases: **(1)** highest earned Piggy/Space milestone badges beside names in Overview leaderboards and category-specific Records rows, **(2)** Overview member-total leaderboards for Piggy lines and Space distance for a selectable calendar month and the **current 35-day Clan League**, and **(3)** Piggy Queen/King/neutral Leader wording determined only by explicitly recorded member pronouns.

@@ -1,3 +1,9 @@
+## 2026-11-03 — Collapsible Player Ratings category columns
+
+- Leader requested replacing the Player Ratings flat PB pts / 3.5 and Avg + recent pts / 6.5 columns with four roster-style collapsible categories: **Big Pig / 3**, **Space / 3**, **Flash / 1**, **Kraken / 3**. Collapsed groups display the sum of their recorded point credits; expanding shows the underlying three Big Pig, three Space, two Flash and three Kraken metrics, each with actual-performance and benchmark tooltips.
+- Overall score / 10, tied-ranking behavior, profile links, filters and the full 11-benchmark explanation are preserved. The existing per-player Breakdown remains available. Tested default collapse, expanded metric coverage and subtotal reconciliation in browser smoke.
+- Presentation-only. Do not mutate ratings calculations, game results, clan membership, event-time attribution, PBs, Sparks, Stars, Discord, SAC or private Kraken strategy. Source is staged for normal CI and exact public Pages browser verification; source commit is not itself proof of deployment.
+
 ## 2026-11-02 — October 30 Space Race screenshot supplement: two new lobby A places
 
 - A newly posted pair of original October 30 final CLAIM screenshots supplies previously missing **rank 8 AV-RkHendrix (43B distance, 148,204 directly visible Stars, 14,835 Sparks, 2% share)** and **rank 9 AV-Oakcliff (35B distance, 74,102 directly visible Stars, 7,418 Sparks, 1% share)**. The second genuine original JPEG was retrieved through the authorized Discord CDN route and independently SHA-256 hashed; it overlaps correctly with the previously accepted ranks 3–7. The first new JPEG similarly confirmed ranks 1–7 and the cropped rank 8; neither is used to fabricate other results.

@@ -102,6 +102,27 @@ async function main(){
           'overview and Player Rating table share competition ranks');
       }
     }
+    // Ratings retain the same /10 values, while category groups expose source-derived metric points.
+    await page.click('.nav-btn[data-page="ratings"]');
+    for(const g of ['piggy','space','flash','kraken']){
+      const control=page.locator('#ratingsContent button[data-rating-group="'+g+'"]');
+      assert.equal(await control.count(),1,g+' category group visible');
+      assert.equal(await control.getAttribute('aria-expanded'),'false',g+' collapsed by default');
+      assert.equal(await page.locator('#ratingsContent [data-rating-col-head="'+g+'Total"]').count(),1,g+' subtotal heading');
+    }
+    assert.equal(await page.locator('#ratingsContent [data-rating-col-head="piggyPB"]').count(),0,'Big Pig details hidden');
+    for(const g of ['piggy','space','flash','kraken'])await page.click('#ratingsContent button[data-rating-group="'+g+'"]');
+    for(const metric of ['piggyPB','piggyArena','piggyLast3','spacePB','spaceArena','spaceLast3','flashDailyPB','flashDailyArena','krakenPB','krakenLast5','krakenLatest']){
+      assert.equal(await page.locator('#ratingsContent [data-rating-col-head="'+metric+'"]').count(),1,metric+' expanded metric');
+    }
+    const sums=await page.locator('#ratingsContent .rating-grouped-table tbody tr').first().evaluate(tr=>{
+      const get=k=>Number(tr.querySelector('[data-rating-col="'+k+'"]').dataset.ratingValue);
+      return {total:get('total'),category:['piggyTotal','spaceTotal','flashTotal','krakenTotal'].reduce((s,k)=>s+get(k),0)};
+    });
+    assert(Math.abs(sums.total-sums.category)<0.02,'rating category points sum to unchanged /10 total');
+    await page.click('#ratingsContent button[data-rating-group="piggy"]');
+    assert.equal(await page.locator('#ratingsContent [data-rating-col-head="piggyPB"]').count(),0,'Big Pig collapse hides metric details');
+    for(const g of ['space','flash','kraken'])await page.click('#ratingsContent button[data-rating-group="'+g+'"]');
     await page.selectOption('#globalStatusFilter','active');
     // The browser shows actual best finishing PLACES (not line-score rankings).
     // This value is fixed by the qualifying historic race, not the current clan roster.

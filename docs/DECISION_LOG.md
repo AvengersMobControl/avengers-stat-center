@@ -1,3 +1,10 @@
+## 2026-11-02 — Full 20-row leader-selected Mob Control loadout matrix
+
+- The leader replaced the two-row draft with **20 explicit combinations** in three sections: **Big Pig & Flashes (7)**, **Space Races (3)**, and **Other (10)**. The Other section carries the leader's note **slow mobs interchangeable**. No combinations or priorities were inferred.
+- `assets/loadouts/recommended-loadouts.json` is now the structured canonical list, with all four slots (Cannon, Mob, Champion, Ultimate) per row and explicit `unknown` for leader-specified ? cards. Mappings: GC→Giga Chicken, CoD→Champion Overdrive, Kaboom→Captain Kaboom, LB→Lootboxer, LuckyR→Lucky Roll, SG→Summon Gate, BB→Big Bertha.
+- The new high-resolution matrix **review graphic** uses the saved approved, timed cannon-card PNGs plus original Mob/Champion/Ultimate card art; color of all intended-purpose text is consistent, image columns are tight, and there are **no redundant captions** beneath cards. Printable/section preview images, CSV, JSON, and review ZIP saved as chat attachments, not published on the Stat Center.
+- Important: GitHub's existing binary card image paths still contain the **untimed** originals. The source archive for the approved timed PNGs is saved in ChatGPT Library under `MobControl_Loadout_Asset_Library_Timed.zip`. Do not claim GitHub image sync or website publication until those binaries are updated and verified.
+
 ## 2026-11-02 — Cannon timing labels approved and completed in saved asset pack
 
 - Leader approved the Single Shot prototype with **white text and dark outline**, 19px DejaVu Sans Condensed Bold, aligned directly under Max, lowered by half the text's height (at 160×190 crop scale, centered at x=116, y≈45.4). Apply the same to all eleven cannon cards.

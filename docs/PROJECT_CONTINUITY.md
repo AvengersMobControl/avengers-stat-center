@@ -1,3 +1,8 @@
+## 2026-11-02 — Remove selected green checkmarks from four loadout card images
+
+- Leader requested direct editing of the existing crops, **not** regenerating the art. Corrected **Railshot, Raccoon, Lootboxer, Lucky Roll** by removing the upper-right green check icon and the lime selected-card outline; retained original characters, card labels, and Railshot's embedded 9.7s timing.
+- The **current approved asset source** in ChatGPT Library is `/AVENGERS Mob Control/MobControl_Loadout_Asset_Library_Timed.zip` (overwritten with corrected pack; 43 card positions including mystery `?`, 20-row matrix data, corrected preview sheets and source-originals backups). A separate review ZIP is `/AVENGERS Mob Control/AVENGERS_Recommended_Loadouts_Matrix_v3_Review_Pack.zip`; it includes the corrected whole matrix and three group previews.
+- Local audit confirmed the four targeted images changed while all other individual card PNGs remained byte-identical. ZIP integrity checked. **GitHub `assets/loadouts/` card PNGs are still original/unmodified (including selection markers): no binary sync or website release was performed.** Sync approved corrected PNGs from the current Library pack before building a website version.
 ## 2026-11-02 — Full 20-row leader-selected Mob Control loadout matrix
 
 - The leader replaced the two-row draft with **20 explicit combinations** in three sections: **Big Pig & Flashes (7)**, **Space Races (3)**, and **Other (10)**. The Other section carries the leader's note **slow mobs interchangeable**. No combinations or priorities were inferred.

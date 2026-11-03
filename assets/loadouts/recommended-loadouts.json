@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "createdDate": "2026-11-02",
   "columns": [
     "INTENDED PURPOSE",
@@ -10,23 +10,221 @@
   ],
   "rows": [
     {
-      "id": "piggy-giga-chicken",
-      "intendedPurpose": "Piggy with GigaChicken",
+      "id": "1-1",
+      "category": "Big Pig & Flashes",
+      "intendedPurpose": "Gigachicken - Optimal",
       "cannon": "cannon:single-shot",
       "mob": "mob:chicken",
       "champion": "champion:giga-chicken",
       "ultimate": "ultimate:champion-overdrive",
-      "source": "Leader supplied 2026-11-02"
+      "source": "Leader supplied"
     },
     {
-      "id": "space-race",
-      "intendedPurpose": "Space Race",
+      "id": "1-2",
+      "category": "Big Pig & Flashes",
+      "intendedPurpose": "Gigachicken - 2nd best",
+      "cannon": "cannon:rapid-fire",
+      "mob": "mob:chicken",
+      "champion": "champion:giga-chicken",
+      "ultimate": "ultimate:champion-overdrive",
+      "source": "Leader supplied"
+    },
+    {
+      "id": "1-3",
+      "category": "Big Pig & Flashes",
+      "intendedPurpose": "Gigachicken - 3rd best",
+      "cannon": "cannon:shotgun",
+      "mob": "mob:chicken",
+      "champion": "champion:giga-chicken",
+      "ultimate": "ultimate:champion-overdrive",
+      "source": "Leader supplied"
+    },
+    {
+      "id": "1-4",
+      "category": "Big Pig & Flashes",
+      "intendedPurpose": "Gigachicken - 4th best",
+      "cannon": "cannon:railshot",
+      "mob": "mob:chicken",
+      "champion": "champion:giga-chicken",
+      "ultimate": "ultimate:champion-overdrive",
+      "source": "Leader supplied"
+    },
+    {
+      "id": "1-5",
+      "category": "Big Pig & Flashes",
+      "intendedPurpose": "Gigachicken w/ fire rate boost - Optimal",
+      "cannon": "cannon:big-bertha",
+      "mob": "mob:chicken",
+      "champion": "champion:giga-chicken",
+      "ultimate": "ultimate:champion-overdrive",
+      "source": "Leader supplied"
+    },
+    {
+      "id": "1-6",
+      "category": "Big Pig & Flashes",
+      "intendedPurpose": "w/o Gigachicken - Optimal",
+      "cannon": "cannon:single-shot",
+      "mob": "mob:raccoon",
+      "champion": "champion:captain-kaboom",
+      "ultimate": "ultimate:champion-overdrive",
+      "source": "Leader supplied"
+    },
+    {
+      "id": "1-7",
+      "category": "Big Pig & Flashes",
+      "intendedPurpose": "w/o Gigachicken - 2nd best",
+      "cannon": "cannon:rapid-fire",
+      "mob": "mob:raccoon",
+      "champion": "champion:captain-kaboom",
+      "ultimate": "ultimate:champion-overdrive",
+      "source": "Leader supplied"
+    },
+    {
+      "id": "2-1",
+      "category": "Space Races",
+      "intendedPurpose": "Optimal",
       "cannon": "cannon:big-bertha",
       "mob": "mob:raccoon",
       "champion": "champion:explodon",
       "ultimate": "ultimate:summon-gate",
-      "source": "Leader supplied 2026-11-02"
+      "source": "Leader supplied"
+    },
+    {
+      "id": "2-2",
+      "category": "Space Races",
+      "intendedPurpose": "2nd Best",
+      "cannon": "cannon:big-bertha",
+      "mob": "mob:raccoon",
+      "champion": "champion:big-blob",
+      "ultimate": "ultimate:summon-gate",
+      "source": "Leader supplied"
+    },
+    {
+      "id": "2-3",
+      "category": "Space Races",
+      "intendedPurpose": "3rd Best",
+      "cannon": "cannon:big-bertha",
+      "mob": "mob:raccoon",
+      "champion": "champion:captain-kaboom",
+      "ultimate": "ultimate:summon-gate",
+      "source": "Leader supplied"
+    },
+    {
+      "id": "3-1",
+      "category": "Other",
+      "intendedPurpose": "Competitives - During Piggies - Consistent",
+      "cannon": "cannon:rapid-fire",
+      "mob": "mob:soldier",
+      "champion": "champion:giga-chicken",
+      "ultimate": "ultimate:champion-overdrive",
+      "source": "Leader supplied"
+    },
+    {
+      "id": "3-2",
+      "category": "Other",
+      "intendedPurpose": "Competitives - During Piggies - Riskier/Faster",
+      "cannon": "cannon:single-shot",
+      "mob": "mob:mini-blob",
+      "champion": "champion:giga-chicken",
+      "ultimate": "ultimate:champion-overdrive",
+      "source": "Leader supplied"
+    },
+    {
+      "id": "3-3",
+      "category": "Other",
+      "intendedPurpose": "Pinata w/ Gigachicken (1-2 boosts)",
+      "cannon": "cannon:big-bertha",
+      "mob": "mob:chicken",
+      "champion": "champion:giga-chicken",
+      "ultimate": "unknown",
+      "source": "Leader supplied"
+    },
+    {
+      "id": "3-4",
+      "category": "Other",
+      "intendedPurpose": "Pinata w/ Gigachicken (no boosts)",
+      "cannon": "cannon:lucky-shot",
+      "mob": "mob:chicken",
+      "champion": "champion:giga-chicken",
+      "ultimate": "ultimate:lucky-roll",
+      "source": "Leader supplied"
+    },
+    {
+      "id": "3-5",
+      "category": "Other",
+      "intendedPurpose": "Pinata w/o GC (1-2 boosts)",
+      "cannon": "cannon:rapid-fire",
+      "mob": "mob:raccoon",
+      "champion": "champion:sirion",
+      "ultimate": "unknown",
+      "source": "Leader supplied"
+    },
+    {
+      "id": "3-6",
+      "category": "Other",
+      "intendedPurpose": "Speed Running Normal Battles",
+      "cannon": "cannon:railshot",
+      "mob": "mob:raccoon",
+      "champion": "champion:captain-kaboom",
+      "ultimate": "ultimate:mobcopter",
+      "source": "Leader supplied"
+    },
+    {
+      "id": "3-7",
+      "category": "Other",
+      "intendedPurpose": "Speed Running Normal Battles + Stars",
+      "cannon": "cannon:railshot",
+      "mob": "mob:raccoon",
+      "champion": "champion:lootboxer",
+      "ultimate": "ultimate:lucky-roll",
+      "source": "Leader supplied"
+    },
+    {
+      "id": "3-8",
+      "category": "Other",
+      "intendedPurpose": "Star Farming (comp and pongs) Risk/Reward",
+      "cannon": "cannon:single-shot",
+      "mob": "mob:knight",
+      "champion": "champion:lootboxer",
+      "ultimate": "ultimate:lucky-roll",
+      "source": "Leader supplied"
+    },
+    {
+      "id": "3-9",
+      "category": "Other",
+      "intendedPurpose": "Star Farming (comp and pongs) Consistent",
+      "cannon": "cannon:rapid-fire",
+      "mob": "mob:knight",
+      "champion": "champion:lootboxer",
+      "ultimate": "ultimate:lucky-roll",
+      "source": "Leader supplied"
+    },
+    {
+      "id": "3-10",
+      "category": "Other",
+      "intendedPurpose": "Kraken (shared week of)",
+      "cannon": "unknown",
+      "mob": "unknown",
+      "champion": "unknown",
+      "ultimate": "unknown",
+      "source": "Leader supplied"
     }
   ],
-  "notes": "User-specified starter rows; no other loadout recommendations implied. Cannon times are tracked in catalog.json."
+  "notes": "Approved timing is embedded in the Library card PNGs; GitHub binary assets are not yet synced. Unknown means a requested ? placeholder.",
+  "categories": [
+    {
+      "name": "Big Pig & Flashes",
+      "count": 7
+    },
+    {
+      "name": "Space Races",
+      "count": 3
+    },
+    {
+      "name": "Other",
+      "count": 10,
+      "note": "Slow mobs interchangeable"
+    }
+  ],
+  "totalLoadouts": 20
 }

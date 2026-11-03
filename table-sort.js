@@ -14,6 +14,7 @@
   table.av-universal-table thead th.global-sortable-th[aria-sort="ascending"]::after{content:'▲';opacity:1;color:var(--cyan,#43d7ff)}
   table.av-universal-table thead th.global-sortable-th[aria-sort="descending"]::after{content:'▼';opacity:1;color:var(--cyan,#43d7ff)}
   table.av-universal-table thead th .av-table-resize{position:absolute;right:0;top:0;bottom:0;width:17px;border:0;border-left:1px solid rgba(71,107,143,.6);background:rgba(44,80,110,.16);color:#a7cae1;cursor:col-resize;touch-action:none;user-select:none;z-index:5;padding:0;font:700 13px/1 sans-serif}
+  table.av-universal-table thead th .av-table-resize::before{content:'⋮';font-weight:700}
   table.av-universal-table thead th .av-table-resize:hover,table.av-universal-table thead th .av-table-resize:focus-visible{background:#346a8c;color:#fff;outline:2px solid #79daff;outline-offset:-2px}
   table.av-universal-table td{overflow:hidden;text-overflow:ellipsis}
   @media print{table.av-universal-table thead th .av-table-resize{display:none}table.av-universal-table thead th.global-sortable-th::after{display:none}}
@@ -79,7 +80,7 @@
     const grip=document.createElement('button');
     grip.type='button';grip.className='av-table-resize';grip.dataset.avResize=String(index);
     grip.setAttribute('aria-label','Resize '+(label(th)||'column')+' column');
-    grip.setAttribute('title','Drag to resize • arrow keys adjust width');grip.textContent='⋮';
+    grip.setAttribute('title','Drag to resize • arrow keys adjust width');grip.textContent='';
     th.classList.add('av-resizable-th');th.appendChild(grip);
     const apply=n=>{widthSet(table,cols,index,n);saved[id]=parseFloat(cols[index].style.width);save(key,saved);};
     grip.addEventListener('keydown',e=>{

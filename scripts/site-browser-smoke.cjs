@@ -604,6 +604,7 @@ async function main(){
       },section);
       assert.equal(audit.missing,0,section+' table columns all provide a resize handle');
     }
+    assert.equal(await page.locator('#spaceContent thead th').allTextContents().then(values=>values.includes('List #')),true,'resize handles preserve exact header labels');
     // Grouped rating subtotal and underlying individual points are independently sortable.
     await page.click('.nav-btn[data-page="ratings"]');
     const piggyGroupHead=page.locator('#ratingsContent th[data-rating-col-head="piggyTotal"]');

@@ -1,3 +1,7 @@
+## 2026-11-03 — Universal table CI correction: header text must remain verbatim
+
+- Initial browser gate failed at the existing source-rank header contract (`List #`) because the new resize button's literal glyph entered `th.innerText`. The grip remains accessible via its aria-label and pointer/keyboard controls, but its visual `⋮` is now CSS-generated, leaving header text unchanged for localization, source provenance, exports and existing tests. Release pending rerun and exact Pages verification.
+
 ## 2026-11-03 — Universal table sorting and adjustable widths
 
 - Leader requires **every displayed HTML table** throughout the Stat Center to have adjustable column widths and sortable metric headers. Replaced the incomplete global `table-sort.js` decorator with shared dynamic-table support for all tabs, archive/history tables, popup histories and two-tier roster/ratings groups (underlying leaf headers only). Existing roster and Flash archive custom sorting remain authoritative for their own buttons.

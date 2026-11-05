@@ -1,3 +1,8 @@
+## 2026-11-05 — Private Kraken analytical workbook maintenance
+
+- At the leader's request, incorporated the newly supplied October battle log into the existing private analytical workbook and added reconciliation against the exact published website event scores. Recorded battle inputs and published website scores are preserved independently; discrepancies and partial logs are exposed for review, not forced to match.
+- The workbook and all strategy-sensitive inputs, champion assignments, ticket details, derived coefficients and outputs remain outside this public repository and Pages assets, consistent with issue #10. This is private spreadsheet maintenance only; it does not publish a strategy calculator or modify the canonical website event ledger, membership, ratings, rewards, Discord dispatch or hosting configuration.
+
 ## 2026-11-03 — Universal table sorting and adjustable widths
 
 - Leader requires **every displayed HTML table** throughout the Stat Center to have adjustable column widths and sortable metric headers. Replaced the incomplete global `table-sort.js` decorator with shared dynamic-table support for all tabs, archive/history tables, popup histories and two-tier roster/ratings groups (underlying leaf headers only). Existing roster and Flash archive custom sorting remain authoritative for their own buttons.

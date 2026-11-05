@@ -1,0 +1,21 @@
+name: Verify approved original character pixels
+on:
+  pull_request:
+    paths:
+      - 'assets/characters/**'
+      - 'scripts/verify-approved-character-rgba.py'
+      - '.github/workflows/approved-character-pixels.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  character-identity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check Pillow==11.3.0
+      - run: python scripts/verify-approved-character-rgba.py

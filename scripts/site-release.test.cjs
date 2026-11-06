@@ -140,16 +140,16 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
   const R=BASE.globals.AVENGERS_MEMBER_TIMEZONES,D=BASE.globals.AVENGERS_DATA;
   const people=BASE.projection.people;
   const active=R.rows.filter(r=>r.status==='Active'),av2=R.rows.filter(r=>r.status==='AV2');
-  assert.equal(active.length,48);assert.equal(av2.length,57);
-  for(const name of ['AV-Lin','AV-JefhKintz05','AV-TRINITY','AV-istanbuL','AV-KKD']){
+  assert.equal(active.length,46);assert.equal(av2.length,59);
+  for(const name of ['AV-Lin','AV-JefhKintz05','AV-TRINITY','AV-istanbuL','AV-KKD','AV-KitKat','AV-Hoops']){
     assert.equal(R.byName[name]?.status,'Active',name+' roster');
     assert.equal(D.members.filter(m=>m.name===name&&m.status==='Active').length,1,name+' unique profile');
     assert.equal(people.find(p=>p.name===name)?.status,'Active',name+' projection');
     assert(!av2.some(r=>r.name===name),name+' no current AV-2 listing');
   }
-  for(const name of ['AV#Rafa#Tun','AV-JAMO','AV-Royal','AV-SiFra','AV-KitKat','AV-Hoops'])assert.equal(R.byName[name]?.status,'AV2',name+' transferred or retained in AV-2');
+  for(const name of ['AV#Rafa#Tun','AV-JAMO','AV-Royal','AV-SiFra','AV-Pablin','AV-MotherboardBeans','AV-no','AV-Neez'])assert.equal(R.byName[name]?.status,'AV2',name+' transferred or retained in AV-2');
   assert.equal(R.byName['AV-WolfLegend']?.status||'Inactive','Inactive','WolfLegend inactive');
-  for(const name of ['AV-Nicefellow','AV-Neez'])assert.equal(R.byName[name]?.status,'Active',name+' status unchanged');
+  assert.equal(R.byName['AV-Nicefellow']?.status,'Active','Nicefellow remains Active');
   assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV-JeffKintz05'),'AV-JefhKintz05');
   assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV-2Lin'),'AV-Lin');
   assert.equal(R.byName['AV-JeffKintz05'].canonicalName,'AV-JefhKintz05');
@@ -230,7 +230,7 @@ test('Council-approved October 30 location updates retain verified identities, i
 });
 test('current roster and every materialized PB/reward agree with independent canonical source sums',()=>{
   const D=BASE.globals.AVENGERS_DATA,R=BASE.globals.AVENGERS_MEMBER_TIMEZONES;
-  assert.equal(R.rows.filter(r=>r.status==='Active').length,48);assert.equal(R.rows.filter(r=>r.status==='AV2').length,57);
+  assert.equal(R.rows.filter(r=>r.status==='Active').length,46);assert.equal(R.rows.filter(r=>r.status==='AV2').length,59);
   const events=BASE.projection.events.filter(e=>e.status!=='revoked');
   for(const m of D.members){
     // Approved overlays may retain their original source alias; compare canonically.
@@ -469,4 +469,27 @@ test('leader-verified she/her pronouns attach only to the 14 canonical member pr
   assert.equal(piggyLeaderTitle('he/him'),'Piggy King');
   assert.equal(piggyLeaderTitle(undefined),'Piggy Leader');
   assert(browserSource(BASE).includes('"pronouns":"she/her"'),'published release embeds the verified member metadata');
+});
+
+test('Nov 6 Zolika first-place supplement is source-linked once and current transfers preserve event clan',()=>{
+  const e=BASE.ledger.events.find(x=>x.id==='space|2026-11-06');
+  assert(e&&e.status==='partial');
+  assert.equal(e.rows.length,49);
+  const z=e.rows.filter(r=>r.player==='AV-Zolika.x.TheBoss');
+  assert.equal(z.length,1);
+  assert.equal(z[0].clan,'AVENGERS');
+  assert.equal(z[0].score,550);
+  assert.equal(z[0].sparks,669250);
+  assert.equal(z[0].stars,6692500);
+  assert.equal(z[0].metadata.rank,1);
+  assert.equal(z[0].metadata.share,0.25);
+  assert.equal(z[0].metadata.lobby,'A');
+  assert(e.sources.includes('reviewed-image-sha256:83f2937f682cc76661f491d2893079e362cb7e39be441795e5a466fdd5222e9b'));
+  const r=BASE.globals.AVENGERS_MEMBER_TIMEZONES.byName;
+  for(const n of ['AV-Pablin','AV-MotherboardBeans','AV-no','AV-Neez'])assert.equal(r[n]?.status,'AV2',n+' current AV-2');
+  for(const n of ['AV-KitKat','AV-Hoops']){
+    assert.equal(r[n]?.status,'Active',n+' current AVENGERS');
+    assert.equal(e.rows.find(x=>x.player===n)?.clan,'AVENGERS',n+' original event clan');
+  }
+  assert.equal(BASE.projection.people.find(p=>p.name==='AV-Zolika.x.TheBoss').kinds.space.pb,1030.7,'Existing Space PB remains higher');
 });

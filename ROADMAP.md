@@ -1,3 +1,10 @@
+## 2026-11-06 — Website-only Space and roster correction
+
+- [x] Recover Zolika first-place final source from already-accepted original PNG proof and stage/apply guarded revision adding one Nov 6 Space row.
+- [x] Update current roster transfers for no, Neez, Pablin, MotherboardBeans (AV-2) and KitKat, Hoops (AVENGERS), retaining historical clan records.
+- [x] Pass source-independent roster audit and 30 site release regression tests.
+- [ ] Verify required GitHub CI, immutable Pages deployment, exact public commit/export and Vercel production.
+
 ## 2026-11-03 — Universal table sorting and adjustable widths
 
 - Leader requires **every displayed HTML table** throughout the Stat Center to have adjustable column widths and sortable metric headers. Replaced the incomplete global `table-sort.js` decorator with shared dynamic-table support for all tabs, archive/history tables, popup histories and two-tier roster/ratings groups (underlying leaf headers only). Existing roster and Flash archive custom sorting remain authoritative for their own buttons.

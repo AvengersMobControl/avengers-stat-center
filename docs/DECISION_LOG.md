@@ -1,3 +1,9 @@
+## 2026-11-06 — Current roster transfers and Zolika first-place Space recovery
+
+Leader directed six current-membership corrections: Pablin, MotherboardBeans, no and Neez to AV-2, and KitKat and Hoops to AVENGERS (46 Active / 59 AV-2). These do not retroactively edit the clan shown in past event screenshots or alter canonical reward records.
+
+Leader confirmed the omitted first-place source spelling AV/S9/Zoliika is AV-Zolika.x.TheBoss. Verified original final image SHA-256 `83f2937f682cc76661f491d2893079e362cb7e39be441795e5a466fdd5222e9b`; lobby A rank 1, 550B, share 25%, 669,250 Sparks, 6,692,500 derived Stars from rounded display. Append one source-guarded row to Nov 6 partial Space Race under standing website-only authorization. No duplicate source, old-row edits, PB replacement or Discord send.
+
 ## 2026-11-03 — Universal table CI correction: header text must remain verbatim
 
 - Initial browser gate failed at the existing source-rank header contract (`List #`) because the new resize button's literal glyph entered `th.innerText`. The grip remains accessible via its aria-label and pointer/keyboard controls, but its visual `⋮` is now CSS-generated, leaving header text unchanged for localization, source provenance, exports and existing tests. Release pending rerun and exact Pages verification.

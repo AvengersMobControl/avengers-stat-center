@@ -119,11 +119,22 @@
     if(matches.length!==1||matches[0].status!=='AV2')
       throw new Error('AV-2 membership mismatch for '+name);
   }
-  // AV-Nicefellow and AV-Neez have no leader-directed change; remain Active.
-  for(const name of ['AV-Nicefellow','AV-Neez']){
+  // AV-Nicefellow remains Active; AV-Neez has a later authorized transfer.
+  for(const name of ['AV-Nicefellow']){
     const entry=rosterEntries.find(row=>row.profileName===canonical(name));
     if(!entry||entry.status!=='Active')
       throw new Error('Undirected member status changed: '+name);
+  }
+  // November 6 leader-directed current roster transfers (after October screenshots).
+  // Never reclassify event-time membership, modify historical reward rows, or reset scores.
+  for(const [name,status] of [
+    ['AV-Pablin','AV2'],['AV-MotherboardBeans','AV2'],
+    ['AV-no','AV2'],['AV-Neez','AV2'],
+    ['AV-KitKat','Active'],['AV-Hoops','Active']
+  ]){
+    const entry=rosterEntries.find(row=>row.profileName===canonical(name));
+    if(!entry)throw new Error('Missing November 6 transferred member: '+name);
+    entry.status=status;
   }
   // Zibby transferred to AV-2. The historic Oct 15 main-clan screenshot
   // remains untouched; this changes CURRENT membership only.
@@ -206,8 +217,8 @@
   delete D.aliasMap['AV-Frenchie2'];
   byName['AV-Frenchie2']=fromRow(currentRows.find(r=>r.name==='AV-Frenchie2'));
   R.byName=byName;
-  R.source='October 15 AVENGERS/AV-2 snapshots + leader identity and membership corrections through October 30';
-  R.precedence='October 15 source screenshots retained as dated provenance, except leader-removed LT shell; current changes: AV-2Lin → AV-Lin, Jeff canonical AV-JefhKintz05, Timmy and Fred Active, FrankAbagnale linked to existing Addicted account, Zibby and TheOli AV-2; Animosity Inactive, Mickzzz and AV2-Froyo AV-2; Oakcliff Active (new member Oct 27); Oct 30: TRINITY, istanbuL, KKD Active; Rafa, JAMO, Royal, SiFra AV-2; WolfLegend Inactive; KitKat and Hoops remain AV-2; Nicefellow and Neez remain Active; 48 Active and 57 AV-2; UTC/TZG/country retained.';
+  R.source='October 15 AVENGERS/AV-2 snapshots + leader identity and membership corrections through November 6';
+  R.precedence='October 15 source screenshots retained as dated provenance, except leader-removed LT shell; current changes: AV-2Lin → AV-Lin, Jeff canonical AV-JefhKintz05, Timmy and Fred Active, FrankAbagnale linked to existing Addicted account, Zibby and TheOli AV-2; Animosity Inactive, Mickzzz and AV2-Froyo AV-2; Oakcliff Active (new member Oct 27); Oct 30: TRINITY, istanbuL, KKD Active; Rafa, JAMO, Royal, SiFra AV-2; WolfLegend Inactive; Nov 6 KitKat and Hoops Active; Pablin, MotherboardBeans, no and Neez AV-2; Nicefellow remains Active; 46 Active and 59 AV-2; UTC/TZG/country retained.';
 
   // Only current member status changes. Event history, clan attribution,
   // personal records, event totals, and rating math remain unchanged.

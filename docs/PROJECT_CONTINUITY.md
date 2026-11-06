@@ -1,3 +1,10 @@
+## 2026-11-06 — Leader roster transfers and source-proven Space Race supplement
+
+- Current roster: AV-no, AV-Neez, AV-Pablin, AV-MotherboardBeans moved to AV-2; AV-KitKat and AV-Hoops returned to AVENGERS. 46 Active AVENGERS / 59 AV-2. Historical event-time clan membership, results, all snapshots and frozen Unlogged Sparks remain unchanged.
+- November 6 Space final CLAIM screenshot of AV/S9/Zoliika, leader-confirmed AV-Zolika.x.TheBoss: lobby A rank 1, 550B distance, 25% share, 669,250 Sparks. Derive 6,692,500 exact Stars from Sparks because screenshot Stars are rounded. Original CDN PNG SHA-256 `83f2937f682cc76661f491d2893079e362cb7e39be441795e5a466fdd5222e9b` was already accepted; this corrects an omission in extraction, not source collection. Existing 1,030.7B Space PB remains higher.
+- Guarded revision 1 of `space|2026-11-06` adds one row to the previously approved 48 (49 total), changes none and removes none. Existing 13 original source hash references stay unchanged. Partial coverage remains. Existing website-only standing authorization `leader-standing-website-publication-2026-10-22` applies; no Discord post or PNG.
+- Roster audit and 30 site-release tests passed in a remote sandbox; site publication still requires required CI and exact GitHub Pages/Vercel live checks.
+
 ## 2026-11-05 — Private Kraken analytical workbook maintenance
 
 - At the leader's request, incorporated the newly supplied October battle log into the existing private analytical workbook and added reconciliation against the exact published website event scores. Recorded battle inputs and published website scores are preserved independently; discrepancies and partial logs are exposed for review, not forced to match.

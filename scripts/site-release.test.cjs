@@ -177,7 +177,7 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
   assert(jeff.snapshotBreakdown.some(r=>r.clan==='AV-2'&&r.sourceName==='AV-JefhKintz05'));
   assert(jeff.snapshotBreakdown.some(r=>r.clan==='AVENGERS'&&r.amount===5307842),'historic AVENGERS screenshot total unchanged');
   assert(people.find(p=>p.name==='AV-SiFra').snapshotBreakdown.some(r=>r.clan==='AV-2'));
-  assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAv2.length,50,'dated AV-2 raw snapshot intact');
+  assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAv2.length,42,'public AV-2 snapshot excludes zero-event removed accounts');
   assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAvengersStars.length,47,'removed LT not published');
 });
 test('Council-approved October 30 location updates retain verified identities, independent TZG and snapshots',()=>{
@@ -346,7 +346,8 @@ test('official 28 Unlogged Sparks remain frozen after one-time 1% exclusion',()=
  }
  for(const name of Object.keys(fixed.excludedRoundingReview)){
    const p=BASE.projection.people.find(x=>x.name===name);
-   assert(p&&p.screenshotGap===0,'excluded small discrepancy should remain zero: '+name);
+   if(['GirlsOnly','yooossss','Shelby','Piton','Jamaica','AV-AC3','Pro','Creatureboost'].includes(name))assert(!p,'removed zero-event account must not have a public profile: '+name);
+   else assert(p&&p.screenshotGap===0,'excluded small discrepancy should remain zero: '+name);
  }
 });
 test('near-one-million AV gaps appear in both dated photos and are not additive',()=>{

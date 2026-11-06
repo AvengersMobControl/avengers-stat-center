@@ -1,3 +1,7 @@
+## AV-2 zero-logged-Sparks site cleanup
+
+2026-11-06: Leader explicitly ordered permanent public-site removal of AV-2 members with exactly zero logged Sparks: GirlsOnly, yooossss, Shelby, Piton, Jamaica, AV-AC3, Pro, Creatureboost. Removed these eight zero-event identities from published AV-2 source lists, Stars/Sparks snapshots, current roster, profiles, tables, ratings, and site exports. The original evidence is retained in repository history only; all accepted event rows and other accounts remain unchanged. Current roster: 50 AVENGERS, 51 AV-2. No Discord posts.
+
 ## 2026-11-06 — Current roster and Dreadrixter Nov 6 Space Race identity
 
 Leader directed active additions AV.ziyad, AV.atarIX, AV-Dreadrixter-UA and AV-Dubai; transfer AV-JAMO to AVENGERS and AV-Oakcliff to AV-2. Current statuses are 50 Active / 59 AV-2; historical results retain event-time clan, and Dubai has a zero-result profile. The already-source-reviewed final CLAIM Space screenshot shows rank 8 AV/S9/Dreadrix... at 254.6B, 2%, 535,249 Stars, 53,540 Sparks. Leader resolved this canonical account as AV-Dreadrixter-UA. Preserve directly visible exact Stars (do not replace with Sparks × 10); accept one new row via standing website-only authorization with current revision/digest; no Discord posting.

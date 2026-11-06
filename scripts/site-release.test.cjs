@@ -140,7 +140,7 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
   const R=BASE.globals.AVENGERS_MEMBER_TIMEZONES,D=BASE.globals.AVENGERS_DATA;
   const people=BASE.projection.people;
   const active=R.rows.filter(r=>r.status==='Active'),av2=R.rows.filter(r=>r.status==='AV2');
-  assert.equal(active.length,50);assert.equal(av2.length,59);
+  assert.equal(active.length,50);assert.equal(av2.length,51);
   for(const name of ['AV-Lin','AV-JefhKintz05','AV-TRINITY','AV-istanbuL','AV-KKD','AV-KitKat','AV-Hoops','AV-JAMO','AV.ziyad','AV.atarIX','AV-Dreadrixter-UA','AV-Dubai']){
     assert.equal(R.byName[name]?.status,'Active',name+' roster');
     assert.equal(D.members.filter(m=>m.name===name&&m.status==='Active').length,1,name+' unique profile');
@@ -225,12 +225,19 @@ test('Council-approved October 30 location updates retain verified identities, i
   assert.equal(R.byName['AV-TRINITY'].timeZoneGroup,'','TRINITY TZG not inferred from UTC');
   assert.equal(R.byName['AV-istanbuL'].timeZoneGroup,'','istanbuL TZG not inferred from UTC');
   assert.equal(R.byName['AV-Zolika.x.TheBoss'].location,'Netherlands','Zolika residence retained; nationality not inferred');
-  assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAv2.length,50,'dated raw AV-2 snapshot unchanged');
+  assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAv2.length,42,'published AV-2 snapshot excludes retired zero-event players');
+  for(const name of ["GirlsOnly","yooossss","Shelby","Piton","Jamaica","AV-AC3","Pro","Creatureboost"]){
+    assert(!R.rows.some(r=>r.name===name),'Removed member remains in published roster: '+name);
+    assert(!D.members.some(m=>m.name===name),'Removed member remains in site profile data: '+name);
+    assert(!BASE.projection.people.some(p=>p.name===name),'Removed member remains in published projection: '+name);
+    assert(!BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAv2.some(p=>p.name===name),'Removed member remains in historical site snapshot: '+name);
+    assert(!BASE.ledger.events.some(e=>e.rows.some(p=>p.player===name)),'Removed member had an event row: '+name);
+  }
   assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAvengersStars.length,47,'dated raw AVENGERS screenshot unchanged');
 });
 test('current roster and every materialized PB/reward agree with independent canonical source sums',()=>{
   const D=BASE.globals.AVENGERS_DATA,R=BASE.globals.AVENGERS_MEMBER_TIMEZONES;
-  assert.equal(R.rows.filter(r=>r.status==='Active').length,50);assert.equal(R.rows.filter(r=>r.status==='AV2').length,59);
+  assert.equal(R.rows.filter(r=>r.status==='Active').length,50);assert.equal(R.rows.filter(r=>r.status==='AV2').length,51);
   const events=BASE.projection.events.filter(e=>e.status!=='revoked');
   for(const m of D.members){
     // Approved overlays may retain their original source alias; compare canonically.
@@ -290,8 +297,8 @@ test('Adigarian does not get artificial gap from a reset returning-clan counter'
 const {audit:transferAudit}=require('./audit-transfer-restorations.cjs');
 test('transfer restoration reconciles every current member, not only Hoops',()=>{
  const result=transferAudit(BASE);
- assert.equal(result.summary.roster,109);
- assert.equal(result.rows.length,109);
+ assert.equal(result.summary.roster,101);
+ assert.equal(result.rows.length,101);
  for(const r of result.rows){
   const player=BASE.projection.people.find(p=>p.name===r.name);
   assert(player,'Missing member '+r.name);

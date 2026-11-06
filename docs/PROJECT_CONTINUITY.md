@@ -1,3 +1,7 @@
+## AV-2 zero-logged-Sparks site cleanup
+
+2026-11-06: Leader explicitly ordered permanent public-site removal of AV-2 members with exactly zero logged Sparks: GirlsOnly, yooossss, Shelby, Piton, Jamaica, AV-AC3, Pro, Creatureboost. Removed these eight zero-event identities from published AV-2 source lists, Stars/Sparks snapshots, current roster, profiles, tables, ratings, and site exports. The original evidence is retained in repository history only; all accepted event rows and other accounts remain unchanged. Current roster: 50 AVENGERS, 51 AV-2. No Discord posts.
+
 ## 2026-11-06 — Leader-confirmed Space lobby-A identity and active roster update
 
 - Leader confirmed the previously held Nov 6 Space Race lobby A rank 8 screenshot identity as AV-Dreadrixter-UA (source shows truncated AV/S9/Dreadrix...). Existing final CLAIM screenshot proof was already accepted in the original source-hash list. Guarded space|2026-11-06 revision 3 adds one verified row: 254.6B, 2% share, 535,249 directly readable Stars, 53,540 Sparks; original event clan AVENGERS. Previous 51 rows and 13 source hashes remain unchanged; final event still partial for any unproven other ranks/lobbies.

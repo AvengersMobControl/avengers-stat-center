@@ -169,7 +169,6 @@ Noob\tInactive\t\t\t\t
 SOLOLEVEL\tInactive\t\t\t\t
 tgves\tInactive\t2\t2\t\tRomania
 AV-LemonBlue\tAV2\t2\t2\t\tGermany
-Jamaica\tAV2\t\t\t\t
 AV-braa\tAV2\t\t\t\t
 AV+HOLLOWBORNs\tAV2\t\t\t\t
 Keyler\tAV2\t\t\t\t

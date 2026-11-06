@@ -1,3 +1,7 @@
+## AV-2 zero-logged-Sparks site cleanup
+
+2026-11-06: Leader explicitly ordered permanent public-site removal of AV-2 members with exactly zero logged Sparks: GirlsOnly, yooossss, Shelby, Piton, Jamaica, AV-AC3, Pro, Creatureboost. Removed these eight zero-event identities from published AV-2 source lists, Stars/Sparks snapshots, current roster, profiles, tables, ratings, and site exports. The original evidence is retained in repository history only; all accepted event rows and other accounts remain unchanged. Current roster: 50 AVENGERS, 51 AV-2. No Discord posts.
+
 ## 2026-11-06 — Nov 6 roster and Dreadrixter guarded Space follow-through
 
 - [x] Leader identified rank-8 truncated Space result as AV-Dreadrixter-UA; preserve exact screenshot score/rewards and accepted original source references.

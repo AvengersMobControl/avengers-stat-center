@@ -47,9 +47,9 @@ assert(D && R && S && L && B, 'Missing loaded roster/ledger data scripts');
 const currentAv=(R.rows||[]).filter(r=>r.status==='Active');
 const currentAv2=(R.rows||[]).filter(r=>r.status==='AV2');
 assert.equal(currentAv.length, 50, 'Expected 50 current AVENGERS after November 6 additional members and transfers');
-assert.equal(currentAv2.length, 59, 'Expected 59 current AV-2 after November 6 leader transfers');
+assert.equal(currentAv2.length, 51, 'Expected 51 current AV-2 after removing eight zero-event accounts');
 assert.equal(S.currentAvengersStars.length, 47, 'LT excluded from site snapshot; no event history');
-assert.equal(S.currentAv2.length, 50);
+assert.equal(S.currentAv2.length, 42);
 assert(currentAv2.some(r=>r.name==='AV-DrDetroit'));
 assert(currentAv2.some(r=>r.name==='AV-Starred'));
 assert(![...currentAv,...currentAv2].some(r=>r.name==='AV-Bubba0816'));
@@ -66,7 +66,12 @@ const canonical=raw=>{
 assert.notEqual(canonical('AV-Frenchie2'),canonical('AV-Frenchie(-4)'));
 const current=[...currentAv,...currentAv2];
 const identityKeys=current.map(r=>canonical(r.name));
-assert.equal(current.length, 109, 'Expected 109 current identities after November 6 membership changes');
+assert.equal(current.length, 101, 'Expected 101 current identities after removing eight zero-event accounts');
+for(const name of ["GirlsOnly","yooossss","Shelby","Piton","Jamaica","AV-AC3","Pro","Creatureboost"]){
+  assert(!R.rows.some(r=>r.name===name),'Removed member appears in any roster status: '+name);
+  assert(!D.members.some(m=>m.name===name),'Removed member retains a player profile: '+name);
+  assert(!S.currentAv2.some(r=>r.name===name),'Removed member remains in public Sparks snapshot: '+name);
+}
 for(const name of ['AV-TRINITY','AV-istanbuL','AV-KKD','AV-Nicefellow','AV-KitKat','AV-Hoops','AV-JAMO','AV.ziyad','AV.atarIX','AV-Dreadrixter-UA','AV-Dubai'])assert(currentAv.some(r=>r.name===name), name+' should be Active');
 for(const name of ['AV#Rafa#Tun','AV-Oakcliff','AV-Royal','AV-SiFra','AV-Pablin','AV-MotherboardBeans','AV-no','AV-Neez'])assert(currentAv2.some(r=>r.name===name), name+' should be AV-2');
 assert(!current.some(r=>r.name==='AV-WolfLegend'), 'AV-WolfLegend must not be in either current clan roster');

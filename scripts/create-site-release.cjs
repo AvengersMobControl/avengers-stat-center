@@ -37,6 +37,19 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
     if(update.approved!==true)throw Error('Unreviewed event update cannot be published');
     ledger=apply(ledger,update.event,{approved:true,expectedRevision:update.expectedRevision,aliases}).ledger;
   }
+  // Leader-directed complete public removal (2026-11-06). Canonical accepted
+  // original evidence stays in Git history, but must never surface in the
+  // published ledger, exports, profile projection or website assets.
+  const publicExcludedNames=new Set(['Keyler','AV-Keyler','Blade','AV-2(TAMIM)']);
+  const publicExcluded=n=>n!=null&&String(n).trim()!==''&&(publicExcludedNames.has(String(n))||publicExcludedNames.has(resolve(n)));
+  for(const e of ledger.events)e.rows=e.rows.filter(r=>!publicExcluded(r.player||r.sourceIdentity));
+  // The public versioned ledger also contains revision-change snapshots;
+  // do not leak removed member identities through before/after audit rows.
+  for(const c of ledger.changes||[]){
+    if(c.before?.rows)c.before.rows=c.before.rows.filter(r=>!publicExcluded(r.player||r.sourceIdentity));
+    if(c.after?.rows)c.after.rows=c.after.rows.filter(r=>!publicExcluded(r.player||r.sourceIdentity));
+  }
+  for(const key of Object.keys(aliases))if(publicExcluded(key)||publicExcluded(aliases[key]))delete aliases[key];
   refreshHistoricalPayouts(ledger);
   const D=copy(legacy.AVENGERS_DATA),K=copy(legacy.AVENGERS_KRAKEN_DATA),S=copy(legacy.AVENGERS_SPARKS_SNAPSHOT),R=copy(legacy.AVENGERS_MEMBER_TIMEZONES);
   // Update today's roster label, but retain historical source-name evidence.
@@ -50,6 +63,14 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
     const source=R.byName['AV-ZolikaLoveKira']||R.byName['AV-Zolika.x.Kira'];
     if(source)R.byName[boss]={...source,name:boss,canonicalName:boss,profileName:boss};
   }
+  // Purge them from all public membership and snapshot sources before projection.
+  R.rows=(R.rows||[]).filter(r=>!publicExcluded(r.name)&&!publicExcluded(r.profileName));
+  for(const name of Object.keys(R.byName||{}))
+    if(publicExcluded(name)||publicExcluded(R.byName[name]?.canonicalName))delete R.byName[name];
+  for(const name of Object.keys(D.aliasMap||{}))if(publicExcluded(name)||publicExcluded(D.aliasMap[name]))delete D.aliasMap[name];
+  D.members=D.members.filter(m=>!publicExcluded(m.name));
+  for(const prop of ['currentAv2','currentAvengers','currentAvengersStars','preSpaceOct16','historicalSparkFloors'])
+    if(Array.isArray(S[prop]))S[prop]=S[prop].filter(r=>!publicExcluded(r.name)&&!publicExcluded(r.profileName));
   const memberMap=new Map();for(const m of D.members){const name=resolve(m.name);if(!memberMap.has(name))memberMap.set(name,{...m,name});}
   // Current roster authority is applied only to current status, not past events.
   for(const r of R.rows||[]){const name=resolve(r.profileName||r.name);if(memberMap.has(name))memberMap.get(name).status=r.status;}
@@ -75,6 +96,7 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
   }
   const fixed=JSON.parse(fs.readFileSync(path.join(root,'data/sparks-prior-to-logging-2026-10-16.json'),'utf8'));
   const priorToLogging={...fixed.amounts};
+  for(const n of Object.keys(priorToLogging))if(publicExcluded(n))delete priorToLogging[n];
   // Re-key existing frozen Sparks if present. Never change the amount.
   if(Object.hasOwn(priorToLogging,'AV-Zolika.x.Kira')){
     assert(!Object.hasOwn(priorToLogging,boss)||priorToLogging[boss]===priorToLogging['AV-Zolika.x.Kira'],'Conflicting frozen Sparks aliases for Zolika');

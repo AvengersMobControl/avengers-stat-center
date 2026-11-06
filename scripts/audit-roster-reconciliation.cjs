@@ -47,9 +47,9 @@ assert(D && R && S && L && B, 'Missing loaded roster/ledger data scripts');
 const currentAv=(R.rows||[]).filter(r=>r.status==='Active');
 const currentAv2=(R.rows||[]).filter(r=>r.status==='AV2');
 assert.equal(currentAv.length, 50, 'Expected 50 current AVENGERS after November 6 additional members and transfers');
-assert.equal(currentAv2.length, 51, 'Expected 51 current AV-2 after removing eight zero-event accounts');
+assert.equal(currentAv2.length, 48, 'Expected 48 current AV-2 after three further leader deletions');
 assert.equal(S.currentAvengersStars.length, 47, 'LT excluded from site snapshot; no event history');
-assert.equal(S.currentAv2.length, 42);
+assert.equal(S.currentAv2.length, 39);
 assert(currentAv2.some(r=>r.name==='AV-DrDetroit'));
 assert(currentAv2.some(r=>r.name==='AV-Starred'));
 assert(![...currentAv,...currentAv2].some(r=>r.name==='AV-Bubba0816'));
@@ -66,7 +66,12 @@ const canonical=raw=>{
 assert.notEqual(canonical('AV-Frenchie2'),canonical('AV-Frenchie(-4)'));
 const current=[...currentAv,...currentAv2];
 const identityKeys=current.map(r=>canonical(r.name));
-assert.equal(current.length, 101, 'Expected 101 current identities after removing eight zero-event accounts');
+assert.equal(current.length, 98, 'Expected 98 current identities after three further leader deletions');
+for(const name of ["Keyler","AV-Keyler","Blade","AV-2(TAMIM)"]){
+  assert(!current.some(r=>r.name===name),'Removed member remains in roster: '+name);
+  assert(!require('./create-site-release.cjs').create().globals.AVENGERS_DATA.members.some(m=>m.name===name),'Removed member remains in published profile projection: '+name);
+  assert(!S.currentAv2.some(m=>m.name===name),'Removed member remains in snapshot: '+name);
+}
 for(const name of ["GirlsOnly","yooossss","Shelby","Piton","Jamaica","AV-AC3","Pro","Creatureboost"]){
   assert(!R.rows.some(r=>r.name===name),'Removed member appears in any roster status: '+name);
   assert(!D.members.some(m=>m.name===name),'Removed member retains a player profile: '+name);

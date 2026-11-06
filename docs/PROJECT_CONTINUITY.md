@@ -1,3 +1,7 @@
+## 2026-11-06 — Complete public-site removal of three single-event AV-2 accounts
+
+At explicit leader direction, permanently exclude Keyler (canonical AV-Keyler), Blade and AV-2(TAMIM) from all website pages, current AV-2 membership, profile/ratings/search data, reward and event listings, versioned public ledger revisions, and published static assets. Their former single source event results were Space 2026-09-27, Kraken 2026-10-11 and Big Pig 2026-10-23 respectively. Retain the original accepted source/approval evidence in repository history and canonical source history; filter it from published releases and revision-change snapshots. Recompute visible event totals from remaining rows without fabricating data or touching anyone else's individual results. Current roster 50 AVENGERS / 48 AV-2; all other histories and existing freezes unchanged. No Discord posts or SAC modifications.
+
 ## AV-2 zero-logged-Sparks site cleanup
 
 2026-11-06: Leader explicitly ordered permanent public-site removal of AV-2 members with exactly zero logged Sparks: GirlsOnly, yooossss, Shelby, Piton, Jamaica, AV-AC3, Pro, Creatureboost. Removed these eight zero-event identities from published AV-2 source lists, Stars/Sparks snapshots, current roster, profiles, tables, ratings, and site exports. The original evidence is retained in repository history only; all accepted event rows and other accounts remain unchanged. Current roster: 50 AVENGERS, 51 AV-2. No Discord posts.

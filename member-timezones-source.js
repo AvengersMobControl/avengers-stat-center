@@ -171,7 +171,6 @@ tgves\tInactive\t2\t2\t\tRomania
 AV-LemonBlue\tAV2\t2\t2\t\tGermany
 AV-braa\tAV2\t\t\t\t
 AV+HOLLOWBORNs\tAV2\t\t\t\t
-Keyler\tAV2\t\t\t\t
 Hasansilin\tAV2\t\t\t\t
 AV-JAMO\tAV2\t\t\t\tPhilippines
 AV-Fahad\tAV2\t3\t\t\tQatar

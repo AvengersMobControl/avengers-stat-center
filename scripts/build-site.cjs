@@ -31,6 +31,9 @@ function build({destination=path.join(root,'dist'),updates}={}){
     if(entry.name.startsWith('.')||['dist','reports','scripts','docs','data','avengers-discord-mcp-connector'].includes(entry.name))continue;
     if(entry.isDirectory()&&entry.name!=='assets')continue;
     if(entry.isFile()&&!/\.(html|css|js|json|toml)$/.test(entry.name))continue;
+    // Legacy input scripts are not referenced by the compiled production page;
+    // exclude the three that preserve removed accounts in dated source material.
+    if(['kraken-history-complete.js','av2-space-results-2026.js','normalization-map-final-2026-10-02.js'].includes(entry.name))continue;
     // Fonts are for the offline PNG renderers only; keep them out of the public site.
     fs.cpSync(path.join(root,entry.name),path.join(destination,entry.name),{recursive:true,filter:src=>!src.startsWith(path.join(root,'assets','fonts'))});
   }

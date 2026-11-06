@@ -1,5 +1,7 @@
 ## 2026-11-06 — Website-only Space and roster correction
 
+Publication follow-through: corrected event ledger, roster and tests were atomically committed in `b96cb3503b51ad3c99fd007dd547a892f1818941`. The GitHub Pages exact-SHA release and public site checks must still finish before marking publication complete.
+
 - [x] Recover Zolika first-place final source from already-accepted original PNG proof and stage/apply guarded revision adding one Nov 6 Space row.
 - [x] Update current roster transfers for no, Neez, Pablin, MotherboardBeans (AV-2) and KitKat, Hoops (AVENGERS), retaining historical clan records.
 - [x] Pass source-independent roster audit and 30 site release regression tests.

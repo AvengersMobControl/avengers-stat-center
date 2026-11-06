@@ -1,3 +1,10 @@
+## 2026-11-06 — Nov 6 roster and Dreadrixter guarded Space follow-through
+
+- [x] Leader identified rank-8 truncated Space result as AV-Dreadrixter-UA; preserve exact screenshot score/rewards and accepted original source references.
+- [x] Add AV.ziyad, AV.atarIX, AV-Dreadrixter-UA and zero-event AV-Dubai to current AVENGERS roster; JAMO to AVENGERS and Oakcliff to AV-2 (50 / 59 current roster).
+- [x] Guarded source-review diff and current SHA approval for space|2026-11-06 revision 3: one new rank-8 row, previous 51 retained.
+- [ ] Pass all release/roster/CI/browser gates and verify exact GitHub Pages and Vercel production SHA and exports before claiming live.
+
 ## 2026-11-06 — Source-completeness supplement for Space Race lobby B
 
 - The Nov 6 original final CLAIM JPEG had already been fetched, hash-verified, and referenced in the approved event source list, yet two clearly visible AVENGERS competitor rows from lobby B were absent from the public event ledger. Independent re-review and original-byte SHA-256 `620ce5cec69f705af05bdc9ccf880e5791f9018c0f7437e36b69ebe807e50575` confirmed the omission.

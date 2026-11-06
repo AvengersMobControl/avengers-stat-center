@@ -1,3 +1,10 @@
+## 2026-11-06 — Leader-confirmed Space lobby-A identity and active roster update
+
+- Leader confirmed the previously held Nov 6 Space Race lobby A rank 8 screenshot identity as AV-Dreadrixter-UA (source shows truncated AV/S9/Dreadrix...). Existing final CLAIM screenshot proof was already accepted in the original source-hash list. Guarded space|2026-11-06 revision 3 adds one verified row: 254.6B, 2% share, 535,249 directly readable Stars, 53,540 Sparks; original event clan AVENGERS. Previous 51 rows and 13 source hashes remain unchanged; final event still partial for any unproven other ranks/lobbies.
+- Current member statuses: add AV.ziyad, AV.atarIX, AV-Dreadrixter-UA, AV-Dubai as active AVENGERS; transfer AV-JAMO from AV-2 to AVENGERS and AV-Oakcliff from AVENGERS to AV-2. Dubai begins with no invented event, Stars, Sparks or lifetime records. New current roster: 50 active AVENGERS, 59 AV-2, 109 distinct current profiles.
+- All existing historical event-time clan affiliations, PBs, member histories, snapshot provenance, frozen pre-logging Sparks, identity aliases and unrelated data stay unchanged. User-provided identity confirmation resolves rank-8 hold without changing previously approved screenshot SHA values.
+- Exact unapproved ingest review recorded 1 addition, 51 unchanged, 0 corrected/removed, +53,540 Sparks and +535,249 Stars; site and roster tests plus GitHub Pages/Vercel exact release verification are required before saying the website is live. No Discord message, PNG, SAC, or other service changes.
+
 ## 2026-11-06 — Source-completeness supplement for Space Race lobby B
 
 - The Nov 6 original final CLAIM JPEG had already been fetched, hash-verified, and referenced in the approved event source list, yet two clearly visible AVENGERS competitor rows from lobby B were absent from the public event ledger. Independent re-review and original-byte SHA-256 `620ce5cec69f705af05bdc9ccf880e5791f9018c0f7437e36b69ebe807e50575` confirmed the omission.

@@ -130,7 +130,8 @@
   for(const [name,status] of [
     ['AV-Pablin','AV2'],['AV-MotherboardBeans','AV2'],
     ['AV-no','AV2'],['AV-Neez','AV2'],
-    ['AV-KitKat','Active'],['AV-Hoops','Active']
+    ['AV-KitKat','Active'],['AV-Hoops','Active'],
+    ['AV-JAMO','Active'],['AV-Oakcliff','AV2']
   ]){
     const entry=rosterEntries.find(row=>row.profileName===canonical(name));
     if(!entry)throw new Error('Missing November 6 transferred member: '+name);
@@ -162,6 +163,16 @@
   // never gets a profile shell: zero known event rows or event rewards.
   if(new Set(rosterEntries.map(row=>row.profileName)).size!==105)
     throw new Error('October 23 roster identities unexpectedly overlap');
+  // November 6 leader confirmation: two verified new Space screenshot identities,
+  // the rank-8 Dreadrixter player, and Dubai (no invented event results).
+  // These are new CURRENT roster members only, not historical clan rewrites.
+  for(const name of ['AV.ziyad','AV.atarIX','AV-Dreadrixter-UA','AV-Dubai']){
+    const profileName=canonical(name);
+    if(rosterEntries.some(row=>row.profileName===profileName))
+      throw new Error('New active member already present: '+name);
+    rosterEntries.push({name,profileName,status:'Active'});
+    fixedIds.add(profileName);
+  }
   const discordMembers=window.AVENGERS_DISCORD_UTC_ROSTER?.members||[];
   for(const member of discordMembers){
     const name=String(member.name||'').trim();
@@ -218,7 +229,7 @@
   byName['AV-Frenchie2']=fromRow(currentRows.find(r=>r.name==='AV-Frenchie2'));
   R.byName=byName;
   R.source='October 15 AVENGERS/AV-2 snapshots + leader identity and membership corrections through November 6';
-  R.precedence='October 15 source screenshots retained as dated provenance, except leader-removed LT shell; current changes: AV-2Lin → AV-Lin, Jeff canonical AV-JefhKintz05, Timmy and Fred Active, FrankAbagnale linked to existing Addicted account, Zibby and TheOli AV-2; Animosity Inactive, Mickzzz and AV2-Froyo AV-2; Oakcliff Active (new member Oct 27); Oct 30: TRINITY, istanbuL, KKD Active; Rafa, JAMO, Royal, SiFra AV-2; WolfLegend Inactive; Nov 6 KitKat and Hoops Active; Pablin, MotherboardBeans, no and Neez AV-2; Nicefellow remains Active; 46 Active and 59 AV-2; UTC/TZG/country retained.';
+  R.precedence='October 15 source screenshots retained as dated provenance, except leader-removed LT shell; current changes: AV-2Lin → AV-Lin, Jeff canonical AV-JefhKintz05, Timmy and Fred Active, FrankAbagnale linked to existing Addicted account, Zibby and TheOli AV-2; Animosity Inactive, Mickzzz and AV2-Froyo AV-2; Oakcliff Active (new member Oct 27); Oct 30: TRINITY, istanbuL, KKD Active; Rafa, JAMO, Royal, SiFra AV-2; WolfLegend Inactive; Nov 6 KitKat and Hoops Active; Pablin, MotherboardBeans, no and Neez AV-2; Nicefellow remains Active; 50 Active and 59 AV-2; UTC/TZG/country retained.';
 
   // Only current member status changes. Event history, clan attribution,
   // personal records, event totals, and rating math remain unchanged.

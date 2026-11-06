@@ -1,3 +1,7 @@
+## 2026-11-06 — Current roster and Dreadrixter Nov 6 Space Race identity
+
+Leader directed active additions AV.ziyad, AV.atarIX, AV-Dreadrixter-UA and AV-Dubai; transfer AV-JAMO to AVENGERS and AV-Oakcliff to AV-2. Current statuses are 50 Active / 59 AV-2; historical results retain event-time clan, and Dubai has a zero-result profile. The already-source-reviewed final CLAIM Space screenshot shows rank 8 AV/S9/Dreadrix... at 254.6B, 2%, 535,249 Stars, 53,540 Sparks. Leader resolved this canonical account as AV-Dreadrixter-UA. Preserve directly visible exact Stars (do not replace with Sparks × 10); accept one new row via standing website-only authorization with current revision/digest; no Discord posting.
+
 ## 2026-11-06 — Source-completeness supplement for Space Race lobby B
 
 - The Nov 6 original final CLAIM JPEG had already been fetched, hash-verified, and referenced in the approved event source list, yet two clearly visible AVENGERS competitor rows from lobby B were absent from the public event ledger. Independent re-review and original-byte SHA-256 `620ce5cec69f705af05bdc9ccf880e5791f9018c0f7437e36b69ebe807e50575` confirmed the omission.

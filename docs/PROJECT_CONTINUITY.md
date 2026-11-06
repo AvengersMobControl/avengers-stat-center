@@ -1,3 +1,9 @@
+## 2026-11-06 — Source-completeness supplement for Space Race lobby B
+
+- The Nov 6 original final CLAIM JPEG had already been fetched, hash-verified, and referenced in the approved event source list, yet two clearly visible AVENGERS competitor rows from lobby B were absent from the public event ledger. Independent re-review and original-byte SHA-256 `620ce5cec69f705af05bdc9ccf880e5791f9018c0f7437e36b69ebe807e50575` confirmed the omission.
+- An unapproved dry run recorded 2 additions, 49 unchanged rows, zero conflicts or removals. Guarded revision-2 apply used current digest and existing leader standing website-only authorization; AVENGERS source coverage rises to 44, AV-2 stays at 7, with +402,780 Sparks and +4,027,800 derived Stars. All existing event-time clan, prehistory, current membership and frozen Unlogged balances remain unchanged.
+- One further lobby-A screenshot rank has a truncated source identity and remains an exception pending canonical-account evidence; do not invent its username or attach the reward to another player's profile. The event remains partial. Future source reviews should explicitly account for each relevant row in a final screenshot even if that image's hash was already accepted.
+
 ## 2026-11-06 — Leader roster transfers and source-proven Space Race supplement
 
 - Current roster: AV-no, AV-Neez, AV-Pablin, AV-MotherboardBeans moved to AV-2; AV-KitKat and AV-Hoops returned to AVENGERS. 46 Active AVENGERS / 59 AV-2. Historical event-time clan membership, results, all snapshots and frozen Unlogged Sparks remain unchanged.

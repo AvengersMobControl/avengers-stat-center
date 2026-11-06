@@ -474,7 +474,9 @@ test('leader-verified she/her pronouns attach only to the 14 canonical member pr
 test('Nov 6 Zolika first-place supplement is source-linked once and current transfers preserve event clan',()=>{
   const e=BASE.ledger.events.find(x=>x.id==='space|2026-11-06');
   assert(e&&e.status==='partial');
-  assert.equal(e.rows.length,49);
+  assert.equal(e.rows.length,51);
+  assert.equal(e.rows.filter(r=>r.clan==='AVENGERS').length,44,'44 verified main-clan Space results');
+  assert.equal(e.rows.filter(r=>r.clan==='AV-2').length,7,'AV-2 result rows preserved');
   const z=e.rows.filter(r=>r.player==='AV-Zolika.x.TheBoss');
   assert.equal(z.length,1);
   assert.equal(z[0].clan,'AVENGERS');
@@ -492,4 +494,16 @@ test('Nov 6 Zolika first-place supplement is source-linked once and current tran
     assert.equal(e.rows.find(x=>x.player===n)?.clan,'AVENGERS',n+' original event clan');
   }
   assert.equal(BASE.projection.people.find(p=>p.name==='AV-Zolika.x.TheBoss').kinds.space.pb,1030.7,'Existing Space PB remains higher');
+  for(const [name,rank,score,sparks] of [
+    ['AV.ziyad',2,241,268520],
+    ['AV.atarIX',5,181.4,134260]
+  ]){
+    const row=e.rows.find(r=>r.player===name);
+    assert(row,name+' must be included in source-verified B-lobby supplement');
+    assert.equal(row.clan,'AVENGERS');
+    assert.equal(row.metadata?.lobby,'B');
+    assert.equal(row.metadata?.rank,rank);
+    assert.equal(row.score,score);
+    assert.equal(row.sparks,sparks);
+  }
 });

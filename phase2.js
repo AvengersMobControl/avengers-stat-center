@@ -419,7 +419,7 @@
     if(key==='spaceAvg') return Number(m.spaceAvg)||0;
     if(key==='krakenPB') return kp?(Number(kp.pb)||0):(Number(m.krakenPB)||0);
     if(key==='krakenL3') return kp?(Number(kp.last3)||0):(Number(m.krakenAvgL3)||0);
-    if(key==='rating') return Number(m.ratingTotal)||0;
+    if(key==='rating') return Number(m.ratingAdjusted??m.ratingTotal)||0;
     if(key==='events') return Number(m.eventsPlayed)||0;
     if(key==='sparks') return combinedSparksFor(name);
     return null;
@@ -472,7 +472,7 @@
     var kp=krakenPlayerFor(name);
     var piggyPB=Number(m.piggyPB)||0,spacePB=Number(m.spacePB)||0,krakenPB=kp?(Number(kp.pb)||0):(Number(m.krakenPB)||0);
     var piggyAvg=Number(m.piggyAvg)||0,spaceAvg=Number(m.spaceAvg)||0,krakenL3=kp?(Number(kp.last3)||0):(Number(m.krakenAvgL3)||0);
-    var rating=Number(m.ratingTotal)||0;
+    var rating=Number(m.ratingAdjusted??m.ratingTotal)||0;
     var spaceRanking=window.AVENGERS_SPACE_RANKS?.analyze(window.AVENGERS_EVENT_PROJECTION?.events||[],D.aliasMap||{})||null;
     var lobbyBest=spaceRanking?.lobbyBestByPlayer.get(canonicalNameFor(name))?.rank??null;
     var verifiedBest=spaceRanking?.verifiedClanBestByPlayer.get(canonicalNameFor(name))?.rank??null;
@@ -491,7 +491,7 @@
           '<div class="p2-profile-kpi"><span>Space Arena Avg</span><strong>'+num(spaceAvg,1)+'</strong>'+profileRankNote(name,'spaceAvg')+'</div>'+
           '<div class="p2-profile-kpi"><span>Kraken PB</span><strong>'+num(krakenPB,0)+'</strong>'+profileRankNote(name,'krakenPB')+'</div>'+
           '<div class="p2-profile-kpi"><span>Kraken Avg L3</span><strong>'+num(krakenL3,0)+'</strong>'+profileRankNote(name,'krakenL3')+'</div>'+
-          '<div class="p2-profile-kpi"><span>Player Rating</span><strong>'+num(rating,2)+'</strong>'+profileRankNote(name,'rating')+'</div>'+
+          '<div class="p2-profile-kpi"><span>Rank Score</span><strong>'+num(rating,3)+'</strong><small>Base '+num(m.ratingTotal||0,2)+' /10 + Leader Bonus '+num(m.ratingBonus||0,3)+'</small>'+profileRankNote(name,'rating')+'</div>'+
           '<div class="p2-profile-kpi"><span>Events Logged</span><strong>'+num(m.eventsPlayed||0,0)+'</strong>'+profileRankNote(name,'events')+'</div>'+
           '<div class="p2-profile-kpi"><span>Total Sparks</span><strong>'+num(combinedSparksFor(name),0)+'</strong>'+profileRankNote(name,'sparks')+'</div>'+
         '</div>'+
@@ -545,7 +545,7 @@
       input.onkeydown=function(e){if(e.key==='Enter'){e.preventDefault();pick();}};
       input.onchange=pick;
     }
-    var preferred=(D.members||[]).slice().sort(function(a,b){return (Number(b.ratingTotal)||0)-(Number(a.ratingTotal)||0);})[0];
+    var preferred=(D.members||[]).slice().sort(function(a,b){return (Number(b.ratingAdjusted??b.ratingTotal)||0)-(Number(a.ratingAdjusted??a.ratingTotal)||0);})[0];
     if(preferred){input.value=preferred.name;renderExplorer(preferred.name);}
   }
 

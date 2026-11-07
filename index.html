@@ -153,6 +153,14 @@ tbody tr:last-child td{border-bottom:0}
 .rating-detail-list>div{display:flex;justify-content:space-between;gap:16px;font-size:11px;line-height:1.5;border-bottom:1px solid #233a54;padding:4px}
 .rating-detail-list>div span:last-child{text-align:right;white-space:nowrap;color:#c0d2e8}
 .rating-detail-list strong{color:#ffd77b}
+.rating-crown{display:inline-flex;align-items:center;vertical-align:middle;margin-left:4px;color:#f5ca57;white-space:nowrap}
+.rating-crown.silver{color:#b9c8dc}
+.rating-crown svg{width:15px;height:15px;stroke:currentColor;stroke-width:1.6;fill:currentColor;fill-opacity:.22;stroke-linejoin:round}
+.rating-crown-count{display:inline-flex;align-items:center;gap:1px;margin-left:5px;font-size:10px;font-weight:850;color:#f5ca57;vertical-align:middle}
+.rating-crown-count.silver{color:#b9c8dc}
+.rating-crown-count .rating-crown{margin-left:0}
+.rating-bonus-value{color:#f5cb75;font-weight:850}
+.rating-adjusted-value{color:#e6f8ff;font-weight:900}
 .records-note{margin:0 0 14px;padding:11px 13px;border:1px solid #263a57;border-left:3px solid #43d7ff;border-radius:10px;background:#0b192b;color:#9db2ca;font-size:12px}
 .records-note strong{color:#e9f2ff}
 .records-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start}
@@ -758,10 +766,10 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       </svg></div>`;
   }
 
-  // Competition ranks use the same two-decimal Total Rating visible to players.
+  // Competition ranks use the same three-decimal adjusted score visible to players.
   // Equal displayed scores share a rank, and the following rank skips places.
   function ratingRankPositions(rows){
-    const scores=rows.map(r=>fmtNum(r.ratingTotal,2));
+    const scores=rows.map(r=>fmtNum(r.ratingAdjusted??r.ratingTotal,3));
     let rank=0;
     return scores.map((score,i)=>{
       if(i===0||scores[i-1]!==score) rank=i+1;
@@ -773,11 +781,28 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
   function nameBadges(name,kinds=['piggy','space']){
     return window.AVENGERS_COMMUNITY?.nameBadges(name,kinds)||'';
   }
+  const crownMetricNames={piggyPB:'Big Pig PB',piggyArena:'Big Pig average',piggyLast3:'Big Pig last three',
+    spacePB:'Space PB',spaceArena:'Space average',spaceLast3:'Space last three',
+    flashDailyPB:'Flash daily PB',flashDailyArena:'Flash daily average',
+    krakenPB:'Kraken PB',krakenLast5:'Kraken last five',krakenLatest:'Latest Kraken'};
+  function crownIcon(metal,label){
+    return `<span class="rating-crown ${metal}" role="img" aria-label="${escapeHtml(label)}" title="${escapeHtml(label)}"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 7 6 10 12 4 18 10 22 7 20 18 4 18Z M4 21H20"/></svg></span>`;
+  }
+  function ratingCrown(r,key){
+    const award=r.ratingCrowns?.[key];if(!award)return '';
+    const label=`${award.metal==='gold'?'Gold':'Silver'} crown: ${crownMetricNames[key]}, place ${award.rank}, +${fmtNum(award.bonus,3)} bonus${award.samples===null?'':` (${award.samples} recorded results)`}`;
+    return crownIcon(award.metal,label);
+  }
+  function ratingCrownSummary(r){
+    const awards=Object.values(r.ratingCrowns||{}),gold=awards.filter(a=>a.metal==='gold').length,silver=awards.filter(a=>a.metal==='silver').length;
+    return (gold?`<span class="rating-crown-count" title="${gold} gold rating crowns">${crownIcon('gold',gold+' gold rating crowns')}${gold}</span>`:'')+
+      (silver?`<span class="rating-crown-count silver" title="${silver} silver rating crowns">${crownIcon('silver',silver+' silver rating crowns')}${silver}</span>`:'');
+  }
   function rankRows(rows, scoreKey, scoreFmt, metaFn=()=>'', count=5,badgeKinds=['piggy','space']){
-    const ranks=scoreKey==='ratingTotal'?ratingRankPositions(rows):null;
+    const ranks=scoreKey==='ratingAdjusted'?ratingRankPositions(rows):null;
     const body=rows.slice(0,count).map((r,i)=>`<tr>
       <td class="num mini-rank-pos" data-sort-value="${ranks?ranks[i].rank:i+1}">${ranks?ranks[i].label:i+1}</td>
-      <td><span class="rank-member-with-badges"><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button>${nameBadges(r.name,badgeKinds)}</span></td>
+      <td><span class="rank-member-with-badges"><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button>${nameBadges(r.name,badgeKinds)}${scoreKey==='ratingAdjusted'?ratingCrownSummary(r):''}</span></td>
       <td class="mini-rank-meta">${metaFn(r)}</td>
       <td class="num mini-rank-score">${scoreFmt(r[scoreKey])}</td>
     </tr>`).join('');
@@ -835,7 +860,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     const cm=currentMembers();
     const active=D.members.filter(m=>statusNorm(m.status)==='active').length;
     const av2=D.members.filter(m=>statusNorm(m.status)==='av2').length;
-    const topRating=maxOf(cm,'ratingTotal');
+    const topRating=maxOf(cm,'ratingAdjusted');
     const latestPig=piggyRowsForSelectedEventRoster(D.meta.latestPiggy);
     const latestSpace=(D.space.events[D.meta.latestSpace]||[]).filter(r=>r.name!=='Total'&&r.name!=='#N/A'&&allowedEventMetricRow(r));
     const topPig=[...latestPig].sort((a,b)=>b.lines-a.lines);
@@ -973,14 +998,14 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       <div class="card rating-command-card" style="margin-top:16px">
         <div class="rating-command-score" role="link" tabindex="0" aria-label="Open Player Ratings">
           <span>OVERALL PLAYER RATING</span>
-          <strong>${topRating?fmtNum(topRating.ratingTotal,2):'—'}</strong>
-          <small>11 metrics • out of 10</small>
+          <strong>${topRating?fmtNum(topRating.ratingAdjusted,3):'—'}</strong>
+          <small>Base /10 + gold/silver leader bonus</small>
         </div>
         <div class="rating-command-list">
           <div class="card-header">
             <div><div class="card-title">Top Rated Players</div><div class="card-sub">Current roster • master rating model</div></div>
           </div>
-          <div class="card-body">${rankRows([...cm].sort((a,b)=>b.ratingTotal-a.ratingTotal),'ratingTotal',v=>fmtNum(v,2),r=>`PB ${fmtNum(r.ratingPB,2)} • Form ${fmtNum(r.ratingAvg,2)}`,8)}</div>
+          <div class="card-body">${rankRows([...cm].sort((a,b)=>b.ratingAdjusted-a.ratingAdjusted),'ratingAdjusted',v=>fmtNum(v,3),r=>`Base ${fmtNum(r.ratingTotal,2)} • Bonus +${fmtNum(r.ratingBonus,3)}`,8)}</div>
         </div>
       </div>`;
     bindPlayerButtons($('#overviewContent'));
@@ -1453,35 +1478,37 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       (g.expanded?g.metrics.map(([key,label])=>`<th scope="col" class="num" data-rating-col-head="${key}" title="${escapeHtml(definitions.get(key).label)}">${escapeHtml(label)}</th>`).join(''):'')).join('');
     const groupCells=r=>visible.map(g=>{
       const sum=g.metrics.reduce((total,[key])=>total+(Number(r.ratingPoints?.[key])||0),0);
-      const summary=`<td class="num roster-group-total rating-group-total" data-rating-col="${g.id}Total" data-rating-value="${sum}" title="${escapeHtml(g.title)} scored points (max ${g.limit})">${fmtNum(sum,2)}</td>`;
+      const summary=`<td class="num roster-group-total rating-group-total" data-rating-col="${g.id}Total" data-rating-value="${sum}" title="${escapeHtml(g.title)} scored base points (max ${g.limit})">${fmtNum(sum,2)}</td>`;
       if(!g.expanded)return summary;
       return summary+g.metrics.map(([key])=>{
         const d=definitions.get(key),points=Number(r.ratingPoints?.[key])||0;
         const actual=d.format(r.ratingMetrics?.[key]??null);
-        return `<td class="num rating-detail-points" data-rating-col="${key}" data-rating-value="${points}" title="${escapeHtml(d.label)}: ${escapeHtml(actual)} / ${escapeHtml(d.target)}">${fmtNum(points,2)}</td>`;
+        return `<td class="num rating-detail-points" data-rating-col="${key}" data-rating-value="${points}" title="${escapeHtml(d.label)}: ${escapeHtml(actual)} / ${escapeHtml(d.target)}">${fmtNum(points,2)}${ratingCrown(r,key)}</td>`;
       }).join('');
     }).join('');
     const body=rows.map((r,i)=>`<tr>
       <td class="num" data-sort-value="${ranks[i].rank}">${ranks[i].label}</td>
-      <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button></div></td>
+      <td><div class="player-cell"><div class="avatar">${initials(r.name)}</div><button class="linkish" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button>${ratingCrownSummary(r)}</div></td>
       <td>${statusBadge(r.status,r.name)}</td>
-      <td data-rating-col="total" data-rating-value="${Number(r.ratingTotal)||0}">${barCell(r.ratingTotal,max,v=>fmtNum(v,2))}</td>
+      <td class="rating-adjusted-value" data-rating-col="adjusted" data-rating-value="${Number(r.ratingAdjusted)||0}">${barCell(r.ratingAdjusted,max,v=>fmtNum(v,3))}</td>
+      <td class="num" data-rating-col="total" data-rating-value="${Number(r.ratingTotal)||0}">${fmtNum(r.ratingTotal,2)}</td>
+      <td class="num rating-bonus-value" data-rating-col="bonus" data-rating-value="${Number(r.ratingBonus)||0}">+${fmtNum(r.ratingBonus,3)}</td>
       ${groupCells(r)}
       <td>${details(r)}</td></tr>`).join('');
-    const count=5+visible.reduce((total,g)=>total+1+(g.expanded?g.metrics.length:0),0);
+    const count=7+visible.reduce((total,g)=>total+1+(g.expanded?g.metrics.length:0),0);
     return `<div class="table-card rating-grouped-card"><div class="table-titlebar"><div><h2>Overall Player Rating</h2>
-      <div class="small-muted">11 benchmarks • total out of 10 • click Big Pig, Space, Flash or Kraken to expand individual points</div></div></div>
+      <div class="small-muted">Base /10 plus gold/silver leader bonuses • adjusted rank score • expand categories for crowns</div></div></div>
       <div class="table-wrap"><table class="roster-grouped-table rating-grouped-table"><thead>
         <tr class="roster-group-head rating-group-head">
-          <th rowspan="2" scope="col" class="num">#</th><th rowspan="2" scope="col">Member</th><th rowspan="2" scope="col">Status</th><th rowspan="2" scope="col">Total / 10</th>
+          <th rowspan="2" scope="col" class="num">#</th><th rowspan="2" scope="col">Member</th><th rowspan="2" scope="col">Status</th><th rowspan="2" scope="col">Rank Score</th><th rowspan="2" scope="col" class="num">Base / 10</th><th rowspan="2" scope="col" class="num">Bonus</th>
           ${topHeaders}<th rowspan="2" scope="col">Breakdown</th>
         </tr><tr class="roster-group-subhead rating-group-subhead">${subHeaders}</tr></thead>
         <tbody>${body||`<tr><td colspan="${count}" class="empty">No rated players.</td></tr>`}</tbody></table></div></div>`;
   }
 
   function renderRatings(){
-    const rows=currentMembers().filter(r=>Number(r.ratingTotal)>0).sort((a,b)=>b.ratingTotal-a.ratingTotal);
-    const max=Math.max(...rows.map(r=>Number(r.ratingTotal)||0),1);
+    const rows=currentMembers().filter(r=>Number(r.ratingAdjusted)>0).sort((a,b)=>b.ratingAdjusted-a.ratingAdjusted);
+    const max=Math.max(...rows.map(r=>Number(r.ratingAdjusted)||0),1);
     const ranks=ratingRankPositions(rows);
     const defs=[
       ['piggyPB','Piggy PB','35,000 lines',v=>fmtNum(v)],
@@ -1497,8 +1524,8 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       ['flashDailyArena','Flash arena-era daily average','3,500 lines',v=>fmtNum(v)]
     ];
     const details=r=>'<details class="rating-breakdown"><summary>11 metrics</summary><div class="rating-detail-list">'+
-      defs.map(([key,label,target,format])=>'<div><span>'+escapeHtml(label)+'</span><span>'+escapeHtml(format(r.ratingMetrics?.[key]??null))+
-        ' / '+target+' · <strong>'+fmtNum(r.ratingPoints?.[key]||0,2)+'</strong> pt</span></div>').join('')+
+      defs.map(([key,label,target,format])=>'<div><span>'+escapeHtml(label)+ratingCrown(r,key)+'</span><span>'+escapeHtml(format(r.ratingMetrics?.[key]??null))+
+        ' / '+target+' · <strong>'+fmtNum(r.ratingPoints?.[key]||0,2)+'</strong> base pt'+(r.ratingCrowns?.[key]?` +${fmtNum(r.ratingCrowns[key].bonus,3)} bonus`:'')+'</span></div>').join('')+
       '</div></details>';
     const grouped=ratingGroupedTable(rows,ranks,details,max,defs);
     const methodRows=defs.map(([key,label,target])=>{
@@ -1507,8 +1534,10 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     }).join('');
     const ratingExplanation=`
       <div class="roster-separation-note rating-method">
-        <strong>Player Rating: 10 possible points across 11 metrics.</strong>
-        Each metric earns a proportional share of its points: actual result ÷ benchmark, capped at full credit. A zero earns zero.
+        <strong>Player Rating: 10 base points across 11 metrics, plus performance-leader bonuses.</strong>
+        Each metric earns a proportional share of its base points: actual result ÷ benchmark, capped at full credit. A zero earns zero. The adjusted Rank Score adds the separately displayed crown bonuses to the unchanged base /10.
+        <p><strong>Gold crown:</strong> #1 eligible actual score earns +0.100 (+0.050 for Flash). <strong>Silver crown:</strong> #2 earns +0.050 (+0.025 for Flash). Crowns use uncapped actual results among current AVENGERS and AV-2 together, regardless of the roster filter; inactive members cannot earn crowns. Ties share the same crown and bonus, with competition-place skips.</p>
+        <p><strong>Average crown qualification:</strong> at least three known Arena-era Piggy events, Space events or distinct Flash days, or three appearances among the latest five clan Krakens. Personal best, latest-event and recent-three metrics have no additional sample requirement.</p>
         <details><summary>View all 11 benchmarks and scoring rules</summary>
           <div class="table-wrap"><table><thead><tr><th>Metric</th><th>Type</th><th>Full-credit benchmark</th><th class="num">Points</th></tr></thead><tbody>${methodRows}</tbody></table></div>
           <p><strong>Recent Piggy and Space:</strong> Everyone is measured against the same latest three clan events. Missing an event earns zero for that event; all three count in the average.</p>
@@ -1516,7 +1545,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
           <p><strong>Flash:</strong> Daily totals combine all recorded flashes in the same Flash Set. PB uses the best day; arena-era average uses days since August 1, 2026.</p>
           <p><strong>PB points</strong> have a 3.50 maximum; <strong>Averages &amp; recent points</strong> have a 6.50 maximum. Historical data may be incomplete where original event coverage is partial.</p>
         </details>
-        <div class="rating-method-foot">Ties use the displayed two-decimal total; tied players share a rank (T-1, T-1, 3).</div>
+        <div class="rating-method-foot">Ranking ties use the displayed three-decimal adjusted score; tied players share a rank (T-1, T-1, 3). Source results and the existing 10-point base model are unchanged.</div>
       </div>`;
     $('#ratingsContent').innerHTML=ratingExplanation+grouped;
     $('#ratingsContent').querySelectorAll('button[data-rating-group]').forEach(button=>button.addEventListener('click',()=>{
@@ -1533,11 +1562,11 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     // searches, include every tracked profile so inactive historical members
     // remain discoverable without changing the global roster filter.
     const source=q ? D.members : currentMembers();
-    const rows=source.filter(r=>!q||r.name.toLowerCase().includes(q)).sort((a,b)=>b.ratingTotal-a.ratingTotal);
+    const rows=source.filter(r=>!q||r.name.toLowerCase().includes(q)).sort((a,b)=>b.ratingAdjusted-a.ratingAdjusted);
     $('#playersContent').innerHTML = rows.length ? `<div class="player-grid">${rows.map(r=>`
       <button class="player-card" data-player="${escapeHtml(r.name)}">
-        <div class="player-top"><div class="avatar">${initials(r.name)}</div><div style="min-width:0"><div class="player-card-name">${escapeHtml(r.name)}</div><div>${statusBadge(r.status,r.name)}</div></div></div>
-        <div class="rating-large">${fmtNum(r.ratingTotal,2)}</div><div class="rating-label">Player Rating</div>
+        <div class="player-top"><div class="avatar">${initials(r.name)}</div><div style="min-width:0"><div class="player-card-name">${escapeHtml(r.name)}</div><div>${statusBadge(r.status,r.name)} ${ratingCrownSummary(r)}</div></div></div>
+        <div class="rating-large">${fmtNum(r.ratingAdjusted,3)}</div><div class="rating-label">Rank Score · Base ${fmtNum(r.ratingTotal,2)} + Bonus ${fmtNum(r.ratingBonus,3)}</div>
         <div class="player-mini-stats">
           <div class="mini-stat"><strong>${fmtNum(r.piggyPB)}</strong><span>Piggy PB</span></div>
           <div class="mini-stat"><strong>${fmtB(r.spacePB)}</strong><span>Space PB</span></div>
@@ -1812,7 +1841,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     {id:'location',name:'Location',keys:['utcOffset','timeZoneGroup','state','country'],summary:'country'},
     {id:'sparks',name:'Sparks',keys:['piggySparks','spaceSparks','flashSparks','krakenSparks','loggedSparks','unloggedSparks','totalCombinedSparks'],summary:'totalCombinedSparks'},
     {id:'stars',name:'Stars',keys:['piggyStars','spaceStars','flashStars','loggedStars','unloggedStars','knownStars'],summary:'knownStars'},
-    {id:'rating',name:'Rating',keys:['ratingTotal','piggyPB','spacePB','spaceLobbyPBRank','krakenPB'],summary:'ratingTotal'},
+    {id:'rating',name:'Rating',keys:['ratingAdjusted','ratingTotal','ratingBonus','piggyPB','spacePB','spaceLobbyPBRank','krakenPB'],summary:'ratingAdjusted'},
     {id:'piggyAchievements',name:'Piggy Achievements',keys:['piggyWins','piggyPodiums','piggyPBRank'],summary:'piggyPBRank'},
     {id:'events',name:'Events',keys:['piggyEvents','spaceEvents','flashEvents','krakenEvents','totalEvents'],summary:'totalEvents'}
   ];
@@ -1823,10 +1852,10 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     loggedSparks:'Logged Sparks',unloggedSparks:'Unlogged Sparks',totalCombinedSparks:'Total Sparks',
     piggyStars:'Piggy',spaceStars:'Space',flashStars:'Flash',
     loggedStars:'Logged Stars',unloggedStars:'Unlogged Stars',knownStars:'Total Stars',
-    ratingTotal:'Rating',piggyPB:'Piggy PB',spacePB:'Space PB',spaceLobbyPBRank:'Space Lobby PB',krakenPB:'Kraken PB',
+    ratingAdjusted:'Rank Score',ratingTotal:'Base / 10',ratingBonus:'Leader Bonus',piggyPB:'Piggy PB',spacePB:'Space PB',spaceLobbyPBRank:'Space Lobby PB',krakenPB:'Kraken PB',
     piggyEvents:'Piggy',spaceEvents:'Space',flashEvents:'Flash',krakenEvents:'Kraken',totalEvents:'Total Events'
   };
-  const numeric=new Set(['piggyWins','piggyPodiums','piggyPBRank','utcOffset','piggySparks','spaceSparks','flashSparks','krakenSparks','loggedSparks','unloggedSparks','totalCombinedSparks','piggyStars','spaceStars','flashStars','loggedStars','unloggedStars','knownStars','ratingTotal','piggyPB','spacePB','spaceLobbyPBRank','krakenPB','piggyEvents','spaceEvents','flashEvents','krakenEvents','totalEvents']);
+  const numeric=new Set(['piggyWins','piggyPodiums','piggyPBRank','utcOffset','piggySparks','spaceSparks','flashSparks','krakenSparks','loggedSparks','unloggedSparks','totalCombinedSparks','piggyStars','spaceStars','flashStars','loggedStars','unloggedStars','knownStars','ratingAdjusted','ratingTotal','ratingBonus','piggyPB','spacePB','spaceLobbyPBRank','krakenPB','piggyEvents','spaceEvents','flashEvents','krakenEvents','totalEvents']);
   const colGroups=groups.map(group=>({...group,visible:expanded[group.id]?group.keys:[group.summary]}));
   const colKeys=['rank','name','status',...colGroups.flatMap(g=>g.visible)];
   const defaultWidths={rank:54,name:220,status:100,country:120,timeZoneGroup:88,state:110,piggyPBRank:108,totalCombinedSparks:146,knownStars:135,unloggedSparks:148};
@@ -1850,7 +1879,9 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       case 'timeZoneGroup':return r.timeZoneGroup?`<span class="tz-pill">${escapeHtml(r.timeZoneGroup)}</span>`:missing;
       case 'state':return r.state?escapeHtml(r.state):missing;
       case 'country':return r.country?escapeHtml(r.country):missing;
-      case 'ratingTotal':return r.hasProfile?`<button type="button" class="roster-rating-link" data-roster-rating="${escapeHtml(r.profileName||r.name)}" title="View ${escapeHtml(r.name)} in Player Ratings">${fmtNum(r.ratingTotal,2)} <span aria-hidden="true">↗</span></button>`:fmtNum(r.ratingTotal,2);
+      case 'ratingAdjusted':return r.hasProfile?`<button type="button" class="roster-rating-link" data-roster-rating="${escapeHtml(r.profileName||r.name)}" title="View ${escapeHtml(r.name)} in Player Ratings">${fmtNum(r.ratingAdjusted,3)}${ratingCrownSummary(r)} <span aria-hidden="true">↗</span></button>`:fmtNum(r.ratingAdjusted,3);
+      case 'ratingTotal':return fmtNum(r.ratingTotal,2);
+      case 'ratingBonus':return `+${fmtNum(r.ratingBonus,3)}`;
       case 'spacePB':return fmtB(r.spacePB);
       case 'spaceLobbyPBRank':return rankText(r.spaceLobbyPBRank);
       case 'krakenPB':return fmtNum(r.krakenPB,1);
@@ -2043,7 +2074,9 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
       loggedSparks:{label:'Logged Sparks',type:'number',get:r=>r.loggedSparks},
       unloggedSparks:{label:'Unlogged Sparks',type:'number',get:r=>r.unloggedSparks},
       totalCombinedSparks:{label:'Total Sparks',type:'number',get:r=>r.totalCombinedSparks},
-      ratingTotal:{label:'Rating',type:'number',get:r=>r.ratingTotal},
+      ratingAdjusted:{label:'Rank Score',type:'number',get:r=>r.ratingAdjusted},
+      ratingTotal:{label:'Base Rating',type:'number',get:r=>r.ratingTotal},
+      ratingBonus:{label:'Leader Bonus',type:'number',get:r=>r.ratingBonus},
       piggyPB:{label:'Piggy PB',type:'number',get:r=>r.piggyPB},
       piggyPBRank:{label:'Piggy PB Rank',type:'number',get:r=>r.piggyPBRank},
       piggyWins:{label:'Piggy Wins',type:'number',get:r=>r.piggyWins},
@@ -2469,7 +2502,7 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
     </tr>`).join(''):`<tr><td colspan="3" class="empty">No Kraken history logged.</td></tr>`;
 
     $('#playerModalContent').innerHTML=`
-      <div class="profile-head"><div class="avatar">${initials(name)}</div><div><div class="profile-name">${escapeHtml(name)}</div><div class="profile-status">${statusBadge(m.status,name)}</div></div></div>
+      <div class="profile-head"><div class="avatar">${initials(name)}</div><div><div class="profile-name">${escapeHtml(name)} ${ratingCrownSummary(m)}</div><div class="profile-status">${statusBadge(m.status,name)}</div></div></div>
       <div class="profile-share"><button type="button" class="profile-share-button" data-copy-profile-link data-profile-url="${escapeHtml(playerProfileUrl(name))}">Copy profile link</button><span class="profile-share-feedback" aria-live="polite"></span></div>
       ${profileLeagueInsightsHtml(name)}
       ${window.AVENGERS_COMMUNITY?.profileHtml(name)||''}
@@ -2492,7 +2525,9 @@ window.AVENGERS_DATA = {"meta":{"title":"AVENGERS Stat Center","generated":"2026
           }).join(''));
       }).join('')}
       <div class="profile-kpis">
-        <div class="profile-kpi"><span>Player Rating</span><strong>${fmtNum(m.ratingTotal,2)}</strong></div>
+        <div class="profile-kpi"><span>Rank Score</span><strong>${fmtNum(m.ratingAdjusted,3)}</strong></div>
+        <div class="profile-kpi"><span>Base Rating / 10</span><strong>${fmtNum(m.ratingTotal,2)}</strong></div>
+        <div class="profile-kpi"><span>Leader Bonus</span><strong>+${fmtNum(m.ratingBonus,3)}</strong></div>
         <div class="profile-kpi"><span>Piggy PB</span><strong>${fmtNum(m.piggyPB)}</strong></div>
         <div class="profile-kpi"><span>Piggy Wins</span><strong>${podium.wins}</strong></div>
         <div class="profile-kpi"><span>Piggy Podiums</span><strong>${podium.podiums}</strong></div>

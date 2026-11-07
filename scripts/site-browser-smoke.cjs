@@ -3,6 +3,9 @@
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),assert=require('node:assert/strict');
 const {build}=require('./build-site.cjs');
 let playwright;try{playwright=require('playwright');}catch{playwright=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');}
+// Crown counts are deliberately displayed alongside the name. Read only its
+// leading text node when verifying the canonical name behind profile links.
+const modalCanonicalName=page=>page.locator('#playerModalContent .profile-name').evaluate(el=>el.firstChild?.textContent?.trim());
 async function main(){
   const built=build(),dir=built.destination,errors=[],requests=[];
   const server=http.createServer((req,res)=>{
@@ -506,13 +509,13 @@ async function main(){
     assert.equal(await page.locator('#achievementsContent [data-community-profile="AV-Lin"]').count(),2,
       'selected badges and achievement-board name both link to canonical profile');
     await page.locator('#achievementsContent .community-toolbar [data-community-profile="AV-Lin"]').click();
-    assert.equal(await page.locator('#playerModalContent .profile-name').innerText(),'AV-Lin');
+    assert.equal(await modalCanonicalName(page),'AV-Lin');
     assert(await page.locator('#playerModalContent .ach-profile').count(),'badges live on unified canonical profile');
     await page.keyboard.press('Escape');
     await page.locator('#achievementsContent .community-table [data-achievement-select="AV-Lin"]').click();
     assert.equal(await page.locator('#achievementMember').inputValue(),'AV-Lin','badge preview stays independent');
     await page.locator('#achievementsContent .community-table [data-community-profile="AV-Lin"]').click();
-    assert.equal(await page.locator('#playerModalContent .profile-name').innerText(),'AV-Lin');
+    assert.equal(await modalCanonicalName(page),'AV-Lin');
     await page.keyboard.press('Escape');
 
     await page.click('.nav-btn[data-page="kraken"]');
@@ -526,7 +529,7 @@ async function main(){
     assert(krakenLinked,'Kraken result includes a mapped player with unified profile');
     await page.locator('#krakenContent [data-kr-player]').filter({hasText:krakenLinked}).first().click();
     const krakenCanonical=await page.evaluate(name=>window.AVENGERS_DATA.resolvePlayerName(name),krakenLinked);
-    assert.equal(await page.locator('#playerModalContent .profile-name').innerText(),krakenCanonical,
+    assert.equal(await modalCanonicalName(page),krakenCanonical,
       'Kraken result links open canonical player modal');
     assert.equal(new URL(page.url()).searchParams.get('player'),krakenCanonical);
     await page.keyboard.press('Escape');
@@ -536,7 +539,7 @@ async function main(){
     const trendLinked=await page.locator('#trendsContent [data-p2-player]').first().getAttribute('data-p2-player');
     assert(trendLinked,'Trends comparison contains a member profile link');
     await page.locator('#trendsContent [data-p2-player]').first().click();
-    assert.equal(await page.locator('#playerModalContent .profile-name').innerText(),trendLinked,
+    assert.equal(await modalCanonicalName(page),trendLinked,
       'Trends row opens same player modal as roster and records');
     await page.keyboard.press('Escape');
     assert(await page.locator('#page-trends').isVisible(),'Trend click retains comparison context');
@@ -544,7 +547,7 @@ async function main(){
     await page.click('.nav-btn[data-page="overview"]');
     await page.fill('#p2QuickPlayer','AV-2Lin');
     await page.click('#p2QuickGo');
-    assert.equal(await page.locator('#playerModalContent .profile-name').innerText(),'AV-Lin',
+    assert.equal(await modalCanonicalName(page),'AV-Lin',
       'quick finder resolves historic alias and opens canonical profile');
     await page.keyboard.press('Escape');
     assert(await page.locator('#page-overview').isVisible(),'overview finder does not redirect');
@@ -555,7 +558,7 @@ async function main(){
     assert((await page.locator('#p2ExplorerProfile').innerText()).includes('AV-Lin'),
       'legacy explorer previews canonical alias statistics');
     await page.click('#p2ExplorerOpenProfile');
-    assert.equal(await page.locator('#playerModalContent .profile-name').innerText(),'AV-Lin',
+    assert.equal(await modalCanonicalName(page),'AV-Lin',
       'explorer has explicit link to unified profile');
     await page.keyboard.press('Escape');
     // Deep-link / alias restore across clans never creates a phantom player.

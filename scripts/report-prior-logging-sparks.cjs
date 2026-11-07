@@ -19,7 +19,9 @@ const rows=(R.rows||[]).filter(r=>['Active','AV2'].includes(r.status)).map(r=>{
    categories:Object.fromEntries(Object.entries(p.categories).map(([k,v])=>[k,v.sparks])),
    screenshots:p.snapshotBreakdown||[]};
 });
-if(rows.length!==103||new Set(rows.map(r=>r.name)).size!==rows.length)throw Error('Expected 103 distinct current members after the October 27 Oakcliff addition');
+const projectedCurrent=release.projection.people.filter(p=>['Active','AV2'].includes(p.status));
+if(rows.length!==projectedCurrent.length||new Set(rows.map(r=>r.name)).size!==rows.length)
+  throw Error('Current roster must contain the same distinct members as the published projection');
 rows.sort((a,b)=>b.priorToLoggingSparks-a.priorToLoggingSparks||a.name.localeCompare(b.name));
 const positives=rows.filter(r=>r.priorToLoggingSparks>0);
 const summary={all:rows.length,positive:positives.length,over1000:positives.filter(r=>r.priorToLoggingSparks>=1000).length,
@@ -30,9 +32,15 @@ fs.writeFileSync(path.join(dir,'prior-to-logging-sparks.json'),JSON.stringify({v
 const cols=['name','clan','loggedSparks','priorToLoggingSparks','roundedTotalSparks','priorPercent'];
 fs.writeFileSync(path.join(dir,'prior-to-logging-sparks.csv'),[cols.join(','),...rows.map(r=>cols.map(k=>r[k]).join(','))].join('\n')+'\n');
 const frozen=require('../data/sparks-prior-to-logging-2026-10-16.json');
-if(summary.priorTotal!==frozen.approvedTotalSparks||positives.length!==28)throw Error('Official Unlogged Sparks export drifted');
-const official={source:'leader-approved fixed 2026-10-16 Unlogged Sparks',projectionVersion:release.projection.version,
-  approvedCount:28,approvedTotalUnloggedSparks:summary.priorTotal,
+// The approval snapshot includes former members. Keep its 28 amounts frozen in
+// source, but publish only balances belonging to today's current public roster.
+const currentNames=new Set(rows.map(r=>r.name));
+const approvedCurrent=new Map(Object.entries(frozen.amounts).filter(([name])=>currentNames.has(resolve(name))).map(([name,value])=>[resolve(name),value]));
+if(Object.values(frozen.amounts).reduce((total,value)=>total+value,0)!==frozen.approvedTotalSparks||
+   approvedCurrent.size!==positives.length||positives.some(r=>approvedCurrent.get(r.name)!==r.priorToLoggingSparks))
+  throw Error('Current Unlogged Sparks export drifted from approved historical amounts');
+const official={source:'leader-approved fixed 2026-10-16 Unlogged Sparks (current public roster)',projectionVersion:release.projection.version,
+  approvedCount:positives.length,approvedTotalUnloggedSparks:summary.priorTotal,
   excludedBelowOnePercent:frozen.excludedBelowOnePercent,
   members:positives.map(r=>({name:r.name,clan:r.clan,loggedSparks:r.loggedSparks,
     unloggedSparks:r.priorToLoggingSparks,totalSparks:r.roundedTotalSparks,percentOfTotal:r.priorPercent}))};
@@ -40,7 +48,7 @@ fs.writeFileSync(path.join(dir,'official-unlogged-sparks.json'),JSON.stringify(o
 const officialCols=['name','clan','loggedSparks','unloggedSparks','totalSparks','percentOfTotal'];
 fs.writeFileSync(path.join(dir,'official-unlogged-sparks.csv'),
   [officialCols.join(','),...official.members.map(m=>officialCols.map(k=>m[k]).join(','))].join('\n')+'\n');
-console.log('OFFICIAL_UNLOGGED_SPARKS '+JSON.stringify({count:28,total:summary.priorTotal}));
+console.log('OFFICIAL_UNLOGGED_SPARKS '+JSON.stringify({count:positives.length,total:summary.priorTotal}));
 console.log('PRIOR_TO_LOGGING_SUMMARY '+JSON.stringify(summary));
 console.log('PRIOR_TO_LOGGING_MEMBERS '+JSON.stringify(positives.map(r=>({name:r.name,gap:r.priorToLoggingSparks,clan:r.clan}))));
 

@@ -71,8 +71,8 @@ async function main(){
         assert.deepEqual(errors,[],name+' has no browser errors');
       }
     }
-    // Ratings ties use displayed two-decimal totals, not array indices. This
-    // checks the built site across each roster scope, including the overview.
+    // Ratings ranks use displayed three-decimal base-plus-bonus totals.
+    // This checks the built site across every roster scope and the overview.
     for(const status of ['active','av2','all']){
       await page.selectOption('#globalStatusFilter',status);
       await page.click('.nav-btn[data-page="ratings"]');
@@ -83,17 +83,20 @@ async function main(){
       })));
       assert(rated.length>0,status+' has rated players');
       assert.equal(await page.locator('#ratingsContent .rating-method tbody tr').count(),11,'all eleven benchmark definitions are documented');
-      let expectedRank=0,numberOfTies=0;
+      let expectedRank=0;
       for(let i=0;i<rated.length;i++){
         if(i===0||rated[i].score!==rated[i-1].score) expectedRank=i+1;
         const tied=(i>0&&rated[i].score===rated[i-1].score)||
           (i+1<rated.length&&rated[i].score===rated[i+1].score);
-        if(tied)numberOfTies++;
         assert.equal(rated[i].rank,(tied?'T-':'')+expectedRank,status+' rating rank '+i);
         assert.equal(rated[i].sortRank,String(expectedRank),status+' numeric sort rank '+i);
       }
-      if(status==='active') assert(numberOfTies>=2,'active players with equal displayed ratings share first place');
       if(status==='active'){
+        const expectedTop=await page.evaluate(()=>{
+          const winner=window.AVENGERS_DATA.members.filter(x=>x.status==='Active').sort((a,b)=>b.ratingAdjusted-a.ratingAdjusted)[0];
+          return winner.ratingAdjusted.toLocaleString(undefined,{minimumFractionDigits:3,maximumFractionDigits:3});
+        });
+        assert.equal(rated[0].score,expectedTop,'active leaderboard uses source-projected adjusted rank score');
         await page.click('.nav-btn[data-page="overview"]');
         const top=await page.locator('#overviewContent .rating-command-list tbody tr').evaluateAll(trs=>trs.map(tr=>({
           rank:tr.cells[0].textContent.trim(),score:tr.cells[3].innerText.trim()
@@ -102,7 +105,8 @@ async function main(){
           'overview and Player Rating table share competition ranks');
       }
     }
-    // Ratings retain the same /10 values, while category groups expose source-derived metric points.
+    // Ratings preserve the unchanged /10 base, separately show bonuses, and
+    // expand to metric-specific gold and silver crowns.
     await page.click('.nav-btn[data-page="ratings"]');
     for(const g of ['piggy','space','flash','kraken']){
       const control=page.locator('#ratingsContent button[data-rating-group="'+g+'"]');
@@ -117,9 +121,12 @@ async function main(){
     }
     const sums=await page.locator('#ratingsContent .rating-grouped-table tbody tr').first().evaluate(tr=>{
       const get=k=>Number(tr.querySelector('[data-rating-col="'+k+'"]').dataset.ratingValue);
-      return {total:get('total'),category:['piggyTotal','spaceTotal','flashTotal','krakenTotal'].reduce((s,k)=>s+get(k),0)};
+      return {total:get('total'),bonus:get('bonus'),adjusted:get('adjusted'),category:['piggyTotal','spaceTotal','flashTotal','krakenTotal'].reduce((s,k)=>s+get(k),0)};
     });
     assert(Math.abs(sums.total-sums.category)<0.02,'rating category points sum to unchanged /10 total');
+    assert(Math.abs(sums.adjusted-sums.total-sums.bonus)<1e-9,'adjusted rank equals base plus bonus');
+    assert.equal(await page.locator('#ratingsContent td[data-rating-col="piggyPB"] .rating-crown.silver').count()>0,true,'silver metric crown visible');
+    assert.equal(await page.locator('#ratingsContent td[data-rating-col="spacePB"] .rating-crown.gold').count()>0,true,'gold metric crown visible');
     await page.click('#ratingsContent button[data-rating-group="piggy"]');
     assert.equal(await page.locator('#ratingsContent [data-rating-col-head="piggyPB"]').count(),0,'Big Pig collapse hides metric details');
     for(const g of ['space','flash','kraken'])await page.click('#ratingsContent button[data-rating-group="'+g+'"]');

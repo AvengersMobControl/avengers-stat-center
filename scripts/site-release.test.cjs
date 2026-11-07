@@ -9,6 +9,27 @@ function boot(r){
 }
 const APPROVED=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/approved-event-updates.json'))).updates;
 const BASE=create(),BASEW=boot(BASE),member=(r,name)=>r.globals.AVENGERS_DATA.members.find(m=>m.name===name);
+test('gold/silver rating crowns and adjusted ranking project consistently to every member',()=>{
+ const P=BASE.projection;
+ assert.equal(Object.keys(P.ratingLeaders).length,11,'all approved metric categories are ranked');
+ assert(Object.values(P.ratingLeaders).some(rows=>rows.length>=2),'current site has silver runner-up awards');
+ for(const projected of P.people){
+   const {name}=projected,shown=member(BASE,name),awards=Object.values(projected.ratingCrowns);
+   const bonus=Math.round(awards.reduce((s,a)=>s+a.bonus,0)*1000)/1000;
+   assert.equal(projected.ratingBonus,bonus,name+' component bonuses reconcile');
+   assert.equal(shown.ratingBonus,bonus,name+' site member bonus');
+   assert.equal(shown.ratingAdjusted,projected.ratingAdjusted,name+' adjusted rank score');
+   assert.deepEqual(shown.ratingCrowns,projected.ratingCrowns,name+' identical site crown metadata');
+   assert(Math.abs(shown.ratingAdjusted-shown.ratingTotal-bonus)<1e-9,name+' base rating remains separate');
+   if(projected.status==='Inactive')assert.equal(awards.length,0,name+' inactive history cannot receive a crown');
+   for(const award of awards){
+     assert([1,2].includes(award.rank));assert.equal(award.metal,award.rank===1?'gold':'silver');
+     if(award.samples!==null)assert(award.samples>=3,name+' averaging crown requires three known appearances');
+   }
+ }
+ const first=P.rankings.ratingAdjusted[0];
+ assert(first&&Math.abs(first.value-Math.max(...P.people.map(p=>Number(p.ratingAdjusted.toFixed(3)))))<1e-9);
+});
 test('approved achievement thresholds are exact across all five categories',()=>{
  const expected={
   piggy:[10000,20000,30000,40000,50000,60000,70000,80000,90000,100000,111000],
@@ -47,7 +68,7 @@ for(const kind of Object.keys(UNITS))for(const clan of ['AVENGERS','AV-2'])test(
     assert.equal(member(r,name).status,member(BASE,name).status,'historical clan cannot transfer current roster');
     // A new global last-three/last-five event can change another player's
     // rating even when their own history, membership and payouts do not change.
-    const withoutGlobalRating=({ratingMetrics,ratingPoints,ratingPB,ratingAvg,ratingTotal,...rest})=>rest;
+    const withoutGlobalRating=({ratingMetrics,ratingPoints,ratingPB,ratingAvg,ratingTotal,ratingCrowns,ratingBonus,ratingAdjusted,...rest})=>rest;
     assert.deepEqual(withoutGlobalRating(member(r,'AV-INTEN')),withoutGlobalRating(member(BASE,'AV-INTEN')));
     if(['piggy','space'].includes(kind)){
       assert.equal(member(r,name)[kind+'PB'],p.kinds[kind].pb);

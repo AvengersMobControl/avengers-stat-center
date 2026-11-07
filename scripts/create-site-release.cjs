@@ -156,7 +156,9 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
     piggyPB:person.kinds.piggy.pb||0,spacePB:person.kinds.space.pb||0,krakenPB:person.kinds.kraken.pb||0,
     piggyAvg:person.kinds.piggy.arenaAverage||0,spaceAvg:person.kinds.space.arenaAverage||0,krakenAvg:person.kinds.kraken.average||0,krakenAvgL3:person.kinds.kraken.last3||0,
     krakenPBMonth:K.players.find(r=>r.name===person.name)?.pbMonth||'',rankingScore:(person.kinds.kraken.pb||0)+(person.kinds.kraken.last3||0),
-    ratingPB:person.ratingPB,ratingAvg:person.ratingAvg,ratingTotal:person.ratingTotal,ratingMetrics:person.ratingMetrics,ratingPoints:person.ratingPoints,eventsPlayed:person.earned.events,totalSparks:person.earned.sparks}));
+    ratingPB:person.ratingPB,ratingAvg:person.ratingAvg,ratingTotal:person.ratingTotal,
+    ratingBonus:person.ratingBonus,ratingAdjusted:person.ratingAdjusted,ratingCrowns:person.ratingCrowns,
+    ratingMetrics:person.ratingMetrics,ratingPoints:person.ratingPoints,eventsPlayed:person.earned.events,totalSparks:person.earned.sparks}));
   // 2026-11-02: Only council-confirmed she/her identities; never infer pronouns
   // from names, avatars, clans, locations, or historical results.
   const pronounSource=JSON.parse(fs.readFileSync(path.join(root,'data/member-pronouns-2026-11-02.json'),'utf8'));

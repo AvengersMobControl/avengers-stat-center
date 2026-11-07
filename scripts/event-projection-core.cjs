@@ -88,6 +88,7 @@ const RATING_BENCHMARKS=Object.freeze({
   flashDailyPB:{target:7000,weight:0.5}, flashDailyArena:{target:3500,weight:0.5}
 });
 const RATING_PB_KEYS=['piggyPB','spacePB','krakenPB','flashDailyPB'];
+const RATING_LEADER_METRICS=Object.freeze(Object.keys(RATING_BENCHMARKS));
 function recentClanEvents(events,kind,count){
   // One shared window per category, regardless of each player's attendance.
   return events.filter(e=>e.kind===kind&&e.status!=='revoked'&&e.rows.some(r=>r.clan==='AVENGERS'))
@@ -151,6 +152,45 @@ function calculateRating(history,kinds,windows,eventById,arenaStart,{name,status
   const normal=score({...ratingMetrics,piggyArena:kinds.piggy.arenaAverage,
     spaceArena:kinds.space.arenaAverage,krakenLast5:lastFiveKraken});
   return proposed.ratingTotal>normal.ratingTotal?proposed:normal;
+}
+// Crowns compare actual, uncapped performances, not benchmark-capped points.
+// All current AVENGERS and AV-2 members compete together regardless of the
+// website's selected filter. Historical inactive accounts are not eligible.
+function awardRatingCrowns(people,windows,eventById,arenaStart){
+  const current=people.filter(p=>p.status==='Active'||p.status==='AV2');
+  const qualifiedSamples=(person,key)=>{
+    if(key==='piggyArena'||key==='spaceArena'){
+      const kind=key==='piggyArena'?'piggy':'space';
+      return person.history.filter(r=>r.kind===kind&&r.date>=arenaStart&&Number.isFinite(r.score)).length;
+    }
+    if(key==='flashDailyArena')return new Set(person.history.filter(r=>r.kind==='flash'&&r.date>=arenaStart&&Number.isFinite(r.score)&&r.score>1)
+      .map(r=>eventById.get(r.eventId)?.metadata?.setId||r.date+'-A')).size;
+    if(key==='krakenLast5')return windows.kraken5.filter(e=>person.history.some(r=>r.eventId===e.id&&Number.isFinite(r.score))).length;
+    return null;
+  };
+  const leaders={};
+  for(const p of people){p.ratingCrowns={};p.ratingBonus=0;p.ratingAdjusted=p.ratingTotal;}
+  for(const key of RATING_LEADER_METRICS){
+    const average=['piggyArena','spaceArena','flashDailyArena','krakenLast5'].includes(key);
+    const ordered=current.filter(p=>Number(p.ratingMetrics[key])>0&&(!average||qualifiedSamples(p,key)>=3))
+      .sort((a,b)=>b.ratingMetrics[key]-a.ratingMetrics[key]||a.name.localeCompare(b.name));
+    let rank=0,previous=null;
+    leaders[key]=[];
+    for(let i=0;i<ordered.length;i++){
+      const p=ordered[i],value=p.ratingMetrics[key];
+      if(previous===null||Math.abs(value-previous)>1e-9)rank=i+1;
+      previous=value;
+      if(rank>2)break; // competition ranking: tied first means no second place
+      const metal=rank===1?'gold':'silver';
+      const bonus=(key.startsWith('flash')?0.05:0.10)/(rank===1?1:2);
+      const award={rank,metal,score:value,bonus,samples:average?qualifiedSamples(p,key):null};
+      p.ratingCrowns[key]=award;
+      p.ratingBonus=Math.round((p.ratingBonus+bonus)*1000)/1000;
+      leaders[key].push({name:p.name,...award});
+    }
+  }
+  for(const p of people)p.ratingAdjusted=p.ratingTotal+p.ratingBonus;
+  return leaders;
 }
 function summary(rows,arenaStart){
   const known=rows.filter(r=>r.score!==null),scores=known.map(r=>r.score),positive=known.filter(r=>r.score>0);
@@ -237,12 +277,13 @@ function project(ledger,{aliases={},members=[],snapshots={},priorToLogging=null,
       totalSparksComplete:earned.unknownSparks===0&&sources.length>0,
       ...rating,ratingComplete:KINDS.every(k=>kinds[k].knownScores>0&&kinds[k].unknownScores===0)};
   });
+  const ratingLeaders=awardRatingCrowns(people,windows,eventById,arenaStart);
   const clanNames=[...new Set(['AVENGERS','AV-2',...rows.map(r=>r.clan).filter(Boolean)])];
   const clans=Object.fromEntries(clanNames.map(c=>[c,rewards(rows.filter(r=>r.clan===c))]));
   const leagues=periods.map(p=>({...p,clans:Object.fromEntries(['AVENGERS','AV-2'].map(c=>[c,rewards(rows.filter(r=>r.clan===c&&r.date>=p.start&&r.date<=p.end))]))}));
   const rankings={};
-  for(const metric of ['ratingTotal',...KINDS.map(k=>k+'PB')]){
-    const value=p=>metric==='ratingTotal'?p.ratingTotal:p.kinds[metric.slice(0,-2)].pb;
+  for(const metric of ['ratingTotal','ratingAdjusted',...KINDS.map(k=>k+'PB')]){
+    const value=p=>metric==='ratingTotal'?p.ratingTotal:metric==='ratingAdjusted'?Number(p.ratingAdjusted.toFixed(3)):p.kinds[metric.slice(0,-2)].pb;
     let rank=0,previous=null;
     rankings[metric]=people.filter(p=>value(p)!==null).sort((a,b)=>value(b)-value(a)||a.name.localeCompare(b.name)).map((p,i)=>{
       const score=value(p);if(previous!==score)rank=i+1;previous=score;return {name:p.name,value:score,rank};
@@ -252,10 +293,10 @@ function project(ledger,{aliases={},members=[],snapshots={},priorToLogging=null,
   for(const r of rows.filter(r=>r.player&&r.clan&&['piggy','space'].includes(r.kind))){
     const dest=councilEvents[r.kind+'Events'];(dest[r.date]??=[]).push({name:r.player,clan:r.clan,[r.kind==='piggy'?'lines':'yearsB']:r.score});
   }
-  const output={schemaVersion:1,events,people,clans,leagues,rankings,council:council.build({...councilEvents,periods}),
+  const output={schemaVersion:1,events,people,clans,leagues,rankings,ratingLeaders,council:council.build({...councilEvents,periods}),
     coverage:{unassignedRows:rows.filter(r=>!r.player),unknownClanRows:rows.filter(r=>!r.clan).length,unknownClanRewards:rewards(rows.filter(r=>!r.clan)),partialEvents:events.filter(e=>e.status==='partial').map(e=>e.id),unknownRewards:rows.filter(r=>r.sparks===null||(r.kind!=='kraken'&&r.stars===null)).length}};
   // Version includes identity, membership, screenshot references and policy, not just events.
   output.version=hash({ledger,aliases,members:[...members].sort((a,b)=>a.name.localeCompare(b.name)),snapshots,arenaStart,projection:output});
   return output;
 }
-module.exports={empty,apply,project,normalize,canonical,stable,UNITS,periods,RATING_BENCHMARKS};
+module.exports={empty,apply,project,normalize,canonical,stable,UNITS,periods,RATING_BENCHMARKS,awardRatingCrowns};

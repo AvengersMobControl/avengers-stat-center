@@ -1,6 +1,6 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict');
-const {empty,apply,project,UNITS}=require('./event-projection-core.cjs');
+const {empty,apply,project,UNITS,RATING_BENCHMARKS,awardRatingCrowns}=require('./event-projection-core.cjs');
 const members=[{name:'A',status:'AV2'},{name:'B',status:'Active'},{name:'Untouched',status:'Active'}];
 const options={members,snapshots:{A:500,B:0,Untouched:null}};
 function ev(kind,id,date,score,clan='AVENGERS',extra={}){
@@ -96,6 +96,38 @@ test('ten-point rating uses eleven leader-approved benchmarks and current event 
   const period=p.council.find(x=>x.end==='2026-10-11');
   assert.equal(period.observedEvents.filter(r=>r.underMinimum).length,2);
   assert.equal(period.observedEvents.find(r=>r.kind==='space').limit,50);
+});
+test('gold/silver crowns use uncapped performances, current rosters, sample gates, competition ties and half-size Flash bonuses',()=>{
+  const metricDefaults=()=>Object.fromEntries(Object.keys(RATING_BENCHMARKS).map(k=>[k,0]));
+  const mk=(name,status,metrics,history)=>({name,status,history,ratingMetrics:{...metricDefaults(),...metrics},ratingTotal:5});
+  const ph=(name,count)=>Array.from({length:count},(_,i)=>({kind:'piggy',date:'2026-09-'+String(i+10),eventId:name+'p'+i,score:50000}));
+  const kh=(count)=>Array.from({length:count},(_,i)=>({kind:'kraken',date:'2026-09-01',eventId:'k'+(i+1),score:3500}));
+  const fh=(count)=>Array.from({length:count},(_,i)=>({kind:'flash',date:'2026-09-'+String(i+10),eventId:'f'+(i+1),score:1000}));
+  const people=[
+    mk('A','Active',{piggyPB:80000,piggyArena:90000,krakenLast5:6000,flashDailyPB:12000,flashDailyArena:9000},[...ph('A',1),...kh(1),...fh(1)]),
+    mk('B','AV2',{piggyPB:70000,piggyArena:55000,krakenLast5:5000,flashDailyPB:10000,flashDailyArena:8000},[...ph('B',3),...kh(3),...fh(3)]),
+    mk('C','Active',{piggyPB:70000,piggyArena:40000,krakenLast5:4000,flashDailyArena:7000},[...ph('C',3),...kh(3),...fh(3)]),
+    mk('D','Inactive',{piggyPB:90000,piggyArena:95000,krakenLast5:9000,flashDailyPB:15000,flashDailyArena:10000},[...ph('D',3),...kh(3),...fh(3)]),
+    mk('E','Active',{piggyPB:60000},[])
+  ];
+  const eventMap=new Map([1,2,3].map(i=>['f'+i,{metadata:{setId:'set'+i}}]));
+  const windows={kraken5:[1,2,3,4,5].map(i=>({id:'k'+i}))};
+  let leaders=awardRatingCrowns(people,windows,eventMap,'2026-08-01');
+  assert.equal(leaders.piggyPB[0].name,'A');
+  assert.deepEqual(leaders.piggyPB.map(x=>[x.name,x.rank,x.metal]),[['A',1,'gold'],['B',2,'silver'],['C',2,'silver']]);
+  for(const key of ['piggyArena','krakenLast5','flashDailyArena']){
+    assert.equal(leaders[key][0].name,'B',key+' excludes the one-result leader');
+    assert.equal(leaders[key][1].name,'C');
+    assert.equal(people[0].ratingCrowns[key],undefined);
+  }
+  assert.equal(people[3].ratingBonus,0,'inactive high-scoring account earns no crown');
+  assert.equal(people[1].ratingCrowns.flashDailyPB.bonus,0.025,'silver Flash is half gold Flash');
+  assert.equal(people[1].ratingBonus,0.325,'bonus amounts accumulate in three-decimal precision');
+  assert.equal(people[1].ratingAdjusted,5.325);
+  people[2].ratingMetrics.piggyPB=80000;
+  leaders=awardRatingCrowns(people,windows,eventMap,'2026-08-01');
+  assert.deepEqual(leaders.piggyPB.map(x=>[x.name,x.rank]),[['A',1],['C',1]],'joint gold skips second place');
+  assert.equal(people[1].ratingCrowns.piggyPB,undefined,'third place does not receive silver after tied first');
 });
 test('recent Piggy and Space scores use fixed last-three-event windows with missed events worth zero',()=>{
   let l=empty();

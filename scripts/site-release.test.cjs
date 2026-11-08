@@ -425,8 +425,8 @@ test('October 23 identities preserve former-member history and add only confirme
    assert.equal(matches.length,1);
    // Profiles start with the verified Oct 23 Piggy; Mickzzz later logged Oct 25 Space.
    const ids=matches[0].history.map(h=>h.eventId).sort();
-   assert.deepEqual(ids,name==='Mickzzz'?['piggy|2026-10-23','space|2026-10-25']:['piggy|2026-10-23','space|2026-10-30','space|2026-11-06']);
-   assert.equal(matches[0].totalSparks,name==='Mickzzz'?16519+11357:5506+7601+6860);
+   assert.deepEqual(ids,name==='Mickzzz'?['piggy|2026-10-23','space|2026-10-25']:['piggy|2026-10-23','piggy|2026-11-08','space|2026-10-30','space|2026-11-06']);
+   assert.equal(matches[0].totalSparks,name==='Mickzzz'?16519+11357:5506+7601+6860+15000);
  }
  assert.equal(resolve('AVS9.Saberkong'),'AV.Saberkong');
  assert.equal(resolve('AVS9-HN'),'AV-HN');

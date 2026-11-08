@@ -425,8 +425,8 @@ test('October 23 identities preserve former-member history and add only confirme
    assert.equal(matches.length,1);
    // Profiles start with the verified Oct 23 Piggy; Mickzzz later logged Oct 25 Space.
    const ids=matches[0].history.map(h=>h.eventId).sort();
-   assert.deepEqual(ids,name==='Mickzzz'?['piggy|2026-10-23','space|2026-10-25']:['piggy|2026-10-23','space|2026-10-30']);
-   assert.equal(matches[0].totalSparks,name==='Mickzzz'?16519+11357:5506+7601);
+   assert.deepEqual(ids,name==='Mickzzz'?['piggy|2026-10-23','space|2026-10-25']:['piggy|2026-10-23','space|2026-10-30','space|2026-11-06']);
+   assert.equal(matches[0].totalSparks,name==='Mickzzz'?16519+11357:5506+7601+6860);
  }
  assert.equal(resolve('AVS9.Saberkong'),'AV.Saberkong');
  assert.equal(resolve('AVS9-HN'),'AV-HN');
@@ -517,9 +517,33 @@ test('leader-verified she/her pronouns attach only to the 14 canonical member pr
 test('Nov 6 Zolika first-place supplement is source-linked once and current transfers preserve event clan',()=>{
   const e=BASE.ledger.events.find(x=>x.id==='space|2026-11-06');
   assert(e&&e.status==='partial');
-  assert.equal(e.rows.length,52);
-  assert.equal(e.rows.filter(r=>r.clan==='AVENGERS').length,45,'45 verified main-clan Space results');
-  assert.equal(e.rows.filter(r=>r.clan==='AV-2').length,7,'AV-2 result rows preserved');
+  assert.equal(e.rows.length,61,'Nine original-source-backed Space supplements');
+  assert.equal(e.rows.filter(r=>r.clan==='AVENGERS').length,46,'46 verified main-clan Space results');
+  assert.equal(e.rows.filter(r=>r.clan==='AV-2').length,15,'15 source-linked AV-2 result rows');
+  for(const [player,clan,lobby,rank,score,stars,sparks] of [
+    ['AV-HN','AVENGERS',undefined,1,42.3,78345,7882],
+    ['AV-2.SURVIVOR','AV-2','G',2,97.2,561714,56312],
+    ['AV2-OlRose','AV-2','H',1,90,427316,42877],
+    ['AV-Brisket','AV-2','H',2,48.8,341853,34301],
+    ['AV2-Thoszi','AV-2','H',3,37.2,307668,30871],
+    ['AV-EventHorizon','AV-2','H',4,30.9,205112,20581],
+    ['AV-KO','AV-2','H',6,12.1,136741,13721],
+    ['AV2-Froyo','AV-2','H',7,9.2,68371,6860],
+    ['AV#Rafa#Tun','AV-2','H',9,0.1248,17093,1715]
+  ]){
+    const matches=e.rows.filter(r=>r.player===player&&r.clan===clan);
+    assert.equal(matches.length,1,player+' imported exactly once');
+    const r=matches[0];
+    assert.equal(r.metadata.lobby,lobby);
+    assert.equal(r.metadata.rank,rank);assert.equal(r.score,score);
+    assert.equal(r.stars,stars);assert.equal(r.sparks,sparks);
+  }
+  assert(!e.rows.some(r=>r.player==='AV2-J'||r.player==='AV2-TheHempe...'),'truncated/unverified AV-2 identity held');
+  for(const sha of [
+    '7293b114b3198eb67266511a02680f7c8fc96139f2e271c647c922f6a2f462c9',
+    '12f6c3c1ce2d899a54970d5781c2ba2f025e6260ebf81fcc029ce2a66f5d66a3',
+    '4db2b63a0a13944ecaf806a22ae8fde89d76a42ab87648680c6d084072e3d977'
+  ])assert(e.sources.includes('reviewed-image-sha256:'+sha),'original source hash bound');
   const z=e.rows.filter(r=>r.player==='AV-Zolika.x.TheBoss');
   assert.equal(z.length,1);
   assert.equal(z[0].clan,'AVENGERS');

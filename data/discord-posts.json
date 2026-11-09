@@ -65,6 +65,19 @@
       "approved": true,
       "authorization": "leader-standing-auto-discord-2026-10-26",
       "description": "AVENGERS Space Race November 6 2026 results"
+    },
+    "piggy|piggy|2026-11-08|AVENGERS": {
+      "kind": "piggy",
+      "eventId": "piggy|2026-11-08",
+      "clan": "AVENGERS",
+      "file": "AVENGERS_Big_Pig_November_8_2026.png",
+      "sha256": "321b2591cb5cd5e3042debede170b7e9017c71068906be4ed48004b3410f419c",
+      "size": 1032112,
+      "template": "bigpig-poster-v3-20261026-candidate",
+      "body": "@everyone\n\n🐷 **AVENGERS Big Pig — November 8** 🐷\n\n**📊 Headline**\n47 racers banked 789,650 lines (avg 16,801 lines/racer) — down -4.6% on our last-4 average. The AVENGERS lobby pot landed at 79.03M Stars, #11 of 15 lobby pots in the Arena era.\n\n**🏆 Podium**\n🥇 INTEN — 62,637 lines\n🥈 Zolika.x.TheBoss — 43,670 lines\n🥉 KKD — 42,172 lines\n\n**🌟 Standout Stories**\nINTEN's 62,637 lines is the #3 Big Pig performance of all time (3/2,145) and #3 of the Arena era! I.S.O posted the biggest jump over his own average tonight: +192.3% (7,377 avg over 44 races to 21,561).\n\n**💥 Personal Bests**\n4 new line PBs this race! Top gains:\n1. TRINITY — 12,473 (+23.3%)\n2. McNasty — 22,512 (+12.5%)\n3. SMILINGBANDIT — 14,252 (+7.1%)\n4. RkHendrix — 8,584 (+6.9%)\n23 of 42 returning racers beat their own average this race!\n\n**👋 Welcome to the Clan**\nziyad — 20,371 lines, 12th place!\nDubai — 9,960 lines, 32nd place!\nDreadrixter-UA — 8,904 lines, 36th place!\natarIX — 8,731 lines, 37th place!\nShieldBreaker — 8,556 lines, 39th place!\n\n**🚩 Milestones**\n60K+ lines: 1 racer this race — ties for the 2nd-best Arena-era count ever in that tier!\n\nFull results and PBs: https://avengersmobcontrol.github.io/avengers-stat-center/",
+      "approved": true,
+      "authorization": "leader-standing-auto-discord-2026-10-26",
+      "description": "AVENGERS Big Pig November 8 2026 results"
     }
   }
 }

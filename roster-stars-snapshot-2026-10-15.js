@@ -33,6 +33,13 @@
     'AV-Zolika.x.Kira':'AV-Zolika.x.TheBoss',
     'AV-ZIBBY2.0':'AV-ZIBBY',
     'AV-Neez':'AV-neez',
+    // November 8 source spelling is the same existing AVENGERS member; do not
+    // create an inactive duplicate or split Big Pig / Space history.
+    'AV-ShieldBreaker':'AV-ShielDBreaker',
+    // Source-confirmed Nov 8 AV-2 Big Pig display aliases. Resolve to the
+    // existing histories, without inventing extra current player profiles.
+    'AV2-J':'AV-J',
+    'AV2-TheHemperor':'TheHemperor',
     'AVS9.Saberkong':'AV.Saberkong',
     'AVS9-HN':'AV-HN'
   };
@@ -173,6 +180,16 @@
     rosterEntries.push({name,profileName,status:'Active'});
     fixedIds.add(profileName);
   }
+  // November 8 leader-confirmed AV-2 screenshot participants. Their already
+  // accepted event rows belong to these exact profiles; roster assignment
+  // changes current status only and does not rewrite event-time clans.
+  for(const name of ['AV2-OlRose','AV-2.SURVIVOR','AV2-Thoszi','TheHemperor']){
+    const profileName=canonical(name);
+    if(rosterEntries.some(row=>row.profileName===profileName))
+      throw new Error('November 8 AV-2 member already present: '+name);
+    rosterEntries.push({name,profileName,status:'AV2'});
+    fixedIds.add(profileName);
+  }
   const discordMembers=window.AVENGERS_DISCORD_UTC_ROSTER?.members||[];
   for(const member of discordMembers){
     const name=String(member.name||'').trim();
@@ -228,8 +245,8 @@
   delete D.aliasMap['AV-Frenchie2'];
   byName['AV-Frenchie2']=fromRow(currentRows.find(r=>r.name==='AV-Frenchie2'));
   R.byName=byName;
-  R.source='October 15 AVENGERS/AV-2 snapshots + leader identity and membership corrections through November 6';
-  R.precedence='October 15 source screenshots retained as dated provenance, except leader-removed LT shell; current changes: AV-2Lin → AV-Lin, Jeff canonical AV-JefhKintz05, Timmy and Fred Active, FrankAbagnale linked to existing Addicted account, Zibby and TheOli AV-2; Animosity Inactive, Mickzzz and AV2-Froyo AV-2; Oakcliff Active (new member Oct 27); Oct 30: TRINITY, istanbuL, KKD Active; Rafa, JAMO, Royal, SiFra AV-2; WolfLegend Inactive; Nov 6 KitKat and Hoops Active; Pablin, MotherboardBeans, no and Neez AV-2; Nicefellow remains Active; 50 Active and 48 AV-2; UTC/TZG/country retained.';
+  R.source='October 15 AVENGERS/AV-2 snapshots + leader identity and membership corrections through November 8';
+  R.precedence='October 15 source screenshots retained as dated provenance, except leader-removed LT shell; current changes: AV-2Lin → AV-Lin, Jeff canonical AV-JefhKintz05, Timmy and Fred Active, FrankAbagnale linked to existing Addicted account, Zibby and TheOli AV-2; Animosity Inactive, Mickzzz and AV2-Froyo AV-2; Oct 30: TRINITY, istanbuL, KKD Active; Rafa, Royal, SiFra AV-2; WolfLegend Inactive; Nov 6 KitKat, Hoops and JAMO Active; Pablin, MotherboardBeans, no, Neez and Oakcliff AV-2; Nov 8 OlRose, SURVIVOR, Thoszi and TheHemperor AV-2; AV2-J merged to existing AV-J, AV2-TheHemperor merged to TheHemperor and existing CRISPIN.27 alias to CRISPIN.97 retained; ShieldBreaker source capitalization merged with existing active ShielDBreaker; Nicefellow remains Active; 50 Active and 52 AV-2; UTC/TZG/country retained.';
 
   // Only current member status changes. Event history, clan attribution,
   // personal records, event totals, and rating math remain unchanged.

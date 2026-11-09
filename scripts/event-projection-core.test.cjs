@@ -9,16 +9,18 @@ function ev(kind,id,date,score,clan='AVENGERS',extra={}){
 }
 function put(l,e,expectedRevision=0,extra={}){return apply(l,e,{approved:true,expectedRevision,...extra}).ledger;}
 const person=(p,n='A')=>p.people.find(x=>x.name===n);
-test('one-line Piggy and Flash placeholders are excluded everywhere; one billion Space remains valid',()=>{
+test('one-line Big Pig counts as a result, one-line Flash is excluded, one billion Space remains valid',()=>{
   for(const kind of ['piggy','flash'])for(const clan of ['AVENGERS','AV-2']){
     let l=put(empty(),ev(kind,'real','2026-09-12',100,clan));
     l=put(l,ev(kind,'placeholder','2026-09-13',1,clan));
     const p=project(l,options),a=person(p);
     assert.equal(l.events.find(e=>e.id==='placeholder').rows[0].score,1,'Original evidence retained');
-    assert.equal(p.events.find(e=>e.id==='placeholder').rows.length,0);
-    assert.equal(a.history.length,1);assert.equal(a.kinds[kind].average,100);
-    assert.equal(a.kinds[kind].eventsRecorded,1);assert.equal(a.earned.events,1);
-    assert.equal(p.clans[clan].events,1);assert.equal(p.clans[clan].sparks,10);
+    const count=kind==='piggy'?2:1;
+    assert.equal(p.events.find(e=>e.id==='placeholder').rows.length,count-1);
+    assert.equal(a.history.length,count);
+    assert.equal(a.kinds[kind].average,kind==='piggy'?50.5:100);
+    assert.equal(a.kinds[kind].eventsRecorded,count);assert.equal(a.earned.events,count);
+    assert.equal(p.clans[clan].events,count);assert.equal(p.clans[clan].sparks,10*count);
   }
   const s=project(put(empty(),ev('space','one-billion','2026-09-12',1)),options);
   assert.equal(person(s).kinds.space.eventsRecorded,1);assert.equal(person(s).kinds.space.average,1);

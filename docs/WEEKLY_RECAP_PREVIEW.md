@@ -2,6 +2,14 @@
 
 **Status:** NEW unapproved weekly visual; immutable approved-data model; NO sending.
 
+**Superseded 2026-11-09:** this script and the visual it produces are a prototype that was never
+approved as the leader's actual weekly recap. The approved artifact — background template,
+renderer, and now automatic Discord posting — is `scripts/render-weekly-recap-poster.py` +
+`scripts/build-weekly-recap-facts.py` + `assets/weekly/AVENGERS_WEEKLY_RECAP_MASTER_BACKGROUND_TEMPLATE_1440w.png`,
+documented in `docs/AUTOMATIC_DISCORD_POSTING.md`'s "Weekly recap" section and
+`docs/DECISION_LOG.md`'s 2026-11-09 entry. Do not use this file's script as the weekly recap;
+it is kept only as a record of the earlier (incorrect) attempt.
+
 Exactly Space, Piggy Flash 1 through 4, Piggy for a given Monday–Sunday week. The first iteration is Monday Oct 12 – Sunday Oct 18, 2026.
 
 ## Recreate from actual accepted source

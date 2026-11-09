@@ -1,6 +1,8 @@
-# Automatic Discord event posts (leader-activated 2026-10-26)
+# Automatic Discord event posts (leader-activated 2026-10-26; weekly recap added 2026-11-09)
 
 On 2026-10-26 the leader approved the Space, Big Pig and Flash Set poster templates and told Claude to post event results automatically: "set it up please". This activates **unattended posting for AVENGERS Space Race, Big Pig and Piggy Flash Set summaries only**. AV-2 posting stays on hold until the leader says otherwise. Kraken is not included.
+
+On 2026-11-09 the leader extended this to the weekly recap, to be sent **alongside** the Sunday/Big Pig post once that week's six events are all posted (see `docs/DECISION_LOG.md`). The weekly recap runs under its own authorization tag (`leader-standing-auto-discord-weekly-2026-11-09`), separate from the single-event tag, and is covered in its own subsection below.
 
 ## Schedule (America/Chicago)
 
@@ -41,6 +43,17 @@ On 2026-10-26 the leader approved the Space, Big Pig and Flash Set poster templa
     - Stop the sandbox.
     - Push-notify the leader with the Discord link: `https://discord.com/channels/1403361698177618081/1470175579058999386/<messageId>`.
 
+## Weekly recap (sent alongside the Sunday/Big Pig post)
+
+Once a week's six events (one Space, four Flash PFs, one Big Pig) have all been posted under the steps above, also send the weekly recap for that week:
+
+1. **Export the facts.** `node scripts/export-event-summary.cjs approved-summary-release.json`, then `python3 scripts/build-weekly-recap-facts.py reports/approved-summary-release.json <out>-FACTS.json --week <ISO Monday> --clan AVENGERS`. This shells out to `scripts/export-weekly-review.cjs` and `scripts/weekly-recap-flash-combined.cjs` itself; it refuses to run if the week isn't exactly 6 events.
+2. **Render.** `python3 scripts/render-weekly-recap-poster.py <out>-FACTS.json <out>-REVIEW.png` (background defaults to `assets/weekly/AVENGERS_WEEKLY_RECAP_MASTER_BACKGROUND_TEMPLATE_1440w.png`).
+3. **Check the poster**, same as any other — look for clipping/overlap/empty sections before going further.
+4. **Write the message** the same way (under 2,000 characters, starts with `@everyone`, every number from the FACTS json).
+5. **Stage it**: `python3 scripts/stage-discord-post.py --kind weekly --event-id 'weekly|<ISO Monday>' --clan AVENGERS --png <out>-REVIEW.png --body-file … --template weekly-recap-poster-v1-20261109 --week-space-event 'space|<date>' --week-flash-set-id '<setId>' --week-piggy-event 'piggy|<date>'`. The three `--week-*` refs are the week's actual Space/Flash-Set/Big-Pig event ids; the publisher verifies all three against `data/approved-event-updates.json` before it will send.
+6. **Everything else is identical** to the single-event flow: `git add -f`, PR, arm the token (the same `AVENGERS_AUTO_PUBLISH_POST` can list a weekly key alongside the Big Pig key for one armed run), merge, wait for deploy, sandboxed preflight/send, confirm the Neon receipt, burn the token, notify the leader.
+
 ## Safety properties
 
 - **Content is fixed by the repo.** The deployed repo (`data/discord-posts.json` plus the SHA-pinned PNG) decides what gets posted. Callers only pick which staged post to send.
@@ -48,5 +61,5 @@ On 2026-10-26 the leader approved the Space, Big Pig and Flash Set poster templa
 - **Pings:** only `@everyone` may ping, and only when the write-up starts with it.
 - **Duplicates:** the Neon send-once ledger blocks a second post for the same event. An uncertain send is marked `manual_reconciliation_required` and is never retried.
 - **Readback:** after sending, the bot reads the message back and verifies both the text and the PNG bytes.
-- **Neon switches:** the database-level `runtime_safety` switches stay false. They are role-privilege checks the publisher requires, not the authorization. The authorization is the leader's 2026-10-26 activation, recorded as `leader-standing-auto-discord-2026-10-26`.
+- **Neon switches:** the database-level `runtime_safety` switches stay false. They are role-privilege checks the publisher requires, not the authorization. The authorization for Space/Big Pig/Flash Set is the leader's 2026-10-26 activation (`leader-standing-auto-discord-2026-10-26`); the weekly recap carries its own, separate tag from the leader's 2026-11-09 decision (`leader-standing-auto-discord-weekly-2026-11-09`), recorded against all three constituent events it is built from.
 - **Kill switch:** set `AVENGERS_AUTO_PUBLISH_ENABLED=false` (takes effect on the next deploy), or disable the scheduled tasks.

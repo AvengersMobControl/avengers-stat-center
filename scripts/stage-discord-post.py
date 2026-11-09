@@ -6,6 +6,13 @@ Usage:
       --png reports/bigpig-2026-10-23-AVENGERS.png --body-file /path/body.txt --template bigpig-poster-v3-...
 
 Flash Sets use --kind flash --event-id 'flash|2026-10-20-A' (the key the Oct 20 post already used).
+
+Weekly recaps use --kind weekly --event-id 'weekly|2026-11-02' (ISO Monday) plus
+--week-space-event, --week-flash-set-id and --week-piggy-event, which the publisher
+verifies against those three already-approved events/sets instead of one (leader
+decision 2026-11-09, see docs/DECISION_LOG.md). It has its own authorization tag,
+separate from the 2026-10-26 single-event activation.
+
 Copies the PNG to assets/reports/<CLAN>_<Event>_<Month>_<D>_<YYYY>.png (commit it with git add -f)
 and writes data/discord-posts.json. Refuses to change an existing entry. Never posts anything.
 """
@@ -14,7 +21,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / 'data' / 'discord-posts.json'
-NAMES = {'space': 'Space_Race', 'piggy': 'Big_Pig', 'flash': 'Piggy_Flashes'}
+NAMES = {'space': 'Space_Race', 'piggy': 'Big_Pig', 'flash': 'Piggy_Flashes', 'weekly': 'Weekly_Recap'}
+AUTH_SINGLE_EVENT = 'leader-standing-auto-discord-2026-10-26'
+AUTH_WEEKLY = 'leader-standing-auto-discord-weekly-2026-11-09'
 
 
 def main():
@@ -26,6 +35,9 @@ def main():
     ap.add_argument('--body-file', required=True)
     ap.add_argument('--template', required=True)
     ap.add_argument('--date', help='Event (or first set) date YYYY-MM-DD for the file name; default from event id')
+    ap.add_argument('--week-space-event', help='weekly only: this week\'s space|<date> event id')
+    ap.add_argument('--week-flash-set-id', help='weekly only: this week\'s Flash Set id, e.g. 2026-11-03-A')
+    ap.add_argument('--week-piggy-event', help='weekly only: this week\'s piggy|<date> event id')
     a = ap.parse_args()
 
     if not a.event_id.startswith(a.kind + '|'): raise SystemExit('Event id must start with kind| (Flash Sets: flash|<setId>)')
@@ -41,8 +53,16 @@ def main():
     key = f'{a.kind}|{a.event_id}|{a.clan}'
     entry = dict(kind=a.kind, eventId=a.event_id, clan=a.clan, file=name, sha256=hashlib.sha256(src).hexdigest(),
                  size=len(src), template=a.template, body=body, approved=True,
-                 authorization='leader-standing-auto-discord-2026-10-26',
+                 authorization=AUTH_WEEKLY if a.kind == 'weekly' else AUTH_SINGLE_EVENT,
                  description=f'{a.clan} {NAMES[a.kind].replace("_", " ")} {d.strftime("%B")} {d.day} {d.year} results')
+
+    if a.kind == 'weekly':
+        if not (a.week_space_event and a.week_flash_set_id and a.week_piggy_event):
+            raise SystemExit('weekly kind requires --week-space-event, --week-flash-set-id and --week-piggy-event')
+        if not re.fullmatch(r'space\|\d{4}-\d{2}-\d{2}', a.week_space_event): raise SystemExit('Bad --week-space-event')
+        if not re.fullmatch(r'\d{4}-\d{2}-\d{2}-[A-Za-z]', a.week_flash_set_id): raise SystemExit('Bad --week-flash-set-id')
+        if not re.fullmatch(r'piggy\|\d{4}-\d{2}-\d{2}', a.week_piggy_event): raise SystemExit('Bad --week-piggy-event')
+        entry['weekRefs'] = dict(space=a.week_space_event, flashSetId=a.week_flash_set_id, piggy=a.week_piggy_event)
 
     data = json.loads(MANIFEST.read_text()) if MANIFEST.exists() else {'schemaVersion': 1, 'posts': {}}
     old = data['posts'].get(key)

@@ -652,3 +652,9 @@ While awaiting an independently retrievable final race screenshot at 5 PM Centra
 - [ ] Verify and publish the corrected site through all CI/Pages exact-SHA/versioned export/live-browser and Vercel production checks.
 - [ ] Independently verify the separate AV-J AV-2 Space result Discord publication state; preserve at-most-once and AV-2 dispatch controls.
 - [ ] Regenerate/correct any Nov 8 Big Pig PNG and Discord summary only through the separate authorized versioned dispatch workflow, now reflecting Finnie's and AV-2's qualifying results.
+
+## 2026-11-08 — Newest leader roster corrections
+
+- [x] Mark AV-23 and AV-Timmy Inactive; transfer AV-JefhKintz05 to AV-2, AV-Chuck and AV-no to AVENGERS. Current roster goal **49 Active / 51 AV-2**, with unchanged historical event-time clan and stats; supersedes prior 50/52 count.
+- [ ] Complete independent original-screenshot-to-ledger row verification for `space|2026-11-06`. One-line Big Pig correction does not address truncated Space images, and incomplete coverage must retain `complete:false`.
+- [ ] Publish and verify the roster update on the GitHub Pages canonical site and Vercel production, with source SHA, roster totals, and row parity checks.

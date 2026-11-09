@@ -161,14 +161,20 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
   const R=BASE.globals.AVENGERS_MEMBER_TIMEZONES,D=BASE.globals.AVENGERS_DATA;
   const people=BASE.projection.people;
   const active=R.rows.filter(r=>r.status==='Active'),av2=R.rows.filter(r=>r.status==='AV2');
-  assert.equal(active.length,50);assert.equal(av2.length,52);
-  for(const name of ['AV-Lin','AV-JefhKintz05','AV-TRINITY','AV-istanbuL','AV-KKD','AV-KitKat','AV-Hoops','AV-JAMO','AV.ziyad','AV.atarIX','AV-Dreadrixter-UA','AV-Dubai']){
+  assert.equal(active.length,49);assert.equal(av2.length,51);
+  for(const name of ['AV-Lin','AV-Chuck','AV-no','AV-TRINITY','AV-istanbuL','AV-KKD','AV-KitKat','AV-Hoops','AV-JAMO','AV.ziyad','AV.atarIX','AV-Dreadrixter-UA','AV-Dubai']){
     assert.equal(R.byName[name]?.status,'Active',name+' roster');
     assert.equal(D.members.filter(m=>m.name===name&&m.status==='Active').length,1,name+' unique profile');
     assert.equal(people.find(p=>p.name===name)?.status,'Active',name+' projection');
     assert(!av2.some(r=>r.name===name),name+' no current AV-2 listing');
   }
-  for(const name of ['AV#Rafa#Tun','AV-Oakcliff','AV-Royal','AV-SiFra','AV-Pablin','AV-MotherboardBeans','AV-no','AV-Neez'])assert.equal(R.byName[name]?.status,'AV2',name+' transferred or retained in AV-2');
+  for(const name of ['AV#Rafa#Tun','AV-Oakcliff','AV-Royal','AV-SiFra','AV-Pablin','AV-MotherboardBeans','AV-Neez','AV-JefhKintz05'])assert.equal(R.byName[name]?.status,'AV2',name+' transferred or retained in AV-2');
+  for(const name of ['AV-23','AV-Timmy']){
+    assert.equal(R.byName[name]?.status,'Inactive',name+' removed from current rosters');
+    assert.equal(people.find(p=>p.name===name)?.status,'Inactive');
+    assert(![...active,...av2].some(r=>r.name===name),name+' not counted in a current clan');
+    assert(people.find(p=>p.name===name).history.length>0,name+' historical results preserved');
+  }
   for(const name of ['AV2-OlRose','AV-2.SURVIVOR','AV2-Thoszi']){
     assert.equal(R.byName[name]?.status,'AV2',name+' confirmed AV-2 roster');
     assert.equal(people.filter(p=>p.name===name&&p.status==='AV2').length,1,name+' existing event identity is current AV-2 member');
@@ -284,7 +290,7 @@ test('leader-deleted AV-2 accounts have no public profiles, roster membership or
 });
 test('current roster and every materialized PB/reward agree with independent canonical source sums',()=>{
   const D=BASE.globals.AVENGERS_DATA,R=BASE.globals.AVENGERS_MEMBER_TIMEZONES;
-  assert.equal(R.rows.filter(r=>r.status==='Active').length,50);assert.equal(R.rows.filter(r=>r.status==='AV2').length,52);
+  assert.equal(R.rows.filter(r=>r.status==='Active').length,49);assert.equal(R.rows.filter(r=>r.status==='AV2').length,51);
   const events=BASE.projection.events.filter(e=>e.status!=='revoked');
   for(const m of D.members){
     // Approved overlays may retain their original source alias; compare canonically.
@@ -344,8 +350,8 @@ test('Adigarian does not get artificial gap from a reset returning-clan counter'
 const {audit:transferAudit}=require('./audit-transfer-restorations.cjs');
 test('transfer restoration reconciles every current member, not only Hoops',()=>{
  const result=transferAudit(BASE);
-  assert.equal(result.summary.roster,102);
-  assert.equal(result.rows.length,102);
+  assert.equal(result.summary.roster,100);
+  assert.equal(result.rows.length,100);
  for(const r of result.rows){
   const player=BASE.projection.people.find(p=>p.name===r.name);
   assert(player,'Missing member '+r.name);
@@ -575,7 +581,8 @@ test('Nov 6 Zolika first-place supplement is source-linked once and current tran
   assert.equal(z[0].metadata.lobby,'A');
   assert(e.sources.includes('reviewed-image-sha256:83f2937f682cc76661f491d2893079e362cb7e39be441795e5a466fdd5222e9b'));
   const r=BASE.globals.AVENGERS_MEMBER_TIMEZONES.byName;
-  for(const n of ['AV-Pablin','AV-MotherboardBeans','AV-no','AV-Neez'])assert.equal(r[n]?.status,'AV2',n+' current AV-2');
+  for(const n of ['AV-Pablin','AV-MotherboardBeans','AV-Neez'])assert.equal(r[n]?.status,'AV2',n+' current AV-2');
+  assert.equal(r['AV-no']?.status,'Active','AV-no returned to AVENGERS');
   for(const n of ['AV-KitKat','AV-Hoops']){
     assert.equal(r[n]?.status,'Active',n+' current AVENGERS');
     assert.equal(e.rows.find(x=>x.player===n)?.clan,'AVENGERS',n+' original event clan');

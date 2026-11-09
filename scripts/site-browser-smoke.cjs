@@ -30,13 +30,17 @@ async function main(){
     const participation=await page.evaluate(()=>{
       const P=window.AVENGERS_EVENT_PROJECTION,D=window.AVENGERS_DATA;
       return {timmy:P.people.find(p=>p.name==='AV-Timmy')?.status,
+        member23:P.people.find(p=>p.name==='AV-23')?.status,
+        jeff:P.people.find(p=>p.name==='AV-JefhKintz05')?.status,
+        chuck:P.people.find(p=>p.name==='AV-Chuck')?.status,
+        avNo:P.people.find(p=>p.name==='AV-no')?.status,
         frank:P.people.find(p=>p.name===D.resolvePlayerName('AV-FrankAbagnale'))?.status,
         flashPlaceholders:P.events.filter(e=>e.kind==='flash').flatMap(e=>e.rows).filter(r=>r.score===1).length,
         nov8BigPigOneLine:P.events.find(e=>e.id==='piggy|2026-11-08')?.rows.filter(r=>r.score===1).length,
         nov8Av2J:P.events.find(e=>e.id==='piggy|2026-11-08')?.rows.some(r=>r.player==='AV-J'&&r.clan==='AV-2'&&r.score===53),
         tavito:P.events.filter(e=>e.metadata?.setId==='2026-10-20-A').flatMap(e=>e.rows).filter(r=>/tavito/i.test(r.player||'')).length};
     });
-    assert.deepEqual(participation,{timmy:'Active',frank:'Active',flashPlaceholders:0,nov8BigPigOneLine:4,nov8Av2J:true,tavito:0});
+    assert.deepEqual(participation,{timmy:'Inactive',member23:'Inactive',jeff:'AV2',chuck:'Active',avNo:'Active',frank:'Active',flashPlaceholders:0,nov8BigPigOneLine:4,nov8Av2J:true,tavito:0});
     // Leader-requested name badges + monthly/current 35-day league totals.
     assert.equal(await page.locator('#overviewContent .overview-period-group').count(),2,'Overview displays month and current league');
     assert.equal(await page.locator('#overviewContent .period-total-card').count(),4,'Piggy and Space totals each appear twice');

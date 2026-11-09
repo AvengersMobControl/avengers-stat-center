@@ -51,7 +51,7 @@ test('Oct 20-21 normal flashes update site history, pots, member rewards and day
   assert.equal(e.length,4);assert.equal(e.flatMap(x=>x.rows).length,95);
   assert.equal(e.flatMap(x=>x.rows).filter(r=>r.sparks===null).length,0);
   assert(e.flatMap(x=>x.rows).every(r=>r.score!==1&&!/tavito/i.test(r.player)));
-  assert.equal(site.projection.people.find(p=>p.name==='AV-Timmy').status,'Active');
+  assert.equal(site.projection.people.find(p=>p.name==='AV-Timmy').status,'Inactive','current roster change cannot erase October Flash results');
   const frank=site.projection.people.filter(p=>['AV-FrankAbagnale','AV-Addicted'].includes(p.name));
   assert.equal(frank.length,1,'Frank keeps one canonical history');assert.equal(frank[0].status,'Active');
   for(const p of site.projection.people){

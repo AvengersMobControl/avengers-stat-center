@@ -39,6 +39,19 @@
       "approved": true,
       "authorization": "leader-standing-auto-discord-2026-10-26",
       "description": "AVENGERS Big Pig November 1 2026 results"
+    },
+    "flash|flash|2026-11-03-A|AVENGERS": {
+      "kind": "flash",
+      "eventId": "flash|2026-11-03-A",
+      "clan": "AVENGERS",
+      "file": "AVENGERS_Piggy_Flashes_November_3_2026.png",
+      "sha256": "d7006f964879ca1b4dbb6cf63ceaf5badbf1596e7d2707dd01d8442d89f4ba3d",
+      "size": 1250291,
+      "template": "flash-poster-v2-20261026-candidate",
+      "body": "@everyone\n⚡ **AVENGERS Piggy Flashes — November 3–4** ⚡\n\n📊 **The Headline**\n37 racers piled up **104,224 lines** across the four Flashes — **2,817 per racer**, up **8.8%** on the last-4-set average (total lines +1.3%).\n\n🏆 **Flash Winners**\nPF1 — 7-STAR (3,057) · PF2 — SB (4,112) · PF3 — istanbuL (3,035) · PF4 — Nicefellow (4,234)\nPlus second-lobby wins for KitKat in PF1, KKD in PF2 and BigPapi in PF3!\n\n👑 **7-STAR Tops the Set Board**\n7-STAR's **9,774-line set** is #13 all-time (13 of 578 in the Arena era) and a **+503.0%** jump on his own 29-set average of 1,621. SB (8,325) and HarryBallsagna (7,233) round out the podium.\n\n🚀 **Personal Bests**\n5 set-total PBs and 5 single-Flash PBs:\n• 7-STAR — 9,774 set (+94.0%) and 4,211 in PF4 (+21.8%)\n• SB — 8,325 set (+87.5%) and 4,112 in PF2 (+98.0%)\n• KitKat — 4,337 set (+12.9%) and 2,737 in PF2 (+26.8%)\n• Oakcliff — 248 set (+12.7%) and 248 in PF4 (+12.7%)\n• McNasty — 2,610 set (+8.8%) and 2,610 in PF2 (+8.8%)\n18 of 34 set totals and 38 of 66 single-Flash results beat the player's own average.\n\n👋 **New Faces**\nWelcome KKD, istanbuL and TRINITY! KKD put up 6,736 lines over three PFs (best 3,267 in PF4), istanbuL logged 4,841 over two PFs (best 3,035 in PF3), and TRINITY posted 1,632 over three PFs (best 663 in PF2).\n\n🎯 **Milestones**\n28 racers cleared 1K, 20 cleared 2K, 16 cleared 3K, 5 cleared 5K and 2 cleared 7.5K this set — the 3K+ count ties for #3 in the Arena era.\n\nFull results and PBs: https://avengersmobcontrol.github.io/avengers-stat-center/",
+      "approved": true,
+      "authorization": "leader-standing-auto-discord-2026-10-26",
+      "description": "AVENGERS Piggy Flashes November 3 2026 results"
     }
   }
 }

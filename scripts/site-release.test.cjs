@@ -533,12 +533,23 @@ test('leader-verified she/her pronouns attach only to the 14 canonical member pr
   assert(browserSource(BASE).includes('"pronouns":"she/her"'),'published release embeds the verified member metadata');
 });
 
-test('Nov 6 Zolika first-place supplement is source-linked once and current transfers preserve event clan',()=>{
+test('Nov 6 Space original screenshot tail, Zolika and AV-2 identity reconciliation preserve event clan',()=>{
   const e=BASE.ledger.events.find(x=>x.id==='space|2026-11-06');
   assert(e&&e.status==='partial');
-  assert.equal(e.rows.length,62,'Nine Sunday supplements and the leader-confirmed AV2-J identity');
+  assert.equal(e.rows.length,63,'Original final-screen tail restores the previously held AV-2 rank 8');
   assert.equal(e.rows.filter(r=>r.clan==='AVENGERS').length,46,'46 verified main-clan Space results');
-  assert.equal(e.rows.filter(r=>r.clan==='AV-2').length,16,'16 source-linked AV-2 result rows');
+  assert.equal(e.rows.filter(r=>r.clan==='AV-2').length,17,'17 source-linked AV-2 result rows');
+  for(const [clan,lobby,expectedRanks] of [
+    ...['A','B','C','E'].map(lobby=>['AVENGERS',lobby,[1,2,3,4,5,6,7,8,9]]),
+    ['AVENGERS','D',[1,2,3,4,5,6,7,8]],
+    ['AVENGERS','F',[1]],
+    ['AV-2','G',[1,2,3,4,5,6,7,9]],
+    ['AV-2','H',[1,2,3,4,5,6,7,8,9]]
+  ]){
+    assert.deepEqual(e.rows.filter(r=>r.clan===clan&&r.metadata?.lobby===lobby)
+      .map(r=>r.metadata.rank).sort((a,b)=>a-b),expectedRanks,
+    clan+' lobby '+lobby+' must include every original visible clan-tagged finish; outsiders excluded');
+  }
   for(const [player,clan,lobby,rank,score,stars,sparks] of [
     ['AV-HN','AVENGERS',undefined,1,42.3,78345,7882],
     ['AV-2.SURVIVOR','AV-2','G',2,97.2,561714,56312],
@@ -549,6 +560,7 @@ test('Nov 6 Zolika first-place supplement is source-linked once and current tran
     ['AV-EventHorizon','AV-2','H',4,30.9,205112,20581],
     ['AV-KO','AV-2','H',6,12.1,136741,13721],
     ['AV2-Froyo','AV-2','H',7,9.2,68371,6860],
+    ['TheHemperor','AV-2','H',8,0.43,34185,3430],
     ['AV#Rafa#Tun','AV-2','H',9,0.1248,17093,1715]
   ]){
     const matches=e.rows.filter(r=>r.player===player&&r.clan===clan);
@@ -559,7 +571,13 @@ test('Nov 6 Zolika first-place supplement is source-linked once and current tran
     assert.equal(r.stars,stars);assert.equal(r.sparks,sparks);
   }
   assert(!e.rows.some(r=>r.player==='AV2-J'||r.player==='AV2-TheHempe...'),
-    'AV2-J is canonical AV-J; truncated/unverified AV-2 identity held');
+    'The cropped source display and AV2-J are not duplicate player identities');
+  const held=e.rows.find(r=>r.player==='TheHemperor');
+  assert.equal(held?.metadata.sourceDisplayName,'AV2-TheHempe...');
+  assert.equal(held?.metadata.sourceDiscordMessageId,'1568324314116390953');
+  assert.equal(held?.metadata.sourceAttachment,'image1.jpg');
+  assert.equal(e.metadata.complete,false,'Outside-source Space lobby coverage remains unknown');
+  assert(!e.rows.some(r=>r.player==='ROG'),'Outside-clan G rank 8 must not be imported');
   const confirmed=e.rows.find(r=>r.player==='AV-J'&&r.clan==='AV-2');
   assert.equal(confirmed?.metadata.sourceDisplayName,'AV2-J','display identity audit retained');
   assert.equal(e.rows.filter(r=>r.player==='AV-J').length,1,'canonical AV-J one race result');

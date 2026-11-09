@@ -52,6 +52,19 @@
       "approved": true,
       "authorization": "leader-standing-auto-discord-2026-10-26",
       "description": "AVENGERS Piggy Flashes November 3 2026 results"
+    },
+    "space|space|2026-11-06|AVENGERS": {
+      "kind": "space",
+      "eventId": "space|2026-11-06",
+      "clan": "AVENGERS",
+      "file": "AVENGERS_Space_Race_November_6_2026.png",
+      "sha256": "29785c58f318c5211bcf3f8f80a738ee3266dbce799d35130acb22c9c1cbb15d",
+      "size": 1453295,
+      "template": "space-poster-v4-20261026-candidate",
+      "body": "@everyone\n🚀 **AVENGERS Space Race — November 6** 🚀\n\n**📊 The Numbers**\n46 racers covered **9,189.3B lightyears** — averaging **199.8B** per racer, up **+4.0%** on our last-4-race pace (total lightyears +6.9%). Lobby 1 ran away with the week's standout pot: **26.77M Stars** (#3 all-time, #3 this Arena era)!\n\n**🏆 Podium**\n🥇 Zolika.x.TheBoss — 550.0B\n🥈 Lin — 536.1B\n🥉 SweetiePL — 530.0B\n\n**✨ Standout Stories**\nZolika.x.TheBoss topped the race at 550.0B — good for #10 all-time (#10 this Arena era), with 9 career wins and 17 podiums. And I.S.O posted the single biggest jump over his own average tonight: **+281.6%** (68.4B average over 36 races to 261.1B)!\n\n**🆕 New Faces**\nWelcome KKD (441.7B, Lobby 1, 4th), Dreadrixter-UA (254.6B, Lobby 1, 8th), istanbuL (243.7B, Lobby 2, 9th), ziyad (241.0B, Lobby 2, 2nd), atarIX (181.4B, Lobby 2, 5th) and TRINITY (118.6B, Lobby 6, 1st)!\n\n**💪 Personal Bests**\n7 new PBs, and 30 of 40 returning racers beat their own average:\n1. KNAVEN +48.2%\n2. 8!l...Bil +32.5%\n3. Oakcliff +17.4%\n4. I.S.O +5.2%\n5. Lin +3.6%\n6. ShielDBreaker +2.1%\n7. Addicted +0.4%\n\n**🎖️ Milestones**\n500B+ this race: 3 racers — #3-best Arena-era count ever in that tier! 400B+: 6 racers, tying for 2nd-best.\n\n**🙌 Effort Shoutout**\nBiggest grind-for-less-reward: **istanbuL**, covering 243.7B at just **109.8 Sparks/B**!\n\nFull results and PBs: https://avengersmobcontrol.github.io/avengers-stat-center/",
+      "approved": true,
+      "authorization": "leader-standing-auto-discord-2026-10-26",
+      "description": "AVENGERS Space Race November 6 2026 results"
     }
   }
 }

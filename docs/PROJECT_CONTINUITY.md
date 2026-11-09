@@ -1,3 +1,9 @@
+## 2026-11-08 — AV-2 screenshot prefix normalization and AV-J Space correction
+
+- Leader confirmed the November 6 Space Race AV-2 lobby-H rank-5 source display `AV2-J` is the existing canonical `AV-J` profile, not a new member. Original final-claim screenshot already authenticated under the accepted lobby-H source SHA; add exactly one source-bound row to `space|2026-11-06`: **28.8B**, **170,926 exact visible Stars**, **17,151 Sparks**, **10% Share**, **5th** in lobby **H**, event-time clan **AV-2**. Store `sourceDisplayName: "AV2-J"` for audit. Event revision 5→6, 61→62 rows, 46 AVENGERS / 16 AV-2; 16 source references unchanged, no old rows replaced or deleted.
+- For future imported AV-2 screenshots, normalize any AV-2-style player-name prefix (e.g. `AV2-J`, `AV-2-J`, `AV-2.J`) **only if** stripping the 2 yields an exact, unique match to an already known canonical member; retain original source display and event-time clan. Do not infer aliases from truncated names or create replacement profiles. The held truncated `AV2-TheHempe...` result remains an identity exception pending independent confirmation; the generic rule does not establish it as `TheHemperor`.
+- Website-only standing authorization remains in place. No Discord sends, PNG/summary dispatch, roster transfers, or changes to frozen Unlogged Sparks. GitHub Pages and Vercel live release must be checked against the exact new commit before declaring success.
+
 ## 2026-11-07 — Gold/silver metric-leader crown bonuses
 
 - Leader approved adding gold (#1) and silver (#2) crowns and proportional bonus points to all eleven existing Player Rating metrics. Gold is +0.100 for each 1-point metric / +0.050 for each half-point Flash metric; silver is exactly half (+0.050 / +0.025). The unchanged base rating remains /10; `ratingBonus` is separately disclosed and `ratingAdjusted=ratingTotal+ratingBonus` is displayed to three decimals for ranking.

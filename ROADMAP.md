@@ -1,3 +1,11 @@
+## 2026-11-08 — AV-2 name reconciliation, Space Race follow-through
+
+- [x] Confirm `AV2-J` maps to existing canonical `AV-J`; retain Nov 6 lobby H rank 5 source spelling, clan and exact rewards.
+- [x] Implement exact-existing-member resolution for AV-2-prefixed variations during final-result assembly; do not guess truncated names.
+- [x] Guard one-row Nov 6 Space Race supplement (61→62; AV-2 15→16), with source provenance already accepted, regression checks, and immutable historical results.
+- [ ] Validate full GitHub Actions/Pages browser pipeline and independent Pages/Vercel production exact-SHA readback for the release.
+- [ ] Privately resolve the remaining cropped AV-2 identity `AV2-TheHempe...` only with reliable account evidence; do not count it as imported prematurely.
+
 ## 2026-11-07 — Gold/silver metric-leader crown bonuses
 
 - Leader approved adding gold (#1) and silver (#2) crowns and proportional bonus points to all eleven existing Player Rating metrics. Gold is +0.100 for each 1-point metric / +0.050 for each half-point Flash metric; silver is exactly half (+0.050 / +0.025). The unchanged base rating remains /10; `ratingBonus` is separately disclosed and `ratingAdjusted=ratingTotal+ratingBonus` is displayed to three decimals for ranking.

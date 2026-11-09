@@ -11,12 +11,12 @@ node scripts/export-weekly-review.cjs weekly-AVENGERS-2026-10-12.json 2026-10-12
 python3 -m pip install Pillow==11.3.0
 python3 scripts/render-weekly-event-review.py reports/weekly-AVENGERS-2026-10-12.json \
   reports/weekly-AVENGERS-2026-10-12-PREVIEW.png \
-  --approved-library-art-dir '/path/to/AVENGERS Mob Control Approved Character PNGs'
+  --approved-library-art-dir assets/characters
 ```
 
 Both PNG and sidecars are placed under gitignored `reports/`. The JSON and companion .txt come from one approved projection version and digest, not a text/image language model making up facts. Every output embeds `readyToPost:false`, `discordPostingEnabled:false`. The `@everyone` text is **only written to a .txt review file**: never sent or posted.
 
-The art renderer will *hard fail* unless it can read the four exact original approved Library PNG bytes and verify their hashes against `docs/APPROVED_CHARACTER_ASSETS.md`: Spider, Terrorist, Kaboom/Pirate, Raccoon. Do **NOT** use lower-resolution `assets/characters/` copies or generated images as fallback. If the Library art is unavailable, only the numerical JSON / Discord draft can be reviewed.
+The art renderer will *hard fail* unless it can read the four exact approved character PNG bytes and verify their hashes: Spider, Terrorist, Kaboom/Pirate, Raccoon. **Updated 2026-11-09:** per the leader's 2026-10-25 decision (`docs/APPROVED_CHARACTER_ASSETS.md`), this repo's `assets/characters/` copies are now the approved, working source for all renderers, including this one — the hard-coded hash table was pointed at the older, 2026-10-19 Library-only filenames/bytes even after that approval, so this renderer kept rejecting the now-approved GitHub copies. The hash table has been corrected to match `assets/characters/AV_ExplodonSpider.png`, `AV_ExplodonTerrorist.png`, `AV_KaboomStar.png` and `AV_RaccoonRocket.png` as committed. If the four files are missing or modified from those checked-in copies, only the numerical JSON / Discord draft can be reviewed.
 
 Source rules: event-time clan only; per-kind historic averages compare only prior results before current event within the same clan and, for Flashes, PF number; no baseline is explicitly excluded. Missing/partial event coverage is shown. Known total Sparks excludes post-Kraken PF1–PF4 as zero, with a prominent unresolved warning because some legacy source records currently show nonzero amounts. These conflicting ledger values MUST be reviewed and separately corrected in the site projection before any eventual posting. No change to frozen historical pre-logging Sparks. Achievement count is strictly new source-derived Piggy/Space performance threshold crossings from the website badge definitions (not falsely claiming all Spark/Streak badges).
 

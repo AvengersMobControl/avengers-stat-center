@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 """Manual-review weekly composite: deterministic text from approved frozen JSON,
-with EXACT user-supplied character originals and SHA-256 integrity checks.
+with EXACT approved character originals and SHA-256 integrity checks.
 NEVER posts messages, sends Discord pings or authorizes dispatch.
+
+Art source: the leader's 2026-10-19 personal Library upload was the original
+source of truth, but the leader's 2026-10-25 decision (docs/APPROVED_CHARACTER_ASSETS.md)
+made the character PNGs checked into this repo's assets/characters/ the
+approved, working source for renderers. The hashes below were updated
+2026-11-09 to match those GitHub-committed files (leader-directed correction)
+so this script no longer requires the old Library-only filenames/bytes.
 """
 import argparse
 import hashlib
@@ -12,10 +19,10 @@ from PIL import Image, ImageDraw, ImageFont
 
 W, H = 2400, 1690
 ART = {
- "spider": ("AV_ExplodonSpider.png", "ce7b4b92672c6a0d3793e360435495bae9ca9fcd5b57d9be0290b8ccda6c0124"),
- "terrorist": ("AV_ExplodonTerrorist.png", "aef1372bf0e47ecd98332858a3c3e2952c2298b2716498bbe8a08f514eb7a7bb"),
- "kaboom": ("AV_KaboomStar(1).png", "d62e3e739892e346a9bb4f4fd8d1507bc89ac92369a44ba6ebdcec505f570fb5"),
- "raccoon": ("AV_RaccoonRocket(1).png", "f7ffeb1a091b488bb84e5b868bdbc3975e856997e63d0225dd21d75142909ac8"),
+ "spider": ("AV_ExplodonSpider.png", "63feb3578c8bf87e5a2354caa6dfc7769e0af4d2db70cdc68ad43a78d87a82c0"),
+ "terrorist": ("AV_ExplodonTerrorist.png", "51172cfc1231a42d2db87bf3eec9d38a981aedde5c3b338f7ffc078df274ca76"),
+ "kaboom": ("AV_KaboomStar.png", "033239fcec81fba42d49b67e252658d3b2b25743dba1572bffa6f5eb5d51ddd3"),
+ "raccoon": ("AV_RaccoonRocket.png", "1d8a90dfaa877606b6d16a389639e6531e633dfffa109fa955d5288cc14632f2"),
 }
 C = {"bg":"#061322", "panel":"#0c223a", "panel2":"#102e4a",
      "border":"#2a587b", "white":"#f0f7ff", "muted":"#a2b7d1",
@@ -172,7 +179,7 @@ def main():
     p=argparse.ArgumentParser()
     p.add_argument("weekly_json");p.add_argument("output_png")
     p.add_argument("--approved-library-art-dir",required=True,
-        help="Directory with exactly the original user-uploaded character PNGs (4 files required)")
+        help="Directory with the 4 approved character PNGs (this repo's assets/characters/ by default; see docs/APPROVED_CHARACTER_ASSETS.md)")
     a=p.parse_args()
     print(json.dumps(render(a.weekly_json,a.output_png,a.approved_library_art_dir)))
 if __name__=="__main__":main()

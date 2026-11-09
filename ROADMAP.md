@@ -3,8 +3,9 @@
 - [x] Confirm `AV2-J` maps to existing canonical `AV-J`; retain Nov 6 lobby H rank 5 source spelling, clan and exact rewards.
 - [x] Implement exact-existing-member resolution for AV-2-prefixed variations during final-result assembly; do not guess truncated names.
 - [x] Guard one-row Nov 6 Space Race supplement (61→62; AV-2 15→16), with source provenance already accepted, regression checks, and immutable historical results.
-- [ ] Validate full GitHub Actions/Pages browser pipeline and independent Pages/Vercel production exact-SHA readback for the release.
-- [ ] Privately resolve the remaining cropped AV-2 identity `AV2-TheHempe...` only with reliable account evidence; do not count it as imported prematurely.
+- [x] Validate full GitHub Actions/Pages browser pipeline and independent Pages/Vercel production exact-SHA readback for the November 8 roster release, commit `4e6327b3bcfed5ef9962b368722175ead9eb1f48`.
+- [x] Resolve cropped Nov 6 Space AV-2 lobby H rank 8 `AV2-TheHempe...` against the independently visible full Nov 8 final Big Pig name `AV2-TheHemperor`, canonical `TheHemperor`; exact Nov 6 source is 0.43B, 34,185 Stars, 3,430 Sparks. Guarded website-only revision 6 restores this already-visible source row without changing past rows or inventing unobserved results.
+- [ ] Complete the new 63-result Space revision's CI, exact Pages live readback and independent Vercel production verification. Keep event `complete:false` for unknown/unposted lobbies.
 
 ## 2026-11-07 — Gold/silver metric-leader crown bonuses
 
@@ -656,5 +657,5 @@ While awaiting an independently retrievable final race screenshot at 5 PM Centra
 ## 2026-11-08 — Newest leader roster corrections
 
 - [x] Mark AV-23 and AV-Timmy Inactive; transfer AV-JefhKintz05 to AV-2, AV-Chuck and AV-no to AVENGERS. Current roster goal **49 Active / 51 AV-2**, with unchanged historical event-time clan and stats; supersedes prior 50/52 count.
-- [ ] Complete independent original-screenshot-to-ledger row verification for `space|2026-11-06`. One-line Big Pig correction does not address truncated Space images, and incomplete coverage must retain `complete:false`.
-- [ ] Publish and verify the roster update on the GitHub Pages canonical site and Vercel production, with source SHA, roster totals, and row parity checks.
+- [x] Complete independent original-screenshot-to-ledger row verification for `space|2026-11-06`. Recover missing AV-2 lobby H rank 8 from the original second final CLAIM attachment and the Nov 8 full-name identity evidence. Preserve `complete:false` for unposted/unknown Space coverage.
+- [x] Publish and verify the 49/51 roster update on GitHub Pages and Vercel production, SHA `4e6327b3bcfed5ef9962b368722175ead9eb1f48`.

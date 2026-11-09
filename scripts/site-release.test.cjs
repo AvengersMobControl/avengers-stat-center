@@ -425,8 +425,8 @@ test('October 23 identities preserve former-member history and add only confirme
    assert.equal(matches.length,1);
    // Profiles start with the verified Oct 23 Piggy; Mickzzz later logged Oct 25 Space.
    const ids=matches[0].history.map(h=>h.eventId).sort();
-   assert.deepEqual(ids,name==='Mickzzz'?['piggy|2026-10-23','space|2026-10-25']:['piggy|2026-10-23','space|2026-10-30','space|2026-11-06']);
-   assert.equal(matches[0].totalSparks,name==='Mickzzz'?16519+11357:5506+7601+6860);
+   assert.deepEqual(ids,name==='Mickzzz'?['piggy|2026-10-23','space|2026-10-25']:['piggy|2026-10-23','piggy|2026-11-08','space|2026-10-30','space|2026-11-06']);
+   assert.equal(matches[0].totalSparks,name==='Mickzzz'?16519+11357:5506+7601+6860+15000);
  }
  assert.equal(resolve('AVS9.Saberkong'),'AV.Saberkong');
  assert.equal(resolve('AVS9-HN'),'AV-HN');
@@ -570,8 +570,15 @@ test('Nov 6 Zolika first-place supplement is source-linked once and current tran
   assert.equal(dreadrix[0].metadata.lobby,'A');
   assert.equal(dreadrix[0].metadata.share,0.02);
   assert.equal(dreadrix[0].clan,'AVENGERS');
-  assert(!BASE.ledger.events.some(e=>e.rows.some(x=>x.player==='AV-Dubai')),'Dubai has no fabricated results');
-  assert.equal(BASE.projection.people.find(p=>p.name==='AV-Dubai')?.earned.events,0,'Dubai zero-event profile');
+  // Dubai's earlier zero-result roster shell now has exactly one verified Nov 8 Big Pig finish.
+  const dubaiRows=BASE.ledger.events.flatMap(event=>event.rows.filter(row=>row.player==='AV-Dubai').map(row=>({eventId:event.id,...row})));
+  assert.equal(dubaiRows.length,1,'Dubai has one verified event and no fabricated history');
+  assert.equal(dubaiRows[0].eventId,'piggy|2026-11-08');
+  assert.equal(dubaiRows[0].score,9960);
+  assert.equal(dubaiRows[0].sparks,63224);
+  assert.equal(dubaiRows[0].stars,632238);
+  assert.equal(dubaiRows[0].metadata.rank,32);
+  assert.equal(BASE.projection.people.find(p=>p.name==='AV-Dubai')?.earned.events,1,'Dubai one verified event');
   assert.equal(r['AV-JAMO'].status,'Active');
   assert.equal(r['AV-Oakcliff'].status,'AV2');
   assert.equal(e.rows.find(x=>x.player==='AV-Oakcliff')?.clan,'AVENGERS','Oakcliff original event-time clan retained');

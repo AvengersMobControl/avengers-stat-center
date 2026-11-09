@@ -25,12 +25,25 @@ function safeMetadata(raw){
   }
   return Object.keys(out).length?out:null;
 }
-function publicRow(raw,aliases,event=null){
+// AV-2 result displays may insert a '2' after AV, e.g. AV2-J or AV-2.J.
+// Collapse that tag only when the remainder identifies exactly one existing
+// canonical profile. The event-time clan remains AV-2; never guess from a
+// shortened, ambiguous, or previously unknown name.
+function matchExistingAv2Identity(raw,aliases,knownPlayers=[]){
+  const original=canonical(raw,aliases);
+  const m=/^AV[.\s_-]*2[.\s_-]*(.+)$/i.exec(String(raw||'').trim());
+  if(!m)return original;
+  const candidate=canonical('AV-'+m[1],aliases);
+  const matches=[...new Set(knownPlayers)].filter(name=>
+    typeof name==='string'&&name.toLowerCase()===candidate.toLowerCase());
+  return matches.length===1?matches[0]:original;
+}
+function publicRow(raw,aliases,event=null,knownPlayers=[]){
   check(raw&&typeof raw==='object'&&!Array.isArray(raw),'Invalid parsed result');
   // Unknown or ambiguous identities go to human review, never silently become
   // an invented member, a Discord user ID, or a different Frenchie account.
   check(typeof raw.player==='string'&&raw.player.trim(),'Unresolved player identity requires review');
-  const player=canonical(raw.player,aliases);
+  const player=raw.clan==='AV-2'?matchExistingAv2Identity(raw.player,aliases,knownPlayers):canonical(raw.player,aliases);
   const weeklyFormerMember=event?.id==='piggy|2026-10-23'&&event?.date==='2026-10-23'&&
     event?.kind==='piggy'&&player==='AV-Animosity'&&raw.clan==='American 50.0'&&
     raw.metadata?.eligibilityOverride==='leader-weekly-big-pig-2026-10-23';
@@ -47,7 +60,7 @@ function publicRow(raw,aliases,event=null){
 function fingerprint(row){
   return stable({player:row.player,clan:row.clan,score:row.score,sparks:row.sparks,stars:row.stars});
 }
-function assemble(review,{existingEvent=null,aliases={}}={}){
+function assemble(review,{existingEvent=null,aliases={},knownPlayers=[]}={}){
   check(review?.schemaVersion===1,'Expected parsed-review schemaVersion 1');
   const e=review.event;
   check(e&&typeof e==='object'&&typeof e.id==='string'&&e.id.startsWith(e.kind+'|'),'Missing stable event identity');
@@ -88,7 +101,7 @@ function assemble(review,{existingEvent=null,aliases={}}={}){
     check(Array.isArray(screen.rows)&&screen.rows.length>0,'Final screenshot has no parsed rows');
     // Hash is an evidence reference, not a replacement for visual inspection.
     const key=screen.imageSha256.toLowerCase();
-    const sanitized=screen.rows.map(row=>publicRow(row,aliases,e));
+    const sanitized=screen.rows.map(row=>publicRow(row,aliases,e,knownPlayers));
     if(e.kind==='kraken')check(sanitized.every(r=>r.stars===null),'Kraken has no Stars');
     const signatures=sanitized.map(fingerprint).sort();
     const previous=seenImages.get(key);
@@ -146,7 +159,7 @@ function assemble(review,{existingEvent=null,aliases={}}={}){
       existingResults:prior?.rows.length||0,action:unchanged?'unchanged':'review-required',
       approvalRequired:true,autoPublish:false}};
 }
-module.exports={assemble,publicRow};
+module.exports={assemble,publicRow,matchExistingAv2Identity};
 if(require.main===module){
   try{
     const args=process.argv.slice(2);
@@ -161,7 +174,7 @@ if(require.main===module){
     const {load}=require('./load-site-data.cjs');
     const aliases=migrate(load()).aliases,baseline=create();
     const existing=baseline.ledger.events.find(e=>e.id===review.event?.id)||null;
-    const result=assemble(review,{existingEvent:existing,aliases});
+    const result=assemble(review,{existingEvent:existing,aliases,knownPlayers:baseline.projection.people.map(p=>p.name)});
     const accepted=JSON.parse(fs.readFileSync(path.join(root,'data/approved-event-updates.json'),'utf8')).updates;
     const {preview}=require('./stage-event-update.cjs');
     const dry=preview(accepted,result.update);

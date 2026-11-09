@@ -1,3 +1,9 @@
+## 2026-11-08 — Resolve AV-2 screenshot naming against established identities
+
+- Leader explicitly identified `AV2-J` as `AV-J`, and directed systematic matching of AV-2-prefixed display variants to existing canonical names when removing the 2 produces a unique exact identity. This is a **display-name alias resolution**, not a current-roster transfer or an instruction to move AV-2 event rows to the AVENGERS clan.
+- Add the independently source-verified Nov 6 Space lobby H result (rank 5, 28.8B, 170,926 Stars, 17,151 Sparks, 10% Share) under `AV-J`, preserving `AV2-J` as `sourceDisplayName`. Unknown or truncated names stay held; never silently manufacture a profile or match on a partial prefix.
+- Preserve the existing source-hash list and all other accepted rows; extend guarded site projection and regression coverage only. No Discord transmission.
+
 ## 2026-11-07 — Gold/silver metric-leader crown bonuses
 
 - Leader approved adding gold (#1) and silver (#2) crowns and proportional bonus points to all eleven existing Player Rating metrics. Gold is +0.100 for each 1-point metric / +0.050 for each half-point Flash metric; silver is exactly half (+0.050 / +0.025). The unchanged base rating remains /10; `ratingBonus` is separately disclosed and `ratingAdjusted=ratingTotal+ratingBonus` is displayed to three decimals for ranking.

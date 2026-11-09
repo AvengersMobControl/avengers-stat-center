@@ -15,6 +15,32 @@ const screen=(e,hash,rows,extra={})=>({
 });
 const review=(e,screens,extra={})=>({schemaVersion:1,event:e,screens,...extra});
 
+test('AV-2-prefixed display names match established canonical identities only',()=>{
+ const {matchExistingAv2Identity}=require('./assemble-result-review.cjs');
+ const existing=['AV-J','AV-Brisket','AV-KO','AV2-Froyo','TheHemperor','AV-HN'];
+ for(const variant of ['AV2-J','AV-2-J','AV_2_J','AV.2.J','AV 2 J','av2-j']){
+   assert.equal(matchExistingAv2Identity(variant,{},existing),'AV-J',variant);
+ }
+ assert.equal(matchExistingAv2Identity('AV2-Brisket',{},existing),'AV-Brisket');
+ assert.equal(matchExistingAv2Identity('AV-2.KO',{},existing),'AV-KO');
+ assert.equal(matchExistingAv2Identity('AV2-Froyo',{},existing),'AV2-Froyo','never invent AV-Froyo');
+ assert.equal(matchExistingAv2Identity('AV2-TheHempe...',{},existing),'AV2-TheHempe...',
+   'a truncated name is not an exact canonical match');
+ assert.equal(matchExistingAv2Identity('AV2-J',{},['AV-J','av-j']),'AV2-J',
+   'ambiguous case-insensitive canonical matches are held');
+ const e=event('space','2026-11-06');
+ const source=row('AV2-J','AV-2',28.8,17151,170926,
+   {rank:5,lobby:'H',share:.1,sourceDisplayName:'AV2-J'});
+ const {update}=assemble(review(e,[screen(e,'a',[source])]),{knownPlayers:existing});
+ assert.equal(update.event.rows.length,1);
+ assert.equal(update.event.rows[0].player,'AV-J');
+ assert.equal(update.event.rows[0].clan,'AV-2','event-time clan preserved');
+ assert.equal(update.event.rows[0].metadata.sourceDisplayName,'AV2-J','source spelling retained');
+ assert.equal(update.event.rows[0].sparks,17151);
+ assert.equal(update.event.rows[0].stars,170926);
+ const unknown=assemble(review(e,[screen(e,'b',[source])]),{knownPlayers:[]});
+ assert.equal(unknown.update.event.rows[0].player,'AV2-J','no identity without a confirmed match');
+});
 test('assemble final AVENGERS and AV-2 lobbies, exclude progress, reposts, repeated players',()=>{
   const e=event(),a=row('AV-HarryBallsagna','AVENGERS',350.4,12000,120000,{rank:1,share:.25,discordUserId:'PRIVATE'}),
     b=row('AV-2Lin','AV-2',245.3,8700,87000,{rank:2,lobby:'B'}),

@@ -161,7 +161,7 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
   const R=BASE.globals.AVENGERS_MEMBER_TIMEZONES,D=BASE.globals.AVENGERS_DATA;
   const people=BASE.projection.people;
   const active=R.rows.filter(r=>r.status==='Active'),av2=R.rows.filter(r=>r.status==='AV2');
-  assert.equal(active.length,50);assert.equal(av2.length,48);
+  assert.equal(active.length,50);assert.equal(av2.length,52);
   for(const name of ['AV-Lin','AV-JefhKintz05','AV-TRINITY','AV-istanbuL','AV-KKD','AV-KitKat','AV-Hoops','AV-JAMO','AV.ziyad','AV.atarIX','AV-Dreadrixter-UA','AV-Dubai']){
     assert.equal(R.byName[name]?.status,'Active',name+' roster');
     assert.equal(D.members.filter(m=>m.name===name&&m.status==='Active').length,1,name+' unique profile');
@@ -169,6 +169,19 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
     assert(!av2.some(r=>r.name===name),name+' no current AV-2 listing');
   }
   for(const name of ['AV#Rafa#Tun','AV-Oakcliff','AV-Royal','AV-SiFra','AV-Pablin','AV-MotherboardBeans','AV-no','AV-Neez'])assert.equal(R.byName[name]?.status,'AV2',name+' transferred or retained in AV-2');
+  for(const name of ['AV2-OlRose','AV-2.SURVIVOR','AV2-Thoszi']){
+    assert.equal(R.byName[name]?.status,'AV2',name+' confirmed AV-2 roster');
+    assert.equal(people.filter(p=>p.name===name&&p.status==='AV2').length,1,name+' existing event identity is current AV-2 member');
+    assert.deepEqual(people.find(p=>p.name===name).history.filter(h=>h.date>='2026-11-06').map(h=>h.kind).sort(),['piggy','space'],name+' two source-verified results retained');
+  }
+  assert.equal(R.byName['TheHemperor']?.status,'AV2','TheHemperor is a current AV-2 participant');
+  assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV2-TheHemperor'),'TheHemperor');
+  assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV2-J'),'AV-J');
+  assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV-CRISPIN.27'),'AV-CRISPIN.97');
+  assert.equal(R.byName['AV-ShielDBreaker']?.status,'Active','ShieldBreaker retains main-clan membership');
+  assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV-ShieldBreaker'),'AV-ShielDBreaker','recent capitalization resolves to existing member');
+  assert(!people.some(p=>p.name==='AV-ShieldBreaker'),'no inactive duplicate ShieldBreaker profile');
+  assert(people.find(p=>p.name==='AV-ShielDBreaker').history.some(h=>h.eventId==='piggy|2026-11-08'&&h.score===8556),'ShieldBreaker Big Pig result merged into existing history');
   assert.equal(R.byName['AV-WolfLegend']?.status||'Inactive','Inactive','WolfLegend inactive');
   assert.equal(R.byName['AV-Nicefellow']?.status,'Active','Nicefellow remains Active');
   assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV-JeffKintz05'),'AV-JefhKintz05');
@@ -271,7 +284,7 @@ test('leader-deleted AV-2 accounts have no public profiles, roster membership or
 });
 test('current roster and every materialized PB/reward agree with independent canonical source sums',()=>{
   const D=BASE.globals.AVENGERS_DATA,R=BASE.globals.AVENGERS_MEMBER_TIMEZONES;
-  assert.equal(R.rows.filter(r=>r.status==='Active').length,50);assert.equal(R.rows.filter(r=>r.status==='AV2').length,48);
+  assert.equal(R.rows.filter(r=>r.status==='Active').length,50);assert.equal(R.rows.filter(r=>r.status==='AV2').length,52);
   const events=BASE.projection.events.filter(e=>e.status!=='revoked');
   for(const m of D.members){
     // Approved overlays may retain their original source alias; compare canonically.
@@ -331,8 +344,8 @@ test('Adigarian does not get artificial gap from a reset returning-clan counter'
 const {audit:transferAudit}=require('./audit-transfer-restorations.cjs');
 test('transfer restoration reconciles every current member, not only Hoops',()=>{
  const result=transferAudit(BASE);
- assert.equal(result.summary.roster,98);
- assert.equal(result.rows.length,98);
+  assert.equal(result.summary.roster,102);
+  assert.equal(result.rows.length,102);
  for(const r of result.rows){
   const player=BASE.projection.people.find(p=>p.name===r.name);
   assert(player,'Missing member '+r.name);
@@ -602,4 +615,35 @@ test('Nov 6 Zolika first-place supplement is source-linked once and current tran
     assert.equal(row.score,score);
     assert.equal(row.sparks,sparks);
   }
+});
+test('one-line Nov 8 Big Pig results count across the published event, roster and histories; Flash still excludes one line',()=>{
+  const id='piggy|2026-11-08';
+  const accepted=BASE.ledger.events.find(e=>e.id===id);
+  const projected=BASE.projection.events.find(e=>e.id===id);
+  const evidence=accepted.rows.find(r=>r.player==='AV-Finnie');
+  assert.equal(evidence.score,1,'source ledger retains exact leader-confirmed result');
+  assert.equal(evidence.clan,'AVENGERS');
+  assert.equal(projected.rows.find(r=>r.player==='AV-Finnie')?.score,1,'published Big Pig includes the score');
+  const main=projected.rows.filter(r=>r.clan==='AVENGERS');
+  assert.equal(main.length,48,'47 prior participants plus Finnie');
+  assert.equal(main.reduce((total,r)=>total+r.score,0),789651,'one extra line included in clan total');
+  assert.equal(BASE.globals.AVENGERS_DATA.piggy.events['2026-11-08'].find(r=>r.name==='AV-Finnie')?.lines,1);
+  assert(BASE.globals.AVENGERS_DATA.piggy.history['AV-Finnie'].some(r=>r.date==='2026-11-08'&&r.lines===1));
+  assert(BASE.projection.people.find(p=>p.name==='AV-Finnie').history.some(r=>r.eventId===id&&r.score===1));
+  const av2=projected.rows.filter(r=>r.clan==='AV-2');
+  assert.equal(av2.length,18,'14 previously logged plus AV-J and three one-line players');
+  const j=av2.find(r=>r.player==='AV-J');
+  assert.deepEqual([j.score,j.stars,j.sparks,j.metadata.rank],[53,85714,8571,24]);
+  for(const [name,rank] of [['AV-TheOli',48],['TheHemperor',49],['AV-CRISPIN.97',50]]){
+    const row=av2.find(r=>r.player===name);
+    assert(row,name+' imported from final AV-2 Big Pig screenshot');
+    assert.equal(row.score,1);
+    assert.equal(row.metadata.rank,rank);
+    assert.equal(row.stars,null,'Tier 10 not reached must remain unknown payout');
+    assert.equal(row.sparks,null,'Tier 10 not reached must remain unknown payout');
+    assert(BASE.projection.people.find(p=>p.name===name)?.history.some(r=>r.eventId===id&&r.score===1),name+' profile retains result');
+  }
+  assert(!BASE.projection.people.some(p=>['AV2-J','AV2-TheHemperor','AV-CRISPIN.27'].includes(p.name)),'source aliases do not create duplicate profiles');
+  assert(!BASE.projection.events.filter(e=>e.kind==='flash').some(e=>e.rows.some(r=>r.score===1)),
+    'exactly-one-line Flash placeholders alone remain excluded');
 });

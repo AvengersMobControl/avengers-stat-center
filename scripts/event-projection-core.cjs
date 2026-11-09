@@ -220,12 +220,12 @@ function rewards(rows){
 function project(ledger,{aliases={},members=[],snapshots={},priorToLogging=null,arenaStart='2026-08-01'}={}){
   validate(ledger,aliases);requireThat(day(arenaStart),'Invalid arena start');
   const originalRows=ledger.events.filter(e=>e.status!=='revoked').flatMap(e=>normalize(e,aliases).rows.map(r=>({...r,date:e.date,kind:e.kind})));
-  // Leader policy: a one-line Piggy/Flash placeholder is nonparticipation.
-  // Retain original evidence in the versioned ledger, but omit it from the
-  // projected event rows used by every statistic, history, export and report.
+  // Leader correction (2026-11-08): one-line Big Pig is a valid result.
+  // Only one-line Flash placeholders count as nonparticipation. Preserve the
+  // original source evidence in both cases.
   const events=ledger.events.map(e=>{
     const normalized=normalize(e,aliases);
-    if(['piggy','flash'].includes(e.kind))normalized.rows=normalized.rows.filter(r=>r.score!==1);
+    if(e.kind==='flash')normalized.rows=normalized.rows.filter(r=>r.score!==1);
     return {...normalized,revision:e.revision};
   }).sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
   // Ambiguous concurrent events for the same player/date/type require migration review;

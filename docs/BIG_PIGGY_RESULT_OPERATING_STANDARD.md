@@ -1,6 +1,6 @@
 # Big Piggy Race Results — Operating Standard
 
-**Updated:** 2026-10-21  
+**Updated:** 2026-11-08
 **Scope:** AVENGERS Mob Control Stat Center only; covers both event-time AVENGERS and AV-2 results. Never apply to SAC / Lock It In.  
 **Current status:** review-only. This document does not enable scheduled collection, imports, or Discord posting.
 
@@ -40,7 +40,7 @@ Record the event date, event-time clan, lobby identity, original game rank, cano
 
 - **Separate lobbies stay separate.** Never combine two small lobbies to meet a participation threshold or compare one lobby’s rank against another lobby’s rank. Use the game’s actual rank and the correct lobby cohort.
 - **Overlapping screenshots:** deduplicate only when canonical player identity, event-time clan, lobby, and original rank establish the same row. Repeated values must agree. Any conflicting score, reward, clan, or rank blocks the candidate until resolved against the originals.
-- **One line means nonparticipation** for Piggy and Piggy Flash, per the 2026-10-21 decision. Retain the original source evidence, but exclude those placeholder rows from participation, totals, averages, event counts, PBs, first appearances, rankings, profiles, and report denominators.
+- **One line still counts in Big Piggy** (leader correction, Nov 8, 2026). Include these results in participation, lines totals, averages, event counts, PBs, first appearances, rankings, profiles, and report denominators. Exclude exactly-one-line placeholders **only in Piggy Flash**, while retaining original source evidence.
 - **Clan attribution is event-time attribution.** Current roster membership does not rewrite historic results. Resolve aliases through the approved identity map; do not merge similar-looking accounts or invent Discord IDs.
 - **Coverage is explicit.** A partial/cropped leaderboard remains partial unless the source set independently establishes completeness. Do not infer that missing ranks contain no clan members unless reliable source evidence establishes that fact for that event.
 - **Totals must reconcile.** Recalculate unique participating rows, total lines, average lines per participating player, source-known Stars and Sparks, per-lobby rank uniqueness, and clan/event totals. Report known sums separately from missing values. A source screenshot’s rounded whole-lobby pot is not the clan’s earned Stars.

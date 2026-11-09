@@ -643,3 +643,12 @@ A review-only source-byte receipt binder is staged, requiring an original Discor
 
 ## October 17 #8: safe credential-readiness contract independent of Sunday's ingestion review
 While awaiting an independently retrievable final race screenshot at 5 PM Central on Sunday October 18, continue #8 without changing production security state: add a read-only privilege verifier that blocks database-owner/API-created elevated Neon credentials, confirms an *actual future restricted login* rather than assuming GRANTs suffice, and rejects nonfalse send/delete/endpoint toggles. Read-only SQL was exercised on both existing AV-only branches using owner-level connections and confirmed both are unsafe for a runtime even though kill switches are OFF. CI-gated tests and docs preserve this as a code milestone. The SQL-created restricted role remains ONLY on the prepared temporary branch, with no password, pending previously approved migration's platform block and a safe credential initialization flow. No public/private live sender, webhook, new event, Discord message, data/Sparks or template change. Next #8 is restricted actual login proof and authorized transaction adapter; separate send/delete approval still mandatory.
+## 2026-11-08 — Big Pig scoring and roster follow-through
+
+- [x] Correct one-line event policy: include Big Pig results (including Nov 8 Finnie 1 line) in all source-derived website metrics; continue excluding one-line Flash nonparticipants.
+- [x] Confirm main-clan ShieldBreaker capitalization is one active account; add OlRose, SURVIVOR, Thoszi and TheHemperor to current AV-2 roster while retaining their logged results.
+- [x] Include AV2-J rank24 Nov8 Big Pig (53 lines, 85,714 Stars, 8,571 Sparks), plus three exact 1-line AV-2 finishers at ranks48–50, under established canonical profiles. Event now has 48 AVENGERS + 18 AV-2 rows; null rewards retained for Tier 10 not reached.
+- [x] Keep the existing Sunday 5 PM CT website pull active and update its one-line rule in place; do not duplicate scheduling.
+- [ ] Verify and publish the corrected site through all CI/Pages exact-SHA/versioned export/live-browser and Vercel production checks.
+- [ ] Independently verify the separate AV-J AV-2 Space result Discord publication state; preserve at-most-once and AV-2 dispatch controls.
+- [ ] Regenerate/correct any Nov 8 Big Pig PNG and Discord summary only through the separate authorized versioned dispatch workflow, now reflecting Finnie's and AV-2's qualifying results.

@@ -1,6 +1,7 @@
 'use strict';
 /**
- * Standing AVENGERS event-summary publisher (leader activated automatic posting 2026-10-26).
+ * Standing AVENGERS event-summary publisher (leader activated automatic posting 2026-10-26;
+ * extended to the weekly recap by leader decision 2026-11-09, see docs/DECISION_LOG.md).
  *
  * Posts ONE event poster + write-up that is already committed in data/discord-posts.json
  * (staged by scripts/stage-discord-post.py) to the configured #Performance Statistics channel.
@@ -9,16 +10,24 @@
  *  - AVENGERS_AUTO_PUBLISH_ENABLED=true (production only) and a clan allowlist (AVENGERS by default);
  *  - a single-use token whose SHA-256 is in AVENGERS_AUTO_PUBLISH_ONCE_SHA256, bound to one post key
  *    or a few (AVENGERS_AUTO_PUBLISH_POST, comma-separated) and an expiry (AVENGERS_AUTO_PUBLISH_EXPIRES_UTC);
- *  - the exact SHA-pinned PNG, approved source event, and the Neon send-once ledger;
+ *  - the exact SHA-pinned PNG, approved source event(s), and the Neon send-once ledger;
  *  - authenticated readback of text and PNG bytes. Never retries an uncertain send.
+ *
+ * The `weekly` kind posts a recap derived from SIX already-approved events (one Space, four
+ * Flash PFs as one Flash Set, one Big Pig) rather than a single event; see sourceDigest() and
+ * post.weekRefs below. It carries its own authorization tag, separate from the 2026-10-26
+ * single-event activation, so the two can be told apart in the audit trail and killed
+ * independently.
  */
 const crypto=require('node:crypto');
 const posts=require('../../data/discord-posts.json');
 const approved=require('../../data/approved-event-updates.json');
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
-const AUTH='leader-standing-auto-discord-2026-10-26';
+const AUTH_SINGLE_EVENT='leader-standing-auto-discord-2026-10-26';
+const AUTH_WEEKLY='leader-standing-auto-discord-weekly-2026-11-09';
+const authFor=kind=>kind==='weekly'?AUTH_WEEKLY:AUTH_SINGLE_EVENT;
 const CHANNEL='1470175579058999386';
-const KINDS=new Set(['space','piggy','flash']);
+const KINDS=new Set(['space','piggy','flash','weekly']);
 
 function answer(res,code,data){
  res.statusCode=code;
@@ -46,18 +55,39 @@ function validPost(key,post){
  if(!/^[a-f0-9]{64}$/.test(post.sha256||'')||!(post.size>0))throw Error('Bad image pin');
  if(typeof post.body!=='string'||!post.body.trim()||post.body.length>2000)throw Error('Bad body');
  if(post.approved!==true)throw Error('Post not approved');
+ if(post.kind==='weekly'){
+  const w=post.weekRefs;
+  if(!w||typeof w!=='object')throw Error('Weekly post missing weekRefs');
+  if(!/^space\|\d{4}-\d{2}-\d{2}$/.test(w.space||''))throw Error('Bad weekRefs.space');
+  if(!/^piggy\|\d{4}-\d{2}-\d{2}$/.test(w.piggy||''))throw Error('Bad weekRefs.piggy');
+  if(!/^\d{4}-\d{2}-\d{2}-[A-Za-z]$/.test(w.flashSetId||''))throw Error('Bad weekRefs.flashSetId');
+ }
  return post;
 }
 function mentions(body){
  // Leader rule 2026-10-26: write-ups start with @everyone, and only that ping is allowed.
  return {parse:body.startsWith('@everyone')?['everyone']:[]};
 }
+function matchApprovedUpdates(kind,ref,clan){
+ // ref is an eventId for space/piggy, or a Flash Set id for flash (covers all its PFs).
+ const ups=approved.updates.filter(u=>u.approved===true&&u.event&&u.event.kind===kind&&(
+   kind==='flash'?(u.event.metadata||{}).setId===ref:u.event.id===ref));
+ if(!ups.length)throw Error('Approved source event missing: '+kind+'|'+ref);
+ const rows=ups.flatMap(u=>u.event.rows||[]).filter(r=>r.clan===clan);
+ if(!rows.length)throw Error('No approved rows for clan: '+kind+'|'+ref);
+ return ups;
+}
 function sourceDigest(post){
- const ups=approved.updates.filter(u=>u.approved===true&&u.event&&u.event.kind===post.kind&&(
-   post.kind==='flash'?(u.event.metadata||{}).setId===post.eventId.replace(/^flash\|/,''):u.event.id===post.eventId));
- if(!ups.length)throw Error('Approved source event missing');
- const rows=ups.flatMap(u=>u.event.rows||[]).filter(r=>r.clan===post.clan);
- if(!rows.length)throw Error('No approved rows for clan');
+ if(post.kind==='weekly'){
+  const w=post.weekRefs;
+  const parts=[
+   ...matchApprovedUpdates('space',w.space,post.clan),
+   ...matchApprovedUpdates('flash',w.flashSetId,post.clan),
+   ...matchApprovedUpdates('piggy',w.piggy,post.clan),
+  ];
+  return sha(JSON.stringify(parts.map(u=>[u.event.id,u.expectedRevision,u.event.rows.length])));
+ }
+ const ups=matchApprovedUpdates(post.kind,post.kind==='flash'?post.eventId.replace(/^flash\|/,''):post.eventId,post.clan);
  return sha(JSON.stringify(ups.map(u=>[u.event.id,u.expectedRevision,u.event.rows.length])));
 }
 async function discord(token,url,method='GET',body){
@@ -89,10 +119,10 @@ async function reserve(sql,channel,post,projection){
  if(inserted.length!==1)return null;
  const slotId=inserted[0].id;
  const intent=await sql.query("INSERT INTO avengers_dispatch_private.send_intents(slot_id,intent_kind,plan_sha256,projection_sha256,image_sha256,template_version,edition,destination_channel_id,approved_by,approved_at) VALUES($1,'first',$2,$3,$4,$5,$6,$7,$8,now()) RETURNING id",
-  [slotId,plan,projection,post.sha256,post.template,edition,channel,AUTH]);
+  [slotId,plan,projection,post.sha256,post.template,edition,channel,authFor(post.kind)]);
  if(intent.length!==1)throw Error('Intent reservation failed');
  await sql.query("INSERT INTO avengers_dispatch_private.audit_events(slot_id,action,actor,details) VALUES($1,'manual_authorization_recorded',$2,$3::jsonb)",
-  [slotId,AUTH,JSON.stringify({kind:post.kind,clan:post.clan,channel,sha:post.sha256})]);
+  [slotId,authFor(post.kind),JSON.stringify({kind:post.kind,clan:post.clan,channel,sha:post.sha256})]);
  return {slotId,intentId:intent[0].id,projection};
 }
 async function send(token,channel,post,bytes){

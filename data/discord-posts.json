@@ -78,6 +78,24 @@
       "approved": true,
       "authorization": "leader-standing-auto-discord-2026-10-26",
       "description": "AVENGERS Big Pig November 8 2026 results"
+    },
+    "weekly|weekly|2026-11-02|AVENGERS": {
+      "kind": "weekly",
+      "eventId": "weekly|2026-11-02",
+      "clan": "AVENGERS",
+      "file": "AVENGERS_Weekly_Recap_November_2_2026.png",
+      "sha256": "5ab01763cc0e4d8b5f005a62d95675f440255441aa9c7c2879c47b59ddb7ff2c",
+      "size": 2939473,
+      "template": "weekly-recap-poster-v1-20261109",
+      "body": "@everyone\n\n🗓️ **AVENGERS Weekly Recap — November 2–8** 🗓️\n\n**📊 The Week**\n15,210,285 known Sparks from 6 events (Space, four Flashes, Big Pig) — 50 distinct AVENGERS, 167 results, partial coverage.\n\n**🏆 Top 5 Spark Contributors**\n1. Zolika.x.TheBoss — 1,380,518\n2. INTEN — 1,014,035\n3. KKD — 978,699\n4. Lin — 904,610\n5. SweetiePL — 709,322\n\n**🚀 Space Race (Nov 6)**\n46 racers, 6 lobbies — 6,660,747 Sparks, 30/40 above own average, 7 new distance PBs.\n\n**⚡ Four Piggy Flashes (Nov 3–4)**\n74 results, 37 unique racers — 670,266 Sparks, 34/63 above day average.\nPF1 7-STAR 3,057 • PF2 SB 4,112 • PF3 istanbuL 3,035 • PF4 Nicefellow 4,234 lines\n\n**🐷 Big Pig (Nov 8)**\n47 AVENGERS results (partial coverage) — 7,879,272 Sparks, 789,650 team lines, 21/42 above own average.\nTop 5: INTEN 62,637 • Zolika.x.TheBoss 43,670 • KKD 42,172 • HarryBallsagna 37,339 • Addicted 32,450\n\n**💥 Milestones**\nKNAVEN — 168.5B Space PB (+48.2%)\nTRINITY — 12,473 Piggy lines (+23.3%)\n7-STAR — 9,774 combined Flash Set lines (+94.0%)\nMcNasty — Big Pig rank 22nd → 10th\n\n7 new Space distance PBs • 5 new Flash Set day PBs • 4 new Piggy line PBs • 7 improved Piggy rank PBs\n\nFull results and PBs: https://avengersmobcontrol.github.io/avengers-stat-center/",
+      "approved": true,
+      "authorization": "leader-standing-auto-discord-weekly-2026-11-09",
+      "description": "AVENGERS Weekly Recap November 2 2026 results",
+      "weekRefs": {
+        "space": "space|2026-11-06",
+        "flashSetId": "2026-11-03-A",
+        "piggy": "piggy|2026-11-08"
+      }
     }
   }
 }

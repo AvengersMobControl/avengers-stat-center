@@ -1,3 +1,10 @@
+## 2026-11-13 — Four existing kicked AV-2 members become Inactive; Royal exempt
+
+- The leader furnished original AV-2 kick-log screenshot and directed inactivation of those kicked out **only where a website player record already exists**, except `AV-Royal` even though that account appears in the screenshot.
+- Identified canonical existing accounts: `uLTRaSLaN`, `Mickzzz`, `Basecreature`, `AV-braa`. All become `Inactive`, not deleted; past results/Sparks/Stars/source clans and player profiles remain.
+- `AV-Royal(No.Energy)` is the screenshot display for existing `AV-Royal`; do **not** mark Inactive. `Keyler`, `Blade`, `AV-2(TAMIM)` remain completely omitted from the published site under the earlier permanent-deletion directive. No new profile created.
+- This is a current-membership change, **not** a retroactive event-clan transfer. Active AVENGERS remain 49, current AV-2 is 47, JR remains Unassigned. Do not change Discord private identity bindings or Kraken testing.
+
 ## 2026-11-12 — Register /kraken immediately as an isolated disposable TEST
 
 - Leader explicitly authorized launching /kraken in the AVENGERS Discord now and discarding pre-Saturday test submissions. Use dummy maps and a short synthetic preset for entry/review testing; never assert they are official Kraken strategies or write them to the master DPT workbook.

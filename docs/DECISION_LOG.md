@@ -1,3 +1,10 @@
+## 2026-11-13 — /kraken command visibility requires member-side validation
+
+- Leader reported slash command missing for several guild members. One-time bot API diagnostic proved command and bot installation exist; not sufficient to prove role/member visibility.
+- Reapplied guild context/install type and unrestricted default member permission on only the existing `/kraken` guild command. Discord returned successful update/readback.
+- The private bot lacks `MANAGE_GUILD` for Discord integrations API (403), and server-specific command permission overrides require a privileged **user Bearer token**; do not attempt unsupported bot-token edits or claim all members can see the slash command until checked in ordinary guild account.
+- Provide secure form link as temporary equivalent entry method. Do not alter the event maps/routes, identity registry or HarryBallsagna-only review/export permissions.
+
 ## 2026-11-13 — Space Race Nov 13 lobby L5 rank 2 correction: AV-Zoliika is AV-Zolika.x.TheBoss
 
 - Source: original Discord Space post 1570715245473697846, attachment 1570715245003939920, final CLAIM screenshot original-byte SHA-256 9c36d9f1a0c0d7931380d1889db97f4eb26d7ce78aadc127eb78445f91b339c2. The source row was fully visible in the 14-image verified November 13 pull but previously held under an identity uncertainty, not imported. Leader explicitly confirms the historical canonical account.

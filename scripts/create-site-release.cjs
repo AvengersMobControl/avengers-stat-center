@@ -25,9 +25,14 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
   const legacy=load(),migration=migrate(legacy);
   // Leader-confirmed identity: TheBoss; Kira and LoveKira are historical aliases.
   const aliases={...migration.aliases};
-  // Leader explicitly states AV-Frenchie(-4) and AV-Frenchie2 are distinct accounts.
-  // Drop legacy display-name alias for new source rows; preserve AV-FrenchieUSA historical records.
+  // 2026-11-12: FrenchieUSA is the historical name of Frenchie(-4).
+  // Frenchie2 is ANOTHER game account belonging to the SAME Discord person.
+  // Old Oct AV-2 source labeled USA is specifically attributed to Frenchie2
+  // (see migrate-event-ledger); historical event-time source evidence remains.
   delete aliases['AV-Frenchie(-4)'];
+  aliases['AV-FrenchieUSA']='AV-Frenchie(-4)';
+  delete aliases['AV-Frenchie2'];
+  aliases['AV-J-Zo']='AV-J';
   delete aliases['AV-Zolika.x.TheBoss']; // remove reverse mapping to avoid cycles
   aliases['AV-Zolika.x.Kira']='AV-Zolika.x.TheBoss';
   aliases['AV-ZolikaLoveKira']='AV-Zolika.x.TheBoss';

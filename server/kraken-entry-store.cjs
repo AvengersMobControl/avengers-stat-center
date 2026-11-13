@@ -42,7 +42,9 @@ async function current(q,user,event,canonicalName=null){
   try{next=nextBattle(run,battles,await sequence(q));}
   catch(e){lookupIssue=e.message;}
  }
- return {run:{id:run.id,status:run.status,routeId:run.route_id||'custom',event:run.event_key,canonicalName:run.canonical_name||null,
+ return {run:{id:run.id,status:run.status,routeId:run.customized?'custom':run.route_id||'custom',
+    originalRouteId:run.route_id||null,customized:Boolean(run.customized),
+    event:run.event_key,canonicalName:run.canonical_name||null,
     submittedAt:run.submitted_at,reviewNote:run.review_note},battles,next,lookupIssue};
 }
 async function start(q,user,event,routeId,canonicalName=null){
@@ -60,7 +62,7 @@ async function start(q,user,event,routeId,canonicalName=null){
   const old=await getBattles(q,existing.id);
   if(old.length&&existing.route_id!==name)fault('Undo existing battles before changing routes',409);
   if(!old.length){
-   await q('UPDATE '+SCHEMA+'.runs SET route_id=$2,route_revision=$3,route_snapshot=$4::jsonb,updated_at=now() WHERE id=$1 AND status=$5',
+   await q('UPDATE '+SCHEMA+'.runs SET route_id=$2,route_revision=$3,route_snapshot=$4::jsonb,customized=false,customized_at=NULL,updated_at=now() WHERE id=$1 AND status=$5',
     [existing.id,name,version,snapshot?JSON.stringify(snapshot):null,'draft']);
   }
   return current(q,user.id,event,canonicalName);
@@ -76,11 +78,20 @@ async function save(q,user,event,canonicalName,input){
  const battles=await getBattles(q,run.id);
  const next=nextBattle(run,battles,await sequence(q));
  const b=validateBattle(input,next);
+ const becomesCustom=Boolean(run.route_snapshot&&!run.customized&&
+  next.autoTickets!==null&&b.ticketsUsed!==next.autoTickets);
  // The server recomputes all fields; client-supplied map, player or battle numbers are ignored.
  const rows=await q('INSERT INTO '+SCHEMA+'.battles(run_id,battle_no,tickets_left,map_code,tickets_used,loadout,damage_m,notes) SELECT $1,$2,$3,$4,$5,$6,$7,$8 WHERE EXISTS(SELECT 1 FROM '+SCHEMA+'.runs WHERE id=$1 AND discord_user_id=$9 AND status=$10) AND (SELECT count(*) FROM '+SCHEMA+'.battles WHERE run_id=$1 AND voided_at IS NULL)=$11 ON CONFLICT DO NOTHING RETURNING id',
   [run.id,b.battleNo,b.ticketsLeft,b.map,b.ticketsUsed,b.loadout,b.damage,b.notes,user.id,'draft',b.battleNo-1]);
  if(rows.length!==1)fault('Another edit was saved; reload the current battle',409);
- await audit(q,run.id,user.id,'battle_saved',{battle:b.battleNo});
+ if(becomesCustom){
+  const switched=await q('UPDATE '+SCHEMA+
+   '.runs SET customized=true,customized_at=now(),updated_at=now() WHERE id=$1 AND discord_user_id=$2 AND status=$3 AND customized=false RETURNING id',
+   [run.id,user.id,'draft']);
+  if(switched.length!==1)fault('Route changed during save; refresh',409);
+ }
+ await audit(q,run.id,user.id,'battle_saved',{battle:b.battleNo,kind:'new-battle',
+  convertedFromPreset:becomesCustom,originalRoute:becomesCustom?run.route_id:null});
  return current(q,user.id,event,canonicalName);
 }
 async function undo(q,user,event,canonicalName){
@@ -95,7 +106,7 @@ async function submit(q,user,event,canonicalName){
  if(!run||run.status!=='draft')fault('No editable draft',409);
  const battles=await getBattles(q,run.id);
  if(!progress(battles).complete)fault('Use all 56 tickets before submitting',409);
- if(run.route_snapshot&&battles.length!==stepsFor(run.route_snapshot).length)
+ if(run.route_snapshot&&!run.customized&&battles.length!==stepsFor(run.route_snapshot).length)
   fault('Preset route is incomplete',409);
  const rows=await q("UPDATE "+SCHEMA+".runs SET status='pending',submitted_at=now(),updated_at=now() WHERE id=$1 AND discord_user_id=$2 AND status='draft' RETURNING id",
   [run.id,user.id]);
@@ -103,8 +114,71 @@ async function submit(q,user,event,canonicalName){
  await audit(q,run.id,user.id,'submit',{battles:battles.length});
  return current(q,user.id,event,canonicalName);
 }
+
+async function reopen(q,user,event,canonicalName){
+ const run=await own(q,user.id,event,canonicalName);
+ if(!run||run.status!=='pending')
+  fault('Only submissions awaiting leader review can be reopened',409);
+ const rows=await q('UPDATE '+SCHEMA+
+  '.runs SET status=$3,submitted_at=NULL,review_note=NULL,reviewed_at=NULL,reviewed_by=NULL,updated_at=now() '+
+  'WHERE id=$1 AND discord_user_id=$2 AND status=$4 RETURNING id',
+  [run.id,user.id,'draft','pending']);
+ if(rows.length!==1)fault('Submission was already reviewed or changed; refresh',409);
+ await audit(q,run.id,user.id,'start',{kind:'reopened-submission',previousStatus:'pending'});
+ return current(q,user.id,event,canonicalName);
+}
+async function editBattle(q,user,event,canonicalName,input){
+ const run=await own(q,user.id,event,canonicalName);
+ if(!run||run.status!=='draft')fault('Reopen the pending submission before editing',409);
+ const number=Number(input.battleNo);
+ if(!Number.isInteger(number)||number<1||number>56)fault('Choose a valid battle');
+ const battles=await getBattles(q,run.id);
+ const old=battles[number-1];
+ if(!old||Number(old.battle_no)!==number)fault('This battle is not in your draft',404);
+ const earlier=battles.slice(0,number-1);
+ const previous=progress(earlier);
+ if(previous.remaining!==Number(old.tickets_left))fault('Stored ticket balances are inconsistent',409);
+ const changed=validateBattle(input,{complete:false,nextNumber:number,
+  remaining:previous.remaining,map:old.map_code,autoTickets:null,autoLoadout:null});
+ const changedTickets=changed.ticketsUsed!==Number(old.tickets_used);
+ const later=battles.length-number;
+ const becomesCustom=Boolean(changedTickets&&run.route_snapshot&&!run.customized);
+ // A change to a past ticket allocation invalidates all subsequent map and
+ // ticket balances. Preserve those old rows (voided, not deleted) for audit.
+ // A confirmation parameter prevents accidental loss of the active entries.
+ if(changedTickets&&later>0&&input.confirmDiscardLater!==true)
+  fault('Changing tickets will archive '+later+' later battle(s); confirm to continue',409);
+ let edited;
+ if(changedTickets){
+  const results=await q('WITH later AS ('+
+   'UPDATE '+SCHEMA+'.battles SET voided_at=now() WHERE run_id=$1 AND battle_no>$2 AND voided_at IS NULL RETURNING id), '+
+   'edited AS (UPDATE '+SCHEMA+
+   '.battles SET tickets_used=$3,loadout=$4,damage_m=$5,notes=$6 WHERE run_id=$1 AND battle_no=$2 AND voided_at IS NULL RETURNING id) '+
+   'SELECT (SELECT count(*) FROM later)::int AS archived,(SELECT count(*) FROM edited)::int AS edited',
+   [run.id,number,changed.ticketsUsed,changed.loadout,changed.damage,changed.notes]);
+  edited=Number(results[0]?.edited||0);
+  if(edited===1&&becomesCustom){
+   await q('UPDATE '+SCHEMA+
+    '.runs SET customized=true,customized_at=now(),updated_at=now() WHERE id=$1 AND discord_user_id=$2 AND status=$3 AND customized=false',
+    [run.id,user.id,'draft']);
+  }
+ }else{
+  const updated=await q('UPDATE '+SCHEMA+
+   '.battles SET loadout=$3,damage_m=$4,notes=$5 WHERE run_id=$1 AND battle_no=$2 AND voided_at IS NULL RETURNING id',
+   [run.id,number,changed.loadout,changed.damage,changed.notes]);
+  edited=updated.length;
+ }
+ if(edited!==1)fault('Another edit changed this battle; reload',409);
+ await audit(q,run.id,user.id,'battle_saved',{kind:'member-edit',
+  battle:number,ticketsBefore:Number(old.tickets_used),ticketsAfter:changed.ticketsUsed,
+  loadoutBefore:old.loadout,loadoutAfter:changed.loadout,
+  damageBefore:String(old.damage_m),damageAfter:String(changed.damage),
+  archivedLaterBattles:changedTickets?later:0,convertedFromPreset:becomesCustom});
+ return current(q,user.id,event,canonicalName);
+}
+
 async function reviewList(q,event){
- const rows=await q('SELECT id,event_key,discord_user_id,discord_username,canonical_name,route_id,status,submitted_at,reviewed_at,reviewed_by,review_note FROM '+SCHEMA+'.runs WHERE event_key=$1 AND status<>$2 ORDER BY submitted_at DESC NULLS LAST LIMIT 200',[event,'draft']);
+ const rows=await q('SELECT id,event_key,discord_user_id,discord_username,canonical_name,route_id,customized,status,submitted_at,reviewed_at,reviewed_by,review_note FROM '+SCHEMA+'.runs WHERE event_key=$1 AND status<>$2 ORDER BY submitted_at DESC NULLS LAST LIMIT 200',[event,'draft']);
  const ids=rows.map(r=>r.id);
  const details=await Promise.all(ids.map(id=>getBattles(q,id)));
  return rows.map((run,i)=>({...run,battles:details[i]}));
@@ -139,14 +213,14 @@ async function reviewAction(q,reviewer,event,action,input){
 }
 async function exportApproved(q,event){
  const runs=await reviewList(q,event);
- const lines=[['Event','Canonical player','Discord username','Discord User ID','Run ID','Route','Battle #','Tickets Left','Map','Tickets Used','Loadout','Damage (M)','Damage/Ticket (M)','Notes']];
+ const lines=[['Event','Canonical player','Discord username','Discord User ID','Run ID','Route','Original preset','Battle #','Tickets Left','Map','Tickets Used','Loadout','Damage (M)','Damage/Ticket (M)','Notes']];
  for(const run of runs.filter(r=>r.status==='approved')){
   for(const b of run.battles){
    lines.push([run.event_key,run.canonical_name||'UNLINKED',run.discord_username,run.discord_user_id,run.id,
-    run.route_id||'custom',b.battle_no,b.tickets_left,b.map_code,b.tickets_used,
+    run.customized?'custom':run.route_id||'custom',run.route_id||'',b.battle_no,b.tickets_left,b.map_code,b.tickets_used,
     b.loadout,b.damage_m,Number(b.damage_m)/Number(b.tickets_used),b.notes]);
   }
  }
  return safeCsv(lines);
 }
-module.exports={connection,checkEvent,routes,sequence,current,start,save,undo,submit,reviewList,reviewAction,exportApproved};
+module.exports={connection,checkEvent,routes,sequence,current,start,save,undo,reopen,editBattle,submit,reviewList,reviewAction,exportApproved};

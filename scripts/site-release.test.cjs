@@ -178,7 +178,7 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
   for(const name of ['AV2-OlRose','AV-2.SURVIVOR','AV2-Thoszi']){
     assert.equal(R.byName[name]?.status,'AV2',name+' confirmed AV-2 roster');
     assert.equal(people.filter(p=>p.name===name&&p.status==='AV2').length,1,name+' existing event identity is current AV-2 member');
-    assert.deepEqual(people.find(p=>p.name===name).history.filter(h=>h.date>='2026-11-06').map(h=>h.kind).sort(),['piggy','space'],name+' two source-verified results retained');
+    assert.deepEqual(people.find(p=>p.name===name).history.filter(h=>h.date>='2026-11-06').map(h=>h.kind).sort(),name==='AV-2.SURVIVOR'?['piggy','space']:['piggy','space','space'],name+' source-verified results retained, including November 13 when present');
   }
   assert.equal(R.byName['TheHemperor']?.status,'AV2','TheHemperor is a current AV-2 participant');
   assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV2-TheHemperor'),'TheHemperor');
@@ -643,15 +643,20 @@ test('Nov 6 Space original screenshot tail, Zolika and AV-2 identity reconciliat
   assert.equal(dreadrix[0].metadata.lobby,'A');
   assert.equal(dreadrix[0].metadata.share,0.02);
   assert.equal(dreadrix[0].clan,'AVENGERS');
-  // Dubai's earlier zero-result roster shell now has exactly one verified Nov 8 Big Pig finish.
+  // Dubai's roster shell has one verified Nov 8 Piggy and one Nov 13 Space result.
   const dubaiRows=BASE.ledger.events.flatMap(event=>event.rows.filter(row=>row.player==='AV-Dubai').map(row=>({eventId:event.id,...row})));
-  assert.equal(dubaiRows.length,1,'Dubai has one verified event and no fabricated history');
-  assert.equal(dubaiRows[0].eventId,'piggy|2026-11-08');
-  assert.equal(dubaiRows[0].score,9960);
-  assert.equal(dubaiRows[0].sparks,63224);
-  assert.equal(dubaiRows[0].stars,632238);
-  assert.equal(dubaiRows[0].metadata.rank,32);
-  assert.equal(BASE.projection.people.find(p=>p.name==='AV-Dubai')?.earned.events,1,'Dubai one verified event');
+  assert.equal(dubaiRows.length,2,'Dubai has precisely two verified events, without invented history');
+  const dubaiPiggy=dubaiRows.find(row=>row.eventId==='piggy|2026-11-08');
+  assert.equal(dubaiPiggy?.score,9960);
+  assert.equal(dubaiPiggy?.sparks,63224);
+  assert.equal(dubaiPiggy?.stars,632238);
+  assert.equal(dubaiPiggy?.metadata.rank,32);
+  const dubaiSpace=dubaiRows.find(row=>row.eventId==='space|2026-11-13');
+  assert.equal(dubaiSpace?.score,146);
+  assert.equal(dubaiSpace?.sparks,124124);
+  assert.equal(dubaiSpace?.stars,1241240);
+  assert.equal(dubaiSpace?.metadata.rank,6);
+  assert.equal(BASE.projection.people.find(p=>p.name==='AV-Dubai')?.earned.events,2);
   assert.equal(r['AV-JAMO'].status,'Active');
   assert.equal(r['AV-Oakcliff'].status,'AV2');
   assert.equal(e.rows.find(x=>x.player==='AV-Oakcliff')?.clan,'AVENGERS','Oakcliff original event-time clan retained');

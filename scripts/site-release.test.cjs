@@ -161,7 +161,7 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
   const R=BASE.globals.AVENGERS_MEMBER_TIMEZONES,D=BASE.globals.AVENGERS_DATA;
   const people=BASE.projection.people;
   const active=R.rows.filter(r=>r.status==='Active'),av2=R.rows.filter(r=>r.status==='AV2');
-  assert.equal(active.length,49);assert.equal(av2.length,51);
+  assert.equal(active.length,49);assert.equal(av2.length,47);
   for(const name of ['AV-Lin','AV-Chuck','AV-no','AV-TRINITY','AV-istanbuL','AV-KKD','AV-KitKat','AV-Hoops','AV-JAMO','AV.ziyad','AV.atarIX','AV-Dreadrixter-UA','AV-Dubai']){
     assert.equal(R.byName[name]?.status,'Active',name+' roster');
     assert.equal(D.members.filter(m=>m.name===name&&m.status==='Active').length,1,name+' unique profile');
@@ -288,9 +288,32 @@ test('leader-deleted AV-2 accounts have no public profiles, roster membership or
  const c=BASE.ledger.events.find(e=>e.id==='kraken|oct');
  assert(c&&!c.rows.some(x=>x.player==='Blade'));
 });
+test('November 13 AV-2 departures retain inactive profiles and history',()=>{
+ const R=BASE.globals.AVENGERS_MEMBER_TIMEZONES,D=BASE.globals.AVENGERS_DATA;
+ const kicked=['uLTRaSLaN','Mickzzz','Basecreature','AV-braa'];
+ const current=R.rows.filter(r=>r.status==='Active'||r.status==='AV2');
+ for(const name of kicked){
+   const rows=R.rows.filter(r=>r.name===name);
+   assert.equal(rows.length,1,name+' retains exactly one website roster row');
+   assert.equal(rows[0].status,'Inactive');
+   assert.equal(R.byName[name]?.status,'Inactive');
+   assert(!current.some(r=>r.name===name),name+' no longer in current AV-2');
+   const p=BASE.projection.people.find(p=>p.name===name);
+   assert(p&&p.status==='Inactive',name+' existing profile remains');
+   assert(D.members.some(m=>m.name===name&&m.status==='Inactive'));
+ }
+ const mick=BASE.projection.people.find(p=>p.name==='Mickzzz');
+ assert.deepEqual(mick.history.map(h=>h.eventId).sort(),['piggy|2026-10-23','space|2026-10-25']);
+ assert.equal(mick.totalSparks,16519+11357,'Mickzzz historical Sparks retained');
+ assert.equal(D.members.find(m=>m.name==='Basecreature').spacePB,9.45);
+ assert.equal(R.byName['AV-Royal']?.status,'AV2','Royal exempt');
+ assert.equal(BASE.projection.people.find(p=>p.name==='AV-Royal')?.status,'AV2');
+ for(const name of ['Keyler','AV-Keyler','Blade','AV-2(TAMIM)'])
+   assert(!D.members.some(m=>m.name===name),'previously deleted account must stay absent: '+name);
+});
 test('current roster and every materialized PB/reward agree with independent canonical source sums',()=>{
   const D=BASE.globals.AVENGERS_DATA,R=BASE.globals.AVENGERS_MEMBER_TIMEZONES;
-  assert.equal(R.rows.filter(r=>r.status==='Active').length,49);assert.equal(R.rows.filter(r=>r.status==='AV2').length,51);
+  assert.equal(R.rows.filter(r=>r.status==='Active').length,49);assert.equal(R.rows.filter(r=>r.status==='AV2').length,47);
   const events=BASE.projection.events.filter(e=>e.status!=='revoked');
   for(const m of D.members){
     // Approved overlays may retain their original source alias; compare canonically.
@@ -355,8 +378,8 @@ test('Adigarian does not get artificial gap from a reset returning-clan counter'
 const {audit:transferAudit}=require('./audit-transfer-restorations.cjs');
 test('transfer restoration reconciles every current member, not only Hoops',()=>{
  const result=transferAudit(BASE);
-  assert.equal(result.summary.roster,100);
-  assert.equal(result.rows.length,100);
+  assert.equal(result.summary.roster,96);
+  assert.equal(result.rows.length,96);
  for(const r of result.rows){
   const player=BASE.projection.people.find(p=>p.name===r.name);
   assert(player,'Missing member '+r.name);
@@ -444,7 +467,7 @@ test('October 23 identities preserve former-member history and add only confirme
  const former=BASE.projection.people.find(p=>p.name==='AV-Animosity');
  assert(former.history.length>0,'former member history retained');
  for(const name of ['Mickzzz','AV2-Froyo']){
-   assert.equal(R.byName[name].status,'AV2');
+   assert.equal(R.byName[name].status,name==='Mickzzz'?'Inactive':'AV2');
    const matches=BASE.projection.people.filter(p=>p.name===name);
    assert.equal(matches.length,1);
    // Profiles start with the verified Oct 23 Piggy; Mickzzz later logged Oct 25 Space.

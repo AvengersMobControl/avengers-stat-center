@@ -1,3 +1,11 @@
+## 2026-11-13 — AV-2 screenshot-backed kicked member inactive statuses
+
+- Leader provided an original in-game AV-2 clan log screenshot confirming eight removals: `Keyler`, `uLTRaSLaN`, `Mickzzz`, `Basecreature`, `AV-braa`, `AV-Royal(No.Energy)`, `Blade`, and `AV-2(TAMIM)`. The screenshot spelling for `uLTRaSLaN` is matched to the canonical site spelling already present in the October 15 AV-2 roster/Sparks snapshot; do not add a new alias profile.
+- Following explicit leader instruction, mark existing site profiles `uLTRaSLaN`, `Mickzzz`, `Basecreature`, `AV-braa` **Inactive**; keep `AV-Royal` **AV2** despite the screenshot removal because it is explicitly exempt. `Keyler`, `Blade`, and `AV-2(TAMIM)` had already been permanently removed from the public site by earlier direction. They must remain absent; do not resurrect them as Inactive.
+- Source of truth for the status change is the leader's screenshot, not historical event-time clan or snapshot. Leave every historical Big Pig/Space/Flash/Kraken score, dated event-time clan, earned rewards, snapshots, aliases, and original proof untouched. New roster counts are **49 Active AVENGERS, 47 AV-2**, with four additional Inactive profiles. Preserve `AV-$JR.$` Unassigned.
+- Implemented as a final current-status override after Discord roster input, so stale roster imports cannot reverse the removal; unknown screenshot names are ignored rather than synthesized. Regression tests verify the four inactive statuses, historic Mickzzz scores, Royal exemption, previously deleted identities and recalculated active roster audit. No Discord posts or Kraken form/strategy changes.
+- Publication requires successful CI, final GitHub Pages exact-SHA/readback, and Vercel deployment confirmation.
+
 ## 2026-11-13 — /kraken editable submissions, preset overrides, leader-only review and CSV
 
 - User confirmed placeholder M10 on every battle was only the disposable test setup: all 56 temporary tickets-left positions in private Neon were deliberately seeded with fake M10. Do not infer actual map sequence; replace with leader-approved Saturday lookup. Keep current test event entirely out of the master workbook.

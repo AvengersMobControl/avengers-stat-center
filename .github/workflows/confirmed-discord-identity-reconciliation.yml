@@ -1,0 +1,21 @@
+name: Discord-confirmed canonical identity reconciliation
+on:
+  push:
+    branches: [fix/discord-confirmed-identities-20261112]
+  pull_request:
+    paths:
+      - 'scripts/create-site-release.cjs'
+      - 'roster-stars-snapshot-2026-10-15.js'
+      - 'scripts/confirmed-discord-identities.test.cjs'
+jobs:
+  identity-reconciliation:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node --check scripts/create-site-release.cjs && node --check roster-stars-snapshot-2026-10-15.js
+      - run: node --test scripts/confirmed-discord-identities.test.cjs

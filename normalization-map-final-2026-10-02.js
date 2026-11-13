@@ -45,7 +45,15 @@
     'AV-HiddenFrenchie':'AV-FrenchieUSA',
     'AV-Jeff':'AV-JefhKintz05',
     'Keyler':'AV-Keyler',
-    'AV-Keyler':'AV-Keyler'
+    'AV-Keyler':'AV-Keyler',
+    // 2026-11-12 leader-confirmed account merges: left spelling is retired.
+    'AV-#ZOLISTAR':'AV-7-STAR',
+    'AV-Adiagrion':'AV-Adigarian',
+    'AV-BXI':'AV-BX1',
+    'AV-FenXistentiel':'AV-FeniXistential',
+    'AV-Frenchie(-4)':'AV-FrenchieUSA',
+    'AV-J-Zo':'AV-J',
+    'AV-JustSomeGuy':'AV-HarryBallsagna'
   });
 
   const exactResolve=name=>{

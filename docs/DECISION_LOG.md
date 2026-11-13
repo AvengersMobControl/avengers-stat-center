@@ -1,3 +1,10 @@
+## 2026-11-13 — Space Race Nov 13 lobby L5 rank 2 correction: AV-Zoliika is AV-Zolika.x.TheBoss
+
+- Source: original Discord Space post 1570715245473697846, attachment 1570715245003939920, final CLAIM screenshot original-byte SHA-256 9c36d9f1a0c0d7931380d1889db97f4eb26d7ce78aadc127eb78445f91b339c2. The source row was fully visible in the 14-image verified November 13 pull but previously held under an identity uncertainty, not imported. Leader explicitly confirms the historical canonical account.
+- Add **AV-Zoliika** as an explicit alias to **AV-Zolika.x.TheBoss**, without creating a player or changing other Zolika/Kira identities. Nov 13 Space: lobby L5, rank 2, distance 200.3B, 120,935 exact Sparks, rounded screenshot Stars 1.21M; accepted Stars = 1,209,350 using the established 10x-Sparks inference, share 20%, clan AVENGERS. Preserve sourceDisplayName AV-Zoliika and original image hash.
+- This is a reviewed source-backed revision from 53 to 54 rows (AVENGERS 44 to 45, AV-2 unchanged 9). Rebuild the site and profiles atomically. Historical TheBoss PB (1030.7B) remains higher; no new-member detection.
+- The already-sent Discord Space poster (message 1570837091825229824) predates this fix and must not be claimed corrected; no automatic Discord send or PNG generated as a side effect of the website update.
+
 ## 2026-11-13 — Verified October Kraken practice presets LIVE
 
 - Production code merged in PR #204 and deployed to Vercel as commit 66b77a247b22e6116d019e2d1eb690f0d400e6ac (READY). Public code contains no strategy/map sequence values.

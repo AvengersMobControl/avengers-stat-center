@@ -13,10 +13,24 @@ function verify(raw,headers,publicKey,now=Date.now()){
    Buffer.from(sig,'hex'));}catch{return false;}
 }
 function answer(res,status,value){res.setHeader('Cache-Control','no-store');return res.status(status).json(value);}
+async function readRaw(req){
+ // On Vercel Node.js the req.body helper is a lazy getter that parses JSON.
+ // Capture the original incoming stream *before* anyone accesses req.body.
+ if(Buffer.isBuffer(req.rawBody))return req.rawBody;
+ if(typeof req.rawBody==='string')return Buffer.from(req.rawBody,'utf8');
+ const chunks=[];let length=0;
+ if(!req[Symbol.asyncIterator])throw Error('Raw request stream not available');
+ for await(const chunk of req){
+  const buf=Buffer.from(chunk);length+=buf.length;
+  if(length>25000)throw Error('Discord interaction exceeds maximum size');
+  chunks.push(buf);
+ }
+ return Buffer.concat(chunks);
+}
 async function handler(req,res){
  if(req.method!=='POST')return answer(res,405,{error:'POST required'});
- // Vercel must expose original request bytes; JSON reserialization breaks signature.
- const raw=Buffer.isBuffer(req.body)?req.body:Buffer.from(req.rawBody||'');
+ let raw;
+ try{raw=await readRaw(req);}catch{return answer(res,413,{error:'Invalid interaction payload'});}
  if(!raw.length||raw.length>25000||!verify(raw,req.headers,process.env.DISCORD_PUBLIC_KEY))
   return answer(res,401,{error:'Invalid Discord signature'});
  let body;
@@ -37,3 +51,4 @@ async function handler(req,res){
 }
 module.exports=handler;
 module.exports.verify=verify;
+module.exports.readRaw=readRaw;

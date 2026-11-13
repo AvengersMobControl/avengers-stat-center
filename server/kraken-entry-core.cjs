@@ -32,7 +32,7 @@ function nextBattle(run,battles,mapSequence){
  const p=progress(battles);
  if(p.complete)return {complete:true,remaining:0,nextNumber:p.nextNumber};
  let auto=null;
- if(run.route_snapshot){
+ if(run.route_snapshot&&!run.customized){
   const s=stepsFor(run.route_snapshot);
   auto=s[battles.length]||null;
   if(!auto||auto.ticketsLeft!==p.remaining)fault('Preset and prior battles disagree',409);
@@ -43,8 +43,11 @@ function nextBattle(run,battles,mapSequence){
 }
 function validateBattle(input,next){
  if(next.complete)fault('All tickets are already accounted for',409);
- const used=next.autoTickets||Number(input.ticketsUsed);
- const loadout=next.autoLoadout||input.loadout;
+ // Preset entries are initial suggestions, not locked input values. An
+ // explicit ticket override promotes the whole run to Custom Route.
+ const used=input.ticketsUsed===undefined||input.ticketsUsed===null?
+  next.autoTickets:Number(input.ticketsUsed);
+ const loadout=input.loadout??next.autoLoadout;
  const rawDamage=String(input.damage??'').trim();
  const damage=Number(rawDamage);
  if(!ALLOWED_TICKETS.includes(used)||used>next.remaining)fault('Invalid tickets used');

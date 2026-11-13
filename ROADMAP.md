@@ -1,3 +1,14 @@
+## 2026-11-13 — Private /kraken usability and reviewer lock-down
+
+- [x] Add additive private customized/customized_at migration for preset→custom conversion audit.
+- [x] Make preset tickets-used and SR/GC fields editable; SR/GC-only edits retain preset, ticket override becomes Custom and recalculates subsequent maps.
+- [x] Add member battle-edit screen and Reopen submission for Pending/Approved runs, requiring reconfirmation and re-entry when earlier tickets change.
+- [x] Pin review/approval/correction/export authorization to the precise verified leader Discord ID rather than guild owner/administrator roles.
+- [x] Show a leader-only review shortcut and pending/approved run counts on the same private Kraken page; add all-status review CSV including pending plus approved-only CSV.
+- [ ] Pass CI including private form JavaScript compilation, preset conversion, leader-only authorization and CSV visibility tests.
+- [ ] Verify Vercel production exact deployment; test anonymous/guest review CSV forbidden and owner's completed test run visible/reopenable.
+- [ ] Saturday: replace ALL dummy M10 lookup positions and dummy preset with approved real maps/routes; switch to new real event, do not migrate test entries into master workbook.
+
 ## 2026-11-12 — Test /kraken command is registered in Discord
 
 - [x] Create isolated TEST event with all 56 fake map positions and short dummy preset in private Neon; preserve Custom Route.

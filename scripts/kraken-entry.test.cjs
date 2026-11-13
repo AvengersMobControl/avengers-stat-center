@@ -21,10 +21,18 @@ test('custom route derives next battle and map from tickets actually spent',()=>
  assert.deepEqual([next.nextNumber,next.remaining,next.map],[2,55,'M2']);
  assert.throws(()=>core.nextBattle({route_snapshot:null},[],{}),/not yet configured/);
 });
-test('preset steps override client-supplied tickets and loadout',()=>{
- const p=core.nextBattle({route_snapshot:example()},[],{});
- const b=core.validateBattle({ticketsUsed:10,loadout:'SR',damage:'20.125',notes:'all good'},p);
- assert.equal(b.ticketsUsed,1);assert.equal(b.loadout,'GC');assert.equal(b.damage,20.125);
+test('preset suggestions allow SR/GC and ticket overrides; revised tickets use custom map sequence',()=>{
+ const p=core.nextBattle({route_snapshot:example(),customized:false},[],{});
+ assert.equal(p.autoTickets,1);assert.equal(p.autoLoadout,'GC');
+ const loadoutOnly=core.validateBattle({ticketsUsed:1,loadout:'SR',damage:'20.125'},p);
+ assert.equal(loadoutOnly.ticketsUsed,1);assert.equal(loadoutOnly.loadout,'SR');
+ const changed=core.validateBattle({ticketsUsed:10,loadout:'SR',damage:'20.125',notes:'changed plan'},p);
+ assert.equal(changed.ticketsUsed,10);assert.equal(changed.loadout,'SR');
+ assert.equal(changed.damage,20.125);
+ const custom=core.nextBattle({route_snapshot:example(),customized:true},
+   [{battle_no:1,tickets_left:56,tickets_used:10}],{'46':'M5'});
+ assert.equal(custom.map,'M5');assert.equal(custom.remaining,46);
+ assert.equal(custom.autoTickets,null);assert.equal(custom.autoLoadout,null);
 });
 test('reject invalid damage, notes, tickets, and incomplete sequences',()=>{
  const next={nextNumber:1,remaining:56,map:'M10'};
@@ -58,19 +66,15 @@ test('members must still belong to the target Discord guild',async()=>{
  const valid=await auth.authenticate(req(member),env,async()=>({status:200,json:async()=>({user:{id:member.sub},roles:['123456789012345679']})}));
  assert.equal(valid.id,member.sub);assert.equal(valid.roles.length,1);
 });
-test('reviewer access checks guild ownership or manage-guild permission',async()=>{
- const guildId='1403361698177618081',env={DISCORD_GUILD_ID:guildId,DISCORD_BOT_TOKEN:'dummy'};
- const user={id:member.sub,roles:['123456789012345679']};
- const fake=async url=>({ok:true,json:async()=>{
-  if(url.endsWith('/roles'))return [{id:guildId,permissions:'0'},{id:user.roles[0],permissions:'32'}];
-  return {id:guildId,owner_id:'111111111111111111'};
- }});
- assert.equal(await auth.isReviewer(user,env,fake),true);
- const deny=async url=>({ok:true,json:async()=>{
-  if(url.endsWith('/roles'))return [{id:guildId,permissions:'0'}];
-  return {id:guildId,owner_id:'111111111111111111'};
- }});
- assert.equal(await auth.isReviewer(user,env,deny),false);
+test('only explicitly listed leader Discord ID can review or export, not arbitrary guild administrators',async()=>{
+ const leader={id:member.sub,roles:[]};
+ const admin={id:'123456789012345679',roles:['987654321098765432']};
+ const env={AVENGERS_KRAKEN_REVIEWER_IDS:member.sub};
+ assert.equal(await auth.isReviewer(leader,env),true);
+ assert.equal(await auth.isReviewer(admin,env),false);
+ assert.equal(await auth.isReviewer(leader,{}),false);
+ assert.equal(await auth.isReviewer(admin,{AVENGERS_KRAKEN_REVIEWER_IDS:admin.id}),true);
+ assert.equal(await auth.isReviewer(null,env),false);
 });
 test('only matching origin and JSON POST content type accepted',()=>{
  const env={AVENGERS_KRAKEN_ORIGIN:'https://avengers-stat-center.vercel.app'};
@@ -104,6 +108,42 @@ test('Discord app key is retrieved from the authenticated bot application and id
  assert.equal(ok,key);
  const explicit=await gateway.applicationPublicKey({...env,DISCORD_PUBLIC_KEY:'b'.repeat(64)},async()=>{throw Error('should not fetch');});
  assert.equal(explicit,'b'.repeat(64));
+});
+test('review CSV contains pending data while approved-only export does not',async()=>{
+ const store=require('../server/kraken-entry-store.cjs');
+ const run=(id,status)=>({
+  id,event_key:'2026-11-12',discord_user_id:'123456789012345678',
+  discord_username:'discord-user',canonical_name:'AV-TestPlayer',
+  route_id:'test-quickrun',customized:false,status,submitted_at:'2026-11-12T23:00:00Z'});
+ const records=[run('pending-id','pending'),run('approved-id','approved')];
+ const q=async(sql,params)=>{
+  if(sql.includes('FROM avengers_kraken_private.runs WHERE'))return records;
+  if(sql.includes('FROM avengers_kraken_private.battles WHERE')){
+   return [{battle_no:1,tickets_left:56,map_code:'M10',tickets_used:10,
+    loadout:'SR',damage_m:'22.5',notes:'test only'}];
+  }
+  throw Error('Unexpected DB query in review export');
+ };
+ const review=await store.exportReview(q,'2026-11-12');
+ const approved=await store.exportApproved(q,'2026-11-12');
+ assert.match(review,/Status/);
+ assert.match(review,/"pending"/);
+ assert.match(review,/"approved"/);
+ assert.match(review,/"22.5"/);
+ assert.doesNotMatch(approved,/pending-id/);
+ assert.match(approved,/approved-id/);
+});
+test('member UI compiles and exposes visible edit, reopen, and leader-only review exports',()=>{
+ const text=fs.readFileSync(path.join(__dirname,'..','api','kraken','form.js'),'utf8');
+ const match=text.match(/const PAGE=([\s\S]*?);\nmodule\.exports/);
+ assert.ok(match,'private form markup is embedded in guarded Vercel API');
+ const html=JSON.parse(match[1]);
+ const script=html.match(/<script>([\s\S]*?)<\/script>/);
+ assert.ok(script,'private page includes browser code');
+ assert.doesNotThrow(()=>new Function(script[1]));
+ for(const id of ['id="editPanel"','id="reopen"','id="reviewShortcut"',
+  'mode=review-csv','mode=csv','id="saveEdit"','id="ticketOverrideHint"'])
+  assert.ok(html.includes(id),'Missing private UI: '+id);
 });
 test('public site builder does not copy the private API/server or route data',()=>{
  const build=fs.readFileSync(path.join(__dirname,'build-site.cjs'),'utf8');

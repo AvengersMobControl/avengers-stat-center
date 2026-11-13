@@ -23,6 +23,13 @@ module.exports=async function handler(req,res){
    }
    if(!await auth.isReviewer(user))return auth.json(res,403,{error:'Reviewer access required'});
    if(mode==='review')return auth.json(res,200,{event,runs:await store.reviewList(q,event)});
+   if(mode==='review-csv'){
+    const csv=await store.exportReview(q,event);
+    res.setHeader('Content-Type','text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition','attachment; filename="avengers-kraken-'+
+     (process.env.AVENGERS_KRAKEN_TEST_MODE==='true'?'TEST-REVIEW-DO-NOT-IMPORT-':'review-')+event+'.csv"');
+    return res.status(200).send(csv);
+   }
    if(mode==='csv'){
     const csv=await store.exportApproved(q,event);
     res.setHeader('Content-Type','text/csv; charset=utf-8');
@@ -44,6 +51,8 @@ module.exports=async function handler(req,res){
   if(body.action==='start')result=await store.start(q,user,event,String(body.routeId||''),profile);
   else if(body.action==='save')result=await store.save(q,user,event,profile,body);
   else if(body.action==='undo')result=await store.undo(q,user,event,profile);
+  else if(body.action==='reopen')result=await store.reopen(q,user,event,profile);
+  else if(body.action==='editBattle')result=await store.editBattle(q,user,event,profile,body);
   else if(body.action==='submit')result=await store.submit(q,user,event,profile);
   else return auth.json(res,400,{error:'Unknown action'});
   return auth.json(res,200,result);

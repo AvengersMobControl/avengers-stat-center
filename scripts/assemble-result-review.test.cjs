@@ -214,3 +214,15 @@ test('short and decorated identities require a confirmed alias before importing'
   assert.throws(()=>assemble(review(e,[screen(e,'b',[decorated])]),{
     knownPlayers:['AV-Abu']}),/Potential duplicate decorated identity/);
 });
+
+test('explicit leader-confirmed AV-Zoliika alias prevents a new identity',()=>{
+  const e=event('space','2026-11-13');
+  const z=row('AV-Zoliika','AVENGERS',200.3,120935,1209350,
+    {rank:2,lobby:'L5',share:.2,sourceDisplayName:'AV-Zoliika'});
+  const {update}=assemble(review(e,[screen(e,'c',[z])]),{
+    aliases:{'AV-Zoliika':'AV-Zolika.x.TheBoss'},
+    knownPlayers:['AV-Zolika.x.TheBoss','AV-KiraLoveZolika']});
+  assert.equal(update.event.rows.length,1);
+  assert.equal(update.event.rows[0].player,'AV-Zolika.x.TheBoss');
+  assert.equal(update.event.rows[0].metadata.sourceDisplayName,'AV-Zoliika');
+});

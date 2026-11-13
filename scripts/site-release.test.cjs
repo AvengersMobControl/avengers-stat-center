@@ -755,3 +755,32 @@ test('November 13 AV-Abu is one historical active member, not a new profile',()=
   assert.equal(rows[0].sparks,310310);
   assert(!space.rows.some(r=>r.player==='AV-Abu'),'no duplicate event player');
 });
+
+test('November 13 Space lobby 5 rank 2 AV-Zoliika is recorded once under historical TheBoss',()=>{
+  const canonical='AV-Zolika.x.TheBoss';
+  assert.equal(BASE.globals.AVENGERS_DATA.aliasMap['AV-Zoliika'],canonical,
+    'explicit identity proof is an alias, not a new profile');
+  const e=BASE.ledger.events.find(e=>e.id==='space|2026-11-13');
+  assert(e,'November 13 final claim evidence exists');
+  assert.equal(e.rows.length,54);
+  assert.equal(e.rows.filter(r=>r.clan==='AVENGERS').length,45);
+  assert.equal(e.rows.filter(r=>r.clan==='AV-2').length,9);
+  const match=e.rows.filter(r=>r.player===canonical);
+  assert.equal(match.length,1,'the held source row is credited once');
+  const row=match[0];
+  assert.equal(row.score,200.3);
+  assert.equal(row.sparks,120935);
+  assert.equal(row.stars,1209350,'derived 10x exact Sparks according to source policy');
+  assert.equal(row.metadata?.lobby,'L5');
+  assert.equal(row.metadata?.rank,2);
+  assert.equal(row.metadata?.share,.20);
+  assert.equal(row.metadata?.sourceDisplayName,'AV-Zoliika');
+  assert(e.sources.includes('reviewed-image-sha256:9c36d9f1a0c0d7931380d1889db97f4eb26d7ce78aadc127eb78445f91b339c2'));
+  assert(!e.rows.some(r=>r.player==='AV-Zoliika'),'never create a second player');
+  const p=BASE.projection.people.filter(p=>p.name===canonical||p.name==='AV-Zoliika');
+  assert.deepEqual(p.map(x=>x.name),[canonical]);
+  assert.equal(p[0].status,'Active');
+  assert(p[0].history.some(h=>h.date<'2026-11-13'),'historical results retained');
+  assert.equal(p[0].history.filter(h=>h.date==='2026-11-13'&&h.kind==='space').length,1);
+  assert.equal(p[0].kinds.space.pb,1030.7,'pre-existing record remains the PB');
+});

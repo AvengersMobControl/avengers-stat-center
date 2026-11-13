@@ -1,3 +1,10 @@
+## 2026-11-12 — Private Discord-member roster export and identity matching (PR #188)
+
+- The leader enabled Discord **Server Members Intent** for the AVENGERS application and requested linking permanent Discord account identities to current canonical AVENGERS / AV-2 roster names, starting with a private export and review.
+- A new guarded Vercel-only endpoint `/api/discord/identity-review` retrieves the complete non-bot Discord membership via bot API pagination, checks current member OAuth session and guild owner/Admin/Manage-Guild authority, and suggests canonical matches from the existing Stat Center release projection. It provides a private CSV download with a blank leader-confirmation column.
+- Suggestions are NEVER confirmed automatically; no public Discord ID mapping, no identity writes, no Kraken master changes, no Discord sends. Guest passes, forged/expired OAuth and unauthorized accounts must fail closed. No route or strategy data was added.
+- This is **not yet certified as production-live**. PR CI, exact deployment/restricted runtime check, and the leader's human matching review remain necessary. The feature is independent of the unfinished `/kraken` battle entry work.
+
 ## 2026-11-08 — AV-2 screenshot prefix normalization and AV-J Space correction
 
 - Leader confirmed the November 6 Space Race AV-2 lobby-H rank-5 source display `AV2-J` is the existing canonical `AV-J` profile, not a new member. Original final-claim screenshot already authenticated under the accepted lobby-H source SHA; add exactly one source-bound row to `space|2026-11-06`: **28.8B**, **170,926 exact visible Stars**, **17,151 Sparks**, **10% Share**, **5th** in lobby **H**, event-time clan **AV-2**. Store `sourceDisplayName: "AV2-J"` for audit. Event revision 5→6, 61→62 rows, 46 AVENGERS / 16 AV-2; 16 source references unchanged, no old rows replaced or deleted.

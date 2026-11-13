@@ -343,7 +343,11 @@ test('Adigarian does not get artificial gap from a reset returning-clan counter'
  assert.equal(earlier.beforeDate,'2026-09-30');
  assert.equal(later.beforeDate,'2026-10-16');
  const {originallyObservedGap}=require('./audit-transfer-restorations.cjs');
- assert(Math.abs(p.screenshotGap-Math.max(0,...p.snapshotBreakdown.map(s=>originallyObservedGap(p,s))))<=0.5);
+ const observed=Math.max(0,...p.snapshotBreakdown.map(s=>originallyObservedGap(p,s)));
+ assert(p.history.some(x=>x.eventId==='flash|PF3-2026-07-02'&&x.clan==='AVENGERS'&&x.score===322&&x.sparks===2365),
+   'July 2 Adiagrion source stays assigned to canonical Adigarian');
+ assert(Math.abs(p.screenshotGap-observed-2365)<=0.5,
+   'the originally frozen screenshot gap must retain the newly merged 2,365-Spark source adjustment');
  assert.equal(p.totalSparks,p.earned.sparks+p.screenshotGap);
 });
 

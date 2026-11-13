@@ -1,3 +1,8 @@
+## One-time blanket approval execution (2026-11-12)
+The leader approved ALL suggestions shown on the earlier private Discord review page, including all "suggested", "likely", and "possible" best guesses, and separately provided seven more accounts. The explicit blanket approval is stored in `avengers_identity_private.leader_approvals` as `2026-11-12-all-proposed-discord-matches`. No more user-side confirmation is required.
+A one-time private operation synchronizes the approved suggestions from the authoritative Discord guild member API against the current canonical roster, writing full immutable Discord snowflake IDs and exact guild join timestamps into the private `discord_bindings` store. Existing leader-supplied account links are resolved first; their usernames are excluded from the heuristic batch so dual-account Frenchie assignments remain unchanged. No unmatched player is invented, and no public personal identity export is produced.
+The operation requires a 256-bit one-time capability stored only in private Neon; it is invalid after the batch is consumed, and the endpoint reveals counts only. It never exposes or edits Kraken routes, data, analytics or the master battle workbook.
+
 # Private Discord member roster + canonical matching
 
 **2026-11-12 — Leader enabled Server Members Intent for the AVENGERS application.**

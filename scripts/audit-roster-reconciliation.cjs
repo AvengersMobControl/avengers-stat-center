@@ -54,7 +54,7 @@ assert(currentAv2.some(r=>r.name==='AV-DrDetroit'));
 assert(currentAv2.some(r=>r.name==='AV-Starred'));
 assert(![...currentAv,...currentAv2].some(r=>r.name==='AV-Bubba0816'));
 assert(currentAv2.some(r=>r.name==='AV-Frenchie2'));
-assert(currentAv2.some(r=>r.name==='AV-Frenchie(-4)'));
+assert(currentAv2.some(r=>r.name==='AV-FrenchieUSA'));
 const canonical=raw=>{
   let name=String(raw||'').trim();
   const seen=new Set();

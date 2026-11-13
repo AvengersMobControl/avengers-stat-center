@@ -1,3 +1,11 @@
+## 2026-11-13 — Historical October practice replaces the original dummy test
+
+**Current configuration:** the prior all-M10 placeholder lookup and seven-battle quickrun were superseded by the actual October 2026 map-order worksheet and two historically advised 56-ticket preset routes (GC/Combo and Sirion-focused). Both private routes were cross-checked step-by-step against the full private map lookup and correct advised loadout defaults, including Sirion/Raccoon switches in GC/Combo. Their actual route steps and map numbers remain private in AVENGERS-only Neon and are intentionally NOT reproduced in this public document.
+
+The prior seven-battle submission remains isolated under test event 2026-11-12; new practice runs are recorded under test event **2026-11-13**. Both are disposable; no master workbook auto-import. Saturday's new official routes must replace all historical practice records in a new real event. TEST MODE stays enabled until that cutover.
+
+---
+
 # Temporary AVENGERS Discord /kraken test launch — November 12, 2026
 
 **User request:** Make `/kraken` visible and usable in Discord immediately so members can test submission, then replace the placeholder routes/maps with Saturday's approved data. User explicitly authorized discarding test entries. No automatic master spreadsheet import.

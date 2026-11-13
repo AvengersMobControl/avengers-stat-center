@@ -1,3 +1,14 @@
+## 2026-11-13 — October Kraken map/route practice restored privately
+
+- [x] Locate original October 2026 Kraken map-order worksheet and cross-check all 56 ticket positions against October advised routes.
+- [x] Replace test-only M10 lookup with original historical 56-position order privately in AVENGERS Neon.
+- [x] Disable seven-battle dummy route; enable the two October advised preset options, each valid for 56 tickets and including advised GC/Sirion switching.
+- [x] Set fresh disposable practice event 2026-11-13 while preserving older 2026-11-12 test submissions for history; remain TEST MODE and exclude master workbook.
+- [x] Change private form and ephemeral command text to identify historically realistic October practice routes, **not** Saturday's current strategy.
+- [ ] Verify new Vercel production deployment and signed Discord command readback with updated description.
+- [ ] Run member-authenticated practice for both presets and Custom Route, verifying automatic loadout switching, editable tickets and maps, and HarryBallsagna-only review CSV.
+- [ ] Before Saturday's real event: replace October practice map order and presets with official newly approved route data in the private store, open a new event, disable TEST MODE, and never import test data.
+
 ## 2026-11-13 — AV-2 kick screenshot roster correction
 
 - [x] Identify eight names from leader's in-game kick log; match against existing published roster only.

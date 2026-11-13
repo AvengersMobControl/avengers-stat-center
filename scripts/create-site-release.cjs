@@ -25,14 +25,20 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
   const legacy=load(),migration=migrate(legacy);
   // Leader-confirmed identity: TheBoss; Kira and LoveKira are historical aliases.
   const aliases={...migration.aliases};
-  // 2026-11-12: FrenchieUSA is the historical name of Frenchie(-4).
-  // Frenchie2 is ANOTHER game account belonging to the SAME Discord person.
-  // Old Oct AV-2 source labeled USA is specifically attributed to Frenchie2
-  // (see migrate-event-ledger); historical event-time source evidence remains.
-  delete aliases['AV-Frenchie(-4)'];
-  aliases['AV-FrenchieUSA']='AV-Frenchie(-4)';
+  // The leader's 2026-11-12 surviving canonical labels are authoritative.
+  // Frenchie2 remains a separate game account, even when the Discord owner
+  // is shared. The exceptional October Kraken source is handled in migration.
+  delete aliases['AV-FrenchieUSA'];
   delete aliases['AV-Frenchie2'];
-  aliases['AV-J-Zo']='AV-J';
+  Object.assign(aliases,{
+    'AV-#ZOLISTAR':'AV-7-STAR',
+    'AV-Adiagrion':'AV-Adigarian',
+    'AV-BXI':'AV-BX1',
+    'AV-FenXistentiel':'AV-FeniXistential',
+    'AV-Frenchie(-4)':'AV-FrenchieUSA',
+    'AV-J-Zo':'AV-J',
+    'AV-JustSomeGuy':'AV-HarryBallsagna'
+  });
   delete aliases['AV-Zolika.x.TheBoss']; // remove reverse mapping to avoid cycles
   aliases['AV-Zolika.x.Kira']='AV-Zolika.x.TheBoss';
   aliases['AV-ZolikaLoveKira']='AV-Zolika.x.TheBoss';
@@ -70,6 +76,23 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
   }
   // Purge them from all public membership and snapshot sources before projection.
   R.rows=(R.rows||[]).filter(r=>!publicExcluded(r.name)&&!publicExcluded(r.profileName));
+  // Display exactly one surviving row per canonical player. Retain sourceName
+  // for private audit/provenance, but never offer retired aliases as players.
+  const canonicalRoster=new Map();
+  const statusRank={Active:3,AV2:2,Unassigned:1,Inactive:0};
+  for(const row of R.rows){
+    const name=resolve(row.profileName||row.name),prior=canonicalRoster.get(name);
+    const next={...row,name,profileName:name,canonicalName:name,sourceName:row.sourceName||row.name};
+    if(!prior){canonicalRoster.set(name,next);continue;}
+    const p=statusRank[prior.status]??-1,n=statusRank[next.status]??-1;
+    if((p>=2&&n>=2)&&prior.status!==next.status)
+      throw Error('Conflicting active current clans for canonical member '+name);
+    if(n>p){for(const k of ['utc','tzg','state','location','city','timeZoneId','timeZoneLabel'])
+      if(next[k]==null||next[k]==='')next[k]=prior[k];canonicalRoster.set(name,next);}
+    else for(const k of ['utc','tzg','state','location','city','timeZoneId','timeZoneLabel'])
+      if((prior[k]==null||prior[k]==='')&&next[k]!=null&&next[k]!=='')prior[k]=next[k];
+  }
+  R.rows=[...canonicalRoster.values()];
   for(const name of Object.keys(R.byName||{}))
     if(publicExcluded(name)||publicExcluded(R.byName[name]?.canonicalName))delete R.byName[name];
   for(const name of Object.keys(D.aliasMap||{}))if(publicExcluded(name)||publicExcluded(D.aliasMap[name]))delete D.aliasMap[name];

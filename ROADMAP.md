@@ -1,3 +1,11 @@
+## 2026-11-12 — Improve private Discord identity suggestions
+
+- [x] Expand exact-only roster comparison to educated ranked matches using nickname, Discord display and username, partial/spelling similarity and existing public alias history.
+- [x] Show top three alternatives and reason/heuristic matching strength in private page and CSV; retain current and inactive player candidates.
+- [x] Flag ambiguous identities and multiple Discord profiles targeting one player; keep all mappings unconfirmed.
+- [ ] Validate branch CI, deployed endpoint access protections and exact Pages/Vercel commit after merge.
+- [ ] Have leader review uncertainty and confirm the private permanent Discord ID→canonical records before linking Kraken submissions.
+
 ## 2026-11-12 — Discord roster → canonical identity review (PR #188)
 
 - [x] Build read-only, member-authenticated, admin-gated Discord roster retrieval with member-list pagination and bot exclusion.

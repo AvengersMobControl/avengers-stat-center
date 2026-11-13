@@ -1,3 +1,10 @@
+## 2026-11-12 — Improve Discord-to-canonical matching with educated candidate rankings
+
+- The leader confirmed the initial Discord roster review's exact-name matches were correct, but asked for educated suggestions for the remaining accounts rather than leaving them all unmatched. The first matching version only tested normalized exact equality against current AVENGERS/AV-2 names and passed an empty alias map, despite established public aliases.
+- Added ranked review suggestions from server nickname, Discord global name and username, including adornments/honorifics, appended digits, spelling similarity and distinctive partial-name matches. Current and historical player accounts can both be considered; published canonical alias history is reused from the existing public Stat Center release alias map (no Discord IDs published).
+- The private review page and CSV now display the best guess, top three candidates, a heuristic matching-strength score, evidence/reason and a classification (suggested / likely / possible / ambiguous / unmatched / shared-candidate). The score is NOT a statistical probability. Uncertain rows appear first. The leader must still confirm every identity; duplicate Discord candidates for the same player are highlighted, and Frenchie2/Frenchie(-4) remain distinct. No member identity link is automatically committed.
+- Feature branch `fix/discord-identity-educated-guesses`; merged/live status requires a fresh CI and exact Vercel/Pages verification. No Kraken route logic or master battle data touched.
+
 ## 2026-11-12 — Private Discord-member roster export and identity matching (PR #188)
 
 - The leader enabled Discord **Server Members Intent** for the AVENGERS application and requested linking permanent Discord account identities to current canonical AVENGERS / AV-2 roster names, starting with a private export and review.

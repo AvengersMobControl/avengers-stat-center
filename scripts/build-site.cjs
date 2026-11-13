@@ -66,7 +66,7 @@ function build({destination=path.join(root,'dist'),updates}={}){
   const exportFiles={};
   const metrics=require('../event-reward-metrics.js');
   const summaries=P.events.filter(e=>e.status!=='revoked').map(e=>({...e,rows:e.rows.map(r=>({...r,sparksPerEffort:e.kind==='kraken'?null:metrics.efficiency(r.sparks,r.score),effortUnit:e.kind==='space'?'billion-lightyears':e.kind==='kraken'?null:'lines',rewardCheck:e.kind==='kraken'?null:metrics.reconcile(r),pbTransition:r.player?P.people.find(p=>p.name===r.player)?.kinds[e.kind]?.pbs.find(b=>b.eventId===e.id)||null:null}))}));
-  for(const [name,value]of Object.entries({eventSummaries:summaries,projection:P,ledger:release.ledger,council:P.council,leagues:release.leagues,review:release.review})){
+  for(const [name,value]of Object.entries({eventSummaries:summaries,projection:P,ledger:release.ledger,council:P.council,leagues:release.leagues,review:release.review,identityAliases:release.globals.AVENGERS_DATA.aliasMap||{}})){
     const file=name+'.'+P.version.slice(0,16)+'.json';fs.writeFileSync(path.join(exportsDir,file),JSON.stringify({version:P.version,data:value}));exportFiles[name]='exports/'+file;
   }
   // Every JS/CSS reference has an immutable content address. No legacy source

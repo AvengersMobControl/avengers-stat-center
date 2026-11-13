@@ -1,3 +1,12 @@
+## 2026-11-12 — Discord roster → canonical identity review (PR #188)
+
+- [x] Build read-only, member-authenticated, admin-gated Discord roster retrieval with member-list pagination and bot exclusion.
+- [x] Derive provisional canonical suggestions from published roster names, keeping manual confirmation required.
+- [x] Add private CSV review export and automated authorization/matcher tests.
+- [ ] Confirm CI and deploy protected Vercel production endpoint, testing owner/admin access and guest/nonmember denials.
+- [ ] Have clan leader review ambiguous and unmatched Discord identities; create private approved Discord ID→canonical registry only after confirmation.
+- [ ] Integrate the confirmed private identity registry with `/kraken` battle intake after route/map data and protected storage are ready.
+
 ## 2026-11-08 — AV-2 name reconciliation, Space Race follow-through
 
 - [x] Confirm `AV2-J` maps to existing canonical `AV-J`; retain Nov 6 lobby H rank 5 source spelling, clan and exact rewards.

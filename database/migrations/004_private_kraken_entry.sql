@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS avengers_kraken_private.runs (
   event_key text NOT NULL CHECK (event_key ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'),
   discord_user_id text NOT NULL CHECK (discord_user_id ~ '^[0-9]{17,22}$'),
   discord_username text NOT NULL CHECK (length(discord_username) BETWEEN 1 AND 100),
+  canonical_name text CHECK (canonical_name IS NULL OR length(canonical_name) BETWEEN 2 AND 128),
   route_id text,
   route_revision integer,
   route_snapshot jsonb,
@@ -36,7 +37,7 @@ CREATE TABLE IF NOT EXISTS avengers_kraken_private.runs (
     OR (route_id IS NOT NULL AND route_snapshot IS NOT NULL AND route_revision IS NOT NULL))
 );
 CREATE UNIQUE INDEX IF NOT EXISTS kraken_one_active_run_per_member
- ON avengers_kraken_private.runs(event_key,discord_user_id)
+ ON avengers_kraken_private.runs(event_key,discord_user_id,COALESCE(canonical_name,''))
  WHERE status <> 'rejected';
 
 CREATE TABLE IF NOT EXISTS avengers_kraken_private.battles (

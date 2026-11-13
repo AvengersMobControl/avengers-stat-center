@@ -1,3 +1,11 @@
+## 2026-11-13 — Verified October Kraken practice presets LIVE
+
+- Production code merged in PR #204 and deployed to Vercel as commit 66b77a247b22e6116d019e2d1eb690f0d400e6ac (READY). Public code contains no strategy/map sequence values.
+- Private October map sequence: verified 56 unique ticket-left positions, 51 not M10. Two active historical route presets verified: 12 and 11 battles respectively, both total 56 tickets. Original seven-battle dummy preset disabled. Every route step matches its entry-point map in the historical private sequence.
+- Exact original strategy and default loadout recommendations were sourced from the leader's October 2026 map-order spreadsheet and prior approved historical plan; they are stored privately in Neon, never copied into this public repo or GitHub Pages.
+- Active disposable test event is 2026-11-13; prior 2026-11-12 test records remain isolated. TEST MODE is still enabled and the master workbook must never auto-import any test result.
+- One-time Discord command-description update succeeded: guild /kraken now describes testing with October routes and map order. REST command readback passed and private nonce consumed (descriptionUpdated true). No conflicting slash commands or interaction endpoint changes.
+- Member login and leader-only review remain enforced. Saturday real route setup is still pending and must use a fresh real event and new authoritative maps before TEST MODE is disabled.
 ## 2026-11-13 — Replace placeholder Kraken practice with verified October historical routes (PRIVATE)
 
 - User explicitly directed that the disposable Discord /kraken test use last month's **historically advised routes and actual 56-position map sequence**, rather than the 7-battle dummy preset and all-M10 map placeholders. The existing privately stored fake map lookup was transactionally replaced with the 56-position original October 2026 order sourced from the leader's native Google Sheet, then cross-checked against the complete October advised battle route entry points and final two map positions. **Never copy the actual map sequence or route steps into this public repo or Pages exports.**

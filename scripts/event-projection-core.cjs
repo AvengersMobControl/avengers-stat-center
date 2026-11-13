@@ -32,10 +32,10 @@ function normalize(event,aliases={}){
   const rows=new Map();
   for(const raw of event.rows){
     const unassigned=raw.player===null&&typeof raw.sourceIdentity==='string'&&raw.sourceIdentity.trim();
-    // Clan-specific leader authority: AV-2 FrenchieUSA is Frenchie2, never the
-    // independently recorded AVENGERS Frenchie. Applies to every event type.
-    const clanName=raw.clan==='AV-2'&&raw.player==='AV-FrenchieUSA'?'AV-Frenchie2':raw.player;
-    const r={player:unassigned?null:canonical(clanName,aliases),...(unassigned?{sourceIdentity:raw.sourceIdentity}:{}),clan:raw.clan,score:amount(raw.score,'score'),sparks:amount(raw.sparks,'sparks'),stars:amount(raw.stars,'stars')};
+    // Do not infer account identity from clan. The historical October Kraken
+    // Frenchie2 attribution is independently source-verified in migration;
+    // other AV-2 Frenchie(-4) / FrenchieUSA rows belong to FrenchieUSA.
+    const r={player:unassigned?null:canonical(raw.player,aliases),...(unassigned?{sourceIdentity:raw.sourceIdentity}:{}),clan:raw.clan,score:amount(raw.score,'score'),sparks:amount(raw.sparks,'sparks'),stars:amount(raw.stars,'stars')};
     // Explicit leader-authorized former-member score, scoped to one event.
     // The source clan remains factual and never becomes AVENGERS membership.
     const weeklyFormerMember=event.id==='piggy|2026-10-23'&&event.kind==='piggy'&&

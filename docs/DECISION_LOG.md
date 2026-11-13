@@ -1,3 +1,10 @@
+## 2026-11-13 — Member editing and private Kraken compilation controlled by leader's Discord ID
+
+- **Preset route fields are suggestions, not restrictions.** Members may override SR/GC on any preset battle without changing route; changing tickets used (new or previously saved battle) automatically converts the run to Custom. Preserve original route revision for provenance and recompute all subsequent ticket balances/maps from server-only authoritative lookup.
+- **Allow editing after Submit**: member may reopen their own Pending or Approved-but-not-exported run, edit its saved battles, and resubmit. Reopening clears approval. When an earlier ticket allocation changes, later saved battles cannot be trusted; archive them with audit trail and require re-entry after explicit warning. Only exported data is locked against self-edit to prevent silently changing already-shared results.
+- **Review and CSV = leader only**. The user identified HarryBallsagna as their Discord identity and confirmed other Discord admins should not read/export the compilation. Use the immutable exact Discord account ID associated with their own verified pending submission, stored in server-side AVENGERS_KRAKEN_REVIEWER_IDS. No username or role-based authorization fallback, and no public export paths. Add owner-only page shortcut, pending/all-status review CSV, and approved-only CSV; keep master DPT import manual and at user's discretion.
+- The all-M10 map output is from deliberately dummy test data; it is NOT actual gameplay routing and must be entirely replaced Saturday.
+
 ## 2026-11-12 — Register /kraken immediately as an isolated disposable TEST
 
 - Leader explicitly authorized launching /kraken in the AVENGERS Discord now and discarding pre-Saturday test submissions. Use dummy maps and a short synthetic preset for entry/review testing; never assert they are official Kraken strategies or write them to the master DPT workbook.

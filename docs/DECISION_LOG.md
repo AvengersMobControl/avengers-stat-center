@@ -1,3 +1,10 @@
+## 2026-11-12 — Discord identities keyed by immutable user ID, with leader review
+
+- For the proposed private Kraken self-submission workflow, the clan leader authorized using Server Members Intent to export the AVENGERS Discord server roster and suggest mappings to canonical Stat Center identities.
+- Permanent Discord snowflake user ID will be the identity join key; nickname and Discord username are mutable evidence only. No automatic positive identity assertion based solely on display-name similarity. Distinct canonical players (including similarly named accounts) must never be silently merged.
+- Access to the full private member roster is restricted to verified non-guest Discord server owner/authorized admins. CSV suggestions require manual leader confirmation before persistence or use in battle result attribution. No public repository member data, no automatic Kraken import or Discord message.
+- PR #188 stages the read-only review API; completed production verification is not claimed at this checkpoint.
+
 ## 2026-11-09 — Weekly recap becomes a real, dynamic artifact and joins automatic Discord posting
 
 - The in-repo `scripts/render-weekly-event-review.py` / `docs/WEEKLY_RECAP_PREVIEW.md` pair is a never-approved prototype, distinct from the leader's actual weekly recap artifact (`AVENGERS_WEEKLY_RECAP_MASTER_BACKGROUND_TEMPLATE_1440w.png` + a Python renderer, previously kept only in the leader's personal ChatGPT Library per 2026-10-26's "Weekly recap blank background approved for reuse" entry below). The leader supplied the real background template and renderer directly in chat on 2026-11-09; both are now checked into this repository as the approved weekly recap (`assets/weekly/AVENGERS_WEEKLY_RECAP_MASTER_BACKGROUND_TEMPLATE_1440w.png`, `scripts/render-weekly-recap-poster.py`, `scripts/build-weekly-recap-facts.py`, `scripts/weekly-recap-flash-combined.cjs`). The prototype pair is left in place but is **not** this artifact and should not be confused with it.

@@ -19,3 +19,10 @@ The endpoint paginates \`GET /guilds/{guild_id}/members?limit=1000\` until compl
 This requires a deployed production Vercel function and a successfully authenticated leader/admin browser session. Read-only: does not create Discord messages, update member roles, edit roster, change Kraken scores, or feed any master workbook.
 
 The roster snapshot remains private and must never be checked into GitHub, static JSON exports, build assets, Discord messages, or public links.
+
+## Educated guesses (2026-11-12 update)
+
+The original exact-only matcher was too strict. The leader requested a more useful review list. The upgraded private review ranks up to three plausible canonical matches per Discord account, using the server nickname, Discord display name, username, safe nickname decoration removal, distinctive prefix/substring overlap, spelling similarity and already-public name aliases. Both active and historical player identities are considered. Published aliases come from the site's existing canonical `AVENGERS_DATA.aliasMap`, exported as an additional public alias-only release JSON artifact; **Discord IDs remain private**.
+
+Each recommendation includes a heuristic matching-strength score, source/reason and a category (exact/suggested, likely, possible, ambiguous, or unmatched). This is NOT a calibrated probability. A matching nickname is not proof of identity. Distinct player accounts are never automatically collapsed, and two Discord members suggesting the same account are flagged as shared candidates. **All private identity links still require leader approval**, with the final confirmation column left blank on CSV export.
+

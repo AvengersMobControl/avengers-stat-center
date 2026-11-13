@@ -51,42 +51,10 @@ async function memberRoster(env,doFetch=fetch){
  }
  throw Error('Discord member pagination exceeded safety limit; no partial roster exported');
 }
-function normalizeName(s){
- return String(s||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase()
-  .replace(/^[^a-z0-9]+/g,'').replace(/^av(?:-?2)?[.#:_\s-]+/,'')
-  .replace(/[^a-z0-9]/g,'');
-}
-function variants(raw){
- const n=String(raw||'').trim();return [...new Set([normalizeName(n),
-  normalizeName(n.replace(/\s*[(（][^()（）]{1,70}[)）]\s*$/,'').trim())].filter(Boolean))];
-}
-function suggest(member,canonicals,aliasMap={}){
- const index=new Map();
- for(const p of canonicals){
-  const key=normalizeName(p.name);
-  if(!key)continue;
-  if(!index.has(key))index.set(key,new Set());index.get(key).add(p.name);
- }
- for(const [alias,canonical] of Object.entries(aliasMap)){
-  if(!canonicals.some(p=>p.name===canonical))continue;
-  const key=normalizeName(alias);
-  if(!key)continue;
-  if(!index.has(key))index.set(key,new Set());index.get(key).add(canonical);
- }
- const display=[member.nick,member.user?.global_name,member.user?.username].filter(Boolean);
- let matched=new Set(),evidence=[];
- for(const label of display){
-  const vs=variants(label);
-  for(const v of vs){
-   const candidates=index.get(v);
-   if(candidates){for(const name of candidates)matched.add(name);evidence.push(String(label));}
-  }
- }
- const choices=[...matched].sort();
- return {suggestion:choices.length===1?choices[0]:'',status:choices.length===0?'unmatched':
-  choices.length===1?'suggested':'ambiguous',
-  choices,evidence:[...new Set(evidence)]};
-}
+const matcher=require('./discord-identity-matcher.cjs');
+function normalizeName(s){return matcher.normalized(s);}
+function variants(s){return matcher.forms(s).map(f=>f.value);}
+function suggest(member,canonicals,aliases){return matcher.rank(member,canonicals,aliases);}
 function csvValue(v){
  let s=String(v??'');
  if(/^[\s]*[=+\-@\t\r]/.test(s))s="'"+s;

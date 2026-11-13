@@ -6,6 +6,7 @@ on:
     paths:
       - 'api/discord/identity-review.js'
       - 'server/discord-identity-review.cjs'
+      - 'server/discord-identity-matcher.cjs'
       - 'scripts/discord-identity-review.test.cjs'
       - '.github/workflows/private-discord-identity-review.yml'
 jobs:
@@ -22,6 +23,7 @@ jobs:
         run: |
           node --check api/discord/identity-review.js
           node --check server/discord-identity-review.cjs
+          node --check server/discord-identity-matcher.cjs
           node --check scripts/discord-identity-review.test.cjs
       - name: Private member export and identity match tests
         run: node --test scripts/discord-identity-review.test.cjs

@@ -1,3 +1,9 @@
+## 2026-11-12 — Roster identity matching uses educated ranked guesses, never automatic confirmation
+
+- Leader requested ranked plausible matches for Discord members left unmatched by strict normalized exact-name comparison, while confirming initial exact suggestions were correct.
+- Use all three observed Discord name fields, benign nickname decorations, name spelling/partial similarity and published canonical aliases, considering inactive historical accounts as well. Display candidate rank, evidence and alternative identities. A matching-strength score is heuristic rather than a likelihood/probability.
+- Keep exact membership/guest/administrator access restrictions and protected CSV. Treat near-duplicate player accounts and multiple Discord candidates as ambiguous; **no nickname similarity alone authorizes writing the private Discord ID→canonical identity registry**. Final review remains leader-controlled. The public repository contains no Discord identity data or private Kraken strategy.
+
 ## 2026-11-12 — Discord identities keyed by immutable user ID, with leader review
 
 - For the proposed private Kraken self-submission workflow, the clan leader authorized using Server Members Intent to export the AVENGERS Discord server roster and suggest mappings to canonical Stat Center identities.

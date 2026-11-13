@@ -38,11 +38,8 @@
     'AV-ShieldBreaker':'AV-ShielDBreaker',
     // Source-confirmed Nov 8 AV-2 Big Pig display aliases. Resolve to the
     // existing histories, without inventing extra current player profiles.
-    // 2026-11-12 leader reconciliation: both Frenchie accounts share one
-    // Discord identity, but AV-Frenchie(-4) and AV-Frenchie2 are distinct
-    // GAME accounts. The older USA label belongs to the (-4) profile.
+    // Leader-confirmed names; Frenchie2 is a DIFFERENT game account.
     'AV-FrenchieUSA':'AV-Frenchie(-4)',
-    // Mr J / AV-J-Zo are the established AV-J player, not a new profile.
     'AV-J-Zo':'AV-J',
     'AV2-J':'AV-J',
     'AV2-TheHemperor':'TheHemperor',
@@ -50,8 +47,6 @@
     'AVS9-HN':'AV-HN'
   };
   D.aliasMap=Object.assign({},D.aliasMap||{},extraAliases);
-  // Prevent any older reverse alias from undoing the leader's canonical
-  // choice. Frenchie2 remains an independent game identity.
   delete D.aliasMap['AV-Frenchie(-4)'];
   delete D.aliasMap['AV-Frenchie2'];
   const canonical=raw=>{
@@ -214,7 +209,7 @@
     rosterEntries.splice(index,1); // prior R.rows supplies Inactive profile with history
     fixedIds.add(profileName); // stale Discord roster cannot re-add it below
   }
-  // November 12: Add JR's account without inventing clan or performance.
+  // JR has no confirmed in-game clan assignment yet.
   const jr='AV-$JR.$';
   if(rosterEntries.some(row=>row.profileName===canonical(jr)))
     throw new Error('JR already has a current profile');
@@ -274,95 +269,11 @@
   });
   delete D.aliasMap['AV-Frenchie2'];
   byName['AV-Frenchie2']=fromRow(currentRows.find(r=>r.name==='AV-Frenchie2'));
-  // Keep old source labels navigable without creating duplicate profiles.
   byName['AV-FrenchieUSA']=byName['AV-Frenchie(-4)'];
   byName['AV-J-Zo']=byName['AV-J'];
   R.byName=byName;
   R.source='October 15 AVENGERS/AV-2 snapshots + leader identity and membership corrections through November 12';
-  R.precedence='October 15 source screenshots retained as dated provenance, except leader-removed LT shell; current changes: AV-2Lin → AV-Lin, Jeff canonical AV-JefhKintz05, formerly Active through Nov 6; Timmy joined and later changed to Inactive; FrankAbagnale linked to existing Addicted account, Zibby and TheOli AV-2; Animosity Inactive, Mickzzz and AV2-Froyo AV-2; Oct 30: TRINITY, istanbuL, KKD Active; Rafa, Royal, SiFra AV-2; WolfLegend Inactive; Nov 6 KitKat, Hoops and JAMO Active; Pablin, MotherboardBeans, no, Neez and Oakcliff AV-2; Nov 8 OlRose, SURVIVOR, Thoszi and TheHemperor AV-2; AV2-J merged to existing AV-J, AV2-TheHemperor merged to TheHemperor and existing CRISPIN.27 alias to CRISPIN.97 retained; ShieldBreaker source capitalization merged with existing active ShielDBreaker; subsequent leader directive moved Jeff to AV-2, Chuck and no to AVENGERS and set AV-23 and Timmy Inactive; Nicefellow remains Active; 49 Active and 51 AV-2, plus JR pending clan assignment; FrenchieUSA merged into Frenchie(-4), Frenchie2 remains separate, and J-Zo merged into J; UTC/TZG/country retained.';
-
-  // Only current member status changes. Event history, clan attribution,
-  // personal records, event totals, and rating math remain unchanged.
-  (D.members||[]).forEach(m=>{m.status=byName[m.name]?.status||'Inactive';});
-  const existingProfiles=new Set((D.members||[]).map(m=>canonical(m.name)));
-  rosterEntries.forEach(({profileName,status})=>{
-    if(existingProfiles.has(profileName))return;
-    D.members.push({
-      name:profileName,status,
-      piggyPB:0,spacePB:0,krakenPB:0,
-      piggyAvg:0,spaceAvg:0,krakenAvgL3:0,krakenAvg:0,
-      rankingScore:0,krakenPBMonth:'',
-      ratingPB:0,ratingAvg:0,ratingTotal:0,
-      eventsPlayed:0,totalSparks:0
-    });
-    existingProfiles.add(profileName);
-  });
-  (window.AVENGERS_KRAKEN_DATA?.players||[]).forEach(p=>{
-    p.status=byName[p.name]?.status||'Inactive';
-  });
-})();
-;
-  if(rosterEntries.some(row=>row.profileName===canonical(jr)))
-    throw new Error('JR already has a current profile');
-  rosterEntries.push({name:jr,profileName:canonical(jr),status:'Unassigned'});
-  fixedIds.add(canonical(jr));
-  const discordMembers=window.AVENGERS_DISCORD_UTC_ROSTER?.members||[];
-  for(const member of discordMembers){
-    const name=String(member.name||'').trim();
-    const status=member.status;
-    if(!name||!['Active','AV2'].includes(status))continue;
-    const profileName=canonical(name);
-    if(fixedIds.has(profileName))continue;
-    rosterEntries.push({name,profileName,status});
-    fixedIds.add(profileName);
-  }
-  const currentIds=new Set(rosterEntries.map(x=>x.profileName));
-  if(currentIds.size!==rosterEntries.length)
-    throw new Error('Dynamic Discord roster identities overlap');
-  if(currentIds.has(canonical('AV-Bubba0816')))
-    throw new Error('Bubba should remain Inactive');
-  const currentRows=rosterEntries.map(row=>{
-    const p=priorRows.get(row.profileName)||priorRows.get(canonical(row.name));
-    return {
-      name:row.name,status:row.status,
-      utc:p?.utc??null,tzg:p?.tzg??null,
-      state:p?.state||'',location:p?.location||'',
-      city:p?.city||'',timeZoneId:p?.timeZoneId||'',timeZoneLabel:p?.timeZoneLabel||''
-    };
-  });
-  const inactiveRows=[...priorRows.entries()]
-    .filter(([id])=>!currentIds.has(id))
-    .map(([,row])=>({...row,status:'Inactive'}));
-  R.rows=[...currentRows,...inactiveRows];
-
-  // Current screenshot membership supersedes prior active and AV-2 statuses;
-  // metadata and alias lookup remain available on player history pages.
-  const fromRow=row=>({
-    sourceName:row.name,canonicalName:canonical(row.name),
-    status:row.status,utc:row.utc,
-    utcLabel:R.formatUtc?.(row.utc)||'',
-    timeZoneGroup:row.tzg==null?'':String(row.tzg),
-    state:row.state||'',location:row.location||'',
-    city:row.city||'',timeZoneId:row.timeZoneId||'',timeZoneLabel:row.timeZoneLabel||''
-  });
-  const byName={};
-  R.rows.forEach(row=>{byName[row.name]=fromRow(row);});
-  rosterEntries.forEach((x,i)=>{
-    byName[x.name]=fromRow(currentRows[i]);
-    byName[x.profileName]=byName[x.name];
-    if(x.name!==x.profileName)D.aliasMap[x.name]=x.profileName;
-  });
-  // Do not restore stale aliases from the old R.byName for aliases now
-  // belonging to a different account (notably Frenchie2).
-  Object.keys(oldByName).forEach(alias=>{
-    const resolved=canonical(alias);
-    if(byName[resolved])byName[alias]=byName[resolved];
-  });
-  delete D.aliasMap['AV-Frenchie2'];
-  byName['AV-Frenchie2']=fromRow(currentRows.find(r=>r.name==='AV-Frenchie2'));
-  R.byName=byName;
-  R.source='October 15 AVENGERS/AV-2 snapshots + leader identity and membership corrections through November 8';
-  R.precedence='October 15 source screenshots retained as dated provenance, except leader-removed LT shell; current changes: AV-2Lin → AV-Lin, Jeff canonical AV-JefhKintz05, formerly Active through Nov 6; Timmy joined and later changed to Inactive; FrankAbagnale linked to existing Addicted account, Zibby and TheOli AV-2; Animosity Inactive, Mickzzz and AV2-Froyo AV-2; Oct 30: TRINITY, istanbuL, KKD Active; Rafa, Royal, SiFra AV-2; WolfLegend Inactive; Nov 6 KitKat, Hoops and JAMO Active; Pablin, MotherboardBeans, no, Neez and Oakcliff AV-2; Nov 8 OlRose, SURVIVOR, Thoszi and TheHemperor AV-2; AV2-J merged to existing AV-J, AV2-TheHemperor merged to TheHemperor and existing CRISPIN.27 alias to CRISPIN.97 retained; ShieldBreaker source capitalization merged with existing active ShielDBreaker; subsequent leader directive moved Jeff to AV-2, Chuck and no to AVENGERS and set AV-23 and Timmy Inactive; Nicefellow remains Active; 49 Active and 51 AV-2; UTC/TZG/country retained.';
+  R.precedence='October 15 source screenshots retained as dated provenance, except leader-removed LT shell; current changes: AV-2Lin → AV-Lin, Jeff canonical AV-JefhKintz05, formerly Active through Nov 6; Timmy joined and later changed to Inactive; FrankAbagnale linked to existing Addicted account, Zibby and TheOli AV-2; Animosity Inactive, Mickzzz and AV2-Froyo AV-2; Oct 30: TRINITY, istanbuL, KKD Active; Rafa, Royal, SiFra AV-2; WolfLegend Inactive; Nov 6 KitKat, Hoops and JAMO Active; Pablin, MotherboardBeans, no, Neez and Oakcliff AV-2; Nov 8 OlRose, SURVIVOR, Thoszi and TheHemperor AV-2; AV2-J merged to existing AV-J, AV2-TheHemperor merged to TheHemperor and existing CRISPIN.27 alias to CRISPIN.97 retained; ShieldBreaker source capitalization merged with existing active ShielDBreaker; subsequent leader directive moved Jeff to AV-2, Chuck and no to AVENGERS and set AV-23 and Timmy Inactive; Nicefellow remains Active; 49 Active and 51 AV-2 plus JR Unassigned; confirmed aliases for FrenchieUSA and J-Zo; UTC/TZG/country retained.';
 
   // Only current member status changes. Event history, clan attribution,
   // personal records, event totals, and rating math remain unchanged.

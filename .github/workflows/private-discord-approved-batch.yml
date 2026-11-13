@@ -1,0 +1,20 @@
+name: One-time leader-approved Discord identity batch
+on:
+  pull_request:
+    paths:
+      - 'api/discord/approved-sync.js'
+      - '.github/workflows/private-discord-approved-batch.yml'
+  push:
+    branches: [fix/private-approved-discord-identity-batch]
+jobs:
+  batch-guards:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --check api/discord/approved-sync.js
+      - run: node --test scripts/discord-identity-review.test.cjs scripts/discord-confirmed-bindings.test.cjs

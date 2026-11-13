@@ -1,0 +1,28 @@
+name: Kraken test-only Discord registration
+on:
+  push:
+    branches: [feat/kraken-test-launch-20261112]
+  pull_request:
+    paths:
+      - 'api/kraken/**'
+      - 'api/discord/kraken-interactions.js'
+      - 'api/discord/kraken-setup.js'
+      - '.github/workflows/kraken-test-launch.yml'
+jobs:
+  kraken-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Syntax checks
+        run: |
+          node --check api/discord/kraken-setup.js
+          node --check api/discord/kraken-interactions.js
+          node --check api/kraken/data.js
+          node --check api/kraken/form.js
+      - name: Private Kraken validation
+        run: node --test scripts/kraken-entry.test.cjs

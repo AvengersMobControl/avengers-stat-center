@@ -62,8 +62,11 @@ async function handler(req,res){
  if(!/^https:\/\/[a-z0-9.-]+$/.test(origin))
   return answer(res,200,{type:4,data:{flags:64,content:'Kraken entry is not configured yet.'}});
  return answer(res,200,{type:4,data:{flags:64,
-  content:'**Private Kraken battle entry**\nOpen your secure form: '+origin+FORM+
-   '\nSign in with the same Discord account. Entries are private and reviewed before export.'}});
+  content:(process.env.AVENGERS_KRAKEN_TEST_MODE==='true'?
+    '**KRAKEN TEST MODE — Dummy maps and test submissions only**\n':
+    '**Private Kraken battle entry**\n')+
+    'Open your secure form: '+origin+FORM+
+    '\nSign in with the same Discord account. Your entries are private; test data never enters the master workbook.'}});
 }
 module.exports=handler;
 module.exports.verify=verify;

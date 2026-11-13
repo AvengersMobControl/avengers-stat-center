@@ -17,7 +17,7 @@ module.exports=async function handler(req,res){
     const profiles=await identities.linkedProfiles(user.id);
     const selected=identities.selectProfile(profiles,req.query?.profile);
     return auth.json(res,200,{
-     event,who:{name:user.username,admin:await auth.isReviewer(user)},
+     event,testMode:process.env.AVENGERS_KRAKEN_TEST_MODE==='true',who:{name:user.username,admin:await auth.isReviewer(user)},
      profiles,selectedProfile:selected,
      routes:await store.routes(q),...(await store.current(q,user.id,event,selected))});
    }
@@ -26,7 +26,7 @@ module.exports=async function handler(req,res){
    if(mode==='csv'){
     const csv=await store.exportApproved(q,event);
     res.setHeader('Content-Type','text/csv; charset=utf-8');
-    res.setHeader('Content-Disposition','attachment; filename="avengers-kraken-approved-'+event+'.csv"');
+    res.setHeader('Content-Disposition','attachment; filename="avengers-kraken-'+(process.env.AVENGERS_KRAKEN_TEST_MODE==='true'?'TEST-DO-NOT-IMPORT-':'approved-')+event+'.csv"');
     return res.status(200).send(csv);
    }
    return auth.json(res,404,{error:'Unknown mode'});

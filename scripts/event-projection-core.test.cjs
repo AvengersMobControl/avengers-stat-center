@@ -357,3 +357,15 @@ test('alumni fallbacks and three approved AV-2 full-history average exceptions',
     assert.equal(x.ratingMetrics.krakenLast5,null,'only Piggy/Space exception for these accounts');
   }
 });
+test('projection rejects unconfirmed decorated aliases even if ingestion is bypassed',()=>{
+  const e=ev('space','space|2026-11-13','2026-11-13',388);
+  e.rows[0].player='AV-Abu';
+  const ledger=put(empty(),e);
+  assert.throws(()=>project(ledger,{members:[{name:'AV-Abu//npjp',status:'Active'}]}),
+    /Potential duplicate decorated identity/);
+  const fixed=project(ledger,{members:[{name:'AV-Abu//npjp',status:'Active'}],
+    aliases:{'AV-Abu':'AV-Abu//npjp'}});
+  assert.equal(fixed.people.filter(p=>p.name.toLowerCase().startsWith('av-abu')).length,1);
+  assert.equal(person(fixed,'AV-Abu//npjp').history.length,1);
+  assert.equal(person(fixed,'AV-Abu//npjp').status,'Active');
+});

@@ -1,3 +1,11 @@
+## 2026-11-13 — AV-Abu duplicate identity correction and permanent decorated-name ingestion gate
+
+- Leader supplied a screenshot showing AV-Abu and AV-Abu//npjp as separate profile choices after the November 13 Space Race release. This was a source-ingestion error: AV-Abu//npjp was already the established Active account with extensive historical results; the shortened AV-Abu was incorrectly introduced as a second, Inactive, one-event identity.
+- Canonical account remains **AV-Abu//npjp**. Explicitly alias the source display **AV-Abu** to it, retain the original screenshot/source spelling, event-time clan, rewards, and all historical rows. November 13 Space rank 2 is 388B, 310,310 Sparks, 3,103,100 derived Stars. Corrected site projection has one Active profile with 130 event histories, no separate new member; 239 unique projected people.
+- New fail-closed safeguards: the ingestion assembler flags unconfirmed double-slash decorated/bare-prefix name collisions, and the central projection rejects a pair of such identities even when an import bypasses the assembler. Never fuzzy-merge unknown accounts or silently assign an unverified decorated variant; use explicit verified aliases and tests.
+- This also affected Claude's already-published Discord new-member recognition in message 1570837091825229824. Website corrections **do not edit or resend** the previously posted Discord report. A correction to that post remains separate work; avoid duplicate/unsolicited sends.
+- Preserve existing Friday/Sunday scheduling, no SAC crossover, no new PNG or Discord send as part of this identity repair.
+
 ## 2026-11-13 — AV-2 screenshot-backed kicked member inactive statuses
 
 - Leader provided an original in-game AV-2 clan log screenshot confirming eight removals: `Keyler`, `uLTRaSLaN`, `Mickzzz`, `Basecreature`, `AV-braa`, `AV-Royal(No.Energy)`, `Blade`, and `AV-2(TAMIM)`. The screenshot spelling for `uLTRaSLaN` is matched to the canonical site spelling already present in the October 15 AV-2 roster/Sparks snapshot; do not add a new alias profile.

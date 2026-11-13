@@ -38,12 +38,25 @@ function matchExistingAv2Identity(raw,aliases,knownPlayers=[]){
     typeof name==='string'&&name.toLowerCase()===candidate.toLowerCase());
   return matches.length===1?matches[0]:original;
 }
+// An apparent new account can be the undecorated name of an existing account
+// with a double-slash suffix, or vice versa. Only a confirmed alias may merge
+// identities; otherwise fail closed before creating new rows.
+function checkDecoratedIdentityCollision(player,aliases,knownPlayers=[]){
+  const known=[...new Set(knownPlayers.map(name=>canonical(name,aliases)))];
+  const base=name=>String(name).split('//')[0].trim().toLowerCase();
+  const candidate=known.find(name=>name!==player&&
+    ((name.includes('//')&&base(name)===player.toLowerCase())||
+     (player.includes('//')&&base(player)===name.toLowerCase())));
+  check(!candidate,'Potential duplicate decorated identity: '+player+' versus '+candidate+
+    '. Confirm a canonical alias before publication');
+}
 function publicRow(raw,aliases,event=null,knownPlayers=[]){
   check(raw&&typeof raw==='object'&&!Array.isArray(raw),'Invalid parsed result');
   // Unknown or ambiguous identities go to human review, never silently become
   // an invented member, a Discord user ID, or a different Frenchie account.
   check(typeof raw.player==='string'&&raw.player.trim(),'Unresolved player identity requires review');
   const player=raw.clan==='AV-2'?matchExistingAv2Identity(raw.player,aliases,knownPlayers):canonical(raw.player,aliases);
+  checkDecoratedIdentityCollision(player,aliases,knownPlayers);
   const weeklyFormerMember=event?.id==='piggy|2026-10-23'&&event?.date==='2026-10-23'&&
     event?.kind==='piggy'&&player==='AV-Animosity'&&raw.clan==='American 50.0'&&
     raw.metadata?.eligibilityOverride==='leader-weekly-big-pig-2026-10-23';

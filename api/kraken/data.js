@@ -44,6 +44,8 @@ module.exports=async function handler(req,res){
   if(body.action==='start')result=await store.start(q,user,event,String(body.routeId||''),profile);
   else if(body.action==='save')result=await store.save(q,user,event,profile,body);
   else if(body.action==='undo')result=await store.undo(q,user,event,profile);
+  else if(body.action==='reopen')result=await store.reopen(q,user,event,profile);
+  else if(body.action==='editBattle')result=await store.editBattle(q,user,event,profile,body);
   else if(body.action==='submit')result=await store.submit(q,user,event,profile);
   else return auth.json(res,400,{error:'Unknown action'});
   return auth.json(res,200,result);

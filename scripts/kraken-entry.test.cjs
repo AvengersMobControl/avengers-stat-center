@@ -97,6 +97,14 @@ test('Discord interaction signatures use the original raw request bytes',async()
  const raw=await gateway.readRaw({async *[Symbol.asyncIterator](){yield body.subarray(0,3);yield body.subarray(3);}});
  assert.deepEqual(raw,body);
 });
+test('Discord app key is retrieved from the authenticated bot application and identity checked',async()=>{
+ const key='a'.repeat(64),id='1554265799806550096';
+ const env={DISCORD_CLIENT_ID:id,DISCORD_BOT_TOKEN:'dummy'};
+ const ok=await gateway.applicationPublicKey(env,async()=>({ok:true,json:async()=>({id,verify_key:key})}));
+ assert.equal(ok,key);
+ const explicit=await gateway.applicationPublicKey({...env,DISCORD_PUBLIC_KEY:'b'.repeat(64)},async()=>{throw Error('should not fetch');});
+ assert.equal(explicit,'b'.repeat(64));
+});
 test('public site builder does not copy the private API/server or route data',()=>{
  const build=fs.readFileSync(path.join(__dirname,'build-site.cjs'),'utf8');
  assert.match(build,/entry\.isDirectory\(\)&&entry\.name!=='assets'/);

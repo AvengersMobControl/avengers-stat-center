@@ -1,17 +1,18 @@
 'use strict';
 const crypto=require('node:crypto');
+const {discordRequest,canReview}=require('./discord-identity-review.cjs');
 function sessionFromRequest(req,env=process.env){
  const secret=env.AUTH_SECRET;
- const item=String(req.headers.cookie||'').split(';').map(s=>s.trim()).find(s=>s.startsWith('avengers_session='));
- const token=item?.slice('avengers_session='.length);
+ const item=String(req.headers?.cookie||'').split(';').map(s=>s.trim()).find(s=>s.startsWith('avengers_session='));
+ let token;try{token=item?decodeURIComponent(item.slice('avengers_session='.length)):null;}catch{return null;}
  if(!secret||!token)return null;
  const [body,sig,extra]=token.split('.');
- if(!body||!sig||extra||body.length>3000)return null;
+ if(!body||!sig||extra||body.length>4000)return null;
  const expected=crypto.createHmac('sha256',secret).update(body).digest('base64url');
  if(sig.length!==expected.length||!crypto.timingSafeEqual(Buffer.from(sig),Buffer.from(expected)))return null;
  try{
   const p=JSON.parse(Buffer.from(body,'base64url').toString('utf8'));
-  if(p.guest===true||p.permanentGuest===true||!p.exp||p.exp<=Date.now()/1000||
+  if(p.guest===true||p.permanentGuest===true||!Number.isFinite(p.exp)||p.exp<=Date.now()/1000||
     !/^\d{17,22}$/.test(String(p.sub||'')))return null;
   return {id:String(p.sub),username:String(p.username||'Discord member').slice(0,100)};
  }catch{return null;}
@@ -19,19 +20,30 @@ function sessionFromRequest(req,env=process.env){
 async function authenticate(req,env=process.env,httpFetch=fetch){
  const member=sessionFromRequest(req,env);
  if(!member)return null;
- if(!/^\d{17,22}$/.test(env.DISCORD_GUILD_ID||'')||!env.DISCORD_BOT_TOKEN)return null;
+ if(!/^\d{17,22}$/.test(String(env.DISCORD_GUILD_ID||''))||!env.DISCORD_BOT_TOKEN)return null;
  const r=await httpFetch('https://discord.com/api/v10/guilds/'+env.DISCORD_GUILD_ID+
-    '/members/'+member.id,{headers:{Authorization:'Bot '+env.DISCORD_BOT_TOKEN},
-      signal:AbortSignal.timeout(8000)});
+  '/members/'+member.id,{headers:{Authorization:'Bot '+env.DISCORD_BOT_TOKEN},
+    signal:AbortSignal.timeout(8000)});
  if(r.status!==200)return null;
- const roleIds=String(env.AVENGERS_KRAKEN_REVIEWER_IDS||'').split(',').map(s=>s.trim());
- return {...member,admin:roleIds.includes(member.id)};
+ const guildMember=await r.json();
+ if(String(guildMember?.user?.id)!==member.id)return null;
+ return {...member,roles:Array.isArray(guildMember.roles)?guildMember.roles:[]};
+}
+async function isReviewer(user,env=process.env,httpFetch=fetch){
+ if(!user||!/^\d{17,22}$/.test(user.id))return false;
+ const url='https://discord.com/api/v10/guilds/'+env.DISCORD_GUILD_ID;
+ const guild=await discordRequest(url,env,httpFetch);
+ if(String(guild.owner_id)===user.id)return true;
+ const roles=await discordRequest(url+'/roles',env,httpFetch);
+ const effective={...env,AVENGERS_DISCORD_REVIEWER_IDS:
+  [env.AVENGERS_DISCORD_REVIEWER_IDS,env.AVENGERS_KRAKEN_REVIEWER_IDS].filter(Boolean).join(',')};
+ return canReview({user:{id:user.id},roles:user.roles||[]},guild,roles,effective);
 }
 function guardPost(req,env=process.env){
- const origin=String(req.headers.origin||'');
+ const origin=String(req.headers?.origin||'');
  const expected=String(env.AVENGERS_KRAKEN_ORIGIN||'');
- return Boolean(expected&&/^https:\/\/[a-z0-9.-]+(?::\d+)?$/.test(expected)&&origin===expected &&
-  req.headers['content-type']?.split(';')[0]?.trim()==='application/json');
+ return Boolean(/^https:\/\/[a-z0-9.-]+(?::\d+)?$/.test(expected)&&origin===expected &&
+  req.headers?.['content-type']?.split(';')[0]?.trim()==='application/json');
 }
 function headers(res){
  res.setHeader('Cache-Control','private, no-store, max-age=0');
@@ -40,5 +52,5 @@ function headers(res){
  res.setHeader('Referrer-Policy','no-referrer');
  res.setHeader('X-Frame-Options','DENY');
 }
-function json(res,status,data){headers(res);res.status(status).json(data);}
-module.exports={sessionFromRequest,authenticate,guardPost,headers,json};
+function json(res,status,data){headers(res);return res.status(status).json(data);}
+module.exports={sessionFromRequest,authenticate,isReviewer,guardPost,headers,json};

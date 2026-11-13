@@ -672,3 +672,37 @@ test('one-line Nov 8 Big Pig results count across the published event, roster an
   assert(!BASE.projection.events.filter(e=>e.kind==='flash').some(e=>e.rows.some(r=>r.score===1)),
     'exactly-one-line Flash placeholders alone remain excluded');
 });
+
+
+test('2026-11-12 canonical alias mergers retain one profile and source-accurate Frenchie accounts',()=>{
+  const aliases=BASE.globals.AVENGERS_DATA.aliasMap;
+  const resolve=raw=>{let n=raw,seen=new Set();while(aliases[n]&&aliases[n]!==n){assert(!seen.has(n),'alias cycle '+raw);seen.add(n);n=aliases[n];}return n;};
+  const pairs={
+    'AV-#ZOLISTAR':'AV-7-STAR',
+    'AV-Adiagrion':'AV-Adigarian',
+    'AV-BXI':'AV-BX1',
+    'AV-FenXistentiel':'AV-FeniXistential',
+    'AV-Frenchie(-4)':'AV-FrenchieUSA',
+    'AV-J-Zo':'AV-J',
+    'AV-JustSomeGuy':'AV-HarryBallsagna'
+  };
+  const retired=new Set(Object.keys(pairs));
+  for(const [from,to] of Object.entries(pairs))assert.equal(resolve(from),to);
+  for(const x of BASE.projection.people)assert(!retired.has(x.name),'retired alias has standalone player profile: '+x.name);
+  const roster=BASE.globals.AVENGERS_MEMBER_TIMEZONES.rows;
+  assert.equal(new Set(roster.map(x=>x.name)).size,roster.length,'current roster has unique canonical names');
+  assert(roster.every(x=>!retired.has(x.name)),'retired aliases cannot be separate roster rows');
+  for(const event of BASE.projection.events)for(const row of event.rows)
+    assert(!retired.has(row.player),'retired alias cannot be a distinct result identity');
+  assert.notEqual(resolve('AV-Frenchie2'),resolve('AV-Frenchie(-4)'),'Frenchie2 is not the -4 account');
+  const piggy=BASE.projection.events.find(e=>e.id==='piggy|2026-10-18');
+  assert(piggy.rows.some(r=>r.player==='AV-FrenchieUSA'&&r.clan==='AV-2'&&r.score===267&&r.sparks===12946),
+    'AV-2 Frenchie(-4) 267-line source must go to FrenchieUSA with original rewards');
+  const oct=BASE.projection.events.find(e=>e.id==='kraken|oct');
+  assert(oct.rows.some(r=>r.player==='AV-FrenchieUSA'&&r.clan==='AVENGERS'&&r.score===2558.3),
+    'main-clan Frenchie October Kraken source is preserved');
+  assert(oct.rows.some(r=>r.player==='AV-Frenchie2'&&r.clan==='AV-2'&&r.score===36.2),
+    'separate AV-2 Frenchie2 October Kraken source is preserved');
+  assert.equal(BASE.projection.people.find(p=>p.name==='AV-Royal')?.status,'AV2',
+    'Royal must not be marked inactive without an explicit removal');
+});

@@ -1,3 +1,11 @@
+## 2026-11-12 — Canonical aliases and inactive AV-2 roster follow-through
+
+- [x] Implement seven leader-confirmed left→right canonical identities at source normalization and release projection, merging histories and eliminating redundant player/roster identities without deleting event evidence.
+- [x] Preserve FrenchieUSA (formerly Frenchie(-4)) versus distinct Frenchie2: October Kraken source-specific exception only, and October 18 AV-2 267-line Frenchie(-4) event correctly credited to FrenchieUSA.
+- [x] Add regression coverage for all seven mappings, roster uniqueness, source-specific Frenchie scores, and Royal AV-2 status retention.
+- [ ] Obtain unambiguous identities of AV-2 players **kicked out** and mark existing public profiles Inactive, excluding AV-Royal. Ignore entries no longer on the website. Do not infer from historical transfers or resurrect permanently removed zero-spark/single-event accounts.
+- [ ] Verify code CI, site artifact consistency, published exact GitHub Pages SHA and Vercel production readback; no Discord send.
+
 ## 2026-11-12 — Kraken Discord launch readiness
 
 - [x] Execute leader-approved private identity sync: 82 canonical profile links across 81 Discord users, 0 unresolved, and one-time approval consumed.

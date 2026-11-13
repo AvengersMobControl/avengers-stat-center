@@ -47,7 +47,7 @@ assert(D && R && S && L && B, 'Missing loaded roster/ledger data scripts');
 const currentAv=(R.rows||[]).filter(r=>r.status==='Active');
 const currentAv2=(R.rows||[]).filter(r=>r.status==='AV2');
 assert.equal(currentAv.length, 49, 'Expected 49 current AVENGERS after subsequent November 8 transfers and inactive flags');
-assert.equal(currentAv2.length, 51, 'Expected 51 current AV-2 after November 8 source-confirmed roster additions');
+assert.equal(currentAv2.length, 47, 'Expected 47 current AV-2 after four November 13 verified kick removals');
 assert.equal(S.currentAvengersStars.length, 47, 'LT excluded from site snapshot; no event history');
 assert.equal(S.currentAv2.length, 39);
 assert(currentAv2.some(r=>r.name==='AV-DrDetroit'));
@@ -66,7 +66,7 @@ const canonical=raw=>{
 assert.notEqual(canonical('AV-Frenchie2'),canonical('AV-Frenchie(-4)'));
 const current=[...currentAv,...currentAv2];
 const identityKeys=current.map(r=>canonical(r.name));
-assert.equal(current.length, 100, 'Expected 100 current identities after subsequent November 8 inactive flags');
+assert.equal(current.length, 96, 'Expected 96 current identities after November 13 AV-2 inactive flags');
 for(const name of ["Keyler","AV-Keyler","Blade","AV-2(TAMIM)"]){
   assert(!current.some(r=>r.name===name),'Removed member remains in roster: '+name);
   assert(!require('./create-site-release.cjs').create().globals.AVENGERS_DATA.members.some(m=>m.name===name),'Removed member remains in published profile projection: '+name);
@@ -80,6 +80,10 @@ for(const name of ["GirlsOnly","yooossss","Shelby","Piton","Jamaica","AV-AC3","P
 for(const name of ['AV-TRINITY','AV-istanbuL','AV-KKD','AV-Nicefellow','AV-KitKat','AV-Hoops','AV-JAMO','AV-no','AV.ziyad','AV.atarIX','AV-Dreadrixter-UA','AV-Dubai','AV-CHUCK'])assert(currentAv.some(r=>r.name===name), name+' should be Active');
 for(const name of ['AV#Rafa#Tun','AV-Oakcliff','AV-Royal','AV-SiFra','AV-Pablin','AV-MotherboardBeans','AV-Neez','AV2-OlRose','AV-2.SURVIVOR','AV2-Thoszi','TheHemperor','AV-JefhKintz05'])assert(currentAv2.some(r=>r.name===name), name+' should be AV-2');
 for(const name of ['AV-23','AV-Timmy'])assert(!current.some(r=>r.name===name)&&R.rows.some(r=>r.name===name&&r.status==='Inactive'),name+' retained as Inactive only');
+for(const name of ['uLTRaSLaN','Mickzzz','Basecreature','AV-braa'])
+  assert(!current.some(r=>r.name===name)&&R.rows.some(r=>r.name===name&&r.status==='Inactive'),
+    name+' kicked from AV-2 but retained on inactive roster');
+assert(R.rows.some(r=>r.name==='AV-Royal'&&r.status==='AV2'),'Leader-exempt Royal remains AV-2');
 assert(!current.some(r=>r.name==='AV-WolfLegend'), 'AV-WolfLegend must not be in either current clan roster');
 assert.equal(new Set(identityKeys).size, current.length, 'Duplicate canonical identities in current rosters');
 const starRows=[...(S.currentAvengersStars||[]),...(S.currentAv2||[])];

@@ -1,3 +1,13 @@
+## 2026-11-12 — Test /kraken command is registered in Discord
+
+- [x] Create isolated TEST event with all 56 fake map positions and short dummy preset in private Neon; preserve Custom Route.
+- [x] Activate TEST MODE banner, ephemeral Discord command message, and TEST-DO-NOT-IMPORT CSV filename.
+- [x] Verify private runtime table grants, preventing route modification.
+- [x] Fix dual-game-account profile selector; deploy test entry form.
+- [x] Register signed HTTP Discord interaction endpoint and guild /kraken command (ID 1570681165852053565); confirm REST readback and consume one-time launch capability.
+- [ ] Test member draft/save/undo/resume and complete sample run; leader review + approved TEST CSV.
+- [ ] Saturday: replace ALL dummy M10 maps and test route, use NEW real event date and disable TEST MODE, then repeat live verification.
+- [ ] Never import test event 2026-11-12 into the master workbook.
 ## 2026-11-12 — Canonical aliases and inactive AV-2 roster follow-through
 
 - [x] Implement seven leader-confirmed left→right canonical identities at source normalization and release projection, merging histories and eliminating redundant player/roster identities without deleting event evidence.

@@ -23,6 +23,13 @@ module.exports=async function handler(req,res){
    }
    if(!await auth.isReviewer(user))return auth.json(res,403,{error:'Reviewer access required'});
    if(mode==='review')return auth.json(res,200,{event,runs:await store.reviewList(q,event)});
+   if(mode==='review-csv'){
+    const csv=await store.exportReview(q,event);
+    res.setHeader('Content-Type','text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition','attachment; filename="avengers-kraken-'+
+     (process.env.AVENGERS_KRAKEN_TEST_MODE==='true'?'TEST-REVIEW-DO-NOT-IMPORT-':'review-')+event+'.csv"');
+    return res.status(200).send(csv);
+   }
    if(mode==='csv'){
     const csv=await store.exportApproved(q,event);
     res.setHeader('Content-Type','text/csv; charset=utf-8');

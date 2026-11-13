@@ -117,14 +117,14 @@ async function submit(q,user,event,canonicalName){
 
 async function reopen(q,user,event,canonicalName){
  const run=await own(q,user.id,event,canonicalName);
- if(!run||run.status!=='pending')
-  fault('Only submissions awaiting leader review can be reopened',409);
+ if(!run||!['pending','approved'].includes(run.status))
+  fault('Only pending or approved (not exported) submissions can be reopened',409);
  const rows=await q('UPDATE '+SCHEMA+
   '.runs SET status=$3,submitted_at=NULL,review_note=NULL,reviewed_at=NULL,reviewed_by=NULL,updated_at=now() '+
   'WHERE id=$1 AND discord_user_id=$2 AND status=$4 RETURNING id',
-  [run.id,user.id,'draft','pending']);
+  [run.id,user.id,'draft',run.status]);
  if(rows.length!==1)fault('Submission was already reviewed or changed; refresh',409);
- await audit(q,run.id,user.id,'start',{kind:'reopened-submission',previousStatus:'pending'});
+ await audit(q,run.id,user.id,'start',{kind:'reopened-submission',previousStatus:run.status,priorApprovalInvalidated:run.status==='approved'});
  return current(q,user.id,event,canonicalName);
 }
 async function editBattle(q,user,event,canonicalName,input){
@@ -211,6 +211,30 @@ async function reviewAction(q,reviewer,event,action,input){
  }else fault('Unknown review action');
  return reviewList(q,event);
 }
+async function exportReview(q,event){
+ // Private leader-only review export: show *all* submitted statuses, including
+ // pending rows. Never require approval simply to inspect the input.
+ const runs=await reviewList(q,event);
+ const lines=[['Event','Status','Canonical Player','Discord Username','Discord User ID',
+  'Run ID','Route','Original Preset','Submitted At','Reviewed At','Review Note',
+  'Battles in Run','Tickets Used in Run','Total Damage (M)','Run DPT (M)',
+  'Battle #','Tickets Left','Map','Tickets Used','Loadout',
+  'Battle Damage (M)','Battle DPT (M)','Notes']];
+ for(const run of runs){
+  const tickets=run.battles.reduce((s,b)=>s+Number(b.tickets_used),0);
+  const damage=run.battles.reduce((s,b)=>s+Number(b.damage_m),0);
+  for(const b of run.battles){
+   lines.push([run.event_key,run.status,run.canonical_name||'UNLINKED',
+    run.discord_username,run.discord_user_id,run.id,
+    run.customized?'custom':run.route_id||'custom',run.route_id||'',
+    run.submitted_at||'',run.reviewed_at||'',run.review_note||'',
+    run.battles.length,tickets,damage,tickets?damage/tickets:'',
+    b.battle_no,b.tickets_left,b.map_code,b.tickets_used,b.loadout,
+    b.damage_m,Number(b.damage_m)/Number(b.tickets_used),b.notes]);
+  }
+ }
+ return safeCsv(lines);
+}
 async function exportApproved(q,event){
  const runs=await reviewList(q,event);
  const lines=[['Event','Canonical player','Discord username','Discord User ID','Run ID','Route','Original preset','Battle #','Tickets Left','Map','Tickets Used','Loadout','Damage (M)','Damage/Ticket (M)','Notes']];
@@ -223,4 +247,4 @@ async function exportApproved(q,event){
  }
  return safeCsv(lines);
 }
-module.exports={connection,checkEvent,routes,sequence,current,start,save,undo,reopen,editBattle,submit,reviewList,reviewAction,exportApproved};
+module.exports={connection,checkEvent,routes,sequence,current,start,save,undo,reopen,editBattle,submit,reviewList,reviewAction,exportReview,exportApproved};

@@ -1,3 +1,9 @@
+## 2026-11-12 — Surviving canonical labels and AV-2 kicked-out status guard
+
+- Leader approved seven explicit left-to-right player consolidations: `AV-#ZOLISTAR`→`AV-7-STAR`, `AV-Adiagrion`→`AV-Adigarian`, `AV-BXI`→`AV-BX1`, `AV-FenXistentiel`→`AV-FeniXistential`, `AV-Frenchie(-4)`→`AV-FrenchieUSA`, `AV-J-Zo`→`AV-J`, `AV-JustSomeGuy`→`AV-HarryBallsagna`. Preserve sources and all result rows under the right-hand identity; remove left-hand names from separate profile and current roster rows.
+- Earlier canonical `AV-Frenchie(-4)` name was superseded by the leader's new direction: surviving account is `AV-FrenchieUSA`. Crucially, the distinct `AV-Frenchie2` owner profile is not merged. October Kraken AV-2 score 36.2M remains Frenchie2; October Kraken main score 2558.3M and October 18 AV-2 267-line score remain FrenchieUSA. A global AV-2 `FrenchieUSA`→`Frenchie2` rewrite is invalid; retain only source-specific Kraken exception.
+- Mark kicked-out **existing** AV-2 website players Inactive once identities are actually established, never AV-Royal. Permanent deletions already approved for unrelated AV-2 zero-spark/single-event entries must remain deleted, not resurrected. No inference from historical transfers alone. No Discord posting.
+
 ## 2026-11-12 — Discord canonical identity registry verified, slash setup self-contained
 
 - Applied leader's blanket confirmation of every previously suggested Discord-to-player mapping and the seven supplemental member confirmations. Final private registry: 74 guessed links + 8 explicit links = 82 verified game profiles, 81 unique Discord accounts, zero unresolved. No rounded CSV IDs used; immutable IDs came from live Discord guild member API. One-time approval capability has been consumed and disabled.

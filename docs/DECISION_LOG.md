@@ -1,3 +1,10 @@
+## 2026-11-12 — Confirmed dual-account Frenchie, legacy aliases, and private Discord ID resolution
+
+- Clan leader confirmed `AV-Frenchie(-4)` and `AV-FrenchieUSA` refer to **one game account** and must be merged on the site, while `AV-Frenchie2` remains a **different game account**, both owned by the same Discord identity. Preserve the two independent October Kraken event-time score rows (historic AVENGERS source vs prior distinct AV-2 source) and all source proofs, rather than double-counting or merging the game accounts.
+- Clan leader confirmed `AV-J-Zo` is existing `AV-J`. Also confirmed account mappings for the existing canonical Zolika, Abu, DaG and HN. New `AV-$JR.$` should appear as a profile with no fabricated events or score; its clan status is **Unassigned** until independently established, rather than changing the 49 active Avengers.
+- Underlying Discord IDs were pasted from Excel in rounded scientific notation. Do **not** store or infer a full snowflake from those cells. Store confirmed usernames and original Discord guild joined timestamps privately, then bind full Discord snowflakes **only after** exact live Discord member API verification. Support one Discord ID with multiple canonical game-account links.
+- The private identity runtime may only select private preapproved mappings and fill verified Discord ID fields. No auto-approval of other guessed matches, no public Discord identity association, no automatic master spreadsheet import.
+
 ## 2026-11-12 — Roster identity matching uses educated ranked guesses, never automatic confirmation
 
 - Leader requested ranked plausible matches for Discord members left unmatched by strict normalized exact-name comparison, while confirming initial exact suggestions were correct.

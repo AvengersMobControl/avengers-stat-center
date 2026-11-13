@@ -239,6 +239,17 @@ function project(ledger,{aliases={},members=[],snapshots={},priorToLogging=null,
   const memberMap=new Map();
   for(const m of members){const name=canonical(m.name,aliases);requireThat(!memberMap.has(name),'Duplicate current member');memberMap.set(name,{name,status:m.status});}
   for(const r of rows)if(r.player&&!memberMap.has(r.player))memberMap.set(r.player,{name:r.player,status:'Inactive'});
+  // Publication-level gate: decorated and bare-prefix identities cannot
+  // coexist as separate profiles even if review assembly was bypassed.
+  const byLower=new Map([...memberMap.keys()].map(name=>[name.toLowerCase(),name]));
+  for(const decorated of memberMap.keys()){
+    const cut=decorated.indexOf('//');
+    if(cut<1)continue;
+    const bare=byLower.get(decorated.slice(0,cut).trim().toLowerCase());
+    requireThat(!bare||bare===decorated,
+      'Potential duplicate decorated identity: '+bare+' versus '+decorated+
+      '. Register a confirmed canonical alias before publication');
+  }
   const eventById=new Map(events.map(e=>[e.id,e]));
   const windows={piggy3:recentClanEvents(events,'piggy',3),space3:recentClanEvents(events,'space',3),
     kraken5:recentClanEvents(events,'kraken',5),kraken1:recentClanEvents(events,'kraken',1)};

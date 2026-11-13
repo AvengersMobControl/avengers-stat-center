@@ -41,6 +41,19 @@ async function main(){
         tavito:P.events.filter(e=>e.metadata?.setId==='2026-10-20-A').flatMap(e=>e.rows).filter(r=>/tavito/i.test(r.player||'')).length};
     });
     assert.deepEqual(participation,{timmy:'Inactive',member23:'Inactive',jeff:'AV2',chuck:'Active',avNo:'Active',frank:'Active',flashPlaceholders:0,nov8BigPigOneLine:4,nov8Av2J:true,tavito:0});
+    // Nov 13 leader-verified AV-2 kick log: membership changes only; all
+    // historical event-time clans and contributions remain in the ledger.
+    const departures=await page.evaluate(()=>{
+      const R=window.AVENGERS_MEMBER_TIMEZONES,P=window.AVENGERS_EVENT_PROJECTION;
+      return ['uLTRaSLaN','Mickzzz','Basecreature','AV-braa','AV-Royal'].map(name=>({
+        name,roster:R.rows.find(r=>r.name===name)?.status||null,
+        player:P.people.find(p=>p.name===name)?.status||null
+      }));
+    });
+    assert.deepEqual(departures,[
+      ...['uLTRaSLaN','Mickzzz','Basecreature','AV-braa'].map(name=>({name,roster:'Inactive',player:'Inactive'})),
+      {name:'AV-Royal',roster:'AV2',player:'AV2'}
+    ],'public browser projection respects screenshot kick list and Royal exemption');
     // Leader-requested name badges + monthly/current 35-day league totals.
     assert.equal(await page.locator('#overviewContent .overview-period-group').count(),2,'Overview displays month and current league');
     assert.equal(await page.locator('#overviewContent .period-total-card').count(),4,'Piggy and Space totals each appear twice');

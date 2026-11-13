@@ -225,6 +225,21 @@
     rosterEntries.push({name,profileName,status});
     fixedIds.add(profileName);
   }
+  // November 13: leader-supplied original AV-2 kick log. These four existing
+  // profiles become Inactive; never delete history, snapshots or event-time
+  // clan attribution. The other kicked players Keyler, Blade and TAMIM were
+  // previously removed entirely, and Royal is expressly exempt.
+  // Ignore names that have no existing website profile.
+  const kickedAv2=['uLTRaSLaN','Mickzzz','Basecreature','AV-braa'];
+  for(const name of kickedAv2){
+    const id=canonical(name);
+    const existing=rosterEntries.find(row=>row.profileName===id);
+    if(!existing)continue;
+    if(existing.status!=='AV2')
+      throw new Error('Kicked AV-2 player has unexpected current roster: '+name);
+    existing.status='Inactive';
+    fixedIds.add(id);
+  }
   const currentIds=new Set(rosterEntries.map(x=>x.profileName));
   if(currentIds.size!==rosterEntries.length)
     throw new Error('Dynamic Discord roster identities overlap');
@@ -272,8 +287,8 @@
   byName['AV-Frenchie(-4)']=byName['AV-FrenchieUSA'];
   byName['AV-J-Zo']=byName['AV-J'];
   R.byName=byName;
-  R.source='October 15 AVENGERS/AV-2 snapshots + leader identity and membership corrections through November 12';
-  R.precedence='October 15 source screenshots retained as dated provenance, except leader-removed LT shell; current changes: AV-2Lin → AV-Lin, Jeff canonical AV-JefhKintz05, formerly Active through Nov 6; Timmy joined and later changed to Inactive; FrankAbagnale linked to existing Addicted account, Zibby and TheOli AV-2; Animosity Inactive, Mickzzz and AV2-Froyo AV-2; Oct 30: TRINITY, istanbuL, KKD Active; Rafa, Royal, SiFra AV-2; WolfLegend Inactive; Nov 6 KitKat, Hoops and JAMO Active; Pablin, MotherboardBeans, no, Neez and Oakcliff AV-2; Nov 8 OlRose, SURVIVOR, Thoszi and TheHemperor AV-2; AV2-J merged to existing AV-J, AV2-TheHemperor merged to TheHemperor and existing CRISPIN.27 alias to CRISPIN.97 retained; ShieldBreaker source capitalization merged with existing active ShielDBreaker; subsequent leader directive moved Jeff to AV-2, Chuck and no to AVENGERS and set AV-23 and Timmy Inactive; Nicefellow remains Active; 49 Active and 51 AV-2 plus JR Unassigned; confirmed aliases for FrenchieUSA and J-Zo; UTC/TZG/country retained.';
+  R.source='October 15 AVENGERS/AV-2 snapshots + leader identity and membership corrections through November 13';
+  R.precedence='October 15 source screenshots retained as dated provenance, except leader-removed LT shell; current changes: AV-2Lin → AV-Lin, Jeff canonical AV-JefhKintz05, formerly Active through Nov 6; Timmy joined and later changed to Inactive; FrankAbagnale linked to existing Addicted account, Zibby and TheOli AV-2; Animosity Inactive, Mickzzz and AV2-Froyo AV-2; Oct 30: TRINITY, istanbuL, KKD Active; Rafa, Royal, SiFra AV-2; WolfLegend Inactive; Nov 6 KitKat, Hoops and JAMO Active; Pablin, MotherboardBeans, no, Neez and Oakcliff AV-2; Nov 8 OlRose, SURVIVOR, Thoszi and TheHemperor AV-2; AV2-J merged to existing AV-J, AV2-TheHemperor merged to TheHemperor and existing CRISPIN.27 alias to CRISPIN.97 retained; ShieldBreaker source capitalization merged with existing active ShielDBreaker; subsequent leader directive moved Jeff to AV-2, Chuck and no to AVENGERS and set AV-23 and Timmy Inactive; Nicefellow remains Active; 49 Active and 47 AV-2 plus JR Unassigned; Nov 13 AV-2 kick log marks uLTRaSLaN, Mickzzz, Basecreature and AV-braa Inactive while Royal remains AV-2; previously deleted Keyler, Blade and TAMIM remain absent; confirmed aliases for FrenchieUSA and J-Zo; UTC/TZG/country retained.';
 
   // Only current member status changes. Event history, clan attribution,
   // personal records, event totals, and rating math remain unchanged.

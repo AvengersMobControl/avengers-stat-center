@@ -30,5 +30,5 @@ test('JR is included without invented game results or false clan attribution',()
  assert.equal(jr.earned.sparks,0);
  const counts=people.reduce((o,p)=>(o[p.status]=(o[p.status]||0)+1,o),{});
  assert.equal(counts.Active,49,'Do not silently replace a main clan member');
- assert.equal(counts.AV2,51,'Do not silently put JR in AV-2');
+ assert.equal(counts.AV2,47,'Only four screenshot-confirmed AV-2 members became inactive; JR stays unassigned');
 });

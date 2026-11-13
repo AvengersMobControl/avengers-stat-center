@@ -63,7 +63,7 @@ async function handler(req,res){
   return answer(res,200,{type:4,data:{flags:64,content:'Kraken entry is not configured yet.'}});
  return answer(res,200,{type:4,data:{flags:64,
   content:(process.env.AVENGERS_KRAKEN_TEST_MODE==='true'?
-    '**KRAKEN TEST MODE — Practice using October's actual map order and advised routes**\n':
+    '**KRAKEN TEST MODE — Practice using the October 2026 map order and advised routes**\n':
     '**Private Kraken battle entry**\n')+
     'Open your secure form: '+origin+FORM+
     '\nSign in with the same Discord account. Your entries are private; test data never enters the master workbook.'}});

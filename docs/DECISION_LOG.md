@@ -1,3 +1,9 @@
+## 2026-11-12 — Discord canonical identity registry verified, slash setup self-contained
+
+- Applied leader's blanket confirmation of every previously suggested Discord-to-player mapping and the seven supplemental member confirmations. Final private registry: 74 guessed links + 8 explicit links = 82 verified game profiles, 81 unique Discord accounts, zero unresolved. No rounded CSV IDs used; immutable IDs came from live Discord guild member API. One-time approval capability has been consumed and disabled.
+- `/kraken` integrates verified identities, allowing multiple game-account logs under one Discord user. Neither member scores nor Kraken route/strategy data is publicly exposed or automatically imported into the master workbook.
+- Reuse app bot token to look up Discord application's published Ed25519 `verify_key` on the private server. Do not require the leader to copy the public key or install software. Never overwrite a preexisting different Discord interaction endpoint. Keep registration inactive until full route mapping/event setup and endpoint verification are complete.
+
 ## 2026-11-12 — Leader approves every prior Discord roster suggestion; resume private /kraken intake
 
 - Leader **explicitly confirmed ALL best-guess canonical identity suggestions shown on the private Discord review page** as correct, in addition to the seven separately provided Discord accounts/eight game profiles. Do not ask the leader to re-confirm these identities. A one-time blanket-approval record `2026-11-12-all-proposed-discord-matches` was persisted to AVENGERS-only Neon `avengers_identity_private.leader_approvals`. The eight explicit account relations were already stored in `avengers_identity_private.discord_bindings`.

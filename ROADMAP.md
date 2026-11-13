@@ -1,3 +1,12 @@
+## 2026-11-12 — Kraken Discord launch readiness
+
+- [x] Execute leader-approved private identity sync: 82 canonical profile links across 81 Discord users, 0 unresolved, and one-time approval consumed.
+- [x] Merge private Kraken battle UI/backend, private database schema, profile selection, auth, reviewer queue and CSV export (PR #191).
+- [x] Add server-side Discord application verify-key discovery and guarded guild slash registrar without needing user-supplied developer settings.
+- [ ] Saturday: privately load complete official ticket-left→map sequence and approved preset route definitions; choose real Kraken event date.
+- [ ] Verify signature-based Discord PING and new Interactions Endpoint; register guild `/kraken` only after readiness, never clobber other bot endpoints.
+- [ ] Supervised end-to-end test member draft/submit→leader review/approved CSV. Do **not** auto-import master DPT workbook.
+
 ## 2026-11-12 — Resume private Discord /kraken command
 
 - [x] Record leader's blanket approval of **all** previously suggested Discord canonical mappings in private Neon; no further user matching review necessary.

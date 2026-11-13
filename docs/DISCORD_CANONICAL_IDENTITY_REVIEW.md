@@ -26,3 +26,12 @@ The original exact-only matcher was too strict. The leader requested a more usef
 
 Each recommendation includes a heuristic matching-strength score, source/reason and a category (exact/suggested, likely, possible, ambiguous, or unmatched). This is NOT a calibrated probability. A matching nickname is not proof of identity. Distinct player accounts are never automatically collapsed, and two Discord members suggesting the same account are flagged as shared candidates. **All private identity links still require leader approval**, with the final confirmation column left blank on CSV export.
 
+
+## Leader-confirmed private bindings (2026-11-12)
+
+Seven additional leader-confirmed Discord members / eight game-account relations are seeded directly into the private AVENGERS Neon schema, **never committed to this public repository**. One Discord member can own multiple separate game accounts (Frenchie(-4) and Frenchie2). The original CSV had IDs displayed in rounded scientific notation, so no ID was inferred or stored from those cells.
+
+On a verified guild-owner/admin visit, the private review endpoint loads the previously approved mappings from Neon. It independently retrieves the Discord member roster, verifies each account has one exact username match **and** the recorded original Discord-server join timestamp, and persists the precise Discord user ID only in the two writable verification columns. A mismatch leaves the mapping unverified. The Vercel runtime has SELECT and narrow UPDATE privileges, but cannot insert or delete leader approvals.
+
+The private review page and CSV display `confirmed` and the canonical name(s) for successfully verified accounts, including multiple game names for the same Discord user. Other candidate matches remain suggestions pending their separate permanent-ID reconciliation. The Kraken master workbook is not updated by any of these operations.
+

@@ -82,7 +82,9 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
   const statusRank={Active:3,AV2:2,Unassigned:1,Inactive:0};
   for(const row of R.rows){
     const name=resolve(row.profileName||row.name),prior=canonicalRoster.get(name);
-    const next={...row,name,profileName:name,canonicalName:name,sourceName:row.sourceName||row.name};
+    const retiredLabels=new Set(['AV-#ZOLISTAR','AV-Adiagrion','AV-BXI','AV-FenXistentiel','AV-Frenchie(-4)','AV-J-Zo','AV-JustSomeGuy']);
+    const displayName=retiredLabels.has(row.name)?name:row.name;
+    const next={...row,name:displayName,profileName:name,canonicalName:name,sourceName:row.sourceName||row.name};
     if(!prior){canonicalRoster.set(name,next);continue;}
     const p=statusRank[prior.status]??-1,n=statusRank[next.status]??-1;
     if((p>=2&&n>=2)&&prior.status!==next.status)

@@ -1,5 +1,6 @@
 'use strict';
 const core=require('../../server/discord-identity-review.cjs');
+const bindings=require('../../server/discord-confirmed-bindings.cjs');
 function fail(res,status,message){
  res.statusCode=status;res.setHeader('Content-Type','text/plain; charset=utf-8');return res.end(message);
 }
@@ -30,6 +31,20 @@ module.exports=async function handler(req,res){
   if(!core.canReview(member,guild,roles,env))
    return fail(res,403,'This member-roster export is restricted to server owners and authorized administrators.');
   const members=await core.memberRoster(env);
+  // Only already leader-confirmed private DB records are eligible for ID
+  // resolution. Verify exact username and joined-at before persisting a
+  // full Discord snowflake; never use user-pasted rounded Excel values.
+  let verified=new Map(),bindingError=false;
+  try {
+   const q=bindings.productionQuery(env);
+   const resolved=await bindings.synchronize(q,members);
+   verified=bindings.confirmedById(resolved);
+   if(resolved.some(r=>['joined-date-mismatch','identity-conflict','ambiguous-username'].includes(r.state)))
+    bindingError=true;
+  }catch(e){
+   bindingError=true;
+   console.error('Private Discord bindings unavailable:',e.message);
+  }
   // Use the same canonical roster projection as the AVENGERS Stat Center.
   // Player names and status are already published; PRIVATE Discord identities are not.
   // Prefer the current public, immutable release projection as a roster source.
@@ -60,25 +75,33 @@ module.exports=async function handler(req,res){
   }
   const rows=members.map(m=>{
    const suggestion=core.suggest(m,all,aliases);
+   const confirmed=verified.get(String(m.user.id))||[];
+   const confirmedName=confirmed.join(' | ');
+   const isConfirmed=confirmed.length>0;
    return {discordId:String(m.user.id),nickname:m.nick||'',globalName:m.user.global_name||'',
     username:m.user.username||'',joinedAt:m.joined_at||'',roles:m.roles||[],
-    suggestedCanonical:suggestion.suggestion,matchStatus:suggestion.status,
-    matchStrength:suggestion.score,reason:suggestion.reason,source:suggestion.source,
-    alternatives:suggestion.candidates.slice(1).map(c=>c.canonical+' ('+c.score+')').join(' | '),
-    topThree:suggestion.candidates.map(c=>c.canonical+' ('+c.score+'; '+c.rosterStatus+')').join(' | '),
-    rosterStatus:all.find(p=>p.name===suggestion.suggestion)?.status||'',
-    evidence:suggestion.evidence.join(' | ')};
+    suggestedCanonical:isConfirmed?confirmedName:suggestion.suggestion,
+    confirmedCanonical:confirmedName,
+    matchStatus:isConfirmed?'confirmed':suggestion.status,
+    matchStrength:isConfirmed?100:suggestion.score,
+    reason:isConfirmed?'Leader-confirmed; exact Discord ID verified against username and joined date':suggestion.reason,
+    source:isConfirmed?'private verified binding':suggestion.source,
+    alternatives:isConfirmed?'':suggestion.candidates.slice(1).map(c=>c.canonical+' ('+c.score+')').join(' | '),
+    topThree:isConfirmed?confirmedName:suggestion.candidates.map(c=>c.canonical+' ('+c.score+'; '+c.rosterStatus+')').join(' | '),
+    rosterStatus:isConfirmed?confirmed.map(n=>all.find(p=>p.name===n)?.status||'Unlisted').join(' / '):
+     all.find(p=>p.name===suggestion.suggestion)?.status||'',
+    evidence:isConfirmed?'Verified against Discord member record':suggestion.evidence.join(' | ')};
   });
   // Two Discord accounts pointing to one canonical identity must always be
   // surfaced for manual review, even when each name independently looks strong.
   const topCounts=new Map();
-  for(const row of rows)if(row.matchStrength>=78&&row.suggestedCanonical)
+  for(const row of rows)if(row.matchStatus!=='confirmed'&&row.matchStrength>=78&&row.suggestedCanonical)
    topCounts.set(row.suggestedCanonical,(topCounts.get(row.suggestedCanonical)||0)+1);
-  for(const row of rows)if(row.suggestedCanonical&&topCounts.get(row.suggestedCanonical)>1){
+  for(const row of rows)if(row.matchStatus!=='confirmed'&&row.suggestedCanonical&&topCounts.get(row.suggestedCanonical)>1){
    row.matchStatus='shared-candidate';
    row.reason+='; multiple Discord profiles suggest this player';
   }
-  const attention={'shared-candidate':0,ambiguous:1,possible:2,likely:3,unmatched:4,suggested:5};
+  const attention={'shared-candidate':0,ambiguous:1,possible:2,likely:3,unmatched:4,suggested:5,confirmed:6};
   rows.sort((a,b)=>(attention[a.matchStatus]??9)-(attention[b.matchStatus]??9)||
    (b.matchStrength-a.matchStrength)||
    (a.suggestedCanonical||a.nickname||a.username).localeCompare(b.suggestedCanonical||b.nickname||b.username));
@@ -86,13 +109,14 @@ module.exports=async function handler(req,res){
    'Role IDs','Suggested canonical','Roster status','Match status','Match strength (heuristic, not probability)',
    'Reason','Other candidates','Top 3 educated guesses','Evidence','Confirmed canonical (leader review)'];
   const data=[columns,...rows.map(r=>[r.discordId,r.nickname,r.globalName,r.username,r.joinedAt,r.roles.join(';'),
-   r.suggestedCanonical,r.rosterStatus,r.matchStatus,r.matchStrength,r.reason,r.alternatives,r.topThree,r.evidence,''])];
+   r.suggestedCanonical,r.rosterStatus,r.matchStatus,r.matchStrength,r.reason,r.alternatives,r.topThree,r.evidence,r.confirmedCanonical])];
   if(req.query?.format==='csv'){
    res.setHeader('Content-Type','text/csv; charset=utf-8');
    res.setHeader('Content-Disposition','attachment; filename="AVENGERS_Discord_Canonical_Matching_Review.csv"');
    return res.status(200).send(core.csv(data));
   }
   const count=rows.length,suggested=rows.filter(r=>r.matchStatus==='suggested').length;
+  const confirmedAccounts=rows.filter(r=>r.matchStatus==='confirmed').length;
   const plausible=rows.filter(r=>['likely','possible','ambiguous','shared-candidate'].includes(r.matchStatus)).length;
   const tr=rows.map(r=>'<tr><td>'+esc(r.nickname||r.globalName||r.username)+'</td><td>'+esc(r.username)+
    '</td><td><code>'+esc(r.discordId)+'</code></td><td><strong>'+
@@ -107,8 +131,9 @@ module.exports=async function handler(req,res){
    'td,th{padding:9px;border-bottom:1px solid #34485e;text-align:left}tr:nth-child(even){background:#14243a}'+
    '.scroll{overflow:auto}.button{display:inline-block;padding:12px 16px;background:#396db5;border-radius:9px;font-weight:bold}'+
    'code{font-size:12px}</style></head><body><h1>AVENGERS Discord identity review</h1>'+
-   '<p>'+count+' non-bot Discord members retrieved; '+suggested+' strong exact-name suggestions; '+plausible+' further educated guesses or ambiguous cases. <b>Zero links auto-confirmed.</b></p>'+
-   '<p>Ranked using server nicknames, global names, Discord usernames, spelling similarity, public historical aliases, and current/historical player names. Strength is a <b>ranking score, not a probability</b>. All matches require leader confirmation. Uncertain and shared-candidate rows appear first. Review the CSV and fill "Confirmed canonical" only after verifying identity.</p>'+
+   '<p>'+count+' non-bot Discord members retrieved; '+confirmedAccounts+' leader-confirmed account identities verified; '+suggested+' strong name suggestions; '+plausible+' educated guesses or ambiguous cases. <b>No guesses are automatically approved.</b></p>'+
+   (bindingError?'<p style="color:#ffb4b4"><b>Private identity verification needs attention.</b> One or more records could not be verified; no mismatched IDs were saved.</p>':'')+
+   '<p>Ranked using server nicknames, global names, Discord usernames, spelling similarity, public historical aliases, and current/historical player names. Strength is a <b>ranking score, not a probability</b>. Only the matches previously confirmed by the leader are marked confirmed, after Discord ID verification. Other guesses need leader confirmation. Uncertain and shared-candidate rows appear first. Review the CSV and fill "Confirmed canonical" only after verifying identity.</p>'+
    '<p><a class="button" href="/api/discord/identity-review?format=csv">Download private matching CSV</a></p>'+
    '<div class="scroll"><table><thead><tr><th>Display</th><th>Discord username</th><th>Permanent Discord ID</th><th>Best guess</th><th>Classification</th><th>Strength</th><th>Why</th><th>Top three alternatives</th></tr></thead><tbody>'+tr+'</tbody></table></div>'+
    '<p>This page is private, not part of the public Stat Center. No member names, Discord identifiers or approved links are committed to GitHub.</p></body></html>';

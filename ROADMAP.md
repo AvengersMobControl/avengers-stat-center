@@ -1,3 +1,14 @@
+## 2026-11-12 — Apply confirmed Discord identities and preserve separate game accounts
+
+- [x] Create private identity linkage table in AVENGERS-only Neon and seed seven leader-confirmed Discord usernames/join dates with eight associated game profiles; **zero rounded IDs** imported.
+- [x] Provision least-privilege runtime and encrypted Vercel production database connection for live Discord ID verification.
+- [x] Implement dual-account Frenchie model; alias FrenchieUSA to Frenchie(-4), keep Frenchie2 separate, preserve historic Oct AV-2 source attribution.
+- [x] Alias J-Zo to J; add JR game profile as Unassigned without guessing clan or rewards.
+- [x] Extend the private admin review endpoint to fill permanent Discord IDs for preapproved matches after exact username and joined-at verification.
+- [ ] Confirm CI, GitHub Pages exact production SHA, Vercel deployment and admin-only live Discord binding readback.
+- [ ] Reconcile the remaining guessed usernames (all earlier guesses were verbally approved, but the private binding store requires exact verified Discord IDs and preservation of the reviewed candidate snapshot).
+- [ ] Verify JR's actual game clan, then change Unassigned to AVENGERS or AV-2 on leader confirmation; integrate confirmed Discord IDs into future private `/kraken` intake.
+
 ## 2026-11-12 — Improve private Discord identity suggestions
 
 - [x] Expand exact-only roster comparison to educated ranked matches using nickname, Discord display and username, partial/spelling similarity and existing public alias history.

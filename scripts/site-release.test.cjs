@@ -739,3 +739,19 @@ test('2026-11-12 canonical alias mergers retain one profile and source-accurate 
   assert.equal(BASE.projection.people.find(p=>p.name==='AV-Royal')?.status,'AV2',
     'Royal must not be marked inactive without an explicit removal');
 });
+test('November 13 AV-Abu is one historical active member, not a new profile',()=>{
+  const aliases=BASE.globals.AVENGERS_DATA.aliasMap;
+  assert.equal(aliases['AV-Abu'],'AV-Abu//npjp');
+  const accounts=BASE.projection.people.filter(p=>p.name==='AV-Abu'||p.name==='AV-Abu//npjp');
+  assert.deepEqual(accounts.map(p=>p.name),['AV-Abu//npjp']);
+  const abu=accounts[0];
+  assert.equal(abu.status,'Active');
+  assert(abu.history.some(h=>h.date<'2026-11-13'),'prior results retained');
+  assert(abu.history.some(h=>h.date==='2026-11-13'&&h.kind==='space'),'new result attached to old player');
+  const space=BASE.ledger.events.find(e=>e.id==='space|2026-11-13');
+  const rows=space.rows.filter(r=>r.player==='AV-Abu//npjp');
+  assert.equal(rows.length,1);
+  assert.equal(rows[0].score,388);
+  assert.equal(rows[0].sparks,310310);
+  assert(!space.rows.some(r=>r.player==='AV-Abu'),'no duplicate event player');
+});

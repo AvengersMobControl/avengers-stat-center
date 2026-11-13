@@ -7,6 +7,10 @@ on:
       - 'scripts/create-site-release.cjs'
       - 'roster-stars-snapshot-2026-10-15.js'
       - 'scripts/confirmed-discord-identities.test.cjs'
+      - 'scripts/discord-confirmed-bindings.test.cjs'
+      - 'server/discord-confirmed-bindings.cjs'
+      - 'api/discord/identity-review.js'
+      - 'database/migrations/005_discord_confirmed_identities.sql'
 jobs:
   identity-reconciliation:
     runs-on: ubuntu-latest
@@ -18,4 +22,5 @@ jobs:
         with:
           node-version: 24
       - run: node --check scripts/create-site-release.cjs && node --check roster-stars-snapshot-2026-10-15.js
-      - run: node --test scripts/confirmed-discord-identities.test.cjs
+      - run: node --check server/discord-confirmed-bindings.cjs && node --check api/discord/identity-review.js
+      - run: node --test scripts/confirmed-discord-identities.test.cjs scripts/discord-confirmed-bindings.test.cjs

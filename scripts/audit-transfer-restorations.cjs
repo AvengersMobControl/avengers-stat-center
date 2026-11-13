@@ -54,7 +54,15 @@ function audit(release){
    ?p.history.filter(x=>x.eventId==='kraken|oct'&&x.clan==='AV-2').reduce((n,x)=>n+(x.sparks||0),0):0;
   if(id==='AV-Frenchie2'&&frenchieCorrection!==18100)
    throw Error('Missing leader-confirmed Frenchie2 October Kraken correction');
-  const frozenEvidence=maxObserved+frenchieCorrection;
+  // This newly approved historical spelling points to a July 2 AVENGERS
+  // Flash result that was a separate account when Unlogged Sparks were frozen.
+  // Add its exact 2,365 Sparks back solely to the ORIGINAL screenshot-evidence
+  // comparison. Do not change the player score, source or frozen baseline.
+  const adigarianCorrection=id==='AV-Adigarian' && p.history.some(x=>
+    x.eventId==='flash|PF3-2026-07-02'&&x.clan==='AVENGERS'&&x.score===322&&x.sparks===2365)?2365:0;
+  if(id==='AV-Adigarian'&&adigarianCorrection!==2365)
+    throw Error('Missing leader-merged July 2 Adiagrion Flash source');
+  const frozenEvidence=maxObserved+frenchieCorrection+adigarianCorrection;
   // The 1% exclusion was a one-time, leader-approved action. Later balance
   // changes (including all new event payouts) must NEVER rerun that cutoff.
   if(committed>0&&Math.abs(committed-frozenEvidence)>0.500001)

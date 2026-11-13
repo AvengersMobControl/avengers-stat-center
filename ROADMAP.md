@@ -1,3 +1,11 @@
+## 2026-11-13 — AV-2 kick screenshot roster correction
+
+- [x] Identify eight names from leader's in-game kick log; match against existing published roster only.
+- [x] Change four existing members (`uLTRaSLaN`, `Mickzzz`, `Basecreature`, `AV-braa`) to Inactive without deleting or rewriting historical performances.
+- [x] Preserve `AV-Royal` as AV-2; leave already permanently deleted `Keyler`, `Blade`, and `AV-2(TAMIM)` absent.
+- [x] Update canonical current roster audit, previous member-status tests and historical result retention checks; expected current roster 49 AVENGERS + 47 AV-2, JR Unassigned.
+- [ ] Verify final branch CI, exact GitHub Pages SHA, Vercel production and public roster readback; do not post to Discord.
+
 ## 2026-11-12 — Test /kraken command is registered in Discord
 
 - [x] Create isolated TEST event with all 56 fake map positions and short dummy preset in private Neon; preserve Custom Route.
@@ -13,7 +21,7 @@
 - [x] Implement seven leader-confirmed left→right canonical identities at source normalization and release projection, merging histories and eliminating redundant player/roster identities without deleting event evidence.
 - [x] Preserve FrenchieUSA (formerly Frenchie(-4)) versus distinct Frenchie2: October Kraken source-specific exception only, and October 18 AV-2 267-line Frenchie(-4) event correctly credited to FrenchieUSA.
 - [x] Add regression coverage for all seven mappings, roster uniqueness, source-specific Frenchie scores, and Royal AV-2 status retention.
-- [ ] Obtain unambiguous identities of AV-2 players **kicked out** and mark existing public profiles Inactive, excluding AV-Royal. Ignore entries no longer on the website. Do not infer from historical transfers or resurrect permanently removed zero-spark/single-event accounts.
+- [x] Obtain screenshot-confirmed AV-2 kicked-out identities and mark existing public profiles Inactive, excluding AV-Royal. Four existing profiles changed November 13; Keyler, Blade and TAMIM remain permanently deleted. See November 13 log above.
 - [ ] Verify code CI, site artifact consistency, published exact GitHub Pages SHA and Vercel production readback; no Discord send.
 
 ## 2026-11-12 — Kraken Discord launch readiness

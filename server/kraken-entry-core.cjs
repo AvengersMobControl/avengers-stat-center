@@ -45,11 +45,12 @@ function validateBattle(input,next){
  if(next.complete)fault('All tickets are already accounted for',409);
  const used=next.autoTickets||Number(input.ticketsUsed);
  const loadout=next.autoLoadout||input.loadout;
- const damage=Number(input.damage);
+ const rawDamage=String(input.damage??'').trim();
+ const damage=Number(rawDamage);
  if(!ALLOWED_TICKETS.includes(used)||used>next.remaining)fault('Invalid tickets used');
  if(!LOADOUTS.includes(loadout))fault('Choose SR or GC');
- if(input.damage===null||input.damage===undefined||String(input.damage).trim()===''||
-   !Number.isFinite(damage)||damage<0||damage>999999999999||Math.round(damage*1000)!==damage*1000)
+ if(!/^(?:\d+|\d*\.\d{1,3})$/.test(rawDamage)||
+   !Number.isFinite(damage)||damage<0||damage>999999999999)
    fault('Enter a valid damage amount in millions, up to 3 decimals');
  const notes=String(input.notes||'').trim();
  if(notes.length>500)fault('Notes cannot exceed 500 characters');

@@ -1,3 +1,12 @@
+## 2026-11-13 — Confirm Kraken slash-command discoverability
+
+- [x] Investigate screenshot showing command absent for multiple AVENGERS Discord members.
+- [x] Confirm correct guild bot installation, OAuth command scope, signed endpoint and guild command registration using restricted private bot API diagnostic.
+- [x] Reapply unrestricted command default permissions, explicit guild-install/guild context, verify Discord PATCH/readback, consume one-time diagnostic nonce.
+- [ ] Independently confirm `/kraken` is visible and runnable in an ordinary non-admin Discord member account after refreshing.
+- [ ] If still absent, inspect Server Settings > Integrations > AVENGERS bot > `/kraken` command / @everyone / all channels permissions. Requires server administrator; not available to bot token.
+- [x] Keep member-only direct form link available as a temporary workaround. No change to private strategy/test data.
+
 ## 2026-11-13 — Verified October Kraken practice presets LIVE
 
 - Production code merged in PR #204 and deployed to Vercel as commit 66b77a247b22e6116d019e2d1eb690f0d400e6ac (READY). Public code contains no strategy/map sequence values.

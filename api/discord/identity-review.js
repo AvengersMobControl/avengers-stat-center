@@ -20,20 +20,34 @@ module.exports=async function handler(req,res){
   return fail(res,503,'Discord member export is not configured');
  try{
   const guildUrl='https://discord.com/api/v10/guilds/'+env.DISCORD_GUILD_ID;
-  const [guild,member,roles]=await Promise.all([
+  const [guild,member]=await Promise.all([
    core.discordRequest(guildUrl,env),
-   core.discordRequest(guildUrl+'/members/'+session.id,env),
-   core.discordRequest(guildUrl+'/roles',env)
+   core.discordRequest(guildUrl+'/members/'+session.id,env)
   ]);
-  if(String(member?.user?.id)!==session.id||!core.canReview(member,guild,roles,env))
+  if(String(member?.user?.id)!==session.id)return fail(res,403,'Discord membership check failed');
+  const isOwner=String(guild.owner_id)===session.id;
+  const roles=isOwner?[]:await core.discordRequest(guildUrl+'/roles',env);
+  if(!core.canReview(member,guild,roles,env))
    return fail(res,403,'This member-roster export is restricted to server owners and authorized administrators.');
   const members=await core.memberRoster(env);
   // Use the same canonical roster projection as the AVENGERS Stat Center.
   // Player names and status are already published; PRIVATE Discord identities are not.
-  const site=require('../../scripts/create-site-release.cjs').create();
-  const all=site.projection.people.map(p=>({name:p.name,status:p.status}));
+  // Prefer the current public, immutable release projection as a roster source.
+  // Vercel functions need not bundle the build-only index.html and legacy scripts.
+  const siteUrl='https://avengersmobcontrol.github.io/avengers-stat-center/';
+  const manifestRes=await fetch(siteUrl+'release-manifest.json',{cache:'no-store',signal:AbortSignal.timeout(8000)});
+  if(!manifestRes.ok)throw Error('Canonical release manifest unavailable');
+  const manifest=await manifestRes.json();
+  const exportPath=String(manifest.exports?.projection||'');
+  if(!/^exports\/projection\.[a-f0-9]{8,64}\.json$/.test(exportPath))
+   throw Error('Canonical release path invalid');
+  const projectionRes=await fetch(siteUrl+exportPath,{cache:'no-store',signal:AbortSignal.timeout(8000)});
+  if(!projectionRes.ok)throw Error('Canonical release projection unavailable');
+  const wrapped=await projectionRes.json();
+  if(!Array.isArray(wrapped.data?.people))throw Error('Invalid canonical projection');
+  const all=wrapped.data.people.map(p=>({name:p.name,status:p.status}));
   const live=all.filter(p=>p.status==='Active'||p.status==='AV2');
-  const aliases=site.globals.AVENGERS_DATA.aliasMap||{};
+  const aliases={};
   const rows=members.map(m=>{
    const suggestion=core.suggest(m,live,aliases);
    return {discordId:String(m.user.id),nickname:m.nick||'',globalName:m.user.global_name||'',

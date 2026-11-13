@@ -1,3 +1,9 @@
+## 2026-11-12 — Leader approves every prior Discord roster suggestion; resume private /kraken intake
+
+- Leader **explicitly confirmed ALL best-guess canonical identity suggestions shown on the private Discord review page** as correct, in addition to the seven separately provided Discord accounts/eight game profiles. Do not ask the leader to re-confirm these identities. A one-time blanket-approval record `2026-11-12-all-proposed-discord-matches` was persisted to AVENGERS-only Neon `avengers_identity_private.leader_approvals`. The eight explicit account relations were already stored in `avengers_identity_private.discord_bindings`.
+- Approval is an identity **decision**, not a fabricated Discord ID: remaining suggested entries must be resolved from exact current guild member snowflakes without rounded Excel IDs. Maintain Frenchie's one-Discord-to-two-game-accounts mapping; never merge the game accounts.
+- Move development priority back to `/kraken`: uniform battle-by-battle private form, selectable preset/custom routes, automatic battle number/tickets left/map and preset tickets/loadout, custom SR/GC and ticket choices, damage and per-battle notes, member saves/undo/resume, leader review and approved-only CSV. Never auto-write the master DPT workbook.
+
 ## 2026-11-12 — Confirmed dual-account Frenchie, legacy aliases, and private Discord ID resolution
 
 - Clan leader confirmed `AV-Frenchie(-4)` and `AV-FrenchieUSA` refer to **one game account** and must be merged on the site, while `AV-Frenchie2` remains a **different game account**, both owned by the same Discord identity. Preserve the two independent October Kraken event-time score rows (historic AVENGERS source vs prior distinct AV-2 source) and all source proofs, rather than double-counting or merging the game accounts.

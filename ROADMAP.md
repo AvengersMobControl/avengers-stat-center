@@ -1,3 +1,14 @@
+## 2026-11-12 — Resume private Discord /kraken command
+
+- [x] Record leader's blanket approval of **all** previously suggested Discord canonical mappings in private Neon; no further user matching review necessary.
+- [x] Provision private Kraken tables, append-only review audit, strict read-only route catalog access, scoped Neon runtime role and Vercel production connection.
+- [x] Stage a uniform one-battle-at-a-time member form with damage, SR/GC, optional battle notes, saved progress and undo; preset and custom modes use the same screen.
+- [x] Support two separate Kraken game-profile submissions from one Discord account, without merging game records.
+- [x] Stage leader correction/approval/rejection and approved-only CSV, with **no master spreadsheet auto-import**.
+- [ ] Finish verified Discord user ID reconciliation for all already-approved guesses via guild member API (technical reconciliation only; no more leader decisions).
+- [ ] Validate Kraken CI / Vercel production routing and private auth; add Saturday's approved full ticket-to-map sequence and preset routes **privately**.
+- [ ] Configure verified Discord app interaction public key and guild slash registration; run supervised end-to-end member submission and review.
+
 ## 2026-11-12 — Apply confirmed Discord identities and preserve separate game accounts
 
 - [x] Create private identity linkage table in AVENGERS-only Neon and seed seven leader-confirmed Discord usernames/join dates with eight associated game profiles; **zero rounded IDs** imported.

@@ -1,3 +1,11 @@
+## 2026-11-12 — /kraken TEST MODE live in AVENGERS Discord (verified)
+
+- Leader requested immediate launch, with Saturday's real routes/maps still pending. Guild slash command /kraken registered for AVENGERS guild 1403361698177618081 with command ID 1570681165852053565. Discord REST readback verified the command, and Discord accepted the signed HTTP PING for interaction endpoint https://avengers-stat-center.vercel.app/api/discord/kraken-interactions.
+- Production Vercel code commit fa26f0a5ca88bac0e2a2a87a98d12fe73eda2728 deployed and rebuilt with the Discord application verify key in the server-only environment. Latest READY deployment dpl_CrGBMeTPbeR8p8grY6S4unWSGrmJ.
+- ACTIVE TEST event 2026-11-12, with Vercel AVENGERS_KRAKEN_TEST_MODE=true. PRIVATE Neon contains 56 FAKE M10 map positions and one clearly labeled test-only seven-battle preset with tickets 10/10/10/10/10/5/1 and synthetic GC/SR loadouts; Custom Route also enabled. Nothing represents actual Kraken strategy.
+- The command replies ephemerally with a secure member-only link. The form has a TEST ONLY banner. CSV exports have TEST-DO-NOT-IMPORT filenames; no master DPT import. Multiple game-account picker change bug was fixed.
+- One-time private launch authorization was consumed. Runtime permissions verified: map/route read and battle write allowed; route update denied. No test scores were invented or auto-filled. User/member end-to-end entry and review still requires supervised test.
+- Saturday transition must set AVENGERS_KRAKEN_TEST_MODE=false, use a NEW event key, replace all 56 fake map values with the complete authorized sequence, disable dummy preset and load actual routes privately, test again. Never import 2026-11-12 fake event results into master DPT workbook.
 ## 2026-11-12 — Canonical player merges; AV-2 inactive eligibility safeguard
 
 - Leader's surviving display identities are: `AV-#ZOLISTAR` → `AV-7-STAR`; `AV-Adiagrion` → `AV-Adigarian`; `AV-BXI` → `AV-BX1`; `AV-FenXistentiel` → `AV-FeniXistential`; `AV-Frenchie(-4)` → `AV-FrenchieUSA`; `AV-J-Zo` → `AV-J`; `AV-JustSomeGuy` → `AV-HarryBallsagna`. The **right-hand** name survives; retain left names only as aliases and original screenshot provenance, never separate profiles, current roster rows or score identities.

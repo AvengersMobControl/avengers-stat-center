@@ -1,3 +1,8 @@
+## 2026-11-12 — Register /kraken immediately as an isolated disposable TEST
+
+- Leader explicitly authorized launching /kraken in the AVENGERS Discord now and discarding pre-Saturday test submissions. Use dummy maps and a short synthetic preset for entry/review testing; never assert they are official Kraken strategies or write them to the master DPT workbook.
+- Discord application was verified to have no existing conflicting interaction endpoint or guild slash commands. Signed PING accepted; guild command 1570681165852053565 was registered and independently read back in guild 1403361698177618081.
+- Real route sequence remains pending Saturday. The active disposable event is 2026-11-12 and test mode is visibly labeled in the form, Discord response, and CSV. Launch nonce consumed after successful registration.
 ## 2026-11-12 — Surviving canonical labels and AV-2 kicked-out status guard
 
 - Leader approved seven explicit left-to-right player consolidations: `AV-#ZOLISTAR`→`AV-7-STAR`, `AV-Adiagrion`→`AV-Adigarian`, `AV-BXI`→`AV-BX1`, `AV-FenXistentiel`→`AV-FeniXistential`, `AV-Frenchie(-4)`→`AV-FrenchieUSA`, `AV-J-Zo`→`AV-J`, `AV-JustSomeGuy`→`AV-HarryBallsagna`. Preserve sources and all result rows under the right-hand identity; remove left-hand names from separate profile and current roster rows.

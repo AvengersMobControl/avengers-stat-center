@@ -13,3 +13,7 @@
 - After successful live registration, remove or permanently disable the one-off registration endpoint. The one-time capability is consumed.
 
 **Status updates should be based on Discord API registration/readback and signed endpoint verification, never on a GitHub merge alone.**
+
+## Verified live registration 2026-11-12
+
+Discord accepted and returned command 1570681165852053565 in the AVENGERS guild, bound to the verified signed interaction endpoint. Test event/route are disposable; official Saturday sequence pending.

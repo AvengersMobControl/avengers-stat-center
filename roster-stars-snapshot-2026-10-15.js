@@ -214,10 +214,13 @@
     rosterEntries.splice(index,1); // prior R.rows supplies Inactive profile with history
     fixedIds.add(profileName); // stale Discord roster cannot re-add it below
   }
-  // November 12 leader: add JR as a real game profile, but do not guess
-  // AVENGERS versus AV-2 from a Discord membership alone. No fabricated
-  // results, Sparks or active clan placement.
-  const jr='AV-$JR.
+  // November 12: Add JR's account without inventing clan or performance.
+  const jr='AV-$JR.$';
+  if(rosterEntries.some(row=>row.profileName===canonical(jr)))
+    throw new Error('JR already has a current profile');
+  rosterEntries.push({name:jr,profileName:canonical(jr),status:'Unassigned'});
+  fixedIds.add(canonical(jr));
+  const discordMembers=window.AVENGERS_DISCORD_UTC_ROSTER?.members||[];
   for(const member of discordMembers){
     const name=String(member.name||'').trim();
     const status=member.status;

@@ -200,3 +200,17 @@ test('real Oct 16 AV-2 final Space captures replay as unchanged, including canon
   assert.equal(fs.readFileSync(path.join(__dirname,'../data/approved-event-updates.json'),'utf8'),originalAccepted,
     'review and simulation never edit accepted event scores');
 });
+test('short and decorated identities require a confirmed alias before importing',()=>{
+  const e=event('space','2026-11-13');
+  const short=row('AV-Abu','AVENGERS',388,310310,3103100,
+    {rank:2,lobby:'L2',share:.2,sourceDisplayName:'AV-Abu'});
+  assert.throws(()=>assemble(review(e,[screen(e,'b',[short])]),{
+    knownPlayers:['AV-Abu//npjp']}),/Potential duplicate decorated identity/);
+  const confirmed=assemble(review(e,[screen(e,'b',[short])]),{
+    aliases:{'AV-Abu':'AV-Abu//npjp'},knownPlayers:['AV-Abu//npjp']});
+  assert.equal(confirmed.update.event.rows.length,1);
+  assert.equal(confirmed.update.event.rows[0].player,'AV-Abu//npjp');
+  const decorated=row('AV-Abu//npjp','AVENGERS',388,310310,3103100);
+  assert.throws(()=>assemble(review(e,[screen(e,'b',[decorated])]),{
+    knownPlayers:['AV-Abu']}),/Potential duplicate decorated identity/);
+});

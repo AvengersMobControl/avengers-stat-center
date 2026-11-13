@@ -21,6 +21,7 @@ jobs:
       - name: Syntax checks
         run: |
           node --check api/discord/kraken-setup.js
+          node --check api/discord/kraken-route-label-refresh.js
           node --check api/discord/kraken-interactions.js
           node --check api/kraken/data.js
           node --check api/kraken/form.js

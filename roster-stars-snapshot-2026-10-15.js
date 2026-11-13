@@ -27,7 +27,7 @@
   S.av2StarsDate='2026-10-15';
 
   // Preserve historical aliases but do not merge two separately confirmed
-  // AV-2 accounts, AV-Frenchie2 and AV-Frenchie(-4).
+  // AV-2 accounts, AV-Frenchie2 and AV-FrenchieUSA (formerly -4).
   const extraAliases={
     'AV-Abu//JPN':'AV-Abu//npjp',
     'AV-Zolika.x.Kira':'AV-Zolika.x.TheBoss',
@@ -39,7 +39,7 @@
     // Source-confirmed Nov 8 AV-2 Big Pig display aliases. Resolve to the
     // existing histories, without inventing extra current player profiles.
     // Leader-confirmed names; Frenchie2 is a DIFFERENT game account.
-    'AV-FrenchieUSA':'AV-Frenchie(-4)',
+    'AV-Frenchie(-4)':'AV-FrenchieUSA',
     'AV-J-Zo':'AV-J',
     'AV2-J':'AV-J',
     'AV2-TheHemperor':'TheHemperor',
@@ -47,7 +47,7 @@
     'AVS9-HN':'AV-HN'
   };
   D.aliasMap=Object.assign({},D.aliasMap||{},extraAliases);
-  delete D.aliasMap['AV-Frenchie(-4)'];
+  delete D.aliasMap['AV-FrenchieUSA'];
   delete D.aliasMap['AV-Frenchie2'];
   const canonical=raw=>{
     let n=String(raw||'').trim();
@@ -233,7 +233,7 @@
   const currentRows=rosterEntries.map(row=>{
     const p=priorRows.get(row.profileName)||priorRows.get(canonical(row.name));
     return {
-      name:row.name,status:row.status,
+      name:row.name==='AV-Frenchie(-4)'?'AV-FrenchieUSA':row.name,status:row.status,
       utc:p?.utc??null,tzg:p?.tzg??null,
       state:p?.state||'',location:p?.location||'',
       city:p?.city||'',timeZoneId:p?.timeZoneId||'',timeZoneLabel:p?.timeZoneLabel||''
@@ -269,7 +269,7 @@
   });
   delete D.aliasMap['AV-Frenchie2'];
   byName['AV-Frenchie2']=fromRow(currentRows.find(r=>r.name==='AV-Frenchie2'));
-  byName['AV-FrenchieUSA']=byName['AV-Frenchie(-4)'];
+  byName['AV-Frenchie(-4)']=byName['AV-FrenchieUSA'];
   byName['AV-J-Zo']=byName['AV-J'];
   R.byName=byName;
   R.source='October 15 AVENGERS/AV-2 snapshots + leader identity and membership corrections through November 12';

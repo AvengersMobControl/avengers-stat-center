@@ -233,7 +233,7 @@
   const currentRows=rosterEntries.map(row=>{
     const p=priorRows.get(row.profileName)||priorRows.get(canonical(row.name));
     return {
-      name:canonical(row.name),status:row.status,
+      name:row.name==='AV-Frenchie(-4)'?'AV-FrenchieUSA':row.name,status:row.status,
       utc:p?.utc??null,tzg:p?.tzg??null,
       state:p?.state||'',location:p?.location||'',
       city:p?.city||'',timeZoneId:p?.timeZoneId||'',timeZoneLabel:p?.timeZoneLabel||''

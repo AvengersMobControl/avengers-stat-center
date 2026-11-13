@@ -96,6 +96,19 @@
         "flashSetId": "2026-11-03-A",
         "piggy": "piggy|2026-11-08"
       }
+    },
+    "space|space|2026-11-13|AVENGERS": {
+      "kind": "space",
+      "eventId": "space|2026-11-13",
+      "clan": "AVENGERS",
+      "file": "AVENGERS_Space_Race_November_13_2026.png",
+      "sha256": "fcd9fecce2a3d38a4d4b6845b069c75256d582261c5e13c1269e683a163569b0",
+      "size": 1368135,
+      "template": "space-poster-v4-20261026-candidate",
+      "body": "@everyone\n🚀 **AVENGERS Space Race — November 13** 🚀\n\n**📊 The Numbers**\n44 racers covered **7,555.7B lightyears** — averaging **171.7B** per racer, down **15.5%** from our last-4-race pace (total lightyears -17.4%). Lobby L2 ran away with the week's standout pot: **15.52M Stars**!\n\n**🏆 Podium**\n🥇 INTEN — 406.1B\n🥈 KKD — 401.3B\n🥉 Abu — 388.0B\n\n**✨ Standout Stories**\nSquishy posted the single biggest jump over his own average this race: **+1156.4%** (22.7B average over 3 races to 285.2B) — and it's a new PB, up **+832.0%** on his old best! INTEN led the whole race at 406.1B, also a fresh PB (+1.6%), with 25 career podiums.\n\n**🆕 New Faces**\nWelcome Abu (388.0B, Lobby L2, 2nd) and Dubai (146.0B, Lobby L2, 6th)!\n\n**💪 Personal Bests**\n4 new PBs, and 23 of 42 returning racers beat their own average:\n1. Squishy +832.0%\n2. McNasty +13.0%\n3. DaG +2.1%\n4. INTEN +1.6%\n\n**🎖️ Milestones**\n100B+ this race: 31 racers (T-#6 Arena-era for that tier). 200B+: 17 (#6). 300B+: 8 (T-#6). 400B+: 2 (T-#10).\n\n**🙏 Effort Shoutout**\nBiggest grind-for-less-reward: BigPapi, covering 133.4B at just **198.4 Sparks/B**! Saberkong (100.1B, 292.3 Sp/B) and Megalodon (192.5B, 304.0 Sp/B) also ground hard for modest payouts.\n\nFull results and PBs: https://avengersmobcontrol.github.io/avengers-stat-center/",
+      "approved": true,
+      "authorization": "leader-standing-auto-discord-2026-10-26",
+      "description": "AVENGERS Space Race November 13 2026 results"
     }
   }
 }

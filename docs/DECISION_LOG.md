@@ -1,3 +1,10 @@
+## 2026-11-13 — October historical routes replace disposable Kraken M10 placeholders
+
+- Leader requested more realistic pre-Kraken testing: replace all fake M10 values and the 7-battle test preset with **the actual prior October event's 56-position map order and previously advised preset routes**, including the advised automatic GC-to-Sirion/Raccoon loadout switches. This is an explicit request to use known historical recommendations for testing, not to project them as this weekend's strategy.
+- Original source was the leader's October 2026 Kraken map-order spreadsheet in connected Google Drive, reconciled to the previously confirmed October route advice. Preset routes are stored exclusively in private Neon; no strategy, map sequence, route JSON, coefficients or screenshots may enter the public GitHub repository or Pages builds. The GC/Combo preset will use its prescribed SR switch points; the Sirion-focused preset retains historical GC exception choices.
+- Preserve test-only status; use new test event 2026-11-13 to keep the earlier 2026-11-12 submitted seven-battle run from blocking new member practice. Disable old test route rather than erase prior results. Keep master DPT imports manual and out of scope.
+- Public source only contains generic UI words clarifying “October practice”; signed Discord slash endpoint and private reviewer-only CSV access remain unchanged.
+
 ## 2026-11-13 — AV-Abu duplicate identity correction and permanent decorated-name ingestion gate
 
 - Leader supplied a screenshot showing AV-Abu and AV-Abu//npjp as separate profile choices after the November 13 Space Race release. This was a source-ingestion error: AV-Abu//npjp was already the established Active account with extensive historical results; the shortened AV-Abu was incorrectly introduced as a second, Inactive, one-event identity.

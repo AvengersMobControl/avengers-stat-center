@@ -67,7 +67,7 @@ async function handler(req,res){
   // date and original Discord snowflake. Respect both Frenchie game accounts.
   for(const r of existing){
    const arr=byUsername.get(r.discord_username)||[],m=arr.length===1?arr[0]:null;
-   if(!m||Date.parse(m.joined_at)!==Date.parse(r.expected_joined_at))continue;
+   if(!m||new Date(m.joined_at).getTime()!==new Date(r.expected_joined_at).getTime())continue;
    const id=String(m.user.id);
    if(!/^\d{17,22}$/.test(id))continue;
    if(r.discord_user_id&&r.discord_user_id!==id)continue;

@@ -159,7 +159,14 @@ def build_model(R, clan, event_id=None):
         lead = max(rs, key=lambda r: r['score'])
         grp = str(rs[0]['metadata'].get('group'))
         rk = pot_rank.get((event['date'], grp)); ra = pot_rank_arena.get((event['date'], grp))
-        cards.append(dict(lobby=grp, potRank=rk[0] if rk else None, potOf=rk[1] if rk else None,
+        # Display label uses the actual per-event lobby key (always present on every
+        # row we group by above), never the legacy numeric 'group' id, which pre-dates
+        # the lobby-letter rows (e.g. 'L8') and is now usually absent -- it previously
+        # leaked through here as the literal string "None". Pot-rank lookups above are
+        # unchanged and still key off 'group', exactly matching the live site's
+        # event-reward-metrics.js lobbyPots(), so a missing/stale 'group' still just
+        # omits the "POT RANK" badge below (already-guarded), rather than inventing one.
+        cards.append(dict(lobby=L, potRank=rk[0] if rk else None, potOf=rk[1] if rk else None,
                           potRankArena=ra[0] if ra else None, potOfArena=ra[1] if ra else None, pot=pot, share=sum(r['metadata'].get('share') or 0 for r in rs),
                           dist=sum(r['score'] for r in rs), n=len(rs), leader=lead['player'],
                           leadScore=lead['score'], stars=sum(r['stars'] or 0 for r in rs)))

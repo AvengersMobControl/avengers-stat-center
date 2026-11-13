@@ -1,6 +1,5 @@
 'use strict';
 const crypto=require('node:crypto');
-const {discordRequest,canReview}=require('./discord-identity-review.cjs');
 function sessionFromRequest(req,env=process.env){
  const secret=env.AUTH_SECRET;
  const item=String(req.headers?.cookie||'').split(';').map(s=>s.trim()).find(s=>s.startsWith('avengers_session='));
@@ -29,15 +28,14 @@ async function authenticate(req,env=process.env,httpFetch=fetch){
  if(String(guildMember?.user?.id)!==member.id)return null;
  return {...member,roles:Array.isArray(guildMember.roles)?guildMember.roles:[]};
 }
-async function isReviewer(user,env=process.env,httpFetch=fetch){
- if(!user||!/^\d{17,22}$/.test(user.id))return false;
- const url='https://discord.com/api/v10/guilds/'+env.DISCORD_GUILD_ID;
- const guild=await discordRequest(url,env,httpFetch);
- if(String(guild.owner_id)===user.id)return true;
- const roles=await discordRequest(url+'/roles',env,httpFetch);
- const effective={...env,AVENGERS_DISCORD_REVIEWER_IDS:
-  [env.AVENGERS_DISCORD_REVIEWER_IDS,env.AVENGERS_KRAKEN_REVIEWER_IDS].filter(Boolean).join(',')};
- return canReview({user:{id:user.id},roles:user.roles||[]},guild,roles,effective);
+async function isReviewer(user,env=process.env){
+ // The user requested private compilation/CSV for their own verified Discord
+ // account only, not other guild owners, administrators or Manage-Guild roles.
+ // Authenticate the live guild membership before calling this helper.
+ if(!user||!/^[0-9]{17,22}$/.test(String(user.id||'')))return false;
+ const allowed=String(env.AVENGERS_KRAKEN_REVIEWER_IDS||'')
+  .split(',').map(s=>s.trim()).filter(s=>/^[0-9]{17,22}$/.test(s));
+ return allowed.length>0&&allowed.includes(user.id);
 }
 function guardPost(req,env=process.env){
  const origin=String(req.headers?.origin||'');

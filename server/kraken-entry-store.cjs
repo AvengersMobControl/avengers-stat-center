@@ -25,6 +25,12 @@ async function sequence(q){
  const rows=await q('SELECT tickets_left,map_code FROM '+SCHEMA+'.map_sequence');
  return Object.fromEntries(rows.map(r=>[String(r.tickets_left),r.map_code]));
 }
+function privateLastMapChoices(env=process.env){
+ // Authoritative candidates are private Vercel configuration, not committed
+ // into the PUBLIC repository or Pages static bundles.
+ return String(env.AVENGERS_KRAKEN_LAST_MAP_CHOICES||'')
+  .split(',').map(x=>x.trim()).filter(x=>/^M([1-9]|10)$/.test(x));
+}
 async function own(q,user,event,canonicalName=null){
  const rows=await q('SELECT * FROM '+SCHEMA+'.runs WHERE event_key=$1 AND discord_user_id=$2 AND status<>$3 AND COALESCE(canonical_name,\'\')=COALESCE($4,\'\') ORDER BY created_at DESC LIMIT 1',
   [event,user,'rejected',canonicalName]);
@@ -39,7 +45,7 @@ async function current(q,user,event,canonicalName=null){
  const battles=await getBattles(q,run.id);
  let next=null,lookupIssue=null;
  if(run.status==='draft'){
-  try{next=nextBattle(run,battles,await sequence(q));}
+  try{next=nextBattle(run,battles,await sequence(q),privateLastMapChoices());}
   catch(e){lookupIssue=e.message;}
  }
  return {run:{id:run.id,status:run.status,routeId:run.customized?'custom':run.route_id||'custom',
@@ -76,7 +82,7 @@ async function save(q,user,event,canonicalName,input){
  const run=await own(q,user.id,event,canonicalName);
  if(!run||run.status!=='draft')fault('No editable Kraken draft',409);
  const battles=await getBattles(q,run.id);
- const next=nextBattle(run,battles,await sequence(q));
+ const next=nextBattle(run,battles,await sequence(q),privateLastMapChoices());
  const b=validateBattle(input,next);
  const becomesCustom=Boolean(run.route_snapshot&&!run.customized&&
   next.autoTickets!==null&&b.ticketsUsed!==next.autoTickets);

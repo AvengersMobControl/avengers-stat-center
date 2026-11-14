@@ -1,9 +1,9 @@
-## 2026-11-14 — Launch current Kraken route set with unknown last map properly represented
+## 2026-11-14 — Activate official private Kraken entry safely
 
-- Leader approved real November 14 `/kraken` launch with three advised **presets** plus Custom: GC/Combo (14 battles, Arsenal 1-48-50); Sirion-only route for players who **do not own GC**, optimized on Sirion scores alone (12 battles, Arsenal 48-1-50); and No x10 Combo (22 battles, Arsenal 1-48-50). Sirion preset must default **SR on every battle**; players with low-level GC may manually change loadout if desired without changing the route. A ticket-count override switches the run to Custom, as already implemented.
-- Use the **current** leader-provided 55-position Saturday map sequence (tickets left 56→2), not October practice data. Ticket-left 1 remains unknown (candidate possibilities supplied separately) and must not receive an invented map. For a custom run that reaches 1 ticket left, authenticated member selects the actual observed last map from private configured candidates. All presets fully consume the remaining 3 tickets and avoid this uncertainty.
-- Production LIVE event key must be new `2026-11-14` and `AVENGERS_KRAKEN_TEST_MODE=false`. Keep 2026-11-12 and 2026-11-13 disposable test runs isolated; never import them to the master workbook. Leader-only review/CSV and explicit manual master approval remain mandatory.
-- Do not include route steps, private map order or strategy coefficients in public GitHub, Pages or guest-accessible endpoints. Vercel private server-only settings/Neon source are the authority. Global Discord /kraken command should have its TEST wording removed after the official event is enabled, without changing permissions or installation.
+- Leader explicitly directed immediate official Kraken activation. Private approved routes and map data were loaded and validated off the public site; public source must not contain specific strategy details.
+- Live event key is `2026-11-14`, TEST MODE is false. A single uncertain final position is not guessed; member-entered observations are validated server-side if needed.
+- Preserve prior practice records under their original event IDs and exclude them from master workbook exports/imports. Keep verified-member-only submissions, leader-only review/CSV, user corrections and manual leader approval gates.
+- Vercel production and Discord global command both confirmed active, with one-time activation authorization consumed. Never claim strategy contents are public; private Neon is authoritative.
 
 ## 2026-11-14 — Kraken command hidden by channel-specific permission overrides
 

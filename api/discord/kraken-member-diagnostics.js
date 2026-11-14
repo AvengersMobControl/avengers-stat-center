@@ -51,6 +51,8 @@ async function handler(req,res){
    expected.length!==nonce.length||!crypto.timingSafeEqual(Buffer.from(expected),Buffer.from(nonce)))
    return json(res,403,{error:'Authorization expired or used'});
   const guild=env.DISCORD_GUILD_ID;
+  if(!env.AVENGERS_IDENTITY_DATABASE_URL)return json(res,503,{error:'Private identity context missing'});
+  const identityDb=neon(env.AVENGERS_IDENTITY_DATABASE_URL);
   const [roles,channels,members,globals,guildCommands,app,leader]=await Promise.all([
    api(env,'/guilds/'+guild+'/roles'),
    api(env,'/guilds/'+guild+'/channels'),
@@ -58,7 +60,7 @@ async function handler(req,res){
    api(env,'/applications/'+env.DISCORD_CLIENT_ID+'/commands'),
    api(env,'/applications/'+env.DISCORD_CLIENT_ID+'/guilds/'+guild+'/commands'),
    api(env,'/applications/@me'),
-   db.query('SELECT discord_user_id FROM avengers_identity_private.discord_bindings '+
+   identityDb.query('SELECT discord_user_id FROM avengers_identity_private.discord_bindings '+
     "WHERE canonical_name='AV-HarryBallsagna' AND verified_at IS NOT NULL LIMIT 2")
   ]);
   const roleMap=new Map(roles.map(r=>[String(r.id),r]));

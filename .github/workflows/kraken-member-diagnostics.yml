@@ -1,0 +1,22 @@
+name: Kraken live member permissions
+on:
+  pull_request:
+    paths:
+      - 'api/discord/kraken-member-diagnostics.js'
+      - 'scripts/kraken-member-diagnostics.test.cjs'
+      - '.github/workflows/kraken-member-diagnostics.yml'
+  push:
+    branches: [fix/kraken-live-member-diagnostics-20261114]
+jobs:
+  diagnose-permissions:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - run: node --check api/discord/kraken-member-diagnostics.js
+      - run: node --test scripts/kraken-member-diagnostics.test.cjs

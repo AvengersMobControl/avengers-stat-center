@@ -1,3 +1,9 @@
+## 2026-11-14 — Kraken role permission root cause and immediate member access fallback
+
+- The AVENGERS server `@everyone` role lacks Discord's `USE_APPLICATION_COMMANDS` permission, explaining why green application-specific permissions did not guarantee slash discoverability. Only the `Council Member` role has it. This role-level setting is independent of the Discord Integrations settings that the leader already checked.
+- The bot lacks `MANAGE_ROLES`. Do not grant the bot powerful additional privileges without the leader's consent or pretend bot authentication can change server roles. Consumed the private one-use diagnostic without altering global server permissions.
+- To restore the intended `/kraken`, replaced stale guild-scoped command with verified new global guild-context `/kraken` and removed old guild command only after confirmed registration (PR #209). Posted one clickable form entry message in `#9️⃣-kraken-clash🦑` as an immediate Discord-native workaround so members can test without command picker access. **Administrator role permission change remains necessary** for non-Council members' slash discoverability. No private Kraken strategies or test scores published.
+
 ## 2026-11-14 — Replace stale guild-scoped Kraken slash with global guild-context command
 
 - Repeated reports show /kraken missing for both ordinary members and leader after unrestricted guild command defaults and green Integrations permissions were applied. Repeating instructions to enable the same settings is not an acceptable fix.

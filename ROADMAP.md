@@ -1,3 +1,13 @@
+## 2026-11-14 — Kraken slash discovery recovery
+
+- [x] Confirm Discord guild role level USE_APPLICATION_COMMANDS is disabled for @everyone; among nine roles, only Council Member grants it.
+- [x] Register and read back global guild-install-only /kraken ID `1571168740228206673`, remove old guild-specific /kraken after global readback; preserve interaction endpoint and all other commands.
+- [x] Post member-usable clickable Kraken entry button in existing `#9️⃣-kraken-clash🦑` channel, preserving OAuth and private owner-only review.
+- [x] Verify bot does not hold Manage Roles and cannot independently edit the missing guild role bit; record and consume one-time audit.
+- [ ] Server administrator enables `Use Application Commands` for @everyone or intended clan member roles (Server Settings > Roles, **not Integrations**) to restore slash picker availability.
+- [ ] Have an ordinary non-Council member confirm /kraken appears and runs in guild channel; global command may require propagation/Discord client refresh.
+- [ ] Continue October practice and Saturday official route cutover without importing test runs to master workbook.
+
 ## 2026-11-14 — Restore real-member /kraken discovery
 
 - [x] Identify longstanding Discord guild-command cache/permission bug consistent with all-member missing slash despite correct Integrations settings.

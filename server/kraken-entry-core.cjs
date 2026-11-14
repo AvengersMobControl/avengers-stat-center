@@ -28,7 +28,7 @@ function progress(battles){
  }
  return {remaining,nextNumber:battles.length+1,complete:remaining===0};
 }
-function nextBattle(run,battles,mapSequence){
+function nextBattle(run,battles,mapSequence,possibleLastMaps=[]){
  const p=progress(battles);
  if(p.complete)return {complete:true,remaining:0,nextNumber:p.nextNumber};
  let auto=null;
@@ -42,8 +42,9 @@ function nextBattle(run,battles,mapSequence){
  // launched. Presets consume all 56 tickets without reaching it. For a
  // custom run that does, ask the player for the observed map instead of
  // copying an unrelated October map into the live record.
- const allowedMaps=!map&&p.remaining===1?['M3','M4','M5','M6','M7']:null;
- if(!allowedMaps&&!/^M([1-9]|10)$/.test(map||''))fault('Map sequence not yet configured for this ticket count',503);
+ const allowedMaps=!map&&p.remaining===1&&Array.isArray(possibleLastMaps)?
+  possibleLastMaps.filter(x=>/^M([1-9]|10)$/.test(x)):null;
+ if((!allowedMaps||!allowedMaps.length)&&!/^M([1-9]|10)$/.test(map||''))fault('Map sequence not yet configured for this ticket count',503);
  return {...p,map:map||null,allowedMaps,
   autoTickets:auto?.ticketsUsed||null,autoLoadout:auto?.loadout||null};
 }

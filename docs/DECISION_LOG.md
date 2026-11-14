@@ -1,3 +1,10 @@
+## 2026-11-14 — Replace stale guild-scoped Kraken slash with global guild-context command
+
+- Repeated reports show /kraken missing for both ordinary members and leader after unrestricted guild command defaults and green Integrations permissions were applied. Repeating instructions to enable the same settings is not an acceptable fix.
+- Use Discord's supported global application-command registration with GUILD_INSTALL and GUILD interaction context; only after successful global readback delete the known, stale guild-scoped command so it cannot shadow the new global command. This retains the exact /kraken name and Discord's existing signed HTTP handler and security gates.
+- As a functional fallback independent of Discord command picker, post a single clickable member-only form URL message to an existing suitable clan text channel when the bot has permissions. Never ping @everyone; no private Kraken strategies, routes, scores or admin export links in Discord.
+- A valid global command readback is not proof of real member autocomplete. Treat member-side discovery as separately unverified until observed.
+
 ## 2026-11-13 — /kraken command visibility requires member-side validation
 
 - Leader reported slash command missing for several guild members. One-time bot API diagnostic proved command and bot installation exist; not sufficient to prove role/member visibility.

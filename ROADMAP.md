@@ -1,3 +1,15 @@
+## 2026-11-14 — Final official Kraken activation
+
+- [x] Recover approved Saturday Combo, pure-Sirion and No x10 Combo presets from recent route-planning conversation.
+- [x] Transactionally replace October practice maps with 55 confirmed live positions; deliberately leave final ticket-left 1 unknown, never fabricate.
+- [x] Store three real private route prescriptions, validate each 56-ticket total/map/loadout and no x10 constraint.
+- [x] Retain historical November 12–13 test submissions in separate event keys and disable test presets.
+- [x] Stage form/backend support for observed last map on a Custom route that reaches unconfirmed one-ticket position.
+- [ ] Pass CI and deploy code without private maps/route data entering public source.
+- [ ] Open new live event 2026-11-14, disable TEST MODE and configure private final-map candidates, redeploy Vercel.
+- [ ] Verify member API/owner-only CSV/leader queue and live Discord command description/readback.
+- [ ] Obtain actual final one-ticket map from an observed member battle if applicable, and update private lookup as evidence warrants. Do not alter existing submitted live scores or automatically import master workbook.
+
 ## 2026-11-14 — Restore effective per-channel Kraken command permissions
 
 - [x] Confirm user-enabled guild-wide @everyone USE_APPLICATION_COMMANDS is effective.

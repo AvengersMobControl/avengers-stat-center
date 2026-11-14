@@ -1,3 +1,10 @@
+## 2026-11-14 — Kraken command hidden by channel-specific permission overrides
+
+- User had already enabled `Use Application Commands` on @everyone at the **guild** level; live API confirmed this setting is true. The **real remaining denial** comes from an explicit `@everyone` channel override of the same permission, present in Kraken and general channels.
+- Full effective permissions for the Kraken channel: 72 of 80 non-bot guild members can view it but lack slash command permission; 8 are allowed. Command registration, global installation/contexts and signed endpoint all verified correct. Channel permission overrides take precedence over guild role defaults; do not keep re-registering slash commands.
+- Bot lacks `MANAGE_ROLES` and cannot directly edit channel overwrites; authorized server staff need to remove ONLY the `Use Application Commands` explicit deny from the desired Kraken channel or its synced parent category. Keep other channel access restrictions unchanged.
+- Continue providing the existing clickable private Kraken form link as a temporary fully functional entry path.
+
 ## 2026-11-14 — Kraken role permission root cause and immediate member access fallback
 
 - The AVENGERS server `@everyone` role lacks Discord's `USE_APPLICATION_COMMANDS` permission, explaining why green application-specific permissions did not guarantee slash discoverability. Only the `Council Member` role has it. This role-level setting is independent of the Discord Integrations settings that the leader already checked.

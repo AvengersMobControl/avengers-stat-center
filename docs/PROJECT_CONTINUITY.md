@@ -1,3 +1,12 @@
+## 2026-11-14 — Definitive /kraken visibility blocker: channel-level @everyone denies
+
+- After user enabled guild-wide @everyone Use Application Commands, the new signed, one-time **read-only** live Discord diagnostic confirmed the guild role permission is NOW **true**. The user applied it correctly; do not send them back to that setting.
+- Verified global guild-install-only `/kraken` command ID `1571168740228206673`, correct guild context/integration types, unrestricted default permissions, signed endpoint, install scopes, and ZERO stale guild-scoped duplicates. These are not the remaining blocker.
+- Examined live guild channels and effective permissions for all 81 guild member records (80 non-bots). The channel `9️⃣-kraken-clash🦑` has an explicit **@everyone USE_APPLICATION_COMMANDS deny** in its channel-specific permission overwrites; **72 of 80** non-bot members can view it but cannot invoke slash commands, while 8 are permitted through higher role or admin exceptions. The same explicit channel-level deny exists in general chat, other Kraken channels, and arena strategies. This overrides the guild-wide permission and explains why the user's correct change did not make /kraken visible.
+- The app bot lacks `MANAGE_ROLES`; cannot edit channel permission overwrites with its bot token. An authorized Discord moderator or owner must edit `#9️⃣-kraken-clash🦑 > Edit Channel > Permissions > @everyone > Use Application Commands` and set it to neutral/inherit (or Allow) instead of Deny; if the category owns the rule, update its category and sync only applicable channels carefully. Change this single permission, **not View Channel or other security controls**. Confirm an ordinary non-Council member then sees /kraken.
+- One-time diagnostic nonce consumed; no member IDs, routes or scores exposed. Private channel link button remains usable regardless of command visibility. Do not claim member-side slash visibility is fixed until the channel override is changed and verified.
+- The diagnostic initially failed closed on private identity schema cross-role permissions; code fixed to use the existing separate least-privilege identity DB connection (PR #213). No privileges were widened.
+
 ## 2026-11-14 — /kraken global slash recovery, in-channel button, and confirmed guild role blocker
 
 - User still unable to see `/kraken` after green Discord Integrations `@everyone` and All Channels settings and multiple guild default resets. Discord's documented command-picker bug under those conditions led to a safer fallback.

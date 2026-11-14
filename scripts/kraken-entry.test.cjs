@@ -12,6 +12,31 @@ test('presets must use exactly 56 tickets with allowed map, ticket and loadout f
  assert.throws(()=>core.stepsFor(example().slice(1)),/does not consume/);
  assert.throws(()=>core.stepsFor([{map:'M1',ticketsUsed:2,loadout:'GC'}]),/Invalid/);
 });
+test('last unknown map is never invented and requires observed user selection',()=>{
+ const allowed=['M2','M7']; // generic test alternatives, not any real map order
+ const already=[{battle_no:1,tickets_left:56,tickets_used:10},
+  {battle_no:2,tickets_left:46,tickets_used:10},
+  {battle_no:3,tickets_left:36,tickets_used:10},
+  {battle_no:4,tickets_left:26,tickets_used:10},
+  {battle_no:5,tickets_left:16,tickets_used:10},
+  {battle_no:6,tickets_left:6,tickets_used:5}];
+ const next=core.nextBattle({route_snapshot:null},already,{},allowed);
+ assert.equal(next.remaining,1);assert.equal(next.map,null);
+ assert.deepEqual(next.allowedMaps,allowed);
+ assert.throws(()=>core.validateBattle({ticketsUsed:1,loadout:'SR',damage:'1'},next),
+  /Select the actual final map/);
+ assert.throws(()=>core.validateBattle({ticketsUsed:1,loadout:'SR',damage:'1',map:'M10'},next),
+  /Select the actual final map/);
+ const scored=core.validateBattle({ticketsUsed:1,loadout:'SR',damage:'1.25',map:'M7'},next);
+ assert.equal(scored.map,'M7');assert.equal(scored.ticketsLeft,1);assert.equal(scored.damage,1.25);
+ assert.throws(()=>core.nextBattle({route_snapshot:null},already,{},[]),
+  /Map sequence not yet configured/);
+});
+test('regular confirmed maps are immutable regardless of client supplied map',()=>{
+ const next=core.nextBattle({route_snapshot:null},[],{'56':'M1'},['M2']);
+ const scored=core.validateBattle({ticketsUsed:1,loadout:'GC',damage:7,map:'M8'},next);
+ assert.equal(scored.map,'M1');
+});
 test('custom route derives next battle and map from tickets actually spent',()=>{
  const p=core.nextBattle({route_snapshot:null},[],{'56':'M10','55':'M2'});
  assert.equal(p.remaining,56);assert.equal(p.map,'M10');

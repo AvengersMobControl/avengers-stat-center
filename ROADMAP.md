@@ -1,3 +1,13 @@
+## 2026-11-14 — Restore effective per-channel Kraken command permissions
+
+- [x] Confirm user-enabled guild-wide @everyone USE_APPLICATION_COMMANDS is effective.
+- [x] Verify new global /kraken registration, installed app scopes, signed endpoint and absence of guild shadow copy.
+- [x] Compute ordinary guild member permissions from live channel overwrites: explicit @everyone deny in Kraken/general channels; 72/80 members blocked in main Kraken channel.
+- [x] Keep alternate clickable private form button in Kraken Clash available.
+- [ ] Authorized server moderator removes **channel-level** @everyone `Use Application Commands` Deny in `9️⃣-kraken-clash🦑`, setting neutral/inherit or Allow; if category-level, change category and synchronize carefully.
+- [ ] Verify one previously affected non-Council member sees and can invoke /kraken in that channel; optionally repeat for other channels if desired.
+- [ ] Keep private test data and HarryBallsagna-only reviewer exports unchanged.
+
 ## 2026-11-14 — Kraken slash discovery recovery
 
 - [x] Confirm Discord guild role level USE_APPLICATION_COMMANDS is disabled for @everyone; among nine roles, only Council Member grants it.

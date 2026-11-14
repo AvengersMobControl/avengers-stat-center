@@ -1,0 +1,20 @@
+name: Kraken global command repair
+on:
+  pull_request:
+    paths:
+      - 'api/discord/kraken-global-repair.js'
+      - '.github/workflows/kraken-global-command-repair.yml'
+  push:
+    branches: [fix/kraken-global-command-fallback]
+jobs:
+  validate-global-repair:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node --check api/discord/kraken-global-repair.js
+      - run: node --test scripts/kraken-entry.test.cjs

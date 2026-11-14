@@ -1,3 +1,11 @@
+## 2026-11-14 — Restore real-member /kraken discovery
+
+- [x] Identify longstanding Discord guild-command cache/permission bug consistent with all-member missing slash despite correct Integrations settings.
+- [x] Stage one-time private global guild-install command replacement and no-shadow guild deletion with REST readback and private test-link fallback.
+- [ ] Validate CI, exact Vercel production deployment, one-time registration operation, and fallback channel message outcome.
+- [ ] Verify non-admin Discord member actually sees /kraken and can open the private form.
+- [ ] Keep original test map/route and private HarryBallsagna review/export access unchanged; do not import practice results.
+
 ## 2026-11-13 — Confirm Kraken slash-command discoverability
 
 - [x] Investigate screenshot showing command absent for multiple AVENGERS Discord members.

@@ -1,3 +1,10 @@
+## 2026-11-14 — Discord /kraken still absent despite guild permissions: switch to global fallback
+
+- Leader reports /kraken is STILL invisible after green @everyone/All Channels screenshot and prior guild-command default permission refresh. Multiple non-admin members and the leader cannot find the slash command. Do not tell them to check same Discord settings again or claim command visibility from API registration alone.
+- Discord API documentation and issue #4959 describe known cases where registered guild commands are absent from member pickers despite command permissions shown allowed. To avoid stale guild-only command shadows, introduce a one-use, private Neon capability-gated production repair which registers a fresh **global guild-install-only /kraken** with contexts=[GUILD], integration_types=[GUILD_INSTALL], no member permission requirement, verifies global readback, then removes only the old guild-scoped command ID so it cannot shadow the new one. The signed interaction endpoint and private form remain unchanged and already enforce the AVENGERS guild ID. All other guild/global commands must remain untouched.
+- Also attempt to post one member-visible clickable **Open Kraken Test Form** URL button in an existing Kraken/general channel, so member testing does not depend on Discord's slash picker propagation. No @everyone pings or private results/route content in the message. If bot lacks Send Messages, report this rather than claiming it succeeded. Preserve HarryBallsagna-only admin exports and private October test maps/routes.
+- Verify Discord global/guild command REST readback, test database access, Vercel deployment and one-time nonce consumption before claiming API success. Actual member-client discoverability still requires member validation. No route plan, game scores or private strategy in public repo.
+
 ## 2026-11-13 — Diagnose /kraken hidden in Discord picker for ordinary members
 
 - Leader provided a Discord screenshot showing multiple members unable to find `/kraken` in slash autocomplete despite earlier registration. Do not describe Discord REST registration as proof ordinary members can see/use a command.

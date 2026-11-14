@@ -66,7 +66,7 @@ async function handler(req,res){
     '**KRAKEN TEST MODE — Practice using the October 2026 map order and advised routes**\n':
     '**Private Kraken battle entry**\n')+
     'Open your secure form: '+origin+FORM+
-    '\nSign in with the same Discord account. Your entries are private; test data never enters the master workbook.'}});
+    '\nSign in with the same Discord account. Your results stay private for leader review; no automatic master workbook import.'}});
 }
 module.exports=handler;
 module.exports.verify=verify;

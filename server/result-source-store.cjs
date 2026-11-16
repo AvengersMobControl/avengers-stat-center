@@ -10,7 +10,7 @@ function makeStore(db){
         ['source-intake:'+key,nonce]);
       if(lock.length!==1)return null;
       await q('INSERT INTO '+SQL+'.channel_checkpoints(channel_key) VALUES($1) ON CONFLICT DO NOTHING',[key]);
-      await q('INSERT INTO '+SQL+'.ingest_runs(run_id,status,summary) VALUES($1::uuid,\'running\',jsonb_build_object(\'kind\',\'source-intake\',\'channel\',$2))',[nonce,key]);
+      await q('INSERT INTO '+SQL+'.ingest_runs(run_id,status,summary) VALUES($1::uuid,\'running\',jsonb_build_object(\'kind\',\'source-intake\',\'channel\',$2::text))',[nonce,key]);
       const rows=await q('SELECT resume_before_id AS next_before,resume_upper_id FROM '+SQL+'.channel_checkpoints WHERE channel_key=$1',[key]);
       return rows[0];
     },
@@ -34,12 +34,12 @@ function makeStore(db){
       const rows=await q('UPDATE '+SQL+'.channel_checkpoints SET resume_before_id=$2,resume_upper_id=$3,last_scan_complete=$4,last_completed_id=CASE WHEN $4 THEN $5 ELSE last_completed_id END,updated_at=now() WHERE channel_key=$1 AND EXISTS (SELECT 1 FROM '+SQL+'.collector_lease WHERE lease_name=$6 AND owner_id=$7::uuid AND expires_at>now()) RETURNING channel_key',
         [key,r.nextBefore,r.cycleComplete?null:r.upperId,r.cycleComplete,r.upperId,'source-intake:'+key,nonce]);
       if(rows.length!==1)throw Error('Could not checkpoint the channel');
-      await q('UPDATE '+SQL+'.ingest_runs SET status=$2,finished_at=now(),summary=jsonb_build_object(\'kind\',\'source-intake\',\'channel\',$3,\'pagesComplete\',$4,\'attachmentsAccounted\',$5,\'newProofs\',$6) WHERE run_id=$1::uuid',
+      await q('UPDATE '+SQL+'.ingest_runs SET status=$2,finished_at=now(),summary=jsonb_build_object(\'kind\',\'source-intake\',\'channel\',$3::text,\'pagesComplete\',$4::boolean,\'attachmentsAccounted\',$5::integer,\'newProofs\',$6::integer) WHERE run_id=$1::uuid',
         [nonce,r.cycleComplete?'source-cycle-complete':'source-page-complete',key,r.cycleComplete,r.sourceAttachments,r.newProofs]);
       await q('DELETE FROM '+SQL+'.collector_lease WHERE lease_name=$1 AND owner_id=$2::uuid',['source-intake:'+key,nonce]);
     },
     async release(key,nonce,errorCode){
-      await q('UPDATE '+SQL+'.ingest_runs SET status=\'source-failed\',finished_at=now(),summary=jsonb_build_object(\'kind\',\'source-intake\',\'channel\',$2,\'errorCode\',$3) WHERE run_id=$1::uuid',[nonce,key,errorCode]);
+      await q('UPDATE '+SQL+'.ingest_runs SET status=\'source-failed\',finished_at=now(),summary=jsonb_build_object(\'kind\',\'source-intake\',\'channel\',$2::text,\'errorCode\',$3::text) WHERE run_id=$1::uuid',[nonce,key,errorCode]);
       await q('DELETE FROM '+SQL+'.collector_lease WHERE lease_name=$1 AND owner_id=$2::uuid',['source-intake:'+key,nonce]);
     },
     async status(){

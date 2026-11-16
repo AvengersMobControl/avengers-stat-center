@@ -72,3 +72,9 @@ test('private endpoint rejects invalid or unconfigured authorization',()=>{
  assert.equal(authorized('Bearer invalid','valid'),false);
  assert.equal(authorized('Bearer valid',null),false);
 });
+
+test('Neon JSONB summary parameters carry explicit SQL types',()=>{
+  const src=require('node:fs').readFileSync(require('node:path').join(__dirname,'../server/result-source-store.cjs'),'utf8');
+  for(const cast of ['$2::text','$3::text','$4::boolean','$5::integer','$6::integer'])assert(src.includes(cast),'missing JSONB parameter cast '+cast);
+  assert(!src.includes("\\'channel\\',$2)"),'variadic JSONB call cannot infer an untyped channel parameter');
+});

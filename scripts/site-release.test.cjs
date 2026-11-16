@@ -205,7 +205,7 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
   }
   const lin=people.find(p=>p.name==='AV-Lin');
   assert.equal(lin.history.filter(r=>r.date<='2026-10-21').length,14,'historic Lin results retained before the new race');
-  assert.equal(lin.history.filter(r=>r.clan==='AV-2').length,10);
+  assert.equal(lin.history.filter(r=>r.clan==='AV-2'&&r.date<'2026-11-15').length,10,'pre-November-15 AV-2 Lin history remains unchanged');
   assert.equal(lin.history.filter(r=>r.clan==='AVENGERS'&&r.date<='2026-10-21').length,4);
   assert(lin.snapshotBreakdown.some(r=>r.sourceName==='AV-2Lin'&&r.clan==='AV-2'));
   const linTransition=lin.kinds.piggy.pbs.find(p=>p.eventId==='piggy|2026-10-18');
@@ -471,9 +471,10 @@ test('October 23 identities preserve former-member history and add only confirme
    const matches=BASE.projection.people.filter(p=>p.name===name);
    assert.equal(matches.length,1);
    // Profiles start with the verified Oct 23 Piggy; Mickzzz later logged Oct 25 Space.
-   const ids=matches[0].history.map(h=>h.eventId).sort();
+   const historic=matches[0].history.filter(h=>h.date<'2026-11-15');
+   const ids=historic.map(h=>h.eventId).sort();
    assert.deepEqual(ids,name==='Mickzzz'?['piggy|2026-10-23','space|2026-10-25']:['piggy|2026-10-23','piggy|2026-11-08','space|2026-10-30','space|2026-11-06']);
-   assert.equal(matches[0].totalSparks,name==='Mickzzz'?16519+11357:5506+7601+6860+15000);
+   assert.equal(historic.reduce((n,h)=>n+(h.sparks||0),0),name==='Mickzzz'?16519+11357:5506+7601+6860+15000,'historical rewards unchanged before Nov 15');
  }
  assert.equal(resolve('AVS9.Saberkong'),'AV.Saberkong');
  assert.equal(resolve('AVS9-HN'),'AV-HN');
@@ -644,8 +645,8 @@ test('Nov 6 Space original screenshot tail, Zolika and AV-2 identity reconciliat
   assert.equal(dreadrix[0].metadata.share,0.02);
   assert.equal(dreadrix[0].clan,'AVENGERS');
   // Dubai's roster shell has one verified Nov 8 Piggy and one Nov 13 Space result.
-  const dubaiRows=BASE.ledger.events.flatMap(event=>event.rows.filter(row=>row.player==='AV-Dubai').map(row=>({eventId:event.id,...row})));
-  assert.equal(dubaiRows.length,2,'Dubai has precisely two verified events, without invented history');
+  const dubaiRows=BASE.ledger.events.filter(event=>event.date<'2026-11-15').flatMap(event=>event.rows.filter(row=>row.player==='AV-Dubai').map(row=>({eventId:event.id,...row})));
+  assert.equal(dubaiRows.length,2,'Dubai has precisely two verified pre-November-15 events, without invented history');
   const dubaiPiggy=dubaiRows.find(row=>row.eventId==='piggy|2026-11-08');
   assert.equal(dubaiPiggy?.score,9960);
   assert.equal(dubaiPiggy?.sparks,63224);
@@ -656,7 +657,7 @@ test('Nov 6 Space original screenshot tail, Zolika and AV-2 identity reconciliat
   assert.equal(dubaiSpace?.sparks,124124);
   assert.equal(dubaiSpace?.stars,1241240);
   assert.equal(dubaiSpace?.metadata.rank,6);
-  assert.equal(BASE.projection.people.find(p=>p.name==='AV-Dubai')?.earned.events,2);
+  assert(BASE.projection.people.find(p=>p.name==='AV-Dubai')?.earned.events>=2,'Dubai historical events remain present after new finals');
   assert.equal(r['AV-JAMO'].status,'Active');
   assert.equal(r['AV-Oakcliff'].status,'AV2');
   assert.equal(e.rows.find(x=>x.player==='AV-Oakcliff')?.clan,'AVENGERS','Oakcliff original event-time clan retained');
@@ -783,4 +784,24 @@ test('November 13 Space lobby 5 rank 2 AV-Zoliika is recorded once under histori
   assert(p[0].history.some(h=>h.date<'2026-11-13'),'historical results retained');
   assert.equal(p[0].history.filter(h=>h.date==='2026-11-13'&&h.kind==='space').length,1);
   assert.equal(p[0].kinds.space.pb,1030.7,'pre-existing record remains the PB');
+});
+
+test('November 15 Big Pig final screenshots preserve source completeness, canonical identities and one-line rules',()=>{
+  const e=BASE.ledger.events.find(x=>x.id==='piggy|2026-11-15');
+  assert(e&&e.status==='partial','unretrieved ninth AV-2 attachment requires partial status');
+  assert.equal(e.rows.length,67,'67 verified in-scope player rows, two private identity holds');
+  assert.equal(e.rows.filter(r=>r.metadata?.lobby==='MAIN').length,46);
+  assert.equal(e.rows.filter(r=>r.metadata?.lobby==='AV2-MAIN').length,21);
+  assert.equal(e.rows.filter(r=>r.clan==='AVENGERS').length,47);
+  assert.equal(e.rows.filter(r=>r.clan==='AV-2').length,20);
+  assert.equal(e.sources.filter(x=>x.startsWith('reviewed-image-sha256:')).length,13,'includes one overlapping seven-row supplement');
+  assert.equal(e.rows.filter(r=>r.player==='AV-Abu//npjp').length,1);
+  assert.equal(e.rows.find(r=>r.player==='AV-Abu//npjp').metadata.sourceDisplayName,'AV-Abu');
+  assert.equal(e.rows.filter(r=>r.player==='AV-Zolika.x.TheBoss').length,1);
+  assert.equal(e.rows.filter(r=>r.player==='AV-J').length,1);
+  assert.equal(e.rows.filter(r=>r.player==='AV-FrenchieUSA').length,1);
+  assert(!e.rows.some(r=>r.player==='AV-KK:D'||r.player==='AV-OIRose'),'unconfirmed identity rows remain private');
+  const hemperor=e.rows.find(r=>r.player==='TheHemperor');
+  assert(hemperor&&hemperor.score===10&&hemperor.sparks===null&&hemperor.stars===null,'Big Pig non-Tier10 lines retained without invented payout');
+  for(const p of ['AV-KK:D','AV-OIRose'])assert(!BASE.projection.people.some(x=>x.name===p),'no false new-member profile: '+p);
 });

@@ -816,20 +816,30 @@ test('November 15 Big Pig final screenshots preserve source completeness, canoni
 test('November 15 Kraken has 51 final positions, corrected Supreeth and canonical player identities',()=>{
   const e=BASE.ledger.events.find(x=>x.id==='kraken|nov');
   assert(e&&e.date==='2026-11-15','leader-confirmed November Kraken exists');
-  assert.equal(e.rows.length,51);
-  assert.equal(e.rows.filter(r=>r.clan==='AVENGERS').length,51);
-  assert.equal(new Set(e.rows.map(r=>r.player)).size,51);
-  assert.equal(new Set(e.rows.map(r=>r.metadata?.rank)).size,51);
-  assert.deepEqual(e.rows.map(r=>r.metadata?.rank).sort((a,b)=>a-b),
+  assert.equal(e.rows.length,90,'51 AVENGERS plus 39 independently identified AV-2 Kraken rows');
+  const main=e.rows.filter(r=>r.clan==='AVENGERS');
+  const av2=e.rows.filter(r=>r.clan==='AV-2');
+  assert.equal(main.length,51);
+  assert.equal(av2.length,39);
+  assert.equal(new Set(e.rows.map(r=>r.clan+'|'+r.player)).size,90);
+  assert.equal(new Set(main.map(r=>r.metadata?.rank)).size,51);
+  assert.deepEqual(main.map(r=>r.metadata?.rank).sort((a,b)=>a-b),
     Array.from({length:51},(_,i)=>i+1));
+  assert.deepEqual(av2.map(r=>r.metadata?.rank).sort((a,b)=>a-b),
+    Array.from({length:44},(_,i)=>i+1).filter(n=>![14,29,37,38,41].includes(n)),
+    'all 44 AV-2 ranks are either verified or one of five private identity holds');
+  assert.equal(e.metadata?.av2ScreenRankCount,44);
+  assert.equal(e.metadata?.av2PrivateIdentityHolds,5);
   const supreeth=e.rows.find(r=>r.player==='AV-Supreeth');
   assert.equal(supreeth.score,4688.9);
   assert.equal(supreeth.metadata.rank,24,'leader-confirmed later screenshot supersedes earlier rank 30');
   const jamo=e.rows.find(r=>r.player==='AV-JAMO');
   assert.equal(jamo.score,4595.1);
   assert.equal(jamo.metadata.rank,25);
-  assert.equal(e.rows.reduce((total,r)=>total+r.sparks,0),172930050);
-  assert(e.rows.every(r=>r.stars===null&&r.clan==='AVENGERS'));
+  assert.equal(main.reduce((total,r)=>total+r.sparks,0),172930050);
+  assert.equal(av2.reduce((total,r)=>total+r.sparks,0),35042150);
+  assert.equal(av2.reduce((total,r)=>total+r.score,0).toFixed(1),'70084.3');
+  assert(e.rows.every(r=>r.stars===null),'Kraken has no Stars');
   assert.equal(e.rows.find(r=>r.player==='AV-Finnie').score,0);
   assert.equal(e.rows.find(r=>r.player==='AV-Timmy').score,0);
   assert.equal(e.rows.filter(r=>r.player==='AV-Abu//npjp').length,1);
@@ -842,5 +852,13 @@ test('November 15 Kraken has 51 final positions, corrected Supreeth and canonica
   assert(!e.rows.some(r=>['AV-Abu','AV-Zoliika','AV-FrankAbagnale','AV-Frenchie(-4)',
     'AV-CRISPIN.27','AV-SmiLiNgBanDiT'].includes(r.player)),'do not duplicate aliases');
   assert.equal(e.sources.filter(x=>x.startsWith('leader-supplied-png-sha256:')).length,8);
+  assert.equal(e.sources.filter(x=>x.startsWith('reviewed-image-sha256:')).length,8,
+    'eight AV-2 final Kraken original CDN hashes');
+  assert.equal(av2.find(r=>r.player==='AV-SiFra').score,7488.3);
+  assert.equal(av2.find(r=>r.player==='AV-Frenchie2').score,8.3);
+  assert.equal(av2.find(r=>r.player==='AV-ZIBBY').metadata.rank,39);
+  assert.equal(av2.find(r=>r.player==='Mickzzz').score,0);
+  assert(!av2.some(r=>['AV-OIRose','Keyler','Blade','AV-AC3','AV-Derya(onVACATIO...'].includes(r.player)),
+    'unverified identities must not be introduced as new member profiles');
   assert.equal(BASE.projection.people.filter(p=>p.name==='AV-Abu//npjp').length,1);
 });

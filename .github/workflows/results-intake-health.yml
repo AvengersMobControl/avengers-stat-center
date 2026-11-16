@@ -1,0 +1,25 @@
+name: AVENGERS source-intake health (website-only)
+on:
+  schedule:
+    - cron: '30 13 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verified-intake-health:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - name: Check native source-intake checkpoint (not ChatGPT task status)
+        run: |
+          set -euo pipefail
+          url="https://avengers-stat-center.vercel.app/api/discord/results-intake-health"
+          code="$(curl --fail-with-body --location --max-time 20 --silent --show-error --output response.json --write-out '%{http_code}' "$url")"
+          node -e '
+            const fs=require("fs");
+            const s=JSON.parse(fs.readFileSync("response.json","utf8"));
+            if(s.status!=="source_intake_healthy"||
+               s.channelsChecked!==8||s.channelsComplete!==8)process.exit(1);
+            console.log("Native private-source intake healthy; this does NOT certify website publication.");
+          '
+          test "$code" = 200

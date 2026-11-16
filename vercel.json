@@ -38,5 +38,11 @@
   ],
   "buildCommand": "node scripts/build-site.cjs",
   "outputDirectory": "dist",
-  "ignoreCommand": "node scripts/vercel-ignore-preview.cjs"
+  "ignoreCommand": "node scripts/vercel-ignore-preview.cjs",
+  "crons": [
+    {
+      "path": "/api/discord/results-intake",
+      "schedule": "0 12 * * *"
+    }
+  ]
 }

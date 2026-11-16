@@ -27,13 +27,13 @@ async function handler(req,res){
     if(req.body?.action==='status')channelKey=KEYS[0];
     if(!KEYS.includes(channelKey))return respond(res,400,{error:'unknown-channel'});
   }
-  if(!process.env.AVENGERS_DISPATCH_DATABASE_URL||!process.env.DISCORD_BOT_TOKEN){
+  if(!process.env.AVENGERS_RESULTS_DATABASE_URL||!process.env.DISCORD_BOT_TOKEN){
     console.error('[source-intake] configuration-missing');
     return respond(res,503,{error:'private-intake-not-configured'});
   }
   try{
     const {neon}=require('@neondatabase/serverless');
-    const sql=neon(process.env.AVENGERS_DISPATCH_DATABASE_URL);
+    const sql=neon(process.env.AVENGERS_RESULTS_DATABASE_URL);
     const store=makeStore({query:(q,params)=>sql.query(q,params)});
     if(!cron&&req.body?.action==='status')return respond(res,200,{kind:'private-source-intake',publication:'not-attempted',channels:await store.status()});
     const report=await scanChannel({channelKey,store,token:process.env.DISCORD_BOT_TOKEN});

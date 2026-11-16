@@ -25799,6 +25799,921 @@
         "id": "leader-standing-website-publication-2026-10-22",
         "date": "2026-10-22"
       }
+    },
+    {
+      "approved": true,
+      "expectedRevision": 0,
+      "event": {
+        "id": "kraken|nov",
+        "kind": "kraken",
+        "date": "2026-11-15",
+        "status": "partial",
+        "unit": "million-damage",
+        "metadata": {
+          "monthKey": "nov",
+          "monthLabel": "November",
+          "complete": false,
+          "leaderConfirmedFinal": true,
+          "coverageNote": "All 51 visible AVENGERS Kraken player positions reviewed from eight leader-uploaded original screenshots. The final Supreeth score is 4688.9M at rank 24; earlier 4038.4M at rank 30 superseded, all positions 24-30 reordered; two displayed zero-damage entries retained. AV-2 Kraken is out of scope. Rewards not visible; Sparks derived from established AVENGERS 750 Sparks per 1M damage conversion. No CDN-original verification is claimed for leader-uploaded PNGs.",
+          "dateBasis": "Leader-confirmed final Sunday November 15, 2026 Kraken result screenshots; leader explicitly confirmed set final on Nov 16.",
+          "visiblePositions": 51,
+          "verifiedDamageMillion": 230573.4,
+          "derivedSparks": 172930050,
+          "sparkRatePerMillionDamage": 750
+        },
+        "sources": [
+          "leader-supplied-png-sha256:7e3129beb27353fb4350b4ad33a609fdfa4da6d9b4af7c2e056c2cc9098bd66f",
+          "leader-supplied-png-sha256:933afc109d9634cfe932157e48f282f4a3cab2b976ab0df0da5cc0715236bd87",
+          "leader-supplied-png-sha256:066a023fd357e23ca27b8b6da0e6d83f1e5a30bfd392f38c2108d883a2dff532",
+          "leader-supplied-png-sha256:9f84beedd2aab8062afbe6ec0beee9207d4971e01fb378e62ceb2548d052a519",
+          "leader-supplied-png-sha256:8d5d04d81ace7bb0b5771bfb537972910c9c04a3a7a6a2c7a6c831c2692e48e4",
+          "leader-supplied-png-sha256:6687476591416f3a68becda626616a42ef698fd0708ceac61f617d8ca34ad59a",
+          "leader-supplied-png-sha256:ad27d99ac2fb56aa6a7e01586c208f9f1374e923c1a3268bfc3dce2dd428d7ce",
+          "leader-supplied-png-sha256:ae458870bd2a0592e11f6729dc44ba327b046d9c5c8b92bd1670fac82a4b557e"
+        ],
+        "rows": [
+          {
+            "player": "AV-J",
+            "clan": "AVENGERS",
+            "score": 8144.5,
+            "sparks": 6108375,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 1,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV2-J",
+              "sourceImageSha256": "7e3129beb27353fb4350b4ad33a609fdfa4da6d9b4af7c2e056c2cc9098bd66f",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-Addicted",
+            "clan": "AVENGERS",
+            "score": 8091.2,
+            "sparks": 6068400,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 2,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-FrankAbagnale",
+              "sourceImageSha256": "7e3129beb27353fb4350b4ad33a609fdfa4da6d9b4af7c2e056c2cc9098bd66f",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-Adigarian",
+            "clan": "AVENGERS",
+            "score": 7764.1,
+            "sparks": 5823075,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 3,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-Adigarian",
+              "sourceImageSha256": "7e3129beb27353fb4350b4ad33a609fdfa4da6d9b4af7c2e056c2cc9098bd66f",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-Abu//npjp",
+            "clan": "AVENGERS",
+            "score": 7682.9,
+            "sparks": 5762175,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 4,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-Abu",
+              "sourceImageSha256": "7e3129beb27353fb4350b4ad33a609fdfa4da6d9b4af7c2e056c2cc9098bd66f",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-HN",
+            "clan": "AVENGERS",
+            "score": 7636.1,
+            "sparks": 5727075,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 5,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-HN",
+              "sourceImageSha256": "7e3129beb27353fb4350b4ad33a609fdfa4da6d9b4af7c2e056c2cc9098bd66f",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-Hoops",
+            "clan": "AVENGERS",
+            "score": 7373.1,
+            "sparks": 5529825,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 6,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-Hoops",
+              "sourceImageSha256": "7e3129beb27353fb4350b4ad33a609fdfa4da6d9b4af7c2e056c2cc9098bd66f",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-Obajoba",
+            "clan": "AVENGERS",
+            "score": 7370.6,
+            "sparks": 5527950,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 7,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-Obajoba",
+              "sourceImageSha256": "7e3129beb27353fb4350b4ad33a609fdfa4da6d9b4af7c2e056c2cc9098bd66f",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-Zolika.x.TheBoss",
+            "clan": "AVENGERS",
+            "score": 7284.6,
+            "sparks": 5463450,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 8,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-Zoliika",
+              "sourceImageSha256": "7e3129beb27353fb4350b4ad33a609fdfa4da6d9b4af7c2e056c2cc9098bd66f",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-8!l...Bil",
+            "clan": "AVENGERS",
+            "score": 6864.6,
+            "sparks": 5148450,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 9,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-8!l...Bil",
+              "sourceImageSha256": "933afc109d9634cfe932157e48f282f4a3cab2b976ab0df0da5cc0715236bd87",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-SMILINGBANDIT",
+            "clan": "AVENGERS",
+            "score": 6793.8,
+            "sparks": 5095350,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 10,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-SmiLiNgBanDiT",
+              "sourceImageSha256": "933afc109d9634cfe932157e48f282f4a3cab2b976ab0df0da5cc0715236bd87",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-I.S.O",
+            "clan": "AVENGERS",
+            "score": 6637,
+            "sparks": 4977750,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 11,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-I.S.O",
+              "sourceImageSha256": "933afc109d9634cfe932157e48f282f4a3cab2b976ab0df0da5cc0715236bd87",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-Nicefellow",
+            "clan": "AVENGERS",
+            "score": 6635.9,
+            "sparks": 4976925,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 12,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-Nicefellow",
+              "sourceImageSha256": "933afc109d9634cfe932157e48f282f4a3cab2b976ab0df0da5cc0715236bd87",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-Chuck",
+            "clan": "AVENGERS",
+            "score": 6565.9,
+            "sparks": 4924425,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 13,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-CHUCK",
+              "sourceImageSha256": "933afc109d9634cfe932157e48f282f4a3cab2b976ab0df0da5cc0715236bd87",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-Megalodon",
+            "clan": "AVENGERS",
+            "score": 6460,
+            "sparks": 4845000,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 14,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-Megalodon-",
+              "sourceImageSha256": "933afc109d9634cfe932157e48f282f4a3cab2b976ab0df0da5cc0715236bd87",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-ColdCreeps",
+            "clan": "AVENGERS",
+            "score": 6091.1,
+            "sparks": 4568325,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 15,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-ColdCreeps",
+              "sourceImageSha256": "933afc109d9634cfe932157e48f282f4a3cab2b976ab0df0da5cc0715236bd87",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-KitKat",
+            "clan": "AVENGERS",
+            "score": 6089,
+            "sparks": 4566750,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 16,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-KitKat",
+              "sourceImageSha256": "933afc109d9634cfe932157e48f282f4a3cab2b976ab0df0da5cc0715236bd87",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-FrenchieUSA",
+            "clan": "AVENGERS",
+            "score": 6006.1,
+            "sparks": 4504575,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 17,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-Frenchie(-4)",
+              "sourceImageSha256": "066a023fd357e23ca27b8b6da0e6d83f1e5a30bfd392f38c2108d883a2dff532",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV<STAR-LORD>",
+            "clan": "AVENGERS",
+            "score": 5883.1,
+            "sparks": 4412325,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 18,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV/<STAR-LORD>\\",
+              "sourceImageSha256": "066a023fd357e23ca27b8b6da0e6d83f1e5a30bfd392f38c2108d883a2dff532",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-RkHendrix",
+            "clan": "AVENGERS",
+            "score": 5558.2,
+            "sparks": 4168650,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 19,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-RkHendrix-MX",
+              "sourceImageSha256": "066a023fd357e23ca27b8b6da0e6d83f1e5a30bfd392f38c2108d883a2dff532",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-McNasty",
+            "clan": "AVENGERS",
+            "score": 5483.7,
+            "sparks": 4112775,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 20,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-McNasty",
+              "sourceImageSha256": "066a023fd357e23ca27b8b6da0e6d83f1e5a30bfd392f38c2108d883a2dff532",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-J1M",
+            "clan": "AVENGERS",
+            "score": 5249,
+            "sparks": 3936750,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 21,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-J1M",
+              "sourceImageSha256": "066a023fd357e23ca27b8b6da0e6d83f1e5a30bfd392f38c2108d883a2dff532",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-DaG",
+            "clan": "AVENGERS",
+            "score": 5169.2,
+            "sparks": 3876900,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 22,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-DaG",
+              "sourceImageSha256": "066a023fd357e23ca27b8b6da0e6d83f1e5a30bfd392f38c2108d883a2dff532",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-7-STAR",
+            "clan": "AVENGERS",
+            "score": 4976,
+            "sparks": 3732000,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 23,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-7-STAR",
+              "sourceImageSha256": "066a023fd357e23ca27b8b6da0e6d83f1e5a30bfd392f38c2108d883a2dff532",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-Supreeth",
+            "clan": "AVENGERS",
+            "score": 4688.9,
+            "sparks": 3516675,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 24,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-Supreeth",
+              "sourceImageSha256": "ae458870bd2a0592e11f6729dc44ba327b046d9c5c8b92bd1670fac82a4b557e",
+              "sparksProvenance": "derived-750-per-million-damage",
+              "scoreBasis": "Leader-confirmed updated Supreeth score supersedes earlier rank-30 result"
+            }
+          },
+          {
+            "player": "AV-JAMO",
+            "clan": "AVENGERS",
+            "score": 4595.1,
+            "sparks": 3446325,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 25,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-JAMO",
+              "sourceImageSha256": "ae458870bd2a0592e11f6729dc44ba327b046d9c5c8b92bd1670fac82a4b557e",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-KKD",
+            "clan": "AVENGERS",
+            "score": 4483,
+            "sparks": 3362250,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 26,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-KK:D",
+              "sourceImageSha256": "9f84beedd2aab8062afbe6ec0beee9207d4971e01fb378e62ceb2548d052a519",
+              "sparksProvenance": "derived-750-per-million-damage",
+              "rankBasis": "Reordered after leader-confirmed Supreeth move from 30 to 24"
+            }
+          },
+          {
+            "player": "AV-Mendoria",
+            "clan": "AVENGERS",
+            "score": 4341.5,
+            "sparks": 3256125,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 27,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-Mendoria",
+              "sourceImageSha256": "9f84beedd2aab8062afbe6ec0beee9207d4971e01fb378e62ceb2548d052a519",
+              "sparksProvenance": "derived-750-per-million-damage",
+              "rankBasis": "Reordered after leader-confirmed Supreeth move from 30 to 24"
+            }
+          },
+          {
+            "player": "AV-Deviantdan",
+            "clan": "AVENGERS",
+            "score": 4152.5,
+            "sparks": 3114375,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 28,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-DeviantDan",
+              "sourceImageSha256": "9f84beedd2aab8062afbe6ec0beee9207d4971e01fb378e62ceb2548d052a519",
+              "sparksProvenance": "derived-750-per-million-damage",
+              "rankBasis": "Reordered after leader-confirmed Supreeth move from 30 to 24"
+            }
+          },
+          {
+            "player": "AV-Mr.Mar.Berry",
+            "clan": "AVENGERS",
+            "score": 4126.8,
+            "sparks": 3095100,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 29,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-Mr.Mar.Berry-USA",
+              "sourceImageSha256": "9f84beedd2aab8062afbe6ec0beee9207d4971e01fb378e62ceb2548d052a519",
+              "sparksProvenance": "derived-750-per-million-damage",
+              "rankBasis": "Reordered after leader-confirmed Supreeth move from 30 to 24"
+            }
+          },
+          {
+            "player": "AV-HarryBallsagna",
+            "clan": "AVENGERS",
+            "score": 4115.4,
+            "sparks": 3086550,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 30,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-HarryBallsagna",
+              "sourceImageSha256": "9f84beedd2aab8062afbe6ec0beee9207d4971e01fb378e62ceb2548d052a519",
+              "sparksProvenance": "derived-750-per-million-damage",
+              "rankBasis": "Reordered after leader-confirmed Supreeth move from 30 to 24"
+            }
+          },
+          {
+            "player": "AV-Jess-PT",
+            "clan": "AVENGERS",
+            "score": 3775.5,
+            "sparks": 2831625,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 31,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-Jess-PT",
+              "sourceImageSha256": "9f84beedd2aab8062afbe6ec0beee9207d4971e01fb378e62ceb2548d052a519",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-no",
+            "clan": "AVENGERS",
+            "score": 3721.7,
+            "sparks": 2791275,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 32,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-no",
+              "sourceImageSha256": "9f84beedd2aab8062afbe6ec0beee9207d4971e01fb378e62ceb2548d052a519",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-UANGELES",
+            "clan": "AVENGERS",
+            "score": 3238,
+            "sparks": 2428500,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 33,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-UANGELES",
+              "sourceImageSha256": "8d5d04d81ace7bb0b5771bfb537972910c9c04a3a7a6a2c7a6c831c2692e48e4",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-INTEN",
+            "clan": "AVENGERS",
+            "score": 3145.7,
+            "sparks": 2359275,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 34,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-INTEN",
+              "sourceImageSha256": "8d5d04d81ace7bb0b5771bfb537972910c9c04a3a7a6a2c7a6c831c2692e48e4",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-TheOli",
+            "clan": "AVENGERS",
+            "score": 2732.2,
+            "sparks": 2049150,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 35,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-TheOli",
+              "sourceImageSha256": "8d5d04d81ace7bb0b5771bfb537972910c9c04a3a7a6a2c7a6c831c2692e48e4",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-Vadik-UA",
+            "clan": "AVENGERS",
+            "score": 2705.6,
+            "sparks": 2029200,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 36,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-Vadik-UA",
+              "sourceImageSha256": "8d5d04d81ace7bb0b5771bfb537972910c9c04a3a7a6a2c7a6c831c2692e48e4",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-Starred",
+            "clan": "AVENGERS",
+            "score": 2671.3,
+            "sparks": 2003475,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 37,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-Starred",
+              "sourceImageSha256": "8d5d04d81ace7bb0b5771bfb537972910c9c04a3a7a6a2c7a6c831c2692e48e4",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-MotherboardBeans",
+            "clan": "AVENGERS",
+            "score": 2655.5,
+            "sparks": 1991625,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 38,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-MotherboardBeans",
+              "sourceImageSha256": "8d5d04d81ace7bb0b5771bfb537972910c9c04a3a7a6a2c7a6c831c2692e48e4",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-BigPapi",
+            "clan": "AVENGERS",
+            "score": 2619.8,
+            "sparks": 1964850,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 39,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-BigPapi",
+              "sourceImageSha256": "8d5d04d81ace7bb0b5771bfb537972910c9c04a3a7a6a2c7a6c831c2692e48e4",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-SB",
+            "clan": "AVENGERS",
+            "score": 2450.5,
+            "sparks": 1837875,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 40,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-SB",
+              "sourceImageSha256": "8d5d04d81ace7bb0b5771bfb537972910c9c04a3a7a6a2c7a6c831c2692e48e4",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-EventHorizon",
+            "clan": "AVENGERS",
+            "score": 2407.8,
+            "sparks": 1805850,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 41,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-EventHorizon",
+              "sourceImageSha256": "6687476591416f3a68becda626616a42ef698fd0708ceac61f617d8ca34ad59a",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-SweetiePL",
+            "clan": "AVENGERS",
+            "score": 2352.5,
+            "sparks": 1764375,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 42,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-SweetiePL",
+              "sourceImageSha256": "6687476591416f3a68becda626616a42ef698fd0708ceac61f617d8ca34ad59a",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-Squishy",
+            "clan": "AVENGERS",
+            "score": 2335.3,
+            "sparks": 1751475,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 43,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-Squishy",
+              "sourceImageSha256": "6687476591416f3a68becda626616a42ef698fd0708ceac61f617d8ca34ad59a",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-Caklet",
+            "clan": "AVENGERS",
+            "score": 2166.5,
+            "sparks": 1624875,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 44,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-Caklet",
+              "sourceImageSha256": "ad27d99ac2fb56aa6a7e01586c208f9f1374e923c1a3268bfc3dce2dd428d7ce",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV.Saberkong",
+            "clan": "AVENGERS",
+            "score": 2137.5,
+            "sparks": 1603125,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 45,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV.Saberkong",
+              "sourceImageSha256": "ad27d99ac2fb56aa6a7e01586c208f9f1374e923c1a3268bfc3dce2dd428d7ce",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-CRISPIN.97",
+            "clan": "AVENGERS",
+            "score": 2122.8,
+            "sparks": 1592100,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 46,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-CRISPIN.27",
+              "sourceImageSha256": "ad27d99ac2fb56aa6a7e01586c208f9f1374e923c1a3268bfc3dce2dd428d7ce",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-DrDetroit",
+            "clan": "AVENGERS",
+            "score": 2087.3,
+            "sparks": 1565475,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 47,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-DrDetroit-USA",
+              "sourceImageSha256": "ad27d99ac2fb56aa6a7e01586c208f9f1374e923c1a3268bfc3dce2dd428d7ce",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV#Rafa#Tun",
+            "clan": "AVENGERS",
+            "score": 1559.2,
+            "sparks": 1169400,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 48,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV#Rafa#Tun",
+              "sourceImageSha256": "ad27d99ac2fb56aa6a7e01586c208f9f1374e923c1a3268bfc3dce2dd428d7ce",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-CHEN1972",
+            "clan": "AVENGERS",
+            "score": 1375.8,
+            "sparks": 1031850,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 49,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-CHEN1972",
+              "sourceImageSha256": "ad27d99ac2fb56aa6a7e01586c208f9f1374e923c1a3268bfc3dce2dd428d7ce",
+              "sparksProvenance": "derived-750-per-million-damage"
+            }
+          },
+          {
+            "player": "AV-Finnie",
+            "clan": "AVENGERS",
+            "score": 0,
+            "sparks": 0,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 50,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-Finnie",
+              "sourceImageSha256": "ad27d99ac2fb56aa6a7e01586c208f9f1374e923c1a3268bfc3dce2dd428d7ce",
+              "sparksProvenance": "derived-750-per-million-damage",
+              "visibleZeroScore": true
+            }
+          },
+          {
+            "player": "AV-Timmy",
+            "clan": "AVENGERS",
+            "score": 0,
+            "sparks": 0,
+            "stars": null,
+            "estimatedSparks": true,
+            "metadata": {
+              "rank": 51,
+              "lobby": "MAIN",
+              "monthKey": "nov",
+              "monthLabel": "November",
+              "sourceDisplayName": "AV-Timmy",
+              "sourceImageSha256": "ad27d99ac2fb56aa6a7e01586c208f9f1374e923c1a3268bfc3dce2dd428d7ce",
+              "sparksProvenance": "derived-750-per-million-damage",
+              "visibleZeroScore": true
+            }
+          }
+        ]
+      },
+      "authorization": {
+        "kind": "standing-website-only",
+        "id": "leader-standing-website-publication-2026-10-22",
+        "date": "2026-10-22"
+      }
     }
   ]
 }

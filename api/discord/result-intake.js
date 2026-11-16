@@ -27,20 +27,28 @@ async function handler(req,res){
     if(req.body?.action==='status')channelKey=KEYS[0];
     if(!KEYS.includes(channelKey))return respond(res,400,{error:'unknown-channel'});
   }
-  if(!process.env.AVENGERS_DISPATCH_DATABASE_URL||!process.env.DISCORD_BOT_TOKEN)
+  if(!process.env.AVENGERS_DISPATCH_DATABASE_URL||!process.env.DISCORD_BOT_TOKEN){
+    console.error('[source-intake] configuration-missing');
     return respond(res,503,{error:'private-intake-not-configured'});
+  }
   try{
     const {neon}=require('@neondatabase/serverless');
     const sql=neon(process.env.AVENGERS_DISPATCH_DATABASE_URL);
     const store=makeStore({query:(q,params)=>sql.query(q,params)});
     if(!cron&&req.body?.action==='status')return respond(res,200,{kind:'private-source-intake',publication:'not-attempted',channels:await store.status()});
     const report=await scanChannel({channelKey,store,token:process.env.DISCORD_BOT_TOKEN});
+    console.info('[source-intake] '+JSON.stringify({channel:channelKey,status:report.status,
+      cycleComplete:report.cycleComplete||false,originals:report.newOriginalProofs||0,
+      attachments:report.attachmentsAccounted||0,publication:'not-attempted'}));
     return respond(res,report.status==='busy'?202:200,report);
   }catch(e){
     // Do not echo private Discord source URLs, IDs, tokens, or query errors.
     const {safeError}=require('../../server/result-source-intake.cjs');
+    const code=safeError(e);
+    console.error('[source-intake] '+JSON.stringify({channel:channelKey,errorCode:code,
+      publication:'not-attempted'}));
     return respond(res,503,{status:'failed',channel:channelKey,
-      errorCode:safeError(e),publication:'not-attempted'});
+      errorCode:code,publication:'not-attempted'});
   }
 }
 module.exports=handler;

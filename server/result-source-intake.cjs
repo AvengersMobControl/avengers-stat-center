@@ -15,7 +15,13 @@ function safeError(err){
   if(err?.code==='RATE_LIMIT')return 'discord-rate-limit';
   const message=String(err?.message||'');
   if(/timeout|aborted/i.test(message))return 'source-timeout';
+  if(/permission denied|42501/i.test(message))return 'source-database-permission-denied';
+  if(/relation .*does not exist|42P01/i.test(message))return 'source-database-schema-missing';
+  if(/Cannot find module.*neondatabase/i.test(message))return 'source-runtime-module-missing';
+  if(/Discord API HTTP 401|HTTP 401|unauthorized/i.test(message))return 'source-auth-invalid';
+  if(/Discord API HTTP 403/i.test(message))return 'source-channel-forbidden';
   if(/HTTP 403|forbidden|expired/i.test(message))return 'source-forbidden';
+  if(/NeonDbError|postgres|database|query/i.test(message))return 'source-database-query-failed';
   if(/HTTP 404|not found/i.test(message))return 'source-not-found';
   if(/content type|signature|filename|image|bytes/i.test(message))return 'invalid-image-proof';
   return 'source-retrieval-failed';

@@ -21,4 +21,15 @@ module.exports=async function handler(req,res){
     const healthy=fresh&&complete&&blocked===0&&outstanding===0;
     return res.status(healthy?200:503).json({
       status:healthy?'source_intake_healthy':'source_intake_needs_attention',
-      lastRunAt:last?.fin¶»§q«^
+      lastRunAt:last?.finished_at||null,
+      channelsChecked:state.channels?.total||0,
+      channelsComplete:state.channels?.complete||0,
+      sourcesVerified:state.attachmentStatus?.verified_bytes||0,
+      sourcesPending:(state.attachmentStatus?.pending||0)+(state.attachmentStatus?.retry||0),
+      sourcesBlocked:blocked,
+      websitePublicationVerified:false
+    });
+  }catch{
+    return res.status(503).json({status:'source_intake_state_unavailable'});
+  }
+};

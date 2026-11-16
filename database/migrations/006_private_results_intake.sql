@@ -30,4 +30,30 @@ CREATE TABLE IF NOT EXISTS avengers_results_private.source_attachments (
   status text NOT NULL CHECK(status IN
     ('pending','retry','verified_bytes','blocked','unsupported','not_image')),
   attempts int NOT NULL DEFAULT 0,
-  next_retry_at timestamptz NOT NU¶»§q«^
+  next_retry_at timestamptz NOT NULL DEFAULT now(),
+  image_sha256 text CHECK(image_sha256 IS NULL OR image_sha256 ~ '^[a-f0-9]{64}$'),
+  byte_length bigint,
+  verified_at timestamptz,
+  last_error_code text,
+  PRIMARY KEY(channel_key,attachment_id),
+  FOREIGN KEY(channel_key,message_id)
+    REFERENCES avengers_results_private.source_messages(channel_key,message_id)
+);
+CREATE INDEX IF NOT EXISTS source_attachments_pending
+  ON avengers_results_private.source_attachments(status,next_retry_at);
+CREATE TABLE IF NOT EXISTS avengers_results_private.collector_lease (
+  lease_name text PRIMARY KEY,
+  owner_id uuid NOT NULL,
+  expires_at timestamptz NOT NULL
+);
+CREATE TABLE IF NOT EXISTS avengers_results_private.ingest_runs (
+  run_id uuid PRIMARY KEY,
+  started_at timestamptz NOT NULL DEFAULT now(),
+  finished_at timestamptz,
+  status text NOT NULL,
+  summary jsonb
+);
+CREATE INDEX IF NOT EXISTS results_ingest_runs_started
+  ON avengers_results_private.ingest_runs(started_at DESC);
+REVOKE ALL ON SCHEMA avengers_results_private FROM PUBLIC;
+REVOKE ALL ON ALL TABLES IN SCHEMA avengers_results_private FROM PUBLIC;

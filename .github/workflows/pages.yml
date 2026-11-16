@@ -30,4 +30,68 @@ jobs:
         with:
           node-version: '22'
       - name: Verify full-site projections before publication
-        run: node --test scripts/event-projection-core.test.cjs scripts/site-release.test.cjs scripts/flash-oct20-accepted.test.cjs scripts/fullsite-accepted-ingestion-gate.test.cjs scripts/report-ingest-candidate.test.cjs scripts/ingestion-source-holds.test.cjs scripts/results-intake-core.test.cjs scripts/results-intake-handler.test.cjs scripts/reconcile-league-reference.test.cjs scripts/space-rank-history.test.cjs scripts/post-kraken-flash-policy.test.cjs scripts/piggy-oct18-accepted.test.cjs scripts/piggy-benchmarks.test.cjs scripts/assemble-result-review.test.cjs scripts/verify-result-image-proofs.test.cjs scripts/audit-result-pagination.test.cjs scripts/hash-original-image.test.cjs scripts/fetch-original-discord-image.test.cjs scripts/verify¶»§q«^
+        run: node --test scripts/event-projection-core.test.cjs scripts/site-release.test.cjs scripts/flash-oct20-accepted.test.cjs scripts/fullsite-accepted-ingestion-gate.test.cjs scripts/report-ingest-candidate.test.cjs scripts/ingestion-source-holds.test.cjs scripts/results-intake-core.test.cjs scripts/results-intake-handler.test.cjs scripts/reconcile-league-reference.test.cjs scripts/space-rank-history.test.cjs scripts/post-kraken-flash-policy.test.cjs scripts/piggy-oct18-accepted.test.cjs scripts/piggy-benchmarks.test.cjs scripts/assemble-result-review.test.cjs scripts/verify-result-image-proofs.test.cjs scripts/audit-result-pagination.test.cjs scripts/hash-original-image.test.cjs scripts/fetch-original-discord-image.test.cjs scripts/verify-live-pages.test.cjs scripts/export-event-summary.test.cjs scripts/plan-event-summary-dispatch.test.cjs scripts/private-summary-publication-state.test.cjs scripts/private-dispatch-schema.test.cjs scripts/private-dispatch-role.test.cjs scripts/private-dispatch-readiness.test.cjs scripts/private-dispatch-ledger-adapter.test.cjs scripts/private-discord-authenticated-readback.test.cjs scripts/audit-six-clan-leagues.test.cjs
+      - name: Reconcile six historic Clan Leagues from canonical source before publication
+        run: |
+          node scripts/audit-six-clan-leagues.cjs
+          node scripts/reconcile-league-reference.cjs
+      - name: Validate event summary PNG output against approved ledger
+        run: |
+          python3 -m pip install --disable-pip-version-check Pillow==11.3.0
+          python3 -m unittest discover -s scripts -p test_render_event_summary.py -v
+          python3 -m unittest discover -s scripts -p test_render_piggy_finish_pb_preview.py -v
+          node scripts/export-event-summary.cjs approved-summary-release.json
+          for kind in piggy flash kraken; do
+            for clan in AVENGERS AV-2; do
+              python3 scripts/render-event-summary.py reports/approved-summary-release.json "reports/event-summary-preview-${kind}-${clan}.png" --kind "$kind" --clan "$clan"
+            done
+          done
+      - name: Stage a coherent versioned site
+        run: node scripts/build-site.cjs
+      - name: Install browser verification dependency
+        run: npm install --no-save --package-lock=false playwright@1.56.1
+      - run: npx playwright install --with-deps chromium
+      - name: Verify rendered pages before publication
+        run: node scripts/site-browser-smoke.cjs
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Verify exact published Pages commit, exports and browser
+        id: live_verify
+        env:
+          AVENGERS_PUBLIC_URL: ${{ steps.deployment.outputs.page_url }}
+          AVENGERS_EXPECTED_SHA: ${{ github.sha }}
+        run: node scripts/verify-live-pages.cjs
+      - name: Report exact live Pages verification on source commit
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const outcome = '${{ steps.live_verify.outcome }}';
+            const passed = outcome === 'success';
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state: passed ? 'success' : 'failure',
+              context: 'AVENGERS GitHub Pages production',
+              description: passed
+                ? 'Exact Pages SHA, exports and public browser verified'
+                : 'GitHub Pages public post-deploy verification incomplete or failed',
+              target_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            });
+      - name: Emit sanitized AVENGERS release outcome (best effort)
+        if: always() && !cancelled()
+        continue-on-error: true
+        env:
+          AVENGERS_POSTHOG_ENABLED: ${{ vars.AVENGERS_POSTHOG_ENABLED }}
+          AVENGERS_POSTHOG_PROJECT_ID: '670043'
+          AVENGERS_POSTHOG_PROJECT_TOKEN: ${{ secrets.AVENGERS_POSTHOG_PROJECT_TOKEN }}
+          AVENGERS_TELEMETRY_OUTCOME: ${{ steps.live_verify.outcome == 'success' && 'success' || 'failure' }}
+        run: node scripts/posthog-operations.cjs

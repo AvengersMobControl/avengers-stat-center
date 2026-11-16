@@ -789,10 +789,10 @@ test('November 13 Space lobby 5 rank 2 AV-Zoliika is recorded once under histori
 test('November 15 Big Pig final screenshots preserve source completeness, canonical identities and one-line rules',()=>{
   const e=BASE.ledger.events.find(x=>x.id==='piggy|2026-11-15');
   assert(e&&e.status==='partial','unretrieved ninth AV-2 attachment requires partial status');
-  assert.equal(e.rows.length,67,'67 verified in-scope player rows, two private identity holds');
-  assert.equal(e.rows.filter(r=>r.metadata?.lobby==='MAIN').length,46);
+  assert.equal(e.rows.length,68,'67 original player rows plus independently verified rank-5 AV-KKD');
+  assert.equal(e.rows.filter(r=>r.metadata?.lobby==='MAIN').length,47);
   assert.equal(e.rows.filter(r=>r.metadata?.lobby==='AV2-MAIN').length,21);
-  assert.equal(e.rows.filter(r=>r.clan==='AVENGERS').length,47);
+  assert.equal(e.rows.filter(r=>r.clan==='AVENGERS').length,48);
   assert.equal(e.rows.filter(r=>r.clan==='AV-2').length,20);
   assert.equal(e.sources.filter(x=>x.startsWith('reviewed-image-sha256:')).length,13,'includes one overlapping seven-row supplement');
   assert.equal(e.rows.filter(r=>r.player==='AV-Abu//npjp').length,1);
@@ -800,8 +800,47 @@ test('November 15 Big Pig final screenshots preserve source completeness, canoni
   assert.equal(e.rows.filter(r=>r.player==='AV-Zolika.x.TheBoss').length,1);
   assert.equal(e.rows.filter(r=>r.player==='AV-J').length,1);
   assert.equal(e.rows.filter(r=>r.player==='AV-FrenchieUSA').length,1);
-  assert(!e.rows.some(r=>r.player==='AV-KK:D'||r.player==='AV-OIRose'),'unconfirmed identity rows remain private');
+  const kk=e.rows.find(r=>r.player==='AV-KKD');
+  assert(kk&&kk.clan==='AVENGERS'&&kk.score===26568&&kk.sparks===250662,
+    'independently verified main rank 5 must appear under existing canonical player');
+  assert.equal(kk.metadata.rank,5);
+  assert.equal(kk.metadata.sourceDisplayName,'AV-KK:D');
+  assert(!e.rows.some(r=>r.player==='AV-KK:D'||r.player==='AV-OIRose'),
+    'unknown identities remain held, and decorated KK:D does not create another member');
   const hemperor=e.rows.find(r=>r.player==='TheHemperor');
   assert(hemperor&&hemperor.score===10&&hemperor.sparks===null&&hemperor.stars===null,'Big Pig non-Tier10 lines retained without invented payout');
   for(const p of ['AV-KK:D','AV-OIRose'])assert(!BASE.projection.people.some(x=>x.name===p),'no false new-member profile: '+p);
+});
+
+
+test('November 15 Kraken has 51 final positions, corrected Supreeth and canonical player identities',()=>{
+  const e=BASE.ledger.events.find(x=>x.id==='kraken|nov');
+  assert(e&&e.date==='2026-11-15','leader-confirmed November Kraken exists');
+  assert.equal(e.rows.length,51);
+  assert.equal(e.rows.filter(r=>r.clan==='AVENGERS').length,51);
+  assert.equal(new Set(e.rows.map(r=>r.player)).size,51);
+  assert.equal(new Set(e.rows.map(r=>r.metadata?.rank)).size,51);
+  assert.deepEqual(e.rows.map(r=>r.metadata?.rank).sort((a,b)=>a-b),
+    Array.from({length:51},(_,i)=>i+1));
+  const supreeth=e.rows.find(r=>r.player==='AV-Supreeth');
+  assert.equal(supreeth.score,4688.9);
+  assert.equal(supreeth.metadata.rank,24,'leader-confirmed later screenshot supersedes earlier rank 30');
+  const jamo=e.rows.find(r=>r.player==='AV-JAMO');
+  assert.equal(jamo.score,4595.1);
+  assert.equal(jamo.metadata.rank,25);
+  assert.equal(e.rows.reduce((total,r)=>total+r.sparks,0),172930050);
+  assert(e.rows.every(r=>r.stars===null&&r.clan==='AVENGERS'));
+  assert.equal(e.rows.find(r=>r.player==='AV-Finnie').score,0);
+  assert.equal(e.rows.find(r=>r.player==='AV-Timmy').score,0);
+  assert.equal(e.rows.filter(r=>r.player==='AV-Abu//npjp').length,1);
+  assert.equal(e.rows.filter(r=>r.player==='AV-Zolika.x.TheBoss').length,1);
+  assert.equal(e.rows.filter(r=>r.player==='AV-Addicted').length,1);
+  assert.equal(e.rows.filter(r=>r.player==='AV-FrenchieUSA').length,1);
+  assert.equal(e.rows.filter(r=>r.player==='AV-SMILINGBANDIT').length,1);
+  assert.equal(e.rows.filter(r=>r.player==='AV-Deviantdan').length,1);
+  assert.equal(e.rows.filter(r=>r.player==='AV-CRISPIN.97').length,1);
+  assert(!e.rows.some(r=>['AV-Abu','AV-Zoliika','AV-FrankAbagnale','AV-Frenchie(-4)',
+    'AV-CRISPIN.27','AV-SmiLiNgBanDiT'].includes(r.player)),'do not duplicate aliases');
+  assert.equal(e.sources.filter(x=>x.startsWith('leader-supplied-png-sha256:')).length,8);
+  assert.equal(BASE.projection.people.filter(p=>p.name==='AV-Abu//npjp').length,1);
 });

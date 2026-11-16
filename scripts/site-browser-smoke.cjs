@@ -82,7 +82,11 @@ async function main(){
     await page.selectOption('#overviewMonthSelect',monthOptions[0]);
     await page.selectOption('#globalStatusFilter','current');
     const joint=await page.locator('#overviewContent [data-total-period="season"] .period-total-piggy .mini-table tbody tr').count();
-    assert(joint>=Math.min(10,periodExpected.seasonal.piggy.length)&&joint>0,'combined roster totals contain at least active scores');
+    if(periodExpected.seasonal.piggy.length===0){
+      assert.equal(joint,0,'new 35-day league starts empty until verified Piggy results are posted');
+    }else{
+      assert(joint>=Math.min(10,periodExpected.seasonal.piggy.length),'combined roster totals contain at least active scores');
+    }
     await page.selectOption('#globalStatusFilter','active');
     for(const status of ['active','av2']){
       await page.selectOption('#globalStatusFilter',status);

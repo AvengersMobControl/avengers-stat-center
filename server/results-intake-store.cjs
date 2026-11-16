@@ -1,9 +1,9 @@
 'use strict';
 // Private state. Idempotent page writes; credentials and signed URLs NEVER persisted.
-const {neon}=require('@neondatabase/serverless');
 const {randomUUID}=require('node:crypto');
 function connect(connection,channels){
   if(!connection)throw Error('missing_private_results_database');
+  const {neon}=require('@neondatabase/serverless');
   return createStore(neon(connection),channels);
 }
 function createStore(sql,channels={}) {

@@ -30,6 +30,8 @@ jobs:
             [ -f "$f" ] || continue
             node --check "$f"
           done
+      - name: Private source-intake security, completeness and resume gates
+        run: node --test scripts/result-source-intake.test.cjs
       - name: Discord connector OAuth and auth gate
         run: node --test scripts/mcp-oauth-clients.test.cjs
       - name: Standing Discord event publisher guards

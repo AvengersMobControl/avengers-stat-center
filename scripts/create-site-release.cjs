@@ -39,6 +39,15 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
     'AV-J-Zo':'AV-J',
     'AV-JustSomeGuy':'AV-HarryBallsagna'
   });
+  // The canonical identity is AV-OlRose regardless of AV2/AV-2 or bare-name
+  // variants, including any future display spelling visible in accepted rows.
+  const olRoseNames=[
+    'OlRose','olRose','OLROSE','AV2-OlRose','AV-2-OlRose','AV-2.OlRose',
+    ...((legacy.AVENGERS_DATA?.members||[]).map(r=>r.name)),
+    ...updates.flatMap(u=>(u.event?.rows||[]).map(r=>r.player||r.sourceIdentity||'')),
+  ];
+  for(const n of olRoseNames)
+    if(typeof n==='string'&&/olrose/i.test(n)&&n!=='AV-OlRose') aliases[n]='AV-OlRose';
   delete aliases['AV-Zolika.x.TheBoss']; // remove reverse mapping to avoid cycles
   aliases['AV-Zolika.x.Kira']='AV-Zolika.x.TheBoss';
   aliases['AV-ZolikaLoveKira']='AV-Zolika.x.TheBoss';

@@ -23,6 +23,14 @@ function refreshHistoricalPayouts(ledger){
 }
 function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approved-event-updates.json'),'utf8')).updates}={}){
   const legacy=load(),migration=migrate(legacy);
+  // Council-approved current assignments, taken directly from the leader's
+  // November 17 spreadsheet. Do not infer present status from event-time clan.
+  const currentRosterPolicy=JSON.parse(fs.readFileSync(path.join(root,'data/council-roster-overrides-2026-11-17.json'),'utf8'));
+  assert.equal(currentRosterPolicy.schemaVersion,1,'Unsupported Council roster policy');
+  const rosterOverrides=currentRosterPolicy.statusOverrides;
+  assert.equal(Object.keys(rosterOverrides).length,22,'Council roster override count changed without review');
+  for(const status of Object.values(rosterOverrides))
+    assert(['Active','AV2','Inactive','Removed'].includes(status),'Unknown Council roster assignment');
   // Leader-confirmed identity: TheBoss; Kira and LoveKira are historical aliases.
   const aliases={...migration.aliases};
   // The leader's 2026-11-12 surviving canonical labels are authoritative.
@@ -51,7 +59,10 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
   // Leader-directed complete public removal (2026-11-06). Canonical accepted
   // original evidence stays in Git history, but must never surface in the
   // published ledger, exports, profile projection or website assets.
-  const publicExcludedNames=new Set(['Keyler','AV-Keyler','Blade','AV-2(TAMIM)']);
+  const publicExcludedNames=new Set([
+    'Keyler','AV-Keyler','Blade','AV-2(TAMIM)',
+    ...Object.entries(rosterOverrides).filter(([,status])=>status==='Removed').map(([name])=>name)
+  ]);
   const publicExcluded=n=>n!=null&&String(n).trim()!==''&&(publicExcludedNames.has(String(n))||publicExcludedNames.has(resolve(n)));
   for(const e of ledger.events)e.rows=e.rows.filter(r=>!publicExcluded(r.player||r.sourceIdentity));
   // The public versioned ledger also contains revision-change snapshots;
@@ -95,8 +106,35 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
       if((prior[k]==null||prior[k]==='')&&next[k]!=null&&next[k]!=='')prior[k]=next[k];
   }
   R.rows=[...canonicalRoster.values()];
+  // The approved spreadsheet changes CURRENT membership only. All historical
+  // event rows retain the clan in which the source result was actually earned.
+  const approvedRosterNames=new Set();
+  for(const row of R.rows){
+    const id=resolve(row.profileName||row.name);
+    const approved=rosterOverrides[id]||rosterOverrides[row.name];
+    if(!approved||approved==='Removed')continue;
+    row.status=approved;
+    approvedRosterNames.add(id);
+  }
+  for(const [name,status] of Object.entries(rosterOverrides)){
+    if(status==='Removed')continue;
+    assert(approvedRosterNames.has(resolve(name)),
+      'Council roster override lacks matching published player: '+name);
+  }
   for(const name of Object.keys(R.byName||{}))
     if(publicExcluded(name)||publicExcluded(R.byName[name]?.canonicalName))delete R.byName[name];
+  for(const [key,entry] of Object.entries(R.byName||{})){
+    const id=resolve(entry?.canonicalName||key);
+    const target=R.rows.find(row=>row.profileName===id);
+    if(target)entry.status=target.status;
+  }
+  // Keep both canonical keys and historic display-name links pointing at the
+  // current roster state, without introducing a duplicate player row.
+  for(const row of R.rows){
+    const id=row.profileName;
+    R.byName[id]={...(R.byName[id]||R.byName[row.name]||{}),
+      canonicalName:id,status:row.status};
+  }
   for(const name of Object.keys(D.aliasMap||{}))if(publicExcluded(name)||publicExcluded(D.aliasMap[name]))delete D.aliasMap[name];
   D.members=D.members.filter(m=>!publicExcluded(m.name));
   for(const prop of ['currentAv2','currentAvengers','currentAvengersStars','preSpaceOct16','historicalSparkFloors'])

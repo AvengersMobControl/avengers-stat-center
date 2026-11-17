@@ -121,6 +121,45 @@
   if(!D) return;
 
   const aliases={"AV#Rafa#":"AV#Rafa#Tun","AV|<STAR-LORD>|":"AV<STAR-LORD>","AV|<STAR-LORD>\\":"AV<STAR-LORD>","AV\\<STAR-LORD>\\":"AV<STAR-LORD>","AV\\<STAR-LOR...":"AV<STAR-LORD>","AV/<STAR-LORD>\\":"AV<STAR-LORD>","AV/<STAR-LOR...":"AV<STAR-LORD>","AV-8!\\...Bil":"AV-8!l...Bil","AV-8!\\....Bil":"AV-8!l...Bil","AV-Abu":"AV-Abu//npjp","AV-Abu#npjp":"AV-Abu//npjp","AV-Abu//np.jp":"AV-Abu//npjp","AV-Andre<DE>":"AV-Andre-DE","AV-Andre":"AV-Andre-DE","AV-Shells.Ani":"AV-Animosity","AV-CowPoke":"AV-Animosity","AV-Attila":"AV-Attila-AZE","AV-Atilla-AZE":"AV-Attila-AZE","AV-Atilla":"AV-Attila-AZE","AV-BaBaVooS-BRA":"AV-BaBaVooS","AV-BaBaVooS-B...":"AV-BaBaVooS","AV-BlackPearl-Dutch":"AV-BlackPearl","AV-BlackPearl-D...":"AV-BlackPearl","AV-BLISTER-USA":"AV-BLISTER","AV-BLISTER2":"AV-BLISTER","AV-Blister2":"AV-BLISTER","BX1":"AV-BX1","AV-CRISPIN.97-MEX":"AV-CRISPIN.97","AV-CRISPIN.97_MEX":"AV-CRISPIN.97","AV-CRISPIN.27-MEX":"AV-CRISPIN.97","AV-CRISPIN.27MEX":"AV-CRISPIN.97","AV-CRISPIN.27M...":"AV-CRISPIN.97","AV-CRISPIN.27M":"AV-CRISPIN.97","AV-CRISPIN.27-...":"AV-CRISPIN.97","AV-CRISPIN.27":"AV-CRISPIN.97","AV-DrDetroit-USA":"AV-DrDetroit","AV-DrDetroit-U...":"AV-DrDetroit","AV2-DrDetroit-USA":"AV-DrDetroit","AV2-DrDetroit-U...":"AV-DrDetroit","DuluDaniels":"AV-DuluDaniels","EatSleepPlay":"AV-EatSleepPlay","AV-EventHorizon028":"AV-EventHorizon","AV-EventHorizon...":"AV-EventHorizon","EvolvedEclipse":"AV-EvolvedEclipse","AV-Witch-king":"AV-EXCALIBUR","AV-Crusader":"AV-EXCALIBUR","AV-FenixTisential":"AV-FeniXistential","HiddenFrenchie":"AV-FrenchieUSA","AV-Frenchie(-4)":"AV-FrenchieUSA","AV-Frenchie USA":"AV-FrenchieUSA","AV-Frenchie":"AV-FrenchieUSA","(AV)HiddenFrenchman":"AV-FrenchieUSA","(AV)HiddenFrench":"AV-FrenchieUSA","(AV)HiddenFrenc...":"AV-FrenchieUSA","(AV)HiddenFren":"AV-FrenchieUSA","AV-GNSK-JPN":"AV-GNSK","AV.GNSK":"AV-GNSK","AV-GreenZombie":"AV-LemonBlue","AV-BlueWave":"AV-LemonBlue","AV-SaddamMiser":"AV-HarryBallsagna","AV-HarryBallsa...":"AV-HarryBallsagna","AV-HarveySpect...":"AV-HarveySpecter","AV-hoops-SCT":"AV-Hoops","AV-hoops":"AV-Hoops","Av-<INFINITY>":"AV-INFINITY","AV-InvisibleSpy":"AV-InvincibleSpy","AV-InvinsibleSpy":"AV-InvincibleSpy","AV-Tin-VNM":"AV-J","AV-TiN.":"AV-J","AV-Tin":"AV-J","AV-TiN":"AV-J","AV-TIN":"AV-J","JACK...RK":"AV-JACK","AV-jacko-TWN":"AV-jacko","AV-Scout":"AV-jacko-mini","AV-JeffKintz05":"AV-JefhKintz05","AV-JefhKintz05":"AV-JefhKintz05","AV-2Lin":"AV-Lin","AV-JimBoy":"AV-J1M","AV-JIM80Y":"AV-J1M","AV-JIM":"AV-J1M","AV-J1m80y":"AV-J1M","AV-J1M80Y":"AV-J1M","JOKER":"AV-JOKER","AV-Liam":"AV-LiamUSA","AV.March":"AV-March","AV-MONSTER.":"AV-MONSTER","Morikila":"AV-Morikila","AV-Marikila":"AV-Morikila","AV-Motherboard...":"AV-MotherboardBeans","AV-Motherboar...":"AV-MotherboardBeans","AV-Mr.Mar.Berry-USA":"AV-Mr.Mar.Berry","AV-Mr.Mar.Berry...":"AV-Mr.Mar.Berry","AV-Mr.Mar.Berr...":"AV-Mr.Mar.Berry","M":"AV-M-usa","BigCheese":"AV-M-usa","AV-M":"AV-M-usa","PuffyMufflin":"AV-PuffyMufflin","PuffyMufflia":"AV-PuffyMufflin","Rex":"AV-Rex","AV-RkHendrix-MX":"AV-RkHendrix","AV-RkHendrix-...":"AV-RkHendrix","Phuc.Mccrevice":"AV-Robcorp","AV-Robcorp-AUS":"AV-Robcorp","AV-Rbcorp":"AV-Robcorp","<H>RobCorps":"AV-Robcorp","SiFra":"AV-SiFra","AV-SMILINGBAN...":"AV-SMILINGBANDIT","AV-SMILINGBAN":"AV-SMILINGBANDIT","AV-take-them.out":"AV-ColdCreeps","AV-take.them.out":"AV-ColdCreeps","AV-TikSON$":"AV-TiK$oN$","AV-Vadik-UKR":"AV-Vadik-UA","AV-Vadik":"AV-Vadik-UA","AV-ZIBBY2.0":"AV-ZIBBY","ZolikaLoveKira":"AV-Zolika.x.TheBoss","AV-ZolikaLoveKira":"AV-Zolika.x.TheBoss","AV-ZolikaLoveK...":"AV-Zolika.x.TheBoss","lam":"Iam","tgyes":"tgves","AV-LY10":"AV-LemonBlue","AV-Megalodon-":"AV-Megalodon","AV-2-EXCALIBUR":"AV-EXCALIBUR","AV-Kira.x.Zolika":"AV-KiraLoveZolika","Foot Slammed":"Foot   Slammed"};
+  // Leader-confirmed November 2026 aliases. Always preserve event-time clan,
+  // source display name and scores; only the canonical player identity changes.
+  Object.assign(aliases, {
+    'AV-2-AVENGER': 'AV-Pablin',
+    'AV2-OlRose': 'AV-OlRose',
+    'AV-ShieldBreaker': 'AV-ShielDBreaker'
+  });
+
+  // Clan-tag normalization: AV2, AV-2, AV-2- (including dot separators) refer
+  // to an established AV- canonical identity only when the target matches
+  // unambiguously. No speculative fuzzy matching or historical clan rewrite.
+  const identityNames=[
+    ...(D.members||[]).map(p=>p.name),
+    ...(K?.players||[]).map(p=>p.name),
+    ...Object.keys(D.piggy?.history||{}),
+    ...Object.keys(D.space?.history||{}),
+    ...Object.values(D.piggy?.events||{}).flatMap(rows=>(rows||[]).map(p=>p.name)),
+    ...Object.values(D.space?.events||{}).flatMap(rows=>(rows||[]).map(p=>p.name)),
+    ...Object.keys(aliases),
+    ...Object.values(aliases)
+  ].filter(name=>typeof name==='string'&&name.trim());
+  const clanTag=/^AV[-_.]?2[-_.]?(.*)$/i;
+  const knownCanonical=new Map();
+  for(const name of identityNames){
+    if(clanTag.test(name))continue;
+    const target=aliases[name]||name;
+    const key=target.toLowerCase();
+    if(!knownCanonical.has(key))knownCanonical.set(key,new Set());
+    knownCanonical.get(key).add(target);
+  }
+  for(const name of identityNames){
+    if(aliases[name])continue;
+    const match=name.match(clanTag);
+    if(!match||!match[1])continue;
+    const canonicalCandidate='AV-'+match[1];
+    const targets=[...(knownCanonical.get(canonicalCandidate.toLowerCase())||[])];
+    if(targets.length===1&&targets[0]!==name)aliases[name]=targets[0];
+  }
+
   // Leader-confirmed November 13 Space rank 2 spelling; retain the established profile.
   D.aliasMap=Object.assign({},D.aliasMap||{},aliases,{'AV-Zoliika':'AV-Zolika.x.TheBoss'});
 

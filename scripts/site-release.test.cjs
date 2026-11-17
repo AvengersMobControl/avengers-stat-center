@@ -101,8 +101,9 @@ test('verified July 30 source corrections and actual October 2 values agree acro
   assert.equal(D.members.find(m=>m.name==='AV-HarryBallsagna').spacePB,549.9);
   assert.equal(w.AVENGERS_COMMUNITY.achievementProfile('AV-HarryBallsagna').categories.find(c=>c.id==='space').value,549.9);
   assert(!D.members.some(m=>m.name==='DedHed'),'leader removed DedHed from public profiles');
-  assert.equal(load().AVENGERS_DATA.members.find(m=>m.name==='DedHed')?.piggyPB,111,
-    'retained historical raw source still preserves DedHed PB');
+  assert(BASE.ledger.events.find(e=>e.id==='space|2026-10-16').rows
+    .some(r=>r.player==='DedHed'&&r.score===0.1957),
+    'retained approved source still preserves DedHed performance');
   assert.equal(D.members.find(m=>m.name==='Basecreature').spacePB,9.45);
   assert.equal(D.resolvePlayerName('AV-CHUCK'),D.resolvePlayerName('AV-Chuck'));
   assert.notEqual(D.resolvePlayerName('AV-Frenchie2'),D.resolvePlayerName('AV-Frenchie(-4)'));
@@ -274,7 +275,7 @@ test('Council-approved October 30 location updates retain verified identities, i
   assert.equal(R.byName['AV-TRINITY'].timeZoneGroup,'','TRINITY TZG not inferred from UTC');
   assert.equal(R.byName['AV-istanbuL'].timeZoneGroup,'','istanbuL TZG not inferred from UTC');
   assert.equal(R.byName['AV-Zolika.x.TheBoss'].location,'Netherlands','Zolika residence retained; nationality not inferred');
-  assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAv2.length,39,'published AV-2 snapshot excludes retired zero-event players');
+  assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAv2.length,31,'published AV-2 snapshot excludes the eight additional leader-removed screenshot accounts');
   for(const name of ["GirlsOnly","yooossss","Shelby","Piton","Jamaica","AV-AC3","Pro","Creatureboost"]){
     assert(!R.rows.some(r=>r.name===name),'Removed member remains in published roster: '+name);
     assert(!D.members.some(m=>m.name===name),'Removed member remains in site profile data: '+name);

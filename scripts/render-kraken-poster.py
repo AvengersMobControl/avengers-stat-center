@@ -5,7 +5,8 @@ DRAFT / under review — no leader approval yet, not wired into docs/AUTOMATIC_D
 and Kraken is explicitly excluded from the standing automatic-posting authorization (AGENTS.md).
 
 Usage:
-  python3 scripts/render-kraken-poster.py reports/approved-summary-release.json out.png --clan AVENGERS [--event-id 'kraken|nov']
+  python3 scripts/render-kraken-poster.py reports/approved-summary-release.json out.png --clan AVENGERS \
+      [--event-id 'kraken|nov'] [--exclude 'AV-Timmy' 'AV-23']
 
 Reads ONLY the approved canonical export (reports/approved-summary-release.json), which carries
 Kraken RESULTS only (player, clan, damage score in millions, derived Sparks, rank) — never route,
@@ -44,11 +45,20 @@ def icon(p, box, flip=False):
     p.im.paste(im, (x0 + (x1 - x0 - im.width) // 2, y0 + (y1 - y0 - im.height) // 2), im)
 
 
-def build_model(R, clan, event_id=None):
+def build_model(R, clan, event_id=None, exclude=None):
     P = R['projection']
     kr = sorted([e for e in P['events'] if e['kind'] == 'kraken' and e['status'] != 'revoked'], key=lambda e: e['date'])
     event = next(e for e in kr if e['id'] == event_id) if event_id else \
         [e for e in kr if any(r['clan'] == clan for r in e['rows'])][-1]
+    # Reusable roster-exclusion mechanism: drop named players from THIS event only (e.g. a player
+    # removed from the clan right around this month, whose row is a stale artifact of the removal,
+    # not a real result). This mutates the shared event dict in place, so every other computation
+    # below that walks `kr`/`earlier` (rank history, totals, finishes, trend) sees the exclusion too
+    # — but only for this one event; the player's own earlier, legitimate months are untouched.
+    # Never edits data/approved-event-updates.json or any other source file — render-time only.
+    if exclude:
+        excl = set(exclude)
+        event['rows'] = [r for r in event['rows'] if r['player'] not in excl]
     rows = sorted([r for r in event['rows'] if r['clan'] == clan and r.get('score') is not None], key=lambda r: -r['score'])
     if not rows: raise SystemExit(f'No {clan} rows in {event["id"]}')
     earlier = [e for e in kr if e['date'] < event['date']]
@@ -111,17 +121,21 @@ def build_model(R, clan, event_id=None):
             g = r['score'] / avg - 1
             if not bva or g > bva['gain']: bva = dict(name=r['player'], gain=g, avg=avg, score=r['score'], n=len(h))
 
-    # Biggest rank climb vs the immediately preceding month this clan has rows for (not vs any
-    # earlier month — "climb" should mean this month vs last time they played, not vs their worst).
+    # Rank climb vs the immediately preceding month this clan has rows for (not vs any earlier
+    # month — "climb" should mean this month vs last time they played, not vs their worst).
+    # `improvements` is every returning player whose placement got better, full list, biggest
+    # climb first; `climb` (its head) still feeds the single-tile spotlight below.
     prior_event = earlier[-1] if earlier else None
+    prior_label = (prior_event.get('metadata') or {}).get('monthLabel', prior_event['date']) if prior_event else None
     prior_ranks = {r['player']: (r.get('metadata') or {}).get('rank') for r in (prior_event['rows'] if prior_event else []) if r['clan'] == clan}
-    climb = None
+    improvements = []
     for r in rows:
         prk = prior_ranks.get(r['player'])
         nrk = (r.get('metadata') or {}).get('rank')
         if isinstance(prk, int) and isinstance(nrk, int) and prk > nrk:
-            gain = prk - nrk
-            if not climb or gain > climb['gain']: climb = dict(name=r['player'], prevRank=prk, newRank=nrk, gain=gain)
+            improvements.append(dict(name=r['player'], prevRank=prk, newRank=nrk, gain=prk - nrk))
+    improvements.sort(key=lambda x: (-x['gain'], x['newRank']))
+    climb = improvements[0] if improvements else None
 
     # Clan record watch: does this month's leader beat the best score from every STRICTLY
     # earlier month (not this one) — i.e. an actual new record, not just "today's leader".
@@ -142,7 +156,8 @@ def build_model(R, clan, event_id=None):
                 sparks=sum(r['sparks'] or 0 for r in rows), rate=rate,
                 totalDamageRank=total_rank, totalDamageOf=len(totals), totalDamageRankArena=total_rank_arena, totalDamageOfArena=len(atotals),
                 recent=recent, finishes=finishes, pbs=pbs, first=sorted(first, key=lambda r: -r['score']),
-                above=above, eligible=eligible, bestVsAvg=bva, climb=climb, priorBest=prior_best, leaderIsRecord=leader_is_record,
+                above=above, eligible=eligible, bestVsAvg=bva, climb=climb, improvements=improvements, priorLabel=prior_label,
+                priorBest=prior_best, leaderIsRecord=leader_is_record,
                 tiers=tiers, everRank={r['player']: ever_rank(r['score']) for r in rows[:10]}, everN=len(ever_scores),
                 arenaRank={r['player']: arena_rank(r['score']) for r in rows[:10]}, arenaN=len(arena_scores),
                 projectionVersion=P.get('version'), complete=bool(event.get('metadata', {}).get('complete')))
@@ -151,7 +166,7 @@ def build_model(R, clan, event_id=None):
 def plan(m):
     LW = 1010; RW = W - 2 * M - LW - 24
     nf = len(m['first'])
-    pb_h = 122 + 50 * max(1, len(m['pbs'])) + 20
+    pb_h = 122 + 50 * max(1, len(m['pbs'])) + (64 + 50 * len(m['improvements']) if m['improvements'] else 0) + 20
     boxes = [('new', 140 + max(1, nf) * 118), ('avg', 170), ('miles', 116 + len(m['tiers']) * 48 + 16)]
     best = None
     rest = boxes[1:]
@@ -293,6 +308,18 @@ def render(m, out):
             p.text((x + 46, ry + 2), i + 1, 22, 'gold', 'black', 'ma'); p.fit((x + 78, ry + 1), bb['name'], 380, 26, 'fg', 'bold')
             p.text((x + 560, ry + 3), dmg(bb['old']), 24, 'mut', 'semi', 'ra'); p.text((x + 690, ry + 5), shortdate(bb['oldDate']), 20, 'mut', 'med', 'ra')
             p.text((x + 860, ry + 1), dmg(bb['new']), 26, 'gold', 'black', 'ra'); p.text((x + w - 28, ry + 2), pct(bb['imp']), 24, 'green', 'xbold', 'ra')
+        if m['improvements']:
+            py = y0 + 122 + max(1, len(m['pbs'])) * 50 + 14
+            p.text((x + 28, py), 'PLACEMENT IMPROVEMENTS', 26, 'cyan', 'black')
+            lbl = f'Rank vs {m["priorLabel"]}' if m['priorLabel'] else 'Rank vs last Kraken'
+            p.text((x + w - 28, py + 6), lbl, 18, 'mut', 'semi', 'ra')
+            for i, q in enumerate(m['improvements']):
+                ry = py + 46 + i * 50
+                if i % 2 == 0: d.rectangle((x + 20, ry - 8, x + w - 20, ry + 40), fill=C['row2'])
+                p.fit((x + 78, ry + 1), q['name'], 380, 26, 'fg', 'bold')
+                p.text((x + 560, ry + 3), ordinal(q['prevRank']), 24, 'mut', 'semi', 'ra')
+                p.text((x + 860, ry + 1), ordinal(q['newRank']), 26, 'cyan', 'black', 'ra')
+                p.text((x + w - 28, ry + 2), f'+{q["gain"]}', 24, 'green', 'xbold', 'ra')
 
     def box_new(x, y0, w, h):
         nf = m['first']; p.neon((x, y0, x + w, y0 + h), 'mag', width=4)
@@ -346,6 +373,7 @@ def render(m, out):
     sha = hashlib.sha256(Path(out).read_bytes()).hexdigest()
     side = dict(file=str(out), eventId=ev['id'], clan=clan, projectionVersion=m['projectionVersion'], templateVersion=TEMPLATE,
                 imageSHA256=sha, dimensions=[W, fh], players=len(m['rows']), damagePBs=len(m['pbs']),
+                placementImprovements=len(m['improvements']),
                 firstTracked=len(m['first']), readyToPost=False, discordPostingEnabled=False)
     Path(str(out).rsplit('.', 1)[0] + '.json').write_text(json.dumps(side, indent=2))
     return side
@@ -354,5 +382,10 @@ def render(m, out):
 if __name__ == '__main__':
     ap = argparse.ArgumentParser(); ap.add_argument('release'); ap.add_argument('output')
     ap.add_argument('--clan', choices=['AVENGERS', 'AV-2'], required=True); ap.add_argument('--event-id')
+    ap.add_argument('--exclude', nargs='*', default=[],
+                     help='Player name(s) to drop from this one rendered event only (e.g. someone removed '
+                          'from the clan right before/around this month whose row is a stale roster '
+                          'artifact, not a real result). Does not touch their legitimate earlier months, '
+                          'and never edits any data file.')
     a = ap.parse_args(); R = json.loads(Path(a.release).read_text())
-    print(json.dumps(render(build_model(R, a.clan, a.event_id), a.output)))
+    print(json.dumps(render(build_model(R, a.clan, a.event_id, exclude=a.exclude), a.output)))

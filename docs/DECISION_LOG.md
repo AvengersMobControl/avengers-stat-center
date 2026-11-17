@@ -1,3 +1,10 @@
+## 2026-11-17 — Leader-provided roster overrides and non-punitive OlRose attendance correction
+
+- **Decision:** The uploaded Council workbook's Current Roster column supersedes dated screenshot and earlier leader membership overrides for the 22 specified canonical members. Apply transfers and inactivations as current status changes, not event-time clan changes. Respect nine explicit “Remove” designations as **public profile removals**, retaining approved original screenshot records in the evidence ledger.
+- **Implementation:** `data/council-roster-overrides-2026-11-17.json` drives the full-site release projection. Separate retained accepted ledger from filtered public projection so review/idempotence checks, original source scores and clan attribution remain reproducible. New expected current count is **48 Active / 37 AV-2** on the site.
+- **Council report exception:** OlRose's absent November Kraken row is **unverified**, not a supported no-show, because five visible AV-2 source ranks have privately held identities. The spreadsheet records the attendance exception and removes the false no-show without inventing a zero damage result or changing the site historical Kraken ledger.
+- **Safety:** Never infer missing scores, invent event attendance, or make an unverified canonical merge. Distinguish user-requested deletion of a public profile from source-evidence deletion.
+
 ## 2026-11-17 — Canonical AV-2 clan-prefix identity rule and Clan League spreadsheet correction
 
 - Leader confirmed that AV-2 / AV2 / AV-2- and similar prefixes are clan labels, **not separate player identities**, when removing the clan tag produces an unambiguous established canonical name. Require an exact, case-insensitive canonical match, not speculative fuzzy matching.

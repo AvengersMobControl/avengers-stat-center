@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 """Monthly Kraken poster, same visual system as render-bigpig-poster.py / render-space-poster.py.
 
-DRAFT / under review — no leader approval yet, not wired into docs/AUTOMATIC_DISCORD_POSTING.md,
-and Kraken is explicitly excluded from the standing automatic-posting authorization (AGENTS.md).
+Leader approved this format and the November AVENGERS render for a one-time Discord send on
+2026-11-17 (see data/discord-posts.json's kraken|kraken|nov|AVENGERS entry and its
+leader-directed-onetime-kraken-2026-11-17 authorization tag). Still not wired into
+docs/AUTOMATIC_DISCORD_POSTING.md, and still excluded from the standing automatic-posting
+authorization (AGENTS.md) -- a future month's Kraken render/send needs its own explicit
+leader direction, the same as this one did.
 
 Usage:
   python3 scripts/render-kraken-poster.py reports/approved-summary-release.json out.png --clan AVENGERS \

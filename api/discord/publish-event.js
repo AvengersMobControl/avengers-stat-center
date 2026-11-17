@@ -25,9 +25,14 @@ const approved=require('../../data/approved-event-updates.json');
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 const AUTH_SINGLE_EVENT='leader-standing-auto-discord-2026-10-26';
 const AUTH_WEEKLY='leader-standing-auto-discord-weekly-2026-11-09';
-const authFor=kind=>kind==='weekly'?AUTH_WEEKLY:AUTH_SINGLE_EVENT;
+// Kraken is explicitly NOT part of the 2026-10-26 standing single-event activation (AGENTS.md:
+// "Kraken is not included") -- it gets its own one-time, date-stamped tag per leader-directed
+// send, so it can never silently inherit standing/automatic authorization in the audit trail.
+// A future Kraken month needs its own explicit leader direction and its own tag, not reuse of this one.
+const AUTH_KRAKEN_ONETIME='leader-directed-onetime-kraken-2026-11-17';
+const authFor=kind=>kind==='weekly'?AUTH_WEEKLY:kind==='kraken'?AUTH_KRAKEN_ONETIME:AUTH_SINGLE_EVENT;
 const CHANNEL='1470175579058999386';
-const KINDS=new Set(['space','piggy','flash','weekly']);
+const KINDS=new Set(['space','piggy','flash','weekly','kraken']);
 
 function answer(res,code,data){
  res.statusCode=code;
@@ -189,4 +194,4 @@ async function handler(req,res){
  }catch(e){return answer(res,503,{ok:false,reason:String(e?.message||'preflight blocked').slice(0,140)});}
 }
 module.exports=handler;
-module.exports._test={tokenOkay,validPost,mentions,allowedClans,sourceDigest,postKeys};
+module.exports._test={tokenOkay,validPost,mentions,allowedClans,sourceDigest,postKeys,authFor};

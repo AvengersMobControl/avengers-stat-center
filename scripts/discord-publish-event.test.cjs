@@ -3,11 +3,14 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
-const { tokenOkay, validPost, mentions, allowedClans, postKeys, sourceDigest } = require('../api/discord/publish-event.js')._test;
+const { tokenOkay, validPost, mentions, allowedClans, postKeys, sourceDigest, authFor } = require('../api/discord/publish-event.js')._test;
 const sha = s => crypto.createHash('sha256').update(s).digest('hex');
 
 const good = { kind: 'piggy', eventId: 'piggy|2026-10-23', clan: 'AVENGERS', file: 'AVENGERS_Big_Pig_October_23_2026.png',
   sha256: 'a'.repeat(64), size: 10, body: '@everyone hi', approved: true, template: 't' };
+
+const goodKraken = { kind: 'kraken', eventId: 'kraken|nov', clan: 'AVENGERS', file: 'AVENGERS_Kraken_November_15_2026.png',
+  sha256: 'a'.repeat(64), size: 10, body: '@everyone kraken', approved: true, template: 't' };
 
 const goodWeekly = { kind: 'weekly', eventId: 'weekly|2026-11-02', clan: 'AVENGERS',
   file: 'AVENGERS_Weekly_Recap_November_2_2026.png', sha256: 'a'.repeat(64), size: 10,
@@ -25,7 +28,9 @@ test('token must hash to the configured digest', () => {
 test('post key, kind, file, pin, body and approval are validated', () => {
   assert.equal(validPost('piggy|piggy|2026-10-23|AVENGERS', good), good);
   assert.throws(() => validPost('piggy|piggy|2026-10-23|AV-2', good));
-  assert.throws(() => validPost('kraken|x|AVENGERS', { ...good, kind: 'kraken', eventId: 'x' }));
+  assert.equal(validPost('kraken|kraken|nov|AVENGERS', goodKraken), goodKraken);
+  assert.throws(() => validPost('kraken|kraken|nov|AVENGERS', { ...goodKraken, approved: false }));
+  assert.throws(() => validPost('kraken|kraken|x|AVENGERS', { ...goodKraken, eventId: 'x' }));
   assert.throws(() => validPost('piggy|piggy|2026-10-23|AVENGERS', { ...good, file: '../x.png' }));
   assert.throws(() => validPost('piggy|piggy|2026-10-23|AVENGERS', { ...good, body: 'x'.repeat(2001) }));
   assert.throws(() => validPost('piggy|piggy|2026-10-23|AVENGERS', { ...good, approved: false }));
@@ -53,6 +58,12 @@ test('weekly posts require space/piggy/flashSetId refs in weekRefs', () => {
   assert.throws(() => validPost('weekly|weekly|2026-11-02|AVENGERS', { ...goodWeekly, weekRefs: undefined }));
   assert.throws(() => validPost('weekly|weekly|2026-11-02|AVENGERS', { ...goodWeekly, weekRefs: { ...goodWeekly.weekRefs, space: 'space|bad' } }));
   assert.throws(() => validPost('weekly|weekly|2026-11-02|AVENGERS', { ...goodWeekly, weekRefs: { ...goodWeekly.weekRefs, flashSetId: 'nope' } }));
+});
+
+test('kraken uses its own one-time authorization tag, never the standing single-event one', () => {
+  assert.notEqual(authFor('kraken'), authFor('piggy'));
+  assert.notEqual(authFor('kraken'), authFor('weekly'));
+  assert.match(authFor('kraken'), /onetime/);
 });
 
 test('weekly sourceDigest verifies all three constituent events against the approved ledger', () => {

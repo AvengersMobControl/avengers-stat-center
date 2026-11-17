@@ -1,3 +1,9 @@
+## 2026-11-17 — All OlRose spellings are one canonical identity
+
+- Leader reaffirmed that **any spelling containing OlRose** (including plain `OlRose`, `AV2-OlRose`, and `AV-OlRose`) is the same player, canonical `AV-OlRose`. This applies to Kraken, Piggy, Space, histories, profiles and future result ingestion. Original screenshot spelling, score, date and clan remain source evidence.
+- Updated `scripts/event-projection-core.cjs`, `scripts/create-site-release.cjs` and `canonical-names-2026-09-29.js` to enforce the identity across ingestion and browser history, with corrected regression tests in `scripts/site-release.test.cjs`.
+- Leader explicitly confirms OlRose participated in November 14 Kraken. The approved public Kraken snapshot did not contain an OlRose score; the corrected Council workbook credits the event and removes a false Kraken no-show, but leaves score and average blank instead of inventing zero. The numeric score must be sourced from verified original evidence before inclusion in the approved event ledger.
+
 ## 2026-11-17 — Canonical AV-2 clan-prefix identity rule and Clan League spreadsheet correction
 
 - Leader confirmed that AV-2 / AV2 / AV-2- and similar prefixes are clan labels, **not separate player identities**, when removing the clan tag produces an unambiguous established canonical name. Require an exact, case-insensitive canonical match, not speculative fuzzy matching.

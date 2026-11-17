@@ -35,6 +35,12 @@ def dmg(v):
     return f'{v:,.1f}M'
 
 
+def dmgr(v):
+    """Rounded, unit-less damage number for the Personal Bests table — the (M) unit lives in
+    that table's column headers instead of being repeated on every row."""
+    return f'{v:,.0f}'
+
+
 def icon(p, box, flip=False):
     """Place assets/achievements/kraken.webp like Poster.char(), since it lives outside
     assets/characters/ (it's a results icon, not a character)."""
@@ -121,21 +127,28 @@ def build_model(R, clan, event_id=None, exclude=None):
             g = r['score'] / avg - 1
             if not bva or g > bva['gain']: bva = dict(name=r['player'], gain=g, avg=avg, score=r['score'], n=len(h))
 
-    # Rank climb vs the immediately preceding month this clan has rows for (not vs any earlier
-    # month — "climb" should mean this month vs last time they played, not vs their worst).
-    # `improvements` is every returning player whose placement got better, full list, biggest
-    # climb first; `climb` (its head) still feeds the single-tile spotlight below.
-    prior_event = earlier[-1] if earlier else None
-    prior_label = (prior_event.get('metadata') or {}).get('monthLabel', prior_event['date']) if prior_event else None
-    prior_ranks = {r['player']: (r.get('metadata') or {}).get('rank') for r in (prior_event['rows'] if prior_event else []) if r['clan'] == clan}
-    improvements = []
+    # Placement PBs: mirrors the damage-PB rule above, but for rank — this month's placement
+    # strictly beats the player's OWN best-ever prior placement (lower rank number is better),
+    # not just last month's. (Feb-Sept carry no `metadata.rank`, only Oct+Nov do, so in practice
+    # today this is "best of Oct" until more months accumulate real rank data.) `placePBs` is the
+    # full list, biggest climb first; `climb` (its head) still feeds the spotlight tile below.
+    rank_hist = {}
+    for e in earlier:
+        for r in e['rows']:
+            if r['clan'] == clan:
+                rk = (r.get('metadata') or {}).get('rank')
+                if isinstance(rk, int): rank_hist.setdefault(r['player'], []).append((e['date'], rk))
+    place_pbs = []
     for r in rows:
-        prk = prior_ranks.get(r['player'])
         nrk = (r.get('metadata') or {}).get('rank')
-        if isinstance(prk, int) and isinstance(nrk, int) and prk > nrk:
-            improvements.append(dict(name=r['player'], prevRank=prk, newRank=nrk, gain=prk - nrk))
-    improvements.sort(key=lambda x: (-x['gain'], x['newRank']))
-    climb = improvements[0] if improvements else None
+        h = rank_hist.get(r['player'], [])
+        if not isinstance(nrk, int) or not h: continue
+        prev_best = min(rk for _, rk in h)
+        if nrk < prev_best:
+            prev_date = max(d for d, rk in h if rk == prev_best)
+            place_pbs.append(dict(name=r['player'], prevRank=prev_best, prevDate=prev_date, newRank=nrk, gain=prev_best - nrk))
+    place_pbs.sort(key=lambda x: (-x['gain'], x['newRank']))
+    climb = place_pbs[0] if place_pbs else None
 
     # Clan record watch: does this month's leader beat the best score from every STRICTLY
     # earlier month (not this one) — i.e. an actual new record, not just "today's leader".
@@ -156,7 +169,7 @@ def build_model(R, clan, event_id=None, exclude=None):
                 sparks=sum(r['sparks'] or 0 for r in rows), rate=rate,
                 totalDamageRank=total_rank, totalDamageOf=len(totals), totalDamageRankArena=total_rank_arena, totalDamageOfArena=len(atotals),
                 recent=recent, finishes=finishes, pbs=pbs, first=sorted(first, key=lambda r: -r['score']),
-                above=above, eligible=eligible, bestVsAvg=bva, climb=climb, improvements=improvements, priorLabel=prior_label,
+                above=above, eligible=eligible, bestVsAvg=bva, climb=climb, placePBs=place_pbs,
                 priorBest=prior_best, leaderIsRecord=leader_is_record,
                 tiers=tiers, everRank={r['player']: ever_rank(r['score']) for r in rows[:10]}, everN=len(ever_scores),
                 arenaRank={r['player']: arena_rank(r['score']) for r in rows[:10]}, arenaN=len(arena_scores),
@@ -164,26 +177,22 @@ def build_model(R, clan, event_id=None, exclude=None):
 
 
 def plan(m):
-    LW = 1010; RW = W - 2 * M - LW - 24
-    nf = len(m['first'])
-    pb_h = 122 + 50 * max(1, len(m['pbs'])) + (64 + 50 * len(m['improvements']) if m['improvements'] else 0) + 20
-    boxes = [('new', 140 + max(1, nf) * 118), ('avg', 170), ('miles', 116 + len(m['tiers']) * 48 + 16)]
-    best = None
-    rest = boxes[1:]
-    for mask in range(1 << len(rest)):
-        cols = {'L': [('pb', LW, pb_h)], 'R': [('new', RW, boxes[0][1])]}
-        h = {'L': pb_h, 'R': boxes[0][1]}
-        for i, (name, hh) in enumerate(rest):
-            c = 'L' if mask >> i & 1 else 'R'
-            cols[c].append((name, LW if c == 'L' else RW, hh)); h[c] += 24 + hh
-        key = (max(h.values()), abs(h['L'] - h['R']))
-        if best is None or key < best[0]: best = (key, cols, h)
-    _, cols, h = best
-    bottom = max(h.values())
-    for c in cols:
-        if cols[c] and h[c] < bottom:
-            n, w, hh = cols[c][-1]; cols[c][-1] = (n, w, hh + bottom - h[c])
-    return dict(cols=cols, bottom=bottom, LW=LW, RW=RW, n10=min(10, len(m['rows'])))
+    """Fixed layout (no longer a bin-packing optimizer): the two Personal Bests tables (damage,
+    placement) side by side first — equal half-width columns, so neither wastes space waiting on
+    the other — then New Faces full-width below them, then Above-Average and Damage Milestones
+    side by side at the bottom."""
+    n10 = min(10, len(m['rows']))
+    colW = (W - 2 * M - 24) // 2
+    pbDamageH = 122 + 50 * max(1, len(m['pbs'])) + 20
+    pbPlaceH = 122 + 50 * max(1, len(m['placePBs'])) + 20
+    pbRowH = max(pbDamageH, pbPlaceH)
+    newH = 140 + max(1, len(m['first'])) * 118
+    avgH = 170
+    milesH = 116 + len(m['tiers']) * 48 + 16
+    bottomRowH = max(avgH, milesH)
+    total = pbRowH + 24 + newH + 24 + bottomRowH
+    return dict(colW=colW, pbDamageH=pbDamageH, pbPlaceH=pbPlaceH, pbRowH=pbRowH,
+                newH=newH, avgH=avgH, milesH=milesH, bottomRowH=bottomRowH, bottom=total, n10=n10)
 
 
 def render(m, out):
@@ -261,8 +270,8 @@ def render(m, out):
              ('BIGGEST JUMP VS OWN AVG', b['name'] if b else '—', pct(b['gain']) if b else '—',
               f'{dmg(b["score"])} vs {dmg(b["avg"])} avg ({b["n"]} Krakens)' if b else 'Needs 3+ earlier Krakens', 'green'),
              ('CLAN RECORD WATCH', top['player'] if m['leaderIsRecord'] else '—', record_val, record_sub, 'cyan'),
-             ('BIGGEST RANK CLIMB', c['name'] if c else '—', f'+{c["gain"]} places' if c else '—',
-              f'{ordinal(c["prevRank"])} → {ordinal(c["newRank"])}' if c else 'No returning climbers vs last Kraken', 'mag')]
+             ('BIGGEST PLACEMENT PB', c['name'] if c else '—', f'+{c["gain"]} places' if c else '—',
+              f'{ordinal(c["prevRank"])} → {ordinal(c["newRank"])} (best ever)' if c else 'No new placement PBs this Kraken', 'mag')]
     sw = (W - 2 * M - 64 - 3 * 16) // 4
     for i, (lab, name, val, sub, col) in enumerate(spots):
         x = M + 32 + i * (sw + 16); yy = y + 84
@@ -294,32 +303,37 @@ def render(m, out):
         for x, v, col in vals: p.text((x, ry + 4), v, 26, col, 'semi', 'ra')
     y += th + 30
 
-    def box_pb(x, y0, w, h):
+    def box_pb_damage(x, y0, w, h):
         p.neon((x, y0, x + w, y0 + h), 'gold'); p.title(x + 28, y0 + 22, 'PERSONAL BESTS', None, None, 34)
         n = str(len(m['pbs'])); p.text((x + w - 28, y0 + 22), n, 40, 'gold', 'black', 'ra')
         p.text((x + w - 40 - d.textlength(n, font=F(40, 'black')), y0 + 34), 'NEW DAMAGE PBs', 22, 'fg', 'xbold', 'ra')
-        hdr = [(x + 46, '#', 'ma'), (x + 78, 'PLAYER', 'la'), (x + 560, 'PREVIOUS', 'ra'), (x + 690, 'DATE', 'ra'), (x + 860, 'NEW PB', 'ra'), (x + w - 28, 'GAIN', 'ra')]
+        hdr = [(x + 46, '#', 'ma'), (x + 78, 'PLAYER', 'la'), (x + 460, 'PREVIOUS (M)', 'ra'), (x + 590, 'DATE', 'ra'),
+               (x + 716, 'NEW PB (M)', 'ra'), (x + w - 28, 'GAIN', 'ra')]
         hy = y0 + 78; d.rectangle((x + 20, hy - 6, x + w - 20, hy + 30), fill=C['row'])
-        for cx, lab, a in hdr: p.text((cx, hy), lab, 18, 'mut', 'semi', a)
+        for cx, lab, a in hdr: p.fit((cx, hy), lab, 150, 18, 'mut', 'semi', a)
         if not m['pbs']: p.text((x + 40, y0 + 130), 'No new damage PBs this Kraken.', 26, 'mut', 'semi')
         for i, bb in enumerate(m['pbs']):
             ry = y0 + 122 + i * 50
             if i % 2 == 0: d.rectangle((x + 20, ry - 8, x + w - 20, ry + 40), fill=C['row2'])
-            p.text((x + 46, ry + 2), i + 1, 22, 'gold', 'black', 'ma'); p.fit((x + 78, ry + 1), bb['name'], 380, 26, 'fg', 'bold')
-            p.text((x + 560, ry + 3), dmg(bb['old']), 24, 'mut', 'semi', 'ra'); p.text((x + 690, ry + 5), shortdate(bb['oldDate']), 20, 'mut', 'med', 'ra')
-            p.text((x + 860, ry + 1), dmg(bb['new']), 26, 'gold', 'black', 'ra'); p.text((x + w - 28, ry + 2), pct(bb['imp']), 24, 'green', 'xbold', 'ra')
-        if m['improvements']:
-            py = y0 + 122 + max(1, len(m['pbs'])) * 50 + 14
-            p.text((x + 28, py), 'PLACEMENT IMPROVEMENTS', 26, 'cyan', 'black')
-            lbl = f'Rank vs {m["priorLabel"]}' if m['priorLabel'] else 'Rank vs last Kraken'
-            p.text((x + w - 28, py + 6), lbl, 18, 'mut', 'semi', 'ra')
-            for i, q in enumerate(m['improvements']):
-                ry = py + 46 + i * 50
-                if i % 2 == 0: d.rectangle((x + 20, ry - 8, x + w - 20, ry + 40), fill=C['row2'])
-                p.fit((x + 78, ry + 1), q['name'], 380, 26, 'fg', 'bold')
-                p.text((x + 560, ry + 3), ordinal(q['prevRank']), 24, 'mut', 'semi', 'ra')
-                p.text((x + 860, ry + 1), ordinal(q['newRank']), 26, 'cyan', 'black', 'ra')
-                p.text((x + w - 28, ry + 2), f'+{q["gain"]}', 24, 'green', 'xbold', 'ra')
+            p.text((x + 46, ry + 2), i + 1, 22, 'gold', 'black', 'ma'); p.fit((x + 78, ry + 1), bb['name'], 300, 26, 'fg', 'bold')
+            p.fit((x + 460, ry + 3), dmgr(bb['old']), 110, 24, 'mut', 'semi', 'ra'); p.fit((x + 590, ry + 5), shortdate(bb['oldDate']), 100, 20, 'mut', 'med', 'ra')
+            p.fit((x + 716, ry + 1), dmgr(bb['new']), 110, 26, 'gold', 'black', 'ra'); p.fit((x + w - 28, ry + 2), pct(bb['imp']), 90, 24, 'green', 'xbold', 'ra')
+
+    def box_pb_place(x, y0, w, h):
+        p.neon((x, y0, x + w, y0 + h), 'cyan'); p.title(x + 28, y0 + 22, 'PLACEMENT PBs', None, None, 34)
+        n = str(len(m['placePBs'])); p.text((x + w - 28, y0 + 22), n, 40, 'cyan', 'black', 'ra')
+        p.text((x + w - 40 - d.textlength(n, font=F(40, 'black')), y0 + 34), 'NEW PLACEMENT PBs', 22, 'fg', 'xbold', 'ra')
+        hdr = [(x + 46, '#', 'ma'), (x + 78, 'PLAYER', 'la'), (x + 460, 'PREVIOUS BEST', 'ra'), (x + 590, 'DATE', 'ra'),
+               (x + 716, 'NEW BEST', 'ra'), (x + w - 28, 'GAIN', 'ra')]
+        hy = y0 + 78; d.rectangle((x + 20, hy - 6, x + w - 20, hy + 30), fill=C['row'])
+        for cx, lab, a in hdr: p.fit((cx, hy), lab, 150, 18, 'mut', 'semi', a)
+        if not m['placePBs']: p.text((x + 40, y0 + 130), 'No new placement PBs this Kraken.', 26, 'mut', 'semi')
+        for i, q in enumerate(m['placePBs']):
+            ry = y0 + 122 + i * 50
+            if i % 2 == 0: d.rectangle((x + 20, ry - 8, x + w - 20, ry + 40), fill=C['row2'])
+            p.text((x + 46, ry + 2), i + 1, 22, 'cyan', 'black', 'ma'); p.fit((x + 78, ry + 1), q['name'], 300, 26, 'fg', 'bold')
+            p.fit((x + 460, ry + 3), ordinal(q['prevRank']), 110, 24, 'mut', 'semi', 'ra'); p.fit((x + 590, ry + 5), shortdate(q['prevDate']), 100, 20, 'mut', 'med', 'ra')
+            p.fit((x + 716, ry + 1), ordinal(q['newRank']), 110, 26, 'cyan', 'black', 'ra'); p.fit((x + w - 28, ry + 2), f'+{q["gain"]}', 90, 24, 'green', 'xbold', 'ra')
 
     def box_new(x, y0, w, h):
         nf = m['first']; p.neon((x, y0, x + w, y0 + h), 'mag', width=4)
@@ -355,11 +369,15 @@ def render(m, out):
             p.text((x + w * 0.55, ry - 2), str(n), 30, ['cyan', 'mag', 'gold', 'green'][i % 4], 'black', 'ra')
             p.text((x + w - 30, ry + 1), f'{"T-" if tie else ""}#{rk} of {of}', 26, 'gold' if rk == 1 else 'fg', 'xbold' if rk <= 3 else 'semi', 'ra')
 
-    draw = dict(pb=box_pb, new=box_new, avg=box_avg, miles=box_miles)
-    for col, x in (('L', M), ('R', M + L['LW'] + 24)):
-        yy = y
-        for name, w, h in L['cols'][col]: draw[name](x, yy, w, h); yy += h + 24
-    y += L['bottom'] + 30
+    # Row 1: Personal Bests (damage) and Placement PBs, side by side.
+    box_pb_damage(M, y, L['colW'], L['pbRowH']); box_pb_place(M + L['colW'] + 24, y, L['colW'], L['pbRowH'])
+    y += L['pbRowH'] + 24
+    # Row 2: New Faces, full width.
+    box_new(M, y, W - 2 * M, L['newH'])
+    y += L['newH'] + 24
+    # Row 3: Above Own Average and Damage Milestones, side by side.
+    box_avg(M, y, L['colW'], L['bottomRowH']); box_miles(M + L['colW'] + 24, y, L['colW'], L['bottomRowH'])
+    y += L['bottomRowH'] + 30
 
     p.neon((M, y, W - M, y + 250), 'cyan')
     icon(p, (M + 24, y + 18, M + 270, y + 232)); icon(p, (W - M - 270, y + 18, W - M - 24, y + 232), flip=True)
@@ -373,7 +391,7 @@ def render(m, out):
     sha = hashlib.sha256(Path(out).read_bytes()).hexdigest()
     side = dict(file=str(out), eventId=ev['id'], clan=clan, projectionVersion=m['projectionVersion'], templateVersion=TEMPLATE,
                 imageSHA256=sha, dimensions=[W, fh], players=len(m['rows']), damagePBs=len(m['pbs']),
-                placementImprovements=len(m['improvements']),
+                placementPBs=len(m['placePBs']),
                 firstTracked=len(m['first']), readyToPost=False, discordPostingEnabled=False)
     Path(str(out).rsplit('.', 1)[0] + '.json').write_text(json.dumps(side, indent=2))
     return side

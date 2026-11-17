@@ -13,6 +13,11 @@ verifies against those three already-approved events/sets instead of one (leader
 decision 2026-11-09, see docs/DECISION_LOG.md). It has its own authorization tag,
 separate from the 2026-10-26 single-event activation.
 
+Kraken uses --kind kraken --event-id 'kraken|nov'. Kraken is explicitly NOT covered by the
+2026-10-26 standing single-event activation (AGENTS.md), so every Kraken post gets its own
+one-time, date-stamped authorization tag (AUTH_KRAKEN_ONETIME) instead -- each month's Kraken
+send needs its own explicit leader direction, never inherited from a prior one.
+
 Copies the PNG to assets/reports/<CLAN>_<Event>_<Month>_<D>_<YYYY>.png (commit it with git add -f)
 and writes data/discord-posts.json. Refuses to change an existing entry. Never posts anything.
 """
@@ -21,9 +26,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / 'data' / 'discord-posts.json'
-NAMES = {'space': 'Space_Race', 'piggy': 'Big_Pig', 'flash': 'Piggy_Flashes', 'weekly': 'Weekly_Recap'}
+NAMES = {'space': 'Space_Race', 'piggy': 'Big_Pig', 'flash': 'Piggy_Flashes', 'weekly': 'Weekly_Recap', 'kraken': 'Kraken'}
 AUTH_SINGLE_EVENT = 'leader-standing-auto-discord-2026-10-26'
 AUTH_WEEKLY = 'leader-standing-auto-discord-weekly-2026-11-09'
+# Kraken is explicitly excluded from the 2026-10-26 standing activation (AGENTS.md), so it never
+# gets AUTH_SINGLE_EVENT -- each Kraken send needs its own explicit leader direction and gets its
+# own date-stamped one-time tag (must match AUTH_KRAKEN_ONETIME in api/discord/publish-event.js).
+AUTH_KRAKEN_ONETIME = 'leader-directed-onetime-kraken-2026-11-17'
 
 
 def main():
@@ -51,9 +60,9 @@ def main():
     clan = a.clan.replace('-', '')
     name = f'{clan}_{NAMES[a.kind]}_{d.strftime("%B")}_{d.day}_{d.year}.png'
     key = f'{a.kind}|{a.event_id}|{a.clan}'
+    auth = AUTH_WEEKLY if a.kind == 'weekly' else AUTH_KRAKEN_ONETIME if a.kind == 'kraken' else AUTH_SINGLE_EVENT
     entry = dict(kind=a.kind, eventId=a.event_id, clan=a.clan, file=name, sha256=hashlib.sha256(src).hexdigest(),
-                 size=len(src), template=a.template, body=body, approved=True,
-                 authorization=AUTH_WEEKLY if a.kind == 'weekly' else AUTH_SINGLE_EVENT,
+                 size=len(src), template=a.template, body=body, approved=True, authorization=auth,
                  description=f'{a.clan} {NAMES[a.kind].replace("_", " ")} {d.strftime("%B")} {d.day} {d.year} results')
 
     if a.kind == 'weekly':

@@ -371,7 +371,7 @@ async function main(){
     assert((await zolikaSpace.innerText()).includes('—'),'Oct 16 has no verified full-clan placement');
     assert((await page.locator('#spaceContent .space-rank-provenance').innerText()).includes('not every contestant'),'partial rank key is explicit');
     await page.selectOption('#globalStatusFilter','av2');
-    assert.equal(await page.locator('#spaceContent tbody tr').count(),22,'AV-2 event-time rows remain separate');
+    assert.equal(await page.locator('#spaceContent tbody tr').count(),16,'public AV-2 event rows exclude leader-removed members; archived source preserves all 22 original results');
     await page.selectOption('#globalStatusFilter','active');
     await page.selectOption('#spaceEventSelect','2026-10-09');
     assert((await page.locator('#spaceContent').innerText()).toLowerCase().includes('sparks/effort (per b)'));

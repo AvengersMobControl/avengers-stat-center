@@ -1,3 +1,12 @@
+## 2026-11-17 — Canonical AV-2 clan-prefix identity rule and Clan League spreadsheet correction
+
+- Leader confirmed that AV-2 / AV2 / AV-2- and similar prefixes are clan labels, **not separate player identities**, when removing the clan tag produces an unambiguous established canonical name. Require an exact, case-insensitive canonical match, not speculative fuzzy matching.
+- Explicit source-backed exceptions/aliases: `AV-2-AVENGER → AV-Pablin`, `AV2-OlRose → AV-OlRose`, `AV-ShieldBreaker → AV-ShielDBreaker`, and previously established `AV-Zolika.x.Kira → AV-Zolika.x.TheBoss`. Preserve each source row's original clan, result, date and provenance; never move historical event-clan credit during identity merging.
+- Updated `canonical-names-2026-09-29.js` on main (commit `047f870b092d2b7d98cf818f4f21db8e89c90284`) to preserve explicit aliases and add guarded exact-match prefix normalization. No invented target when the stripped name is unknown/ambiguous.
+- Rebuilt the 2026-10-12..2026-11-15 Council Excel report with **105 canonical player rows, 699 recorded event results, and 359 no-show audit rows**. The canonical merge produced 11/11 events and zero no-shows for TheBoss and ShielDBreaker, 9 recorded events for Pablin and 3 for OlRose. Spreadsheet remains an editable/filterable Excel workbook with full event-time clan evidence.
+- Council no-show rule: after a player's first recorded event with either clan (including historic proof before the current Clan League), every later clan-league race without a recorded result counts as a no-show. Explicit zero Kraken results are recorded participation. Earlier events before first evidence do not count.
+- Future report exporters must use the canonical alias resolver and verify that `COUNTIFS` case-insensitive matches cannot double count case-only duplicate names. Automated checks should assert no duplicate canonical roster entries and reconcile the no-show audit to report formulas.
+
 ## 2026-11-14 — Official Kraken event LIVE (production verified)
 
 - AVENGERS `/kraken` is LIVE on official event `2026-11-14`, `AVENGERS_KRAKEN_TEST_MODE=false`. Leader-approved preset routes, private map order and any uncertain map alternatives are stored ONLY in the restricted AVENGERS Neon database and private server environment, never in this public repository, Pages artifacts, screenshots or guest-accessible URLs.

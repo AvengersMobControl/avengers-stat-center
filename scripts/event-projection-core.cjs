@@ -18,7 +18,11 @@ function day(x){return typeof x==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x)&&Numbe
 function amount(x,label){requireThat(x===null||(typeof x==='number'&&Number.isFinite(x)&&x>=0),'Invalid '+label+' (use null for unknown)');return x;}
 function canonical(raw,aliases={}){
   let name=String(raw||'').trim();const seen=new Set();
+  // Leader-confirmed: EVERY OlRose display spelling/prefix is AV-OlRose.
+  // Preserve original sourceIdentity and event-time clan elsewhere in the row.
+  if(/olrose/i.test(name))name='AV-OlRose';
   while(aliases[name]&&aliases[name]!==name){requireThat(!seen.has(name),'Alias cycle: '+name);seen.add(name);name=aliases[name];}
+  if(/olrose/i.test(name))name='AV-OlRose';
   requireThat(typeof name==='string'&&name.trim()&&name!=='Total'&&name!=='#N/A','Invalid player');return name;
 }
 function normalize(event,aliases={}){

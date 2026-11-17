@@ -51,6 +51,16 @@ def icon(p, box, flip=False):
     p.im.paste(im, (x0 + (x1 - x0 - im.width) // 2, y0 + (y1 - y0 - im.height) // 2), im)
 
 
+def clan_ranks(e, clan):
+    """This event's placements for `clan`, derived straight from the score data rather than
+    `metadata.rank` — which is null for every Kraken before October even though the scores (and
+    therefore the actual placements) are fully on file for all of them. Ties share a rank, the
+    same convention `metadata.rank` itself uses (verified to match it exactly for Oct/Nov, the two
+    months that do carry a real rank field)."""
+    scored = [r for r in e['rows'] if r['clan'] == clan and r.get('score') is not None]
+    return {r['player']: 1 + sum(1 for o in scored if o['score'] > r['score']) for r in scored}
+
+
 def build_model(R, clan, event_id=None, exclude=None):
     P = R['projection']
     kr = sorted([e for e in P['events'] if e['kind'] == 'kraken' and e['status'] != 'revoked'], key=lambda e: e['date'])
@@ -68,6 +78,7 @@ def build_model(R, clan, event_id=None, exclude=None):
     rows = sorted([r for r in event['rows'] if r['clan'] == clan and r.get('score') is not None], key=lambda r: -r['score'])
     if not rows: raise SystemExit(f'No {clan} rows in {event["id"]}')
     earlier = [e for e in kr if e['date'] < event['date']]
+    ranks_by_event = {e['id']: clan_ranks(e, clan) for e in kr}
 
     hist = {}
     for e in earlier:
@@ -79,15 +90,14 @@ def build_model(R, clan, event_id=None, exclude=None):
     def ever_rank(s): return 1 + sum(1 for x in ever_scores if x > s)
     def arena_rank(s): return 1 + sum(1 for x in arena_scores if x > s)
 
-    # All-time 1st/podium finishes for this clan, any month, through this event.
+    # All-time 1st/podium finishes for this clan, any month, through this event. Uses the derived
+    # ranks (clan_ranks), not metadata.rank, so Feb-Sept wins/podiums actually count.
     finishes = {}
     for e in kr:
         if e['date'] > event['date']: continue
-        for r in e['rows']:
-            if r['clan'] != clan: continue
-            k = (r.get('metadata') or {}).get('rank')
-            if isinstance(k, int) and 1 <= k <= 3:
-                w, pdm = finishes.get(r['player'], (0, 0)); finishes[r['player']] = (w + (k == 1), pdm + 1)
+        for player, k in ranks_by_event[e['id']].items():
+            if 1 <= k <= 3:
+                w, pdm = finishes.get(player, (0, 0)); finishes[player] = (w + (k == 1), pdm + 1)
 
     # This Kraken plus the clan's previous 4 (by date, skipping months with no clan rows).
     recent = []
@@ -129,18 +139,18 @@ def build_model(R, clan, event_id=None, exclude=None):
 
     # Placement PBs: mirrors the damage-PB rule above, but for rank — this month's placement
     # strictly beats the player's OWN best-ever prior placement (lower rank number is better),
-    # not just last month's. (Feb-Sept carry no `metadata.rank`, only Oct+Nov do, so in practice
-    # today this is "best of Oct" until more months accumulate real rank data.) `placePBs` is the
-    # full list, biggest climb first; `climb` (its head) still feeds the spotlight tile below.
+    # not just last month's. Uses the derived ranks (clan_ranks) for every earlier month, not
+    # just the two (Oct, Nov) that happen to carry a real `metadata.rank` field — the scores for
+    # every earlier Kraken are on file, so the actual placements are fully knowable, even though
+    # the stored metadata never recorded them before October. `placePBs` is the full list, biggest
+    # climb first; `climb` (its head) still feeds the spotlight tile below.
     rank_hist = {}
     for e in earlier:
-        for r in e['rows']:
-            if r['clan'] == clan:
-                rk = (r.get('metadata') or {}).get('rank')
-                if isinstance(rk, int): rank_hist.setdefault(r['player'], []).append((e['date'], rk))
+        for player, rk in ranks_by_event[e['id']].items():
+            rank_hist.setdefault(player, []).append((e['date'], rk))
     place_pbs = []
     for r in rows:
-        nrk = (r.get('metadata') or {}).get('rank')
+        nrk = ranks_by_event[event['id']].get(r['player'])
         h = rank_hist.get(r['player'], [])
         if not isinstance(nrk, int) or not h: continue
         prev_best = min(rk for _, rk in h)

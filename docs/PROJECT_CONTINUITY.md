@@ -1,3 +1,10 @@
+## 2026-11-17 — OlRose identity and November Kraken attendance correction
+
+- The leader explicitly reconfirmed that **every name containing OlRose** refers to canonical `AV-OlRose`, no matter AV-2/AV2 prefix or capitalization.
+- Event ingestion canonicalization, website release aliases, browser history normalization and site regression assertions were updated to preserve one OlRose player. Preserve original screenshot name and event-time clan for provenance.
+- Corrected Council Excel report now credits the leader-confirmed November 14 Kraken appearance under OlRose: 1 Kraken event, 0 Kraken no-shows, 4 total league events. The approved public Kraken data lacks the numeric OlRose score, so score/average remain blank; never substitute 0.
+- Important follow-up: locate and verify the original OlRose Kraken score before importing a numeric ledger result. Do not treat the missing value as failure to participate. Verify the current GitHub Pages production deployment after successful Actions checks.
+
 ## 2026-11-17 — Canonical AV-2 clan-prefix identity rule and Clan League spreadsheet correction
 
 - Leader confirmed that AV-2 / AV2 / AV-2- and similar prefixes are clan labels, **not separate player identities**, when removing the clan tag produces an unambiguous established canonical name. Require an exact, case-insensitive canonical match, not speculative fuzzy matching.

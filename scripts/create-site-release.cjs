@@ -59,6 +59,19 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
   // Leader-directed complete public removal (2026-11-06). Canonical accepted
   // original evidence stays in Git history, but must never surface in the
   // published ledger, exports, profile projection or website assets.
+  // Keep the approved original ledger for import/review idempotence. A current
+  // roster change must NEVER cause a previously accepted screenshot to appear
+  // like a new or changed result. The public projection still excludes newly
+  // removed identities entirely; only the retained source ledger is complete.
+  const retainedLedger=copy(ledger);
+  const previouslyDeleted=new Set(['Keyler','AV-Keyler','Blade','AV-2(TAMIM)']);
+  const previouslyExcluded=n=>n!=null&&(previouslyDeleted.has(String(n))||previouslyDeleted.has(resolve(n)));
+  for(const e of retainedLedger.events)e.rows=e.rows.filter(r=>!previouslyExcluded(r.player||r.sourceIdentity));
+  for(const c of retainedLedger.changes||[]){
+    if(c.before?.rows)c.before.rows=c.before.rows.filter(r=>!previouslyExcluded(r.player||r.sourceIdentity));
+    if(c.after?.rows)c.after.rows=c.after.rows.filter(r=>!previouslyExcluded(r.player||r.sourceIdentity));
+  }
+  refreshHistoricalPayouts(retainedLedger);
   const publicExcludedNames=new Set([
     'Keyler','AV-Keyler','Blade','AV-2(TAMIM)',
     ...Object.entries(rosterOverrides).filter(([,status])=>status==='Removed').map(([name])=>name)
@@ -266,7 +279,7 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
       unknownClanRows:events.reduce((sum,e)=>sum+e.rows.filter(r=>r.clan===null).length,0)};
   });
   for(const person of p.people){const b=breakdowns[person.name];b.effort=person.effort;assert(Math.abs(b.eventLoggedSparks-b.piggySparks-b.spaceSparks-b.flashSparks-b.krakenSparks)<0.001);}
-  return {projection:p,ledger,review:migration.review,breakdowns,leagues,globals:{AVENGERS_DATA:D,AVENGERS_KRAKEN_DATA:K,AVENGERS_PIGGY_FLASH_DATA:F,
+  return {projection:p,ledger:retainedLedger,review:migration.review,breakdowns,leagues,globals:{AVENGERS_DATA:D,AVENGERS_KRAKEN_DATA:K,AVENGERS_PIGGY_FLASH_DATA:F,
     AVENGERS_SPARKS_SNAPSHOT:S,AVENGERS_MEMBER_TIMEZONES:R,AVENGERS_DISCORD_UTC_ROSTER:copy(legacy.AVENGERS_DISCORD_UTC_ROSTER),AVENGERS_KRAKEN_ROSTER_SNAPSHOT:copy(legacy.AVENGERS_KRAKEN_ROSTER_SNAPSHOT)}};
 }
 module.exports={create};

@@ -352,7 +352,13 @@ const publicCanonical=raw=>{
   }
   return n;
 };
-const publishedRoster=new Set(current.map(r=>publicCanonical(r.name)));
+// The old 96-member screenshot replay is historical; Council-approved
+// current assignments supersede it for the published audit. The source
+// screenshot diagnostics above must keep their original counts.
+const effectiveCurrent=publishedRelease.globals.AVENGERS_MEMBER_TIMEZONES.rows
+  .filter(r=>r.status==='Active'||r.status==='AV2');
+const publishedRoster=new Set(effectiveCurrent.map(r=>publicCanonical(r.profileName||r.name)));
+assert.equal(effectiveCurrent.length,85,'48 AVENGERS + 37 AV-2 assignments from Council workbook');
 const publishedPeople=publishedRelease.projection.people
   .filter(p=>publishedRoster.has(p.name))
   .map(p=>({
@@ -367,7 +373,7 @@ const publishedAudit={
   rosterCount:publishedPeople.length,
   members:publishedPeople
 };
-assert.equal(publishedPeople.length,current.length,'Published roster audit must cover all current members');
+assert.equal(publishedPeople.length,effectiveCurrent.length,'Published roster audit must cover current Council-assigned members');
 for(const p of publishedPeople)assert(Math.abs(p.totalSparks-p.loggedSparks-(p.screenshotGap||0))<0.001,
   'Published Total must be Logged + screenshot historical gap for '+p.name);
 fs.writeFileSync(path.join(dir,'roster-reconciliation-audit.published.json'),

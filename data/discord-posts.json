@@ -109,6 +109,19 @@
       "approved": true,
       "authorization": "leader-standing-auto-discord-2026-10-26",
       "description": "AVENGERS Space Race November 13 2026 results"
+    },
+    "piggy|piggy|2026-11-15|AVENGERS": {
+      "kind": "piggy",
+      "eventId": "piggy|2026-11-15",
+      "clan": "AVENGERS",
+      "file": "AVENGERS_Big_Pig_November_15_2026.png",
+      "sha256": "019d18488cc16ee0bf05f75f244c3c012f5d9a5b03558653fe6f1ef31eba11ce",
+      "size": 943071,
+      "template": "bigpig-poster-v3-20261026-candidate",
+      "body": "@everyone\n\n🐷 **AVENGERS Big Pig — November 15** 🐷\n\n**📊 Headline**\n48 racers banked 557,294 lines (avg 11,610 lines/racer) — down 36.6% on our last-4 average. The AVENGERS lobby pot landed at 55.70M Stars, #16 of 16 Big Pig pots in the Arena era.\n\n**🏆 Podium**\n🥇 INTEN — 62,352 lines\n🥈 HarryBallsagna — 36,184 lines\n🥉 Zolika.x.TheBoss — 33,850 lines\n\n**🌟 Standout Stories**\nINTEN's 62,352 lines is the #4 Big Pig performance of all time (4/2,223) and #4 of the Arena era — he's also the league's Big Pig lines AND Sparks leader (277,338 lines / 3,426,943 Sparks, Oct 12–Nov 15)! Squishy posted the biggest jump over his own average tonight: +419.0% (2,787 avg over 3 races to 14,462) — and it's a new PB too.\n\n**💥 Personal Bests**\n2 new line PBs this race! Top gains:\n1. Squishy — 14,462 (+313.2%)\n2. KitKat — 21,428 (+25.0%)\n19 of 48 returning racers beat their own average this race!\n\n**🚩 Milestones**\n60K+ lines: 1 racer this race — ties for the 2nd-best Arena-era count ever in that tier!\n\nFull results and PBs: https://avengersmobcontrol.github.io/avengers-stat-center/",
+      "approved": true,
+      "authorization": "leader-standing-auto-discord-2026-10-26",
+      "description": "AVENGERS Big Pig November 15 2026 results"
     }
   }
 }

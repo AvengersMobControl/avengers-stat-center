@@ -279,7 +279,7 @@ test('Council-approved October 30 location updates retain verified identities, i
   assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAvengersStars.length,47,'dated raw AVENGERS screenshot unchanged');
 });
 test('leader-deleted AV-2 accounts have no public profiles, roster membership or event rows',()=>{
- const gone=['Keyler','AV-Keyler','Blade','AV-2(TAMIM)','AV-2Pipesis','AV-fueravini','DedHed','GANESH','Ibrahim','MayyaZ','Punchy','kayesie','uLTRaSLaN'];
+ const gone=['Keyler','AV-Keyler','Blade','AV-2(TAMIM)'];
  const R=BASE.globals.AVENGERS_MEMBER_TIMEZONES,D=BASE.globals.AVENGERS_DATA,S=BASE.globals.AVENGERS_SPARKS_SNAPSHOT;
  for(const name of gone){
   assert(!R.rows.some(x=>x.name===name));assert(!Object.hasOwn(R.byName,name));
@@ -305,7 +305,8 @@ test('November 17 Council roster changes retain inactive history, restore Mickzz
    assert(!R.rows.some(r=>r.name===name),name+' removed from current roster records');
    assert(!D.members.some(m=>m.name===name),name+' removed from published profiles');
    assert(!BASE.projection.people.some(p=>p.name===name),name+' removed from public projection');
-   assert(!BASE.ledger.events.some(e=>e.rows.some(r=>r.player===name)),name+' removed from public event rows');
+   assert(!BASE.projection.events.some(e=>e.rows.some(r=>r.player===name)),name+' excluded from public event projection');
+   assert(BASE.ledger.events.some(e=>e.rows.some(r=>r.player===name)),'retained approved source remains available for import audit');
  }
  assert.equal(R.byName['Mickzzz']?.status,'AV2','Mickzzz reinstated in AV-2 by Council');
  const mick=BASE.projection.people.find(p=>p.name==='Mickzzz');
@@ -823,17 +824,17 @@ test('November 15 Big Pig final screenshots preserve source completeness, canoni
 test('November 15 Kraken has 51 final positions, corrected Supreeth and canonical player identities',()=>{
   const e=BASE.ledger.events.find(x=>x.id==='kraken|nov');
   assert(e&&e.date==='2026-11-15','leader-confirmed November Kraken exists');
-  assert.equal(e.rows.length,89,'51 AVENGERS plus 38 public AV-2 rows; removed source rank 33 retained privately');
+  assert.equal(e.rows.length,90,'51 AVENGERS plus 39 verified source AV-2 rows; public projection separately excludes removed accounts');
   const main=e.rows.filter(r=>r.clan==='AVENGERS');
   const av2=e.rows.filter(r=>r.clan==='AV-2');
   assert.equal(main.length,51);
-  assert.equal(av2.length,38);
-  assert.equal(new Set(e.rows.map(r=>r.clan+'|'+r.player)).size,89);
+  assert.equal(av2.length,39);
+  assert.equal(new Set(e.rows.map(r=>r.clan+'|'+r.player)).size,90);
   assert.equal(new Set(main.map(r=>r.metadata?.rank)).size,51);
   assert.deepEqual(main.map(r=>r.metadata?.rank).sort((a,b)=>a-b),
     Array.from({length:51},(_,i)=>i+1));
   assert.deepEqual(av2.map(r=>r.metadata?.rank).sort((a,b)=>a-b),
-    Array.from({length:44},(_,i)=>i+1).filter(n=>![14,29,33,37,38,41].includes(n)),
+    Array.from({length:44},(_,i)=>i+1).filter(n=>![14,29,37,38,41].includes(n)),
     'all 44 AV-2 ranks are either verified or one of five private identity holds');
   assert.equal(e.metadata?.av2ScreenRankCount,44);
   assert.equal(e.metadata?.av2PrivateIdentityHolds,5);

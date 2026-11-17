@@ -129,6 +129,11 @@
     'AV-ShieldBreaker': 'AV-ShielDBreaker'
   });
 
+  // Identity invariant (leader confirmed 2026-11-17): any spelling
+  // containing OlRose denotes the ONE canonical AV-OlRose player.
+  for(const display of ['OlRose','olRose','OLROSE','AV2-OlRose','AV-2-OlRose','AV-2.OlRose'])
+    aliases[display]='AV-OlRose';
+
   // Clan-tag normalization: AV2, AV-2, AV-2- (including dot separators) refer
   // to an established AV- canonical identity only when the target matches
   // unambiguously. No speculative fuzzy matching or historical clan rewrite.
@@ -152,6 +157,9 @@
     knownCanonical.get(key).add(target);
   }
   for(const name of identityNames){
+    if(typeof name==='string'&&/olrose/i.test(name)&&name!=='AV-OlRose') aliases[name]='AV-OlRose';
+  }
+  for(const name of identityNames){
     if(aliases[name])continue;
     const match=name.match(clanTag);
     if(!match||!match[1])continue;
@@ -165,6 +173,7 @@
 
   const resolve=name=>{
     let x=String(name||'');
+    if(/olrose/i.test(x)) return 'AV-OlRose';
     const seen=new Set();
     while(D.aliasMap[x] && !seen.has(x)){
       seen.add(x);

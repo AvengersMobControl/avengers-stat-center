@@ -1,3 +1,12 @@
+## 2026-11-17 — Council roster changes and verified attendance
+
+- [x] Read uploaded Council workbook, map roster changes by canonical identity (not spreadsheet row position), and regenerate its editable Excel report with OlRose Kraken attendance corrected as unverified.
+- [x] Record 22 Council-assigned status overrides and separate public removals from retained approved source evidence; preserve event-time clan attribution.
+- [x] Add source-vs-public release tests, canonical identity tests, revised roster accounting checks and browser smoke check for the current roster.
+- [ ] Merge [PR #226](https://github.com/AvengersMobControl/avengers-stat-center/pull/226) once required release checks succeed.
+- [ ] Verify GitHub Pages exact published release commit and independent live readback of leader-approved statuses, especially OlRose, Pablin, Royal, Mickzzz, MotherboardBeans and removed members.
+- [ ] Ensure future Council no-show exports do not count unconfirmed held-identity screenshots as verified absence without explicit leader review; retain source/attendance exceptions.
+
 ## 2026-11-14 — Official private Kraken intake active
 
 - [x] Load leader-approved private presets and complete confirmed private map data; do not disclose strategy in public source.

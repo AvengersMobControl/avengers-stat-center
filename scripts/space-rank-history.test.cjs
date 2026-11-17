@@ -67,12 +67,13 @@ test('actual Oct 16 approved partial Space event retains source rank and no fals
   const positions=out.byEvent.get(e.id);
   const av=e.rows.filter(r=>r.clan==='AVENGERS');
   const av2=e.rows.filter(r=>r.clan==='AV-2');
-  assert.equal(av.length,44);assert.equal(av2.length,22);
+  assert.equal(av.length,44);assert.equal(av2.length,16,'six newly removed AV-2 members remain in approved raw source but are not in public results');
+  assert.equal(create().ledger.events.find(x=>x.id===e.id).rows.filter(r=>r.clan==='AV-2').length,22,'retained approved source includes all 22 original AV-2 results');
   const leader=e.rows.find(r=>r.player==='AV-Zolika.x.TheBoss');
   assert.equal(positions.get('AVENGERS|'+leader.player).lobbyFinish,1);
   assert.equal(positions.get('AVENGERS|'+leader.player).lobby,'A');
   assert.equal(positions.get('AVENGERS|'+leader.player).verifiedClanFinish,null);
-  assert([...positions.values()].every(r=>r.verifiedClanFinish===null),'66 recorded rows cannot be called official clan placements');
+  assert([...positions.values()].every(r=>r.verifiedClanFinish===null),'60 public results cannot be called official clan placements');
 });
 test('Space rank module is wired into the site and event table differentiates rank scopes',()=>{
   const html=readFileSync(join(__dirname,'../index.html'),'utf8');

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-11-17",
+  "source": "Clan leader's uploaded AVENGERS Clan League workbook, Current Roster column (2026-11-17); exactly 22 changed statuses keyed by canonical player name",
+  "statusOverrides": {
+    "AV-2Pipesis": "Removed",
+    "AV-CLJM": "Inactive",
+    "AV-Dubai": "AV2",
+    "AV-EventHorizon": "Active",
+    "AV-Finnie": "AV2",
+    "AV-HECKTO": "Inactive",
+    "AV-MotherboardBeans": "Active",
+    "AV-Rita": "AV2",
+    "AV-Royal": "Inactive",
+    "AV-Squishy": "Active",
+    "AV-SweetiePL": "AV2",
+    "AV-fueravini": "Removed",
+    "AV2-MayyaZ": "Inactive",
+    "AV2-Thoszi": "Inactive",
+    "DedHed": "Removed",
+    "GANESH": "Removed",
+    "Ibrahim": "Removed",
+    "MayyaZ": "Removed",
+    "Mickzzz": "AV2",
+    "Punchy": "Removed",
+    "kayesie": "Removed",
+    "uLTRaSLaN": "Removed"
+  },
+  "notes": "Removed means fully excluded from public profiles and public event projections; private source records and screenshot provenance remain in retained approved event updates. Inactive means retain profile/history but not active membership. Historical clan attribution never changes."
+}

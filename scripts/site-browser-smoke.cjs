@@ -41,8 +41,8 @@ async function main(){
         tavito:P.events.filter(e=>e.metadata?.setId==='2026-10-20-A').flatMap(e=>e.rows).filter(r=>/tavito/i.test(r.player||'')).length};
     });
     assert.deepEqual(participation,{timmy:'Inactive',member23:'Inactive',jeff:'AV2',chuck:'Active',avNo:'Active',frank:'Active',flashPlaceholders:0,nov8BigPigOneLine:4,nov8Av2J:true,tavito:0});
-    // Nov 13 leader-verified AV-2 kick log: membership changes only; all
-    // historical event-time clans and contributions remain in the ledger.
+    // Nov 17 leader-approved workbook supersedes older membership snapshots.
+    // Removed members vanish from public profiles, not from retained evidence.
     const departures=await page.evaluate(()=>{
       const R=window.AVENGERS_MEMBER_TIMEZONES,P=window.AVENGERS_EVENT_PROJECTION;
       return ['uLTRaSLaN','Mickzzz','Basecreature','AV-braa','AV-Royal'].map(name=>({
@@ -51,9 +51,12 @@ async function main(){
       }));
     });
     assert.deepEqual(departures,[
-      ...['uLTRaSLaN','Mickzzz','Basecreature','AV-braa'].map(name=>({name,roster:'Inactive',player:'Inactive'})),
-      {name:'AV-Royal',roster:'AV2',player:'AV2'}
-    ],'public browser projection respects screenshot kick list and Royal exemption');
+      {name:'uLTRaSLaN',roster:null,player:null},
+      {name:'Mickzzz',roster:'AV2',player:'AV2'},
+      {name:'Basecreature',roster:'Inactive',player:'Inactive'},
+      {name:'AV-braa',roster:'Inactive',player:'Inactive'},
+      {name:'AV-Royal',roster:'Inactive',player:'Inactive'}
+    ],'published roster follows the current leader-approved workbook');
     // Leader-requested name badges + monthly/current 35-day league totals.
     assert.equal(await page.locator('#overviewContent .overview-period-group').count(),2,'Overview displays month and current league');
     assert.equal(await page.locator('#overviewContent .period-total-card').count(),4,'Piggy and Space totals each appear twice');
@@ -368,7 +371,7 @@ async function main(){
     assert((await zolikaSpace.innerText()).includes('—'),'Oct 16 has no verified full-clan placement');
     assert((await page.locator('#spaceContent .space-rank-provenance').innerText()).includes('not every contestant'),'partial rank key is explicit');
     await page.selectOption('#globalStatusFilter','av2');
-    assert.equal(await page.locator('#spaceContent tbody tr').count(),22,'AV-2 event-time rows remain separate');
+    assert.equal(await page.locator('#spaceContent tbody tr').count(),16,'public AV-2 event rows exclude leader-removed members; archived source preserves all 22 original results');
     await page.selectOption('#globalStatusFilter','active');
     await page.selectOption('#spaceEventSelect','2026-10-09');
     assert((await page.locator('#spaceContent').innerText()).toLowerCase().includes('sparks/effort (per b)'));

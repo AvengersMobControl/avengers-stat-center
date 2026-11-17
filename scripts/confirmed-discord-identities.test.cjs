@@ -29,6 +29,6 @@ test('JR is included without invented game results or false clan attribution',()
  assert.equal(jr.history.length,0);
  assert.equal(jr.earned.sparks,0);
  const counts=people.reduce((o,p)=>(o[p.status]=(o[p.status]||0)+1,o),{});
- assert.equal(counts.Active,49,'Do not silently replace a main clan member');
- assert.equal(counts.AV2,47,'Only four screenshot-confirmed AV-2 members became inactive; JR stays unassigned');
+ assert.equal(counts.Active,48,'Council transfer ledger currently assigns 48 AVENGERS members');
+ assert.equal(counts.AV2,37,'Council transfer, inactivation and public-removal ledger currently assigns 37 AV-2 members; JR stays unassigned');
 });

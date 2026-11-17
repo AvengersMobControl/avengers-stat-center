@@ -163,10 +163,9 @@ def build_model(R, clan, event_id=None, exclude=None):
               sum(1 for c in arena_counts if sum(1 for s in c if s >= t) == n) > 1)
              for t in TIERS for n in [sum(1 for r in rows if r['score'] >= t)] if n]
 
-    rate = next((r['sparks'] / r['score'] for r in rows if r.get('sparks') and r['score']), None)
     total = sum(r['score'] for r in rows)
     return dict(event=event, clan=clan, rows=rows, total=total, avg=total / len(rows),
-                sparks=sum(r['sparks'] or 0 for r in rows), rate=rate,
+                sparks=sum(r['sparks'] or 0 for r in rows),
                 totalDamageRank=total_rank, totalDamageOf=len(totals), totalDamageRankArena=total_rank_arena, totalDamageOfArena=len(atotals),
                 recent=recent, finishes=finishes, pbs=pbs, first=sorted(first, key=lambda r: -r['score']),
                 above=above, eligible=eligible, bestVsAvg=bva, climb=climb, placePBs=place_pbs,
@@ -179,20 +178,19 @@ def build_model(R, clan, event_id=None, exclude=None):
 def plan(m):
     """Fixed layout (no longer a bin-packing optimizer): the two Personal Bests tables (damage,
     placement) side by side first — equal half-width columns, so neither wastes space waiting on
-    the other — then New Faces full-width below them, then Above-Average and Damage Milestones
-    side by side at the bottom."""
+    the other — then New Faces and Damage Milestones side by side below them. Above Own Average
+    moved up into the top KPI row, so it no longer needs a box down here."""
     n10 = min(10, len(m['rows']))
     colW = (W - 2 * M - 24) // 2
     pbDamageH = 122 + 50 * max(1, len(m['pbs'])) + 20
     pbPlaceH = 122 + 50 * max(1, len(m['placePBs'])) + 20
     pbRowH = max(pbDamageH, pbPlaceH)
     newH = 140 + max(1, len(m['first'])) * 118
-    avgH = 170
     milesH = 116 + len(m['tiers']) * 48 + 16
-    bottomRowH = max(avgH, milesH)
-    total = pbRowH + 24 + newH + 24 + bottomRowH
+    bottomRowH = max(newH, milesH)
+    total = pbRowH + 24 + bottomRowH
     return dict(colW=colW, pbDamageH=pbDamageH, pbPlaceH=pbPlaceH, pbRowH=pbRowH,
-                newH=newH, avgH=avgH, milesH=milesH, bottomRowH=bottomRowH, bottom=total, n10=n10)
+                newH=newH, milesH=milesH, bottomRowH=bottomRowH, bottom=total, n10=n10)
 
 
 def render(m, out):
@@ -208,14 +206,19 @@ def render(m, out):
     d.line((W // 2 - 440, 340, W // 2 + 440, 340), fill=C['mag'], width=3)
     y = 370
 
-    kpis = [('PLAYERS', fmt(len(m['rows'])), 'cyan'), ('TOTAL DAMAGE', dmg(m['total']), 'white'),
-            ('AVG DAMAGE', dmg(m['avg']), 'mag'), ('EARNED SPARKS', fmt(m['sparks']), 'green'),
-            ('SPARKS RATE', (f'{round(m["rate"])}/M' if m['rate'] else '—'), 'gold')]
-    bw = (W - 2 * M - 4 * 18) // 5
-    for i, (lab, val, col) in enumerate(kpis):
-        x = M + i * (bw + 18); p.neon((x, y, x + bw, y + 136), col)
-        p.fit((x + bw // 2, y + 22), val, bw - 30, 58, col if col != 'white' else 'fg', 'black', 'ma')
-        p.text((x + bw // 2, y + 96), lab, 22, 'fg', 'semi', 'ma')
+    # Unequal widths: ABOVE OWN AVG carries the longest label and EARNED SPARKS the longest
+    # number, so both get extra room; PLAYERS (a short number, short label) gets the least.
+    kpis = [('PLAYERS', fmt(len(m['rows'])), 'cyan', 0.85), ('TOTAL DAMAGE', dmg(m['total']), 'white', 1.15),
+            ('AVG DAMAGE', dmg(m['avg']), 'mag', 1.0), ('EARNED SPARKS', fmt(m['sparks']), 'green', 1.25),
+            ('ABOVE OWN AVG', f'{m["above"]} / {m["eligible"]}', 'gold', 1.15)]
+    gap = 18; avail = W - 2 * M - 4 * gap; wsum = sum(k[3] for k in kpis)
+    xcur = float(M)
+    for lab, val, col, wt in kpis:
+        bw = avail * wt / wsum; x0, x1 = round(xcur), round(xcur + bw)
+        p.neon((x0, y, x1, y + 136), col)
+        p.fit(((x0 + x1) // 2, y + 22), val, x1 - x0 - 30, 58, col if col != 'white' else 'fg', 'black', 'ma')
+        p.text(((x0 + x1) // 2, y + 96), lab, 22, 'fg', 'semi', 'ma')
+        xcur += bw + gap
     y += 160
 
     # Clan total damage ribbon (pot-equivalent: a collective number with its own history rank).
@@ -351,12 +354,6 @@ def render(m, out):
                 bits = [f'{ordinal(md["rank"])} place' if md.get('rank') else None, f'{fmt(r["sparks"])} Sparks' if r.get('sparks') is not None else None]
                 p.fit((cx + 18, cy + ch - 38), '  ·  '.join(bt for bt in bits if bt), cw - 36, 22, 'mut', 'semi')
 
-    def box_avg(x, y0, w, h):
-        p.neon((x, y0, x + w, y0 + h), 'cyan'); p.text((x + 26, y0 + 18), 'ABOVE OWN AVERAGE', 30, 'fg', 'black')
-        s = f'{m["above"]} / {m["eligible"]}'; p.text((x + 26, y0 + 70), s, 62, 'green', 'black')
-        tx = x + 46 + d.textlength(s, font=F(62, 'black'))
-        p.text((tx, y0 + 84), 'returning players beat', 22, 'fg', 'semi'); p.text((tx, y0 + 112), 'their own earlier average', 22, 'fg', 'semi')
-
     def box_miles(x, y0, w, h):
         p.neon((x, y0, x + w, y0 + h), 'gold'); p.text((x + 26, y0 + 18), 'DAMAGE MILESTONES', 30, 'fg', 'black')
         hy = y0 + 70; d.rectangle((x + 18, hy - 6, x + w - 18, hy + 28), fill=C['row'])
@@ -372,11 +369,8 @@ def render(m, out):
     # Row 1: Personal Bests (damage) and Placement PBs, side by side.
     box_pb_damage(M, y, L['colW'], L['pbRowH']); box_pb_place(M + L['colW'] + 24, y, L['colW'], L['pbRowH'])
     y += L['pbRowH'] + 24
-    # Row 2: New Faces, full width.
-    box_new(M, y, W - 2 * M, L['newH'])
-    y += L['newH'] + 24
-    # Row 3: Above Own Average and Damage Milestones, side by side.
-    box_avg(M, y, L['colW'], L['bottomRowH']); box_miles(M + L['colW'] + 24, y, L['colW'], L['bottomRowH'])
+    # Row 2: New Faces and Damage Milestones, side by side.
+    box_new(M, y, L['colW'], L['bottomRowH']); box_miles(M + L['colW'] + 24, y, L['colW'], L['bottomRowH'])
     y += L['bottomRowH'] + 30
 
     p.neon((M, y, W - M, y + 250), 'cyan')

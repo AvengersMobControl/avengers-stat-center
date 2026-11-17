@@ -175,7 +175,7 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
     assert(![...active,...av2].some(r=>r.name===name),name+' not counted in a current clan');
     assert(people.find(p=>p.name===name).history.length>0,name+' historical results preserved');
   }
-  for(const name of ['AV2-OlRose','AV-2.SURVIVOR','AV2-Thoszi']){
+  for(const name of ['AV-OlRose','AV-2.SURVIVOR','AV2-Thoszi']){
     assert.equal(R.byName[name]?.status,'AV2',name+' confirmed AV-2 roster');
     assert.equal(people.filter(p=>p.name===name&&p.status==='AV2').length,1,name+' existing event identity is current AV-2 member');
     assert.deepEqual(people.find(p=>p.name===name).history.filter(h=>h.date>='2026-11-06').map(h=>h.kind).sort(),name==='AV-2.SURVIVOR'?['kraken','piggy','space']:name==='AV2-Thoszi'?['kraken','piggy','space','space']:['piggy','space','space'],name+' source-verified results retained, including November 13 when present');
@@ -183,6 +183,9 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
   assert.equal(R.byName['TheHemperor']?.status,'AV2','TheHemperor is a current AV-2 participant');
   assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV2-TheHemperor'),'TheHemperor');
   assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV2-J'),'AV-J');
+  for(const variant of ['OlRose','olRose','AV2-OlRose','AV-2-OlRose','AV-OlRose'])
+    assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName(variant),'AV-OlRose',variant+' resolves to same player');
+  assert(!people.some(p=>p.name==='AV2-OlRose'||p.name==='OlRose'), 'No OlRose alias has separate profile');
   assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV-CRISPIN.27'),'AV-CRISPIN.97');
   assert.equal(R.byName['AV-ShielDBreaker']?.status,'Active','ShieldBreaker retains main-clan membership');
   assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV-ShieldBreaker'),'AV-ShielDBreaker','recent capitalization resolves to existing member');
@@ -583,7 +586,7 @@ test('Nov 6 Space original screenshot tail, Zolika and AV-2 identity reconciliat
   for(const [player,clan,lobby,rank,score,stars,sparks] of [
     ['AV-HN','AVENGERS',undefined,1,42.3,78345,7882],
     ['AV-2.SURVIVOR','AV-2','G',2,97.2,561714,56312],
-    ['AV2-OlRose','AV-2','H',1,90,427316,42877],
+    ['AV-OlRose','AV-2','H',1,90,427316,42877],
     ['AV-J','AV-2','H',5,28.8,170926,17151],
     ['AV-Brisket','AV-2','H',2,48.8,341853,34301],
     ['AV2-Thoszi','AV-2','H',3,37.2,307668,30871],
@@ -596,6 +599,7 @@ test('Nov 6 Space original screenshot tail, Zolika and AV-2 identity reconciliat
     const matches=e.rows.filter(r=>r.player===player&&r.clan===clan);
     assert.equal(matches.length,1,player+' imported exactly once');
     const r=matches[0];
+    if(player==='AV-OlRose')assert.equal(r.metadata.sourceDisplayName,'AV2-OlRose','Preserve source screenshot spelling for audit');
     assert.equal(r.metadata.lobby,lobby);
     assert.equal(r.metadata.rank,rank);assert.equal(r.score,score);
     assert.equal(r.stars,stars);assert.equal(r.sparks,sparks);

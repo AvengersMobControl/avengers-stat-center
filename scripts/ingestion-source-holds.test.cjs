@@ -11,7 +11,7 @@ test('leader-approved AV-2 Oct18 release includes valid Big Pig one-line score b
  const e=create().projection.events.find(x=>x.id==='piggy|2026-10-18');
  assert.ok(e);assert.equal(e.status,'final');
  assert.equal(e.rows.filter(x=>x.clan==='AVENGERS').length,50);
- assert.equal(e.rows.filter(x=>x.clan==='AV-2').length,18);
+ assert.equal(e.rows.filter(x=>x.clan==='AV-2').length,16,'public release excludes two additional leader-removed profiles while retained source stays complete');
  assert(e.rows.some(r=>r.player==='AV-ZIBBY'&&r.clan==='AV-2'&&r.score===1));
  assert(!e.rows.some(r=>r.player==='Keyler'));
 });

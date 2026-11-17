@@ -186,21 +186,20 @@ def build_model(R, clan, event_id=None, exclude=None):
 
 
 def plan(m):
-    """Fixed layout (no longer a bin-packing optimizer): the two Personal Bests tables (damage,
-    placement) side by side first — equal half-width columns, so neither wastes space waiting on
-    the other — then New Faces and Damage Milestones side by side below them. Above Own Average
-    moved up into the top KPI row, so it no longer needs a box down here."""
+    """Fixed layout: Personal Bests (damage) alone in the left column; Placement PBs, Damage
+    Milestones and New Faces stacked in the right column, in that order. Above Own Average lives
+    in the top KPI row, so it needs no box down here. Whichever column is shorter stretches to
+    match the taller one (same convention used throughout this poster)."""
     n10 = min(10, len(m['rows']))
     colW = (W - 2 * M - 24) // 2
     pbDamageH = 122 + 50 * max(1, len(m['pbs'])) + 20
     pbPlaceH = 122 + 50 * max(1, len(m['placePBs'])) + 20
-    pbRowH = max(pbDamageH, pbPlaceH)
-    newH = 140 + max(1, len(m['first'])) * 118
     milesH = 116 + len(m['tiers']) * 48 + 16
-    bottomRowH = max(newH, milesH)
-    total = pbRowH + 24 + bottomRowH
-    return dict(colW=colW, pbDamageH=pbDamageH, pbPlaceH=pbPlaceH, pbRowH=pbRowH,
-                newH=newH, milesH=milesH, bottomRowH=bottomRowH, bottom=total, n10=n10)
+    newH = 140 + max(1, len(m['first'])) * 118
+    rightStack = pbPlaceH + 24 + milesH + 24 + newH
+    rowH = max(pbDamageH, rightStack)
+    return dict(colW=colW, pbDamageH=pbDamageH, pbPlaceH=pbPlaceH,
+                newH=newH, milesH=milesH, rightStack=rightStack, rowH=rowH, bottom=rowH, n10=n10)
 
 
 def render(m, out):
@@ -376,12 +375,14 @@ def render(m, out):
             p.text((x + w * 0.55, ry - 2), str(n), 30, ['cyan', 'mag', 'gold', 'green'][i % 4], 'black', 'ra')
             p.text((x + w - 30, ry + 1), f'{"T-" if tie else ""}#{rk} of {of}', 26, 'gold' if rk == 1 else 'fg', 'xbold' if rk <= 3 else 'semi', 'ra')
 
-    # Row 1: Personal Bests (damage) and Placement PBs, side by side.
-    box_pb_damage(M, y, L['colW'], L['pbRowH']); box_pb_place(M + L['colW'] + 24, y, L['colW'], L['pbRowH'])
-    y += L['pbRowH'] + 24
-    # Row 2: New Faces and Damage Milestones, side by side.
-    box_new(M, y, L['colW'], L['bottomRowH']); box_miles(M + L['colW'] + 24, y, L['colW'], L['bottomRowH'])
-    y += L['bottomRowH'] + 30
+    # Left column: Personal Bests (damage) alone, stretched to match the right column.
+    box_pb_damage(M, y, L['colW'], L['rowH'])
+    # Right column: Placement PBs, Damage Milestones, New Faces, stacked.
+    rx = M + L['colW'] + 24
+    box_pb_place(rx, y, L['colW'], L['pbPlaceH'])
+    box_miles(rx, y + L['pbPlaceH'] + 24, L['colW'], L['milesH'])
+    box_new(rx, y + L['pbPlaceH'] + 24 + L['milesH'] + 24, L['colW'], L['newH'])
+    y += L['rowH'] + 30
 
     p.neon((M, y, W - M, y + 250), 'cyan')
     icon(p, (M + 24, y + 18, M + 270, y + 232)); icon(p, (W - M - 270, y + 18, W - M - 24, y + 232), flip=True)

@@ -161,25 +161,28 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
   const R=BASE.globals.AVENGERS_MEMBER_TIMEZONES,D=BASE.globals.AVENGERS_DATA;
   const people=BASE.projection.people;
   const active=R.rows.filter(r=>r.status==='Active'),av2=R.rows.filter(r=>r.status==='AV2');
-  assert.equal(active.length,49);assert.equal(av2.length,47);
-  for(const name of ['AV-Lin','AV-Chuck','AV-no','AV-TRINITY','AV-istanbuL','AV-KKD','AV-KitKat','AV-Hoops','AV-JAMO','AV.ziyad','AV.atarIX','AV-Dreadrixter-UA','AV-Dubai']){
+  assert.equal(active.length,48);assert.equal(av2.length,37);
+  for(const name of ['AV-Lin','AV-Chuck','AV-no','AV-TRINITY','AV-istanbuL','AV-KKD','AV-KitKat','AV-Hoops','AV-JAMO','AV.ziyad','AV.atarIX','AV-Dreadrixter-UA','AV-EventHorizon','AV-MotherboardBeans','AV-Squishy']){
     assert.equal(R.byName[name]?.status,'Active',name+' roster');
     assert.equal(D.members.filter(m=>m.name===name&&m.status==='Active').length,1,name+' unique profile');
     assert.equal(people.find(p=>p.name===name)?.status,'Active',name+' projection');
     assert(!av2.some(r=>r.name===name),name+' no current AV-2 listing');
   }
-  for(const name of ['AV#Rafa#Tun','AV-Oakcliff','AV-Royal','AV-SiFra','AV-Pablin','AV-MotherboardBeans','AV-Neez','AV-JefhKintz05'])assert.equal(R.byName[name]?.status,'AV2',name+' transferred or retained in AV-2');
+  for(const name of ['AV#Rafa#Tun','AV-Oakcliff','AV-SiFra','AV-Pablin','AV-Neez','AV-JefhKintz05','AV-Dubai','AV-Finnie','AV-Rita','AV-SweetiePL'])assert.equal(R.byName[name]?.status,'AV2',name+' transferred or retained in AV-2');
   for(const name of ['AV-23','AV-Timmy']){
     assert.equal(R.byName[name]?.status,'Inactive',name+' removed from current rosters');
     assert.equal(people.find(p=>p.name===name)?.status,'Inactive');
     assert(![...active,...av2].some(r=>r.name===name),name+' not counted in a current clan');
     assert(people.find(p=>p.name===name).history.length>0,name+' historical results preserved');
   }
-  for(const name of ['AV2-OlRose','AV-2.SURVIVOR','AV2-Thoszi']){
-    assert.equal(R.byName[name]?.status,'AV2',name+' confirmed AV-2 roster');
-    assert.equal(people.filter(p=>p.name===name&&p.status==='AV2').length,1,name+' existing event identity is current AV-2 member');
-    assert.deepEqual(people.find(p=>p.name===name).history.filter(h=>h.date>='2026-11-06').map(h=>h.kind).sort(),name==='AV-2.SURVIVOR'?['kraken','piggy','space']:name==='AV2-Thoszi'?['kraken','piggy','space','space']:['piggy','space','space'],name+' source-verified results retained, including November 13 when present');
+  for(const [name,status] of [['AV-OlRose','AV2'],['AV-2.SURVIVOR','AV2'],['AV2-Thoszi','Inactive']]){
+    assert.equal(R.byName[name]?.status,status,name+' current leader-assigned roster');
+    assert.equal(people.filter(p=>p.name===name&&p.status===status).length,1,name+' canonical published profile');
+    assert.deepEqual(people.find(p=>p.name===name).history.filter(h=>h.date>='2026-11-06').map(h=>h.kind).sort(),
+      name==='AV-2.SURVIVOR'?['kraken','piggy','space']:name==='AV2-Thoszi'?['kraken','piggy','space','space']:['piggy','space','space'],
+      name+' source-verified results retained, including November 13 when present');
   }
+  assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV2-OlRose'),'AV-OlRose','source alias resolves to canonical OlRose');
   assert.equal(R.byName['TheHemperor']?.status,'AV2','TheHemperor is a current AV-2 participant');
   assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV2-TheHemperor'),'TheHemperor');
   assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV2-J'),'AV-J');
@@ -217,7 +220,7 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
   assert(jeff.snapshotBreakdown.some(r=>r.clan==='AV-2'&&r.sourceName==='AV-JefhKintz05'));
   assert(jeff.snapshotBreakdown.some(r=>r.clan==='AVENGERS'&&r.amount===5307842),'historic AVENGERS screenshot total unchanged');
   assert(people.find(p=>p.name==='AV-SiFra').snapshotBreakdown.some(r=>r.clan==='AV-2'));
-  assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAv2.length,39,'public AV-2 snapshot excludes zero-event removed accounts');
+  assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAv2.length,31,'public AV-2 snapshot excludes zero-event removed accounts');
   assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAvengersStars.length,47,'removed LT not published');
 });
 test('Council-approved October 30 location updates retain verified identities, independent TZG and snapshots',()=>{
@@ -276,7 +279,7 @@ test('Council-approved October 30 location updates retain verified identities, i
   assert.equal(BASE.globals.AVENGERS_SPARKS_SNAPSHOT.currentAvengersStars.length,47,'dated raw AVENGERS screenshot unchanged');
 });
 test('leader-deleted AV-2 accounts have no public profiles, roster membership or event rows',()=>{
- const gone=['Keyler','AV-Keyler','Blade','AV-2(TAMIM)'];
+ const gone=['Keyler','AV-Keyler','Blade','AV-2(TAMIM)','AV-2Pipesis','AV-fueravini','DedHed','GANESH','Ibrahim','MayyaZ','Punchy','kayesie','uLTRaSLaN'];
  const R=BASE.globals.AVENGERS_MEMBER_TIMEZONES,D=BASE.globals.AVENGERS_DATA,S=BASE.globals.AVENGERS_SPARKS_SNAPSHOT;
  for(const name of gone){
   assert(!R.rows.some(x=>x.name===name));assert(!Object.hasOwn(R.byName,name));
@@ -288,33 +291,36 @@ test('leader-deleted AV-2 accounts have no public profiles, roster membership or
  const c=BASE.ledger.events.find(e=>e.id==='kraken|oct');
  assert(c&&!c.rows.some(x=>x.player==='Blade'));
 });
-test('November 13 AV-2 departures retain inactive profiles and history',()=>{
+test('November 17 Council roster changes retain inactive history, restore Mickzzz and remove selected public profiles',()=>{
  const R=BASE.globals.AVENGERS_MEMBER_TIMEZONES,D=BASE.globals.AVENGERS_DATA;
- const kicked=['uLTRaSLaN','Mickzzz','Basecreature','AV-braa'];
  const current=R.rows.filter(r=>r.status==='Active'||r.status==='AV2');
- for(const name of kicked){
-   const rows=R.rows.filter(r=>r.name===name);
-   assert.equal(rows.length,1,name+' retains exactly one website roster row');
-   assert.equal(rows[0].status,'Inactive');
-   assert.equal(R.byName[name]?.status,'Inactive');
-   assert(!current.some(r=>r.name===name),name+' no longer in current AV-2');
+ for(const name of ['Basecreature','AV-braa','AV-CLJM','AV-HECKTO','AV-Royal','AV2-MayyaZ','AV2-Thoszi']){
+   assert.equal(R.rows.filter(r=>r.name===name).length,1,name+' retained in roster exactly once');
+   assert.equal(R.byName[name]?.status,'Inactive',name+' marked inactive');
+   assert(!current.some(r=>r.name===name),name+' not currently active');
    const p=BASE.projection.people.find(p=>p.name===name);
-   assert(p&&p.status==='Inactive',name+' existing profile remains');
-   assert(D.members.some(m=>m.name===name&&m.status==='Inactive'));
+   assert(p&&p.status==='Inactive',name+' historical profile retained');
  }
+ for(const name of ['uLTRaSLaN','AV-2Pipesis','AV-fueravini','DedHed','GANESH','Ibrahim','MayyaZ','Punchy','kayesie']){
+   assert(!R.rows.some(r=>r.name===name),name+' removed from current roster records');
+   assert(!D.members.some(m=>m.name===name),name+' removed from published profiles');
+   assert(!BASE.projection.people.some(p=>p.name===name),name+' removed from public projection');
+   assert(!BASE.ledger.events.some(e=>e.rows.some(r=>r.player===name)),name+' removed from public event rows');
+ }
+ assert.equal(R.byName['Mickzzz']?.status,'AV2','Mickzzz reinstated in AV-2 by Council');
  const mick=BASE.projection.people.find(p=>p.name==='Mickzzz');
+ assert.equal(mick?.status,'AV2');
  assert.deepEqual(mick.history.map(h=>h.eventId).sort(),['kraken|nov','piggy|2026-10-23','space|2026-10-25']);
- assert.equal(mick.history.find(h=>h.eventId==='kraken|nov')?.score,0,'Nov 15 AV-2 zero-damage row preserves history without inventing Sparks');
- assert.equal(mick.totalSparks,16519+11357,'Mickzzz historical Sparks retained');
+ assert.equal(mick.history.find(h=>h.eventId==='kraken|nov')?.score,0,'zero-damage row preserved');
+ assert.equal(mick.totalSparks,16519+11357,'historic Sparks unchanged');
  assert.equal(D.members.find(m=>m.name==='Basecreature').spacePB,9.45);
- assert.equal(R.byName['AV-Royal']?.status,'AV2','Royal exempt');
- assert.equal(BASE.projection.people.find(p=>p.name==='AV-Royal')?.status,'AV2');
+ assert.equal(R.byName['AV-Royal']?.status,'Inactive','Royal moved to inactive by the leader');
  for(const name of ['Keyler','AV-Keyler','Blade','AV-2(TAMIM)'])
-   assert(!D.members.some(m=>m.name===name),'previously deleted account must stay absent: '+name);
+   assert(!D.members.some(m=>m.name===name),'previously deleted account remains absent: '+name);
 });
 test('current roster and every materialized PB/reward agree with independent canonical source sums',()=>{
   const D=BASE.globals.AVENGERS_DATA,R=BASE.globals.AVENGERS_MEMBER_TIMEZONES;
-  assert.equal(R.rows.filter(r=>r.status==='Active').length,49);assert.equal(R.rows.filter(r=>r.status==='AV2').length,47);
+  assert.equal(R.rows.filter(r=>r.status==='Active').length,48);assert.equal(R.rows.filter(r=>r.status==='AV2').length,37);
   const events=BASE.projection.events.filter(e=>e.status!=='revoked');
   for(const m of D.members){
     // Approved overlays may retain their original source alias; compare canonically.
@@ -468,7 +474,7 @@ test('October 23 identities preserve former-member history and add only confirme
  const former=BASE.projection.people.find(p=>p.name==='AV-Animosity');
  assert(former.history.length>0,'former member history retained');
  for(const name of ['Mickzzz','AV2-Froyo']){
-   assert.equal(R.byName[name].status,name==='Mickzzz'?'Inactive':'AV2');
+   assert.equal(R.byName[name].status,'AV2');
    const matches=BASE.projection.people.filter(p=>p.name===name);
    assert.equal(matches.length,1);
    // Profiles start with the verified Oct 23 Piggy; Mickzzz later logged Oct 25 Space.
@@ -583,7 +589,7 @@ test('Nov 6 Space original screenshot tail, Zolika and AV-2 identity reconciliat
   for(const [player,clan,lobby,rank,score,stars,sparks] of [
     ['AV-HN','AVENGERS',undefined,1,42.3,78345,7882],
     ['AV-2.SURVIVOR','AV-2','G',2,97.2,561714,56312],
-    ['AV2-OlRose','AV-2','H',1,90,427316,42877],
+    ['AV-OlRose','AV-2','H',1,90,427316,42877],
     ['AV-J','AV-2','H',5,28.8,170926,17151],
     ['AV-Brisket','AV-2','H',2,48.8,341853,34301],
     ['AV2-Thoszi','AV-2','H',3,37.2,307668,30871],
@@ -817,17 +823,17 @@ test('November 15 Big Pig final screenshots preserve source completeness, canoni
 test('November 15 Kraken has 51 final positions, corrected Supreeth and canonical player identities',()=>{
   const e=BASE.ledger.events.find(x=>x.id==='kraken|nov');
   assert(e&&e.date==='2026-11-15','leader-confirmed November Kraken exists');
-  assert.equal(e.rows.length,90,'51 AVENGERS plus 39 independently identified AV-2 Kraken rows');
+  assert.equal(e.rows.length,89,'51 AVENGERS plus 38 public AV-2 rows; removed source rank 33 retained privately');
   const main=e.rows.filter(r=>r.clan==='AVENGERS');
   const av2=e.rows.filter(r=>r.clan==='AV-2');
   assert.equal(main.length,51);
-  assert.equal(av2.length,39);
-  assert.equal(new Set(e.rows.map(r=>r.clan+'|'+r.player)).size,90);
+  assert.equal(av2.length,38);
+  assert.equal(new Set(e.rows.map(r=>r.clan+'|'+r.player)).size,89);
   assert.equal(new Set(main.map(r=>r.metadata?.rank)).size,51);
   assert.deepEqual(main.map(r=>r.metadata?.rank).sort((a,b)=>a-b),
     Array.from({length:51},(_,i)=>i+1));
   assert.deepEqual(av2.map(r=>r.metadata?.rank).sort((a,b)=>a-b),
-    Array.from({length:44},(_,i)=>i+1).filter(n=>![14,29,37,38,41].includes(n)),
+    Array.from({length:44},(_,i)=>i+1).filter(n=>![14,29,33,37,38,41].includes(n)),
     'all 44 AV-2 ranks are either verified or one of five private identity holds');
   assert.equal(e.metadata?.av2ScreenRankCount,44);
   assert.equal(e.metadata?.av2PrivateIdentityHolds,5);

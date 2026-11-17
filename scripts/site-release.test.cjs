@@ -100,7 +100,9 @@ test('verified July 30 source corrections and actual October 2 values agree acro
   assert.equal(D.space.events['2026-10-02'].find(r=>r.name==='AV-Zolika.x.TheBoss').yearsB,480.6);
   assert.equal(D.members.find(m=>m.name==='AV-HarryBallsagna').spacePB,549.9);
   assert.equal(w.AVENGERS_COMMUNITY.achievementProfile('AV-HarryBallsagna').categories.find(c=>c.id==='space').value,549.9);
-  assert.equal(D.members.find(m=>m.name==='DedHed').piggyPB,111);
+  assert(!D.members.some(m=>m.name==='DedHed'),'leader removed DedHed from public profiles');
+  assert.equal(load().AVENGERS_DATA.members.find(m=>m.name==='DedHed')?.piggyPB,111,
+    'retained historical raw source still preserves DedHed PB');
   assert.equal(D.members.find(m=>m.name==='Basecreature').spacePB,9.45);
   assert.equal(D.resolvePlayerName('AV-CHUCK'),D.resolvePlayerName('AV-Chuck'));
   assert.notEqual(D.resolvePlayerName('AV-Frenchie2'),D.resolvePlayerName('AV-Frenchie(-4)'));
@@ -138,7 +140,11 @@ test('AV-2 Kraken FrenchieUSA source belongs exclusively to Frenchie2; totals an
   const total=p.people.reduce((s,p)=>s+p.earned.sparks,0);
   const clan=Object.values(p.clans).reduce((s,c)=>s+c.sparks,0)+p.coverage.unknownClanRewards.sparks;
   assert(Math.abs(total-clan)<0.001);
-  assert.equal(BASE.globals.AVENGERS_KRAKEN_DATA.octEventTotals['AV-2'].sparks,8193179.9);
+  const sourceAV2=BASE.ledger.events.find(e=>e.id==='kraken|oct').rows
+    .filter(r=>r.clan==='AV-2').reduce((n,r)=>n+(r.sparks||0),0);
+  assert.equal(Math.round(sourceAV2*10)/10,8193179.9,'approved source remains unchanged');
+  assert.equal(BASE.globals.AVENGERS_KRAKEN_DATA.octEventTotals['AV-2'].sparks,8049279.9,
+    'public total excludes leader-removed account while source remains available privately');
 });
 test('complete staged site uses one projection bundle, immutable script/CSS references, versioned exports and deterministic output',()=>{
   const dest=fs.mkdtempSync(path.join(os.tmpdir(),'avengers-release-'));
@@ -386,8 +392,11 @@ test('Adigarian does not get artificial gap from a reset returning-clan counter'
 const {audit:transferAudit}=require('./audit-transfer-restorations.cjs');
 test('transfer restoration reconciles every current member, not only Hoops',()=>{
  const result=transferAudit(BASE);
-  assert.equal(result.summary.roster,96);
-  assert.equal(result.rows.length,96);
+  const assigned=BASE.globals.AVENGERS_MEMBER_TIMEZONES.rows
+    .filter(r=>r.status==='Active'||r.status==='AV2').length;
+  assert.equal(assigned,85,'48 AVENGERS plus 37 AV-2 verified current assignments');
+  assert.equal(result.summary.roster,assigned);
+  assert.equal(result.rows.length,assigned);
  for(const r of result.rows){
   const player=BASE.projection.people.find(p=>p.name===r.name);
   assert(player,'Missing member '+r.name);
@@ -418,7 +427,11 @@ test('official 28 Unlogged Sparks remain frozen after one-time 1% exclusion',()=
  for(const [name,prior] of Object.entries(amounts)){
    assert(Number.isSafeInteger(prior)&&prior>=1000,'not a rounded historical amount: '+name);
    const p=BASE.projection.people.find(x=>x.name===name);
-   if(name==='AV-Keyler'){assert(!p,'leader-removed account must be absent from public projections');continue;}
+   const removed=require('../data/council-roster-overrides-2026-11-17.json').statusOverrides;
+   if(name==='AV-Keyler'||removed[name]==='Removed'){
+     assert(!p,'leader-removed account must be absent from public projections: '+name);
+     continue;
+   }
    assert(p,'missing account '+name);
    assert.equal(p.screenshotGap,prior);
    assert.equal(p.totalSparks,p.earned.sparks+prior);
@@ -436,7 +449,8 @@ test('official 28 Unlogged Sparks remain frozen after one-time 1% exclusion',()=
  }
  for(const name of Object.keys(fixed.excludedRoundingReview)){
    const p=BASE.projection.people.find(x=>x.name===name);
-   if(['GirlsOnly','yooossss','Shelby','Piton','Jamaica','AV-AC3','Pro','Creatureboost'].includes(name))assert(!p,'removed zero-event account must not have a public profile: '+name);
+   if(['GirlsOnly','yooossss','Shelby','Piton','Jamaica','AV-AC3','Pro','Creatureboost','Punchy'].includes(name))
+     assert(!p,'removed account must not have a public profile: '+name);
    else assert(p&&p.screenshotGap===0,'excluded small discrepancy should remain zero: '+name);
  }
 });
@@ -636,7 +650,8 @@ test('Nov 6 Space original screenshot tail, Zolika and AV-2 identity reconciliat
   assert.equal(z[0].metadata.lobby,'A');
   assert(e.sources.includes('reviewed-image-sha256:83f2937f682cc76661f491d2893079e362cb7e39be441795e5a466fdd5222e9b'));
   const r=BASE.globals.AVENGERS_MEMBER_TIMEZONES.byName;
-  for(const n of ['AV-Pablin','AV-MotherboardBeans','AV-Neez'])assert.equal(r[n]?.status,'AV2',n+' current AV-2');
+  for(const n of ['AV-Pablin','AV-Neez'])assert.equal(r[n]?.status,'AV2',n+' current AV-2');
+  assert.equal(r['AV-MotherboardBeans']?.status,'Active','leader restored MotherboardBeans to AVENGERS');
   assert.equal(r['AV-no']?.status,'Active','AV-no returned to AVENGERS');
   for(const n of ['AV-KitKat','AV-Hoops']){
     assert.equal(r[n]?.status,'Active',n+' current AVENGERS');
@@ -745,8 +760,8 @@ test('2026-11-12 canonical alias mergers retain one profile and source-accurate 
     'main-clan Frenchie October Kraken source is preserved');
   assert(oct.rows.some(r=>r.player==='AV-Frenchie2'&&r.clan==='AV-2'&&r.score===36.2),
     'separate AV-2 Frenchie2 October Kraken source is preserved');
-  assert.equal(BASE.projection.people.find(p=>p.name==='AV-Royal')?.status,'AV2',
-    'Royal must not be marked inactive without an explicit removal');
+  assert.equal(BASE.projection.people.find(p=>p.name==='AV-Royal')?.status,'Inactive',
+    'leader explicitly marked Royal inactive on November 17');
 });
 test('November 13 AV-Abu is one historical active member, not a new profile',()=>{
   const aliases=BASE.globals.AVENGERS_DATA.aliasMap;

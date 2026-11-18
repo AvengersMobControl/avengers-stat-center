@@ -226,8 +226,13 @@ def plan(m):
     milesH = 116 + len(m['tiers']) * 48 + 16
     rightStack = pbPlaceH + 24 + milesH
     rowH = max(pbDamageH, rightStack)
-    newRows = max(1, -(-len(m['first']) // 2))  # New Faces renders as two side-by-side tables
-    newH = 122 + 50 * newRows + 20              # (same row/header sizing as the PB tables above).
+    # New Faces renders as one full-width table when the list is short (4 or fewer) -- splitting
+    # a short list into two tables leaves one mostly empty, which is its own kind of wasted space
+    # -- and as two side-by-side tables once there are enough rows for that to meaningfully cut
+    # the box's height. Same row/header sizing as the PB tables above either way.
+    newCols = 1 if len(m['first']) <= 4 else 2
+    newRows = max(1, -(-len(m['first']) // newCols))
+    newH = 122 + 50 * newRows + 20
     bottom = rowH + 24 + newH
     return dict(colW=colW, pbDamageH=pbDamageH, pbPlaceH=pbPlaceH,
                 newH=newH, milesH=milesH, rightStack=rightStack, rowH=rowH, bottom=bottom, n10=n10)
@@ -381,8 +386,11 @@ def render(m, out):
     def box_new(x, y0, w, h):
         # Same table styling as the Personal Bests boxes above (same title/count treatment, same
         # header row and 50px data rows, same text sizes) rather than the larger name/score cards
-        # from the previous revision. Still split into two side-by-side tables -- leader-requested
-        # 2026-11-18 -- so the box doesn't run as tall as one long single-column list would.
+        # from an earlier revision. A short list (4 or fewer -- e.g. a clan with only a couple of
+        # first-timers this Kraken) renders as one full-width table instead of being split into two
+        # side-by-side tables, since splitting a short list just leaves one column mostly empty --
+        # its own kind of wasted space. A longer list still splits into two, since that meaningfully
+        # cuts the box's height (leader-requested 2026-11-18) without leaving either side empty.
         nf = m['first']
         p.neon((x, y0, x + w, y0 + h), 'mag', width=4)
         p.title(x + 28, y0 + 22, 'NEW FACES', None, None, 34)
@@ -391,10 +399,18 @@ def render(m, out):
         if not nf:
             p.text((x + 28, y0 + 130), 'No first-time Kraken results this month.', 26, 'mut', 'semi')
             return
+        # Column width always matches the two-table split's width, even with one table, so row
+        # density (name field, gaps between PLACE/SPARKS/DAMAGE) stays the same either way -- a
+        # single table just doesn't stretch its columns out to fill the full box width, which
+        # would leave odd gaps of its own between sparse columns.
         gap = 24; cw = (w - gap) // 2
-        half = -(-len(nf) // 2)
-        for ci, colRows in enumerate((nf[:half], nf[half:])):
-            cx = x + ci * (cw + gap)
+        if len(nf) <= 4:
+            groups = [(x, cw, nf)]
+        else:
+            half = -(-len(nf) // 2)
+            groups = [(x, cw, nf[:half]), (x + cw + gap, cw, nf[half:])]
+        for ci, (cx, cw, colRows) in enumerate(groups):
+            base_idx = sum(len(g[2]) for g in groups[:ci])
             hdr = [(cx + 46, '#', 'ma'), (cx + 78, 'PLAYER', 'la'), (cx + cw * 0.56, 'PLACE', 'ra'),
                    (cx + cw * 0.78, 'SPARKS', 'ra'), (cx + cw - 28, 'DAMAGE', 'ra')]
             hy = y0 + 78; d.rectangle((cx + 20, hy - 6, cx + cw - 20, hy + 30), fill=C['row'])
@@ -402,7 +418,7 @@ def render(m, out):
             for i, r in enumerate(colRows):
                 ry = y0 + 122 + i * 50
                 if i % 2 == 0: d.rectangle((cx + 20, ry - 8, cx + cw - 20, ry + 40), fill=C['row2'])
-                p.text((cx + 46, ry + 2), ci * half + i + 1, 22, 'mag', 'black', 'ma')
+                p.text((cx + 46, ry + 2), base_idx + i + 1, 22, 'mag', 'black', 'ma')
                 p.fit((cx + 78, ry + 1), r['player'], cw * 0.38, 26, 'fg', 'bold')
                 rank = (r.get('metadata') or {}).get('rank')
                 p.fit((cx + cw * 0.56, ry + 3), ordinal(rank) if rank else '—', cw * 0.16, 24, 'mut', 'semi', 'ra')

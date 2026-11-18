@@ -27,6 +27,7 @@
       "allowedEventTypes": [
         "space",
         "piggy",
+        "flash",
         "kraken"
       ]
     },
@@ -77,10 +78,11 @@
       "AV-2": [
         "space",
         "piggy",
+        "flash",
         "kraken"
       ]
     },
-    "ignoreFlashInAv2Channel": true
+    "ignoreFlashInAv2Channel": false
   },
   "scheduledReview": {
     "enabled": true,
@@ -101,7 +103,7 @@
     "authorization": {
       "id": "leader-standing-website-publication-2026-10-22",
       "date": "2026-10-22",
-      "scope": "AVENGERS full event scope; AV-2 Space, Big Pig and Kraken (no AV-2 Flash); website only",
+      "scope": "AVENGERS Piggy, Space and Flash; AV-2 Piggy, Space and Flash; monthly Kraken for either clan only on explicit leader request; website-only",
       "perResultCommissionerApprovalRequired": false
     },
     "sourceReviewRequired": true,
@@ -116,7 +118,7 @@
     "pngGeneration": false,
     "discordMessages": false,
     "discordAutoSend": false,
-    "flashAttribution": "dedicated PF channel + preceding established large final-results posting; later supplements inherit that event unless evidence conflicts",
+    "flashAttribution": "AVENGERS PF1–4: dedicated channel anchor and prior established final posting. AV-2 Flash: mixed AV-2-channel final screenshots; cross-match actual event date and Flash set number to independently established PF1–4 timing/source evidence; never infer from mere post date if multiple sets possible. Hold ambiguous attribution privately, publish every verified source-bound row independently, including late AV-2 uploads.",
     "displayTagPolicy": "Ignore S9 display tags when matching an independently established canonical account; preserve original source spelling and never merge ambiguous identities.",
     "weeklyEligibilityExceptions": [
       {

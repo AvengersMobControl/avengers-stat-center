@@ -1,3 +1,9 @@
+## 2026-11-18 — AV-2 Piggy Flash included in website results
+
+- The leader confirmed AV-2 Piggy Flash must be logged. The historical website ledger contained **275 AVENGERS Flash rows and zero AV-2 Flash rows**, so the previous exclusion was incorrect.
+- Change `av2.allowedEventTypes` and `trackedEventKindsByClan['AV-2']` to include `flash`, set `ignoreFlashInAv2Channel=false`, and include AV-2 Flash in recurring Friday/Sunday publication/verification. Preserve existing event-time AVENGERS records and do not assume posted date equals event date or Flash-set number; use source-bound evidence and hold ambiguities privately. Only exactly-one-line Flash performances are excluded for both clans; 1-line Big Pig still counts.
+- Keep Kraken source **manual only**; no new recurring tasks, no schedule changes, no PNGs or Discord messages.
+
 ## 2026-11-17 — Kraken poster format approved; first Kraken Discord send; runbook saved
 
 - Leader approved the Kraken poster format (iterated over several rounds: placement PBs measured against true all-time-best rank rather than just last month, side-by-side Personal Bests/Placement-PBs tables, reordered/stacked bottom boxes, rounded no-"M" damage numbers in the PB table, unequal-width top KPI tiles) and the November 15 AVENGERS render, then explicitly said "send it" / "and send it". PR #225 (merged) added the poster renderer and Kraken support to `api/discord/publish-event.js`'s `KINDS`/`authFor()`, which previously threw "Unsupported kind" for Kraken by design (a ChatGPT-era guard predating any Kraken poster) — confirmed with the leader before changing it ("that rule was written by chat - fix it").

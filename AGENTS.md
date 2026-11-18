@@ -1,5 +1,11 @@
 # AVENGERS Mob Control — Agent Operating Instructions
 
+## 2026-11-18 — AV-2 Flash inclusion (newest leader correction)
+
+- Collect and import final AV-2 Piggy Flash screenshots from the mixed `av2` channel alongside the existing four AVENGERS Flash channels. AV-2 Flash is **not** excluded. Late screenshots remain eligible since the last full AV-2 result checkpoint; keep original source SHA, rank, Score lines, Stars, Sparks and Share metadata. Exclude only **one-line Flash** results for either clan; do NOT exclude 1-line Big Pig.
+- Tie each AV-2 Flash row to a source-grounded Flash set number and event date, preserve original AVENGERS rows in the shared event, and use the canonical account with `clan='AV-2'` for event-time attribution. Update history, PB, rating, rewards, totals and site when published. If no verified date/set, hold privately instead of inventing placement or an event; missing AV-2 lobbies must not delay independently verified other results.
+- Kraken is still **manual only**, and the established Friday 02:00–07:30 / Sunday 16:00–18:30 Central schedules do not change.
+
 ## 2026-11-18 — Leader correction: monthly Kraken is MANUAL ONLY
 
 - Remove `kraken` from both Friday and Sunday **scheduled** source-channel scans and publication stop conditions. Do not poll/retrieve Kraken results on either recurring results automation. Leader will supply the once-per-month Kraken screenshots explicitly; process those on manual request only.
@@ -18,7 +24,7 @@
   Space screenshots since Wednesday 06:00 (all 6+ lobbies, including solos).
   If no final Space Race, use Friday Piggy instead. Always check AV-2
   late sources since last successful published/fully accounted checkpoint,
-  excluding monthly Kraken. AV-2 Flash remains excluded.
+  excluding monthly Kraken, and INCLUDING AV-2 Flash.
 - Sunday: Big Pig at 16:00 first, Space fallback if no final Piggy;
   inspect AV-2 late posts too. Partial AV-2 is not a blocker to separately
   verified AVENGERS website rows; preserve source-bound private holds.

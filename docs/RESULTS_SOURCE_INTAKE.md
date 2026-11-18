@@ -10,8 +10,8 @@ and checks whether a guarded publication run reached the live website.
 
 | Window | Priority, lookbacks and fallback |
 | --- | --- |
-| Friday **02:00–07:30** | **First all four Piggy Flash channels**: every posted screenshot since prior Monday 06:00. **Then Space Race**: every posted screenshot since prior Wednesday 06:00, including all lobbies (6 typical, 7+ possible). Space usually ends Friday 02:00 but can end earlier. If no final Space result, use Friday Piggy (same Wednesday lookback) instead. **Always check delayed AV-2** (monthly Kraken channel excluded; leader provides its results manually). |
-| Sunday **16:00–18:30** | **Big Piggy first**, usually ending at 16:00, with posted screenshots since prior Friday 02:00. If no final Piggy, check Sunday Space (since prior Wednesday 06:00). **Always check AV-2** and no Kraken-channel scans, even when AV-2 is late/incomplete. |
+| Friday **02:00–07:30** | **First all four Piggy Flash channels**: every posted screenshot since prior Monday 06:00. **Then Space Race**: every posted screenshot since prior Wednesday 06:00, including all lobbies (6 typical, 7+ possible). Space usually ends Friday 02:00 but can end earlier. If no final Space result, use Friday Piggy (same Wednesday lookback) instead. **Always check delayed AV-2**, including final AV-2 Piggy Flash posts in the mixed AV-2 channel (monthly Kraken channel excluded; leader provides it manually). |
+| Sunday **16:00–18:30** | **Big Piggy first**, usually ending at 16:00, with posted screenshots since prior Friday 02:00. If no final Piggy, check Sunday Space (since prior Wednesday 06:00). **Always check AV-2**, including late Piggy Flash results from earlier in the week; no Kraken-channel scans, even when AV-2 is late/incomplete. |
 
 **Monthly Kraken is manual only**: neither Friday nor Sunday scheduled polling accesses the Kraken channel or treats Kraken as a required website-publication result. When the leader provides the monthly AVENGERS/AV-2 screenshots separately, use the existing manual import and verification process; preserve all Kraken records. The direct authenticated manual Kraken source path remains available.
 
@@ -35,6 +35,11 @@ channel_checkpoints (scoped by window), source_messages, source_attachments,
 collector_lease, and ingest_runs. Pages never advance past a failed original
 proof. Other channels continue after one source failure. A failed or partial
 AV-2 scan does not block import of verified main-clan rows.
+
+
+## AV-2 Piggy Flash (leader correction November 18, 2026)
+
+AV-2 Flash results are **in scope**, not excluded. The four dedicated PF1–4 channels carry AVENGERS Flash, while AV-2 final screenshots can appear late in the mixed AV-2 results channel. Retrieve every relevant final AV-2 screenshot since the last fully accounted source checkpoint, match its individual rows to the established player identity and *event-time AV-2 clan*, and import into the SAME `flash|YYYY-MM-DD|N` event as the matching Flash set (or revise that event without dropping AVENGERS rows). An event's Flash number/date must have independent evidence: channel anchor, adjacent final result times or explicit screenshot/caption; posting time alone can be ambiguous. Put unresolved attribution on a private hold; do not assign a guessed set, false no-show, or zero score. Exclude **exactly one-line** Flash performances for AV-2 just as for AVENGERS; all other valid lines, Stars, Sparks and Share values contribute to personal histories, Flash records, PBs, ratings, event participation, clan rewards and recaps. Incomplete AV-2 lobbies never prevent publishing verified other results, but source-bound verified rows remain eligible on subsequent runs.
 
 ## Stop condition: real website publication, not screenshot download
 

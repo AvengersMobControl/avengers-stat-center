@@ -1,3 +1,7 @@
+## 2026-11-18 — AV-2 Piggy Flash must be logged
+
+Leader confirms AV-2 Piggy Flash results are required. Scan the AV-2 mixed results channel during regular Friday/Sunday windows, retaining all eligible late final screenshots, and import verified rows under `AV-2` into existing Flash event IDs matched by supported date/Flash-set evidence. Their Sparks, Stars, lines, PBs, achievements, ratings, participation and clan totals must be included. Preserve original AVENGERS Flash rows in any revision, exclude only exactly-one-line Flash entries for either clan, and hold uncertain date/set or member identity rather than inventing data. The 2026-11-18 manual-only Kraken exception remains in force.
+
 ## 2026-11-18 — Latest leader instruction: Kraken is manual-only
 
 Monthly Kraken results are supplied separately by the leader and are **not** a Friday or Sunday scheduled Discord channel, final-results requirement, publication hold, or watchdog failure condition. Continue to ingest AVENGERS and AV-2 Kraken only when the leader explicitly requests the manual import. Preserve `discord-ingest-config.json` Kraken channel for manual access and all historical Kraken records. Weekly Flash, Space/Piggy fallback and AV-2 results still use the existing Friday 02:00–07:30 and Sunday 16:00–18:30 Central windows.
@@ -14,7 +18,7 @@ Monthly Kraken results are supplied separately by the leader and are **not** a F
   Space screenshots since Wednesday 06:00 (all 6+ lobbies, including solos).
   If no final Space Race, use Friday Piggy instead. Always check AV-2
   late sources since last successful published/fully accounted checkpoint,
-  excluding monthly Kraken. AV-2 Flash remains excluded.
+  excluding monthly Kraken. AV-2 Flash is included and must be imported.
 - Sunday: Big Pig at 16:00 first, Space fallback if no final Piggy;
   inspect AV-2 late posts too. Partial AV-2 is not a blocker to separately
   verified AVENGERS website rows; preserve source-bound private holds.

@@ -1,6 +1,12 @@
 # AVENGERS Mob Control — Agent Operating Instructions
 
-## 2026-11-18 — Leader correction: monthly Kraken is MANUAL ONLY\n\n- Remove `kraken` from both Friday and Sunday **scheduled** source-channel scans and publication stop conditions. Do not poll/retrieve Kraken results on either recurring results automation. Leader will supply the once-per-month Kraken screenshots explicitly; process those on manual request only.\n- Keep the Kraken channel configured for explicit manual retrieval, existing accepted AVENGERS/AV-2 Kraken event types, canonical identities, and historical results. Do not remove Kraken from the website or modify Discord/PNG posting rules.\n- Friday remains 02:00–07:30 Central, Sunday 16:00–18:30; weekly Flash/Space/Piggy/AV-2 schedule unchanged.\n\n## 2026-11-18 — Leader-approved bounded collection and publication windows
+## 2026-11-18 — Leader correction: monthly Kraken is MANUAL ONLY
+
+- Remove `kraken` from both Friday and Sunday **scheduled** source-channel scans and publication stop conditions. Do not poll/retrieve Kraken results on either recurring results automation. Leader will supply the once-per-month Kraken screenshots explicitly; process those on manual request only.
+- Keep the Kraken channel configured for explicit manual retrieval, existing accepted AVENGERS/AV-2 Kraken event types, canonical identities, and historical results. Do not remove Kraken from the website or modify Discord/PNG posting rules.
+- Friday remains 02:00–07:30 Central, Sunday 16:00–18:30; weekly Flash/Space/Piggy/AV-2 schedule unchanged.
+
+## 2026-11-18 — Leader-approved bounded collection and publication windows
 
 - STOP 24/7 Discord polling. Vercel source collection is now allowed only
   Friday 02:00–07:30 or Sunday 16:00–18:30 America/Chicago,

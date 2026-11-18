@@ -1,7 +1,9 @@
 'use strict';
 // Existing private AVENGERS result-collector tables, already provisioned in Neon.
 // Never touch avengers_dispatch_private (Discord posts) or public site ledgers.
+const crypto=require('node:crypto');
 const SQL='avengers_results_private';
+function windowUuid(id){const h=crypto.createHash('sha256').update('avengers-window:'+id).digest('hex');return h.slice(0,8)+'-'+h.slice(8,12)+'-4'+h.slice(13,16)+'-a'+h.slice(17,20)+'-'+h.slice(20,32);}
 function makeStore(db){
   const q=(statement,params=[])=>db.query(statement,params);
   return {
@@ -41,6 +43,45 @@ function makeStore(db){
     async release(key,nonce,errorCode){
       await q('UPDATE '+SQL+'.ingest_runs SET status=\'source-failed\',finished_at=now(),summary=jsonb_build_object(\'kind\',\'source-intake\',\'channel\',$2::text,\'errorCode\',$3::text) WHERE run_id=$1::uuid',[nonce,key,errorCode]);
       await q('DELETE FROM '+SQL+'.collector_lease WHERE lease_name=$1 AND owner_id=$2::uuid',['source-intake:'+key,nonce]);
+    },
+    async windowCheckpoints(window,scopedKey){
+      const keys=window.channels.map(k=>scopedKey(window,k));
+      const rows=await q('SELECT channel_key,last_scan_complete,resume_before_id,updated_at FROM '+SQL+'.channel_checkpoints WHERE channel_key=ANY($1::text[])',[keys]);
+      const map={};
+      for(const row of rows){
+        for(const channel of window.channels)if(row.channel_key===scopedKey(window,channel))map[channel]=row;
+      }
+      return map;
+    },
+    async previousWebsitePublication(){
+      const rows=await q('SELECT max(finished_at) AS last_published FROM '+SQL+'.ingest_runs WHERE status=\'website-published\' AND summary->>\'mode\' IN (\'friday\',\'sunday\') AND coalesce(summary#>>\'{verification,av2,partial}\',\'false\')=\'false\'');
+      const t=rows[0]?.last_published;
+      return t?Date.parse(t):null;
+    },
+    async sourceRows(window){
+      const since=Math.min(...Object.values(window.cutoffs));
+      const rows=await q('SELECT m.channel_key,m.message_id,m.message_timestamp,m.progress_hint,m.image_count,a.attachment_id,a.image_sha256,a.status FROM '+SQL+'.source_messages m LEFT JOIN '+SQL+'.source_attachments a ON m.channel_key=a.channel_key AND m.message_id=a.message_id WHERE m.channel_key=ANY($1::text[]) AND m.message_timestamp >= $2::timestamptz AND m.image_count>0 ORDER BY m.message_timestamp DESC LIMIT 2501',
+        [window.channels,new Date(since).toISOString()]);
+      if(rows.length>2500)throw Error('source-query-result-limit');
+      return rows;
+    },
+    async websitePublished(windowId){
+      const uuid=windowUuid(windowId);
+      const rows=await q('SELECT summary FROM '+SQL+'.ingest_runs WHERE run_id=$1::uuid AND status=\'website-published\'',[uuid]);
+      return rows[0]?.summary||null;
+    },
+    async markWebsitePublished(window,verification){
+      const uuid=windowUuid(window.id);
+      const summary={
+        kind:'website-source-coverage',
+        windowId:window.id,mode:window.mode,sourceSha:verification.publicCommit,
+        releaseVersion:verification.version,checkedAt:new Date().toISOString(),
+        channels:window.channels,
+        verification:verification.coverage
+      };
+      await q('INSERT INTO '+SQL+'.ingest_runs(run_id,status,started_at,finished_at,summary) VALUES($1::uuid,\'website-published\',to_timestamp($2::double precision / 1000),now(),$3::jsonb) ON CONFLICT(run_id) DO UPDATE SET status=EXCLUDED.status,finished_at=EXCLUDED.finished_at,summary=EXCLUDED.summary',
+        [uuid,window.startMs,JSON.stringify(summary)]);
+      return summary;
     },
     async status(){
       const rows=await q('SELECT c.channel_key,c.updated_at,c.last_scan_complete,c.resume_before_id IS NOT NULL AS pending_pages, (SELECT count(*)::integer FROM '+SQL+'.source_attachments a WHERE a.channel_key=c.channel_key AND a.status=\'verified_bytes\') AS original_images_verified, (SELECT count(*)::integer FROM '+SQL+'.source_attachments a WHERE a.channel_key=c.channel_key AND a.status IN (\'retry\',\'blocked\')) AS source_failures, (SELECT count(*)::integer FROM '+SQL+'.source_messages m WHERE m.channel_key=c.channel_key AND (SELECT count(*) FROM '+SQL+'.source_attachments a WHERE a.channel_key=m.channel_key AND a.message_id=m.message_id AND a.status=\'verified_bytes\') <> m.image_count) AS incomplete_posts FROM '+SQL+'.channel_checkpoints c ORDER BY c.channel_key');

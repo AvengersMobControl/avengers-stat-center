@@ -41,12 +41,29 @@
   "ignoreCommand": "node scripts/vercel-ignore-preview.cjs",
   "crons": [
     {
-      "path": "/api/discord/result-intake",
-      "schedule": "*/5 * * * *"
+      "path": "/api/discord/result-intake-friday",
+      "schedule": "*/5 11-13 * * 5"
+    },
+    {
+      "path": "/api/discord/result-intake-sunday",
+      "schedule": "*/5 21-23 * * 0"
+    },
+    {
+      "path": "/api/discord/result-intake-monday",
+      "schedule": "*/5 0 * * 1"
     }
   ],
   "functions": {
     "api/discord/result-intake.js": {
+      "maxDuration": 60
+    },
+    "api/discord/result-intake-friday.js": {
+      "maxDuration": 60
+    },
+    "api/discord/result-intake-sunday.js": {
+      "maxDuration": 60
+    },
+    "api/discord/result-intake-monday.js": {
       "maxDuration": 60
     }
   }

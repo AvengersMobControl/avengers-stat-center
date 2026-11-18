@@ -15,6 +15,8 @@ function safeError(err){
   if(err?.code==='RATE_LIMIT')return 'discord-rate-limit';
   const message=String(err?.message||'');
   if(/timeout|aborted/i.test(message))return 'source-timeout';
+  if(/source-query-result-limit/i.test(message))return 'source-window-too-many-images';
+  if(/public-ledger/i.test(message))return 'public-website-verification-unavailable';
   if(/permission denied|42501/i.test(message))return 'source-database-permission-denied';
   if(/relation .*does not exist|42P01/i.test(message))return 'source-database-schema-missing';
   if(/Cannot find module.*neondatabase/i.test(message))return 'source-runtime-module-missing';
@@ -33,14 +35,16 @@ function sourceType(a){
   return {jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp',gif:'image/gif'}[ext]||null;
 }
 async function scanChannel({channelKey,store,token,fetchImpl=fetch,downloadOriginal=retrieveOriginal,
-  nowMs=Date.now(),maxMessages=MAX_MESSAGES}){
+  nowMs=Date.now(),maxMessages=MAX_MESSAGES,cutoffMs=null,checkpointKey=null}){
   assert(Object.hasOwn(config.channels,channelKey),'Unknown configured channel');
   assert(typeof token==='string'&&token.length>0,'Discord bot token unavailable');
   assert(Number.isInteger(maxMessages)&&maxMessages>=1&&maxMessages<=MAX_MESSAGES,'Unsafe scan page size');
   const channel=config.channels[channelKey],nonce=require('node:crypto').randomUUID();
-  const current=await store.claim(channelKey,nonce);
+  const stateKey=checkpointKey||channelKey;
+  const current=await store.claim(stateKey,nonce);
   if(!current)return {status:'busy',channel:channelKey};
-  const cutoff=nowMs-DAYS*86400000;
+  const cutoff=cutoffMs===null?nowMs-DAYS*86400000:cutoffMs;
+  assert(Number.isFinite(cutoff)&&cutoff<=nowMs&&cutoff>=0,'Invalid source cutoff');
   let attempted=0,saved=0,previous=0,completed=false,nextBefore=current.next_before||null;
   try{
     const params=new URLSearchParams({limit:String(maxMessages)});
@@ -99,7 +103,7 @@ async function scanChannel({channelKey,store,token,fetchImpl=fetch,downloadOrigi
     const exhausted=messages.length<maxMessages || messages.some(m=>Date.parse(m.timestamp)<cutoff);
     completed=exhausted;
     nextBefore=exhausted?null:String(messages.at(-1).id);
-    await store.complete(channelKey,nonce,{
+    await store.complete(stateKey,nonce,{
       nextBefore,upperId:current.resume_upper_id||messages[0]?.id||null,cycleComplete:completed,pageMessages:inside.length,
       sourceAttachments:attempted,newProofs:saved,priorProofs:previous
     });
@@ -107,7 +111,7 @@ async function scanChannel({channelKey,store,token,fetchImpl=fetch,downloadOrigi
       sourceMessages:inside.length,attachmentsAccounted:attempted,newOriginalProofs:saved,
       existingOriginalProofs:previous,nextPagePending:!completed,publication:'not-attempted'};
   }catch(err){
-    await store.release(channelKey,nonce,safeError(err));
+    await store.release(stateKey,nonce,safeError(err));
     throw err;
   }
 }

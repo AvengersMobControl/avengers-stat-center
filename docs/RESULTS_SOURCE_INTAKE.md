@@ -1,52 +1,74 @@
-# Resumable AVENGERS source intake
+# AVENGERS website-results collection — bounded Friday/Sunday windows
 
-This implements ONLY private screenshot retrieval and original-byte SHA-256.
-It does not parse screenshots into player rows, classify new members, approve
-events, update the public event ledger, create PNGs or send Discord posts.
-Only independently verified website releases constitute publication.
+Effective November 18, 2026. Leader-approved website-only pipeline; Claude
+alone produces and sends Discord summary PNGs/messages AFTER website publication.
+This collector never sends Discord messages, generates posters or updates the
+public event ledger. It only captures original screenshots, proves their bytes,
+and checks whether a guarded publication run reached the live website.
 
-## Collector
+## Collection windows (America/Chicago; DST-aware)
 
-- Vercel cron every five minutes invokes the private server-side GET endpoint,
-  protected by production CRON_SECRET. Channel selection rotates through all
-  eight configured channels. Each call processes at most five messages.
-- It reads the Discord API directly, bypassing the client connector's eight
-  image cap. All original attachments are accounted for; each supported
-  image is fetched from its authenticated CDN URL through the existing
-  retrieveOriginal code. The original image bytes and signed URLs are
-  never persisted in logs or the repository.
-- Uses the EXISTING Neon avengers_results_private tables: collector_lease,
-  channel_checkpoints, source_messages, source_attachments and ingest_runs.
-  The source table SHA-256 receipts and cursor are durable. A failed source
-  download records a private retry without advancing the page cursor.
-  Previously verified attachments are reused on a retry. Lookback: 9 days.
-- On completion of an older-page cycle, the next scan restarts from newest
-  posts to capture new material. Repeated, overlapping runs are serialized
-  per channel by the database lease.
-- Success of source intake is never labeled success of result publication.
-  Additional gates remain final screenshot visual confirmation, all player
-  rows accounted, exact event attribution, historical aliases and identities,
-  original proof binding, guarded dry-run/apply, CI, public Git SHA/projection,
-  and browser verification.
+| Window | Priority, lookbacks and fallback |
+| --- | --- |
+| Friday **06:00–07:30** | **First all four Piggy Flash channels**: every posted screenshot since prior Monday 06:00. **Then Space Race**: every posted screenshot since prior Wednesday 06:00, including all lobbies (6 typical, 7+ possible). Space usually ends Friday 02:00 but can end earlier. If no final Space result, use Friday Piggy (same Wednesday lookback) instead. **Always check delayed AV-2** (plus relevant Kraken-channel sources). |
+| Sunday **16:00–18:30** | **Big Piggy first**, usually ending at 16:00, with posted screenshots since prior Friday 06:00. If no final Piggy, check Sunday Space (since prior Wednesday 06:00). **Always check AV-2** and relevant Kraken-channel sources, even when AV-2 is late/incomplete. |
 
-## Operator controls
+The first AV-2 source window uses a conservatively extended 21-day lookback,
+then the last successfully published and fully accounted AV-2 checkpoint
+(where available). A partial AV-2 cycle does NOT advance that cutoff; its
+unresolved sources remain eligible for a later collection window.
 
-Private POST to /api/discord/result-intake using existing production
-DISCORD_PULL_SECRET Bearer. Body channelKey selects one of the eight
-configured channels. Body action=status returns a sanitized channel summary:
-source cycle/checkpoint state, verified original attachment counts,
-incomplete source posts, and retry counts; no Discord IDs, names or media.
+Vercel's legacy crons are UTC-only. The three narrowly bounded production
+cron paths cover the required Central-time hours in both CST and CDT. A hard
+America/Chicago time gate in the API executes before any Discord, Neon, or
+website calls: out-of-window UTC ticks perform NO source collection. The
+underlying Vercel cron receives a few extra UTC invocations around DST edges;
+the server returns immediately, without background polling.
 
-The source run status is persisted in avengers_results_private.ingest_runs.
-This has no Discord send pathway, no public checkpoint details, and no
-connection to SAC/Lock It In.
+The job processes two bounded channel pages per five-minute tick. Each page
+contains up to five Discord messages, ALL original image attachments (no
+eight-image client cap), with SHA-256 computed over actual Discord original
+bytes. Source-only progress is durable in the existing private Neon tables:
+channel_checkpoints (scoped by window), source_messages, source_attachments,
+collector_lease, and ingest_runs. Pages never advance past a failed original
+proof. Other channels continue after one source failure. A failed or partial
+AV-2 scan does not block import of verified main-clan rows.
 
-## Deployment verification
+## Stop condition: real website publication, not screenshot download
 
-- Required CI tests must pass, including a ten-image post and failure resume.
-- Check Vercel production CRON_SECRET, bot token, database URL presence (never
-  print the values) and confirm actual cron deployment and plan support.
-- Verify a real private source-intake run and a subsequent resumed scan before
-  declaring the collector operational.
-- Existing Friday and Sunday website-release tasks stay enabled until the
-  entire publication portion is independently replaced and live-verified.
+Every collection tick independently requests the public GitHub Pages release
+manifest and immutable versioned event ledger. It may record private
+website-published state and stop future Discord requests only when:
+1. Required channel source windows have been fully scanned and original images
+   verified (AV-2/Kraken need at least one scan attempt; partial remains explicit).
+2. All four Friday Flash result sources appear in the appropriate four live
+   Flash events after the Monday cutoff.
+3. The actual primary Space/Piggy event (or verified fallback) appears in the
+   public ledger with every required verified final source hash.
+4. The manifest's exact Git commit, export version, and returned ledger version
+   agree. A Vercel READY deployment, successful scan, GitHub PR or job-complete
+   flag does NOT satisfy this condition.
+
+This is intentionally conservative: an unrelated or progress image may require
+manual classification before the stop condition can pass. A verified screenshot
+hash by itself NEVER proves that all player rows were imported. Final CLAIM
+review, canonical historical identity matching, per-lobby/rank row-completeness
+proof, guarded digest staging/apply, CI/Pages/browser checks remain the
+separate ChatGPT Friday/Sunday website-publication tasks.
+
+## Failure alert to the leader
+
+The TWO existing ChatGPT automations were rescheduled, not duplicated:
+Friday 06:00 and 07:30 Central; Sunday 16:00 and 18:30 Central. The early run
+is responsible for final screenshots and website publication. The window-end
+run checks the live Pages manifest, event ledger/projection, Flash channel
+coverage and AV-2 source holds. If any required result did not reach the site,
+it must report FAILED PUBLICATION to the leader, naming the blocker, source
+coverage and live SHA. It must not report success just because cron or PR
+succeeded. Claude sees results only after they reach the website.
+
+Manual authenticated POST /api/discord/result-intake retains existing operator
+access for explicitly directed recovery, including action=status. The cron
+never uses manual POST. Private tokens, Discord source URLs, message IDs and
+raw images must never enter public checkpoints, release manifests, PR
+summaries, or user-facing failure alerts.

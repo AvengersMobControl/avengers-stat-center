@@ -46,7 +46,7 @@ test('rejects redirected, modified, mismatched, credentialed or unsafe URLs befo
  url.replace('https://','https://example@'),
  url.replace('/attachments/','/ephemeral-attachments/'),
  url.replace('Screenshot_result.jpg','..%2F..%2Fprivate.jpg'),
- url.replace('Screenshot_result.jpg','Screenshot_result.webp'),
+ url.replace('Screenshot_result.jpg','Screenshot_result.bmp'),
  base+'?ex=abcdefab',
  base+'?ex=abcdefab&is=abcdefff&hm=nope',
  url+'&hm='+('a'.repeat(64)),
@@ -54,6 +54,31 @@ test('rejects redirected, modified, mismatched, credentialed or unsafe URLs befo
  for(const value of bad)await assert.rejects(
    retrieveOriginal({...opts,url:value,fetchImpl}),/attachment|Discord|Only|query|image type|extension|signature|filename/i,value);
  assert.equal(called,0,'invalid signed URLs cannot trigger outbound network requests');
+});
+test('Discord preserves PNG filenames while declaring original JPEG or WebP bytes',async()=>{
+ const namedPng=url.replace('Screenshot_result.jpg','IMG_0910.png');
+ const jpegProof=await retrieveOriginal({...opts,url:namedPng,fetchImpl:async()=>okResponse()});
+ assert.equal(jpegProof.imageSha256,crypto.createHash('sha256').update(jpeg).digest('hex'));
+ assert.equal(jpegProof.contentType,'image/jpeg');
+
+ const webp=Buffer.from('RIFF'+String.fromCharCode(4,0,0,0)+'WEBPVP8 ', 'binary');
+ const webpProof=await retrieveOriginal({...opts,url:namedPng,
+   expectedContentType:'image/webp',
+   fetchImpl:async()=>new Response(webp,{status:200,
+     headers:{'content-type':'image/webp','content-length':String(webp.length)}})});
+ assert.equal(webpProof.contentType,'image/webp');
+ assert.equal(webpProof.imageSha256,crypto.createHash('sha256').update(webp).digest('hex'));
+});
+test('filename exception never accepts transformed bytes or unrelated MIME',async()=>{
+ const namedPng=url.replace('Screenshot_result.jpg','image.png');
+ await assert.rejects(retrieveOriginal({...opts,url:namedPng,
+   fetchImpl:async()=>okResponse(jpeg,{'content-type':'image/webp'})}),
+   /different image content type/);
+ await assert.rejects(retrieveOriginal({...opts,url:namedPng,
+   fetchImpl:async()=>okResponse(Buffer.from('not-an-image'))}),
+   /Invalid image file signature/);
+ assert.throws(()=>verifyDiscordUrl(namedPng,{...opts,expectedContentType:'image/avif'}),
+   /image MIME is unsupported/);
 });
 test('validates HTTP 200 and explicitly declines redirects and unauthorized results',async()=>{
  for(const status of [302,403,404,429,500]){
@@ -87,6 +112,6 @@ test('rejects invalid content type and malformed source IDs',()=>{
  for(const wrong of [
    {...opts,channelId:'../../etc/passwd'},
    {...opts,attachmentId:'155'},
-   {...opts,expectedContentType:'image/webp'},
+   {...opts,expectedContentType:'application/pdf'},
  ])assert.throws(()=>verifyDiscordUrl(url,wrong));
 });

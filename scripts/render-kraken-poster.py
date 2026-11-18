@@ -55,13 +55,28 @@ def icon(p, box, flip=False):
     p.im.paste(im, (x0 + (x1 - x0 - im.width) // 2, y0 + (y1 - y0 - im.height) // 2), im)
 
 
+def has_score(r):
+    """True if this row has a real, countable Kraken damage result.
+
+    Leader-confirmed 2026-11-18: a row with score == 0 is not a real "dealt zero damage"
+    result -- it's a tail-of-screenshot listing (name + rank visible, damage not
+    legible/captured), confirmed against the raw ledger's per-row sourceImageSha256
+    clustering and the kraken|nov AV-2 event metadata's own av2FinalClanDamageMillion
+    (72120) vs av2VerifiedRowDamageMillion (70084.3) gap. These rows must not count
+    toward player counts, totals, averages, New Faces, damage PBs, placement PBs or
+    ranks for ANY clan/month -- excluding them here (not in the data file; the raw
+    ledger is never edited) keeps every number traceable back to real captured damage.
+    """
+    return r.get('score') not in (None, 0)
+
+
 def clan_ranks(e, clan):
     """This event's placements for `clan`, derived straight from the score data rather than
     `metadata.rank` — which is null for every Kraken before October even though the scores (and
     therefore the actual placements) are fully on file for all of them. Ties share a rank, the
     same convention `metadata.rank` itself uses (verified to match it exactly for Oct/Nov, the two
     months that do carry a real rank field)."""
-    scored = [r for r in e['rows'] if r['clan'] == clan and r.get('score') is not None]
+    scored = [r for r in e['rows'] if r['clan'] == clan and has_score(r)]
     return {r['player']: 1 + sum(1 for o in scored if o['score'] > r['score']) for r in scored}
 
 
@@ -79,7 +94,7 @@ def build_model(R, clan, event_id=None, exclude=None):
     if exclude:
         excl = set(exclude)
         event['rows'] = [r for r in event['rows'] if r['player'] not in excl]
-    rows = sorted([r for r in event['rows'] if r['clan'] == clan and r.get('score') is not None], key=lambda r: -r['score'])
+    rows = sorted([r for r in event['rows'] if r['clan'] == clan and has_score(r)], key=lambda r: -r['score'])
     if not rows: raise SystemExit(f'No {clan} rows in {event["id"]}')
     earlier = [e for e in kr if e['date'] < event['date']]
     ranks_by_event = {e['id']: clan_ranks(e, clan) for e in kr}
@@ -87,10 +102,10 @@ def build_model(R, clan, event_id=None, exclude=None):
     hist = {}
     for e in earlier:
         for r in e['rows']:
-            if r['clan'] == clan and r.get('score') is not None: hist.setdefault(r['player'], []).append((e['date'], r['score']))
+            if r['clan'] == clan and has_score(r): hist.setdefault(r['player'], []).append((e['date'], r['score']))
     # True all-time (no date floor) vs Arena-era (since 2026-08-01), both bounded to <= this event.
-    ever_scores = [r['score'] for e in kr if e['date'] <= event['date'] for r in e['rows'] if r['clan'] == clan and r.get('score') is not None]
-    arena_scores = [r['score'] for e in kr if ARENA_START <= e['date'] <= event['date'] for r in e['rows'] if r['clan'] == clan and r.get('score') is not None]
+    ever_scores = [r['score'] for e in kr if e['date'] <= event['date'] for r in e['rows'] if r['clan'] == clan and has_score(r)]
+    arena_scores = [r['score'] for e in kr if ARENA_START <= e['date'] <= event['date'] for r in e['rows'] if r['clan'] == clan and has_score(r)]
     def ever_rank(s): return 1 + sum(1 for x in ever_scores if x > s)
     def arena_rank(s): return 1 + sum(1 for x in arena_scores if x > s)
 
@@ -106,12 +121,12 @@ def build_model(R, clan, event_id=None, exclude=None):
     # This Kraken plus the clan's previous 4 (by date, skipping months with no clan rows).
     recent = []
     for e in [x for x in kr if x['date'] <= event['date']][::-1]:
-        rr = [r['score'] for r in e['rows'] if r['clan'] == clan and r.get('score') is not None]
+        rr = [r['score'] for r in e['rows'] if r['clan'] == clan and has_score(r)]
         if rr: recent.append(dict(date=e['date'], label=(e['metadata'] or {}).get('monthLabel', e['date']), n=len(rr), total=sum(rr), avg=sum(rr) / len(rr)))
         if len(recent) == 5: break
 
     # Clan total damage, ranked among this clan's own Kraken months (pot-equivalent ribbon stat).
-    totals = [(sum(r['score'] for r in e['rows'] if r['clan'] == clan and r.get('score') is not None), e['date'])
+    totals = [(sum(r['score'] for r in e['rows'] if r['clan'] == clan and has_score(r)), e['date'])
               for e in kr if e['date'] <= event['date']]
     totals = [(t, d) for t, d in totals if t > 0]
     this_total = sum(r['score'] for r in rows)
@@ -166,11 +181,11 @@ def build_model(R, clan, event_id=None, exclude=None):
 
     # Clan record watch: does this month's leader beat the best score from every STRICTLY
     # earlier month (not this one) — i.e. an actual new record, not just "today's leader".
-    prior_ever_scores = [r['score'] for e in earlier for r in e['rows'] if r['clan'] == clan and r.get('score') is not None]
+    prior_ever_scores = [r['score'] for e in earlier for r in e['rows'] if r['clan'] == clan and has_score(r)]
     prior_best = max(prior_ever_scores) if prior_ever_scores else None
     leader_is_record = prior_best is not None and rows[0]['score'] > prior_best
 
-    arena_counts = [[r['score'] for r in e['rows'] if r['clan'] == clan and r.get('score') is not None]
+    arena_counts = [[r['score'] for r in e['rows'] if r['clan'] == clan and has_score(r)]
                     for e in kr if ARENA_START <= e['date'] <= event['date']]
     arena_counts = [c for c in arena_counts if c]
     tiers = [(t, n, 1 + sum(1 for c in arena_counts if sum(1 for s in c if s >= t) > n), len(arena_counts),

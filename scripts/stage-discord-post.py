@@ -20,6 +20,13 @@ send needs its own explicit leader direction, never inherited from a prior one.
 
 Copies the PNG to assets/reports/<CLAN>_<Event>_<Month>_<D>_<YYYY>.png (commit it with git add -f)
 and writes data/discord-posts.json. Refuses to change an existing entry. Never posts anything.
+
+--suffix (Kraken corrections only, added 2026-11-18): a prior Kraken Discord message can't be
+edited or deleted, so fixing wrong figures means staging a distinctly-identified follow-up under
+a NEW --event-id (e.g. 'kraken|nov-corrected') rather than re-using the one that's already sent
+and reserved in Neon. --suffix (e.g. 'Corrected') keeps that follow-up's asset file from colliding
+with the original's filename, which would otherwise be identical (same clan/kind/date) and trip
+the "exists with different bytes" guard below. Must match middleware.js's allowlist suffix group.
 """
 import argparse, datetime as dt, hashlib, json, re, shutil
 from pathlib import Path
@@ -32,7 +39,7 @@ AUTH_WEEKLY = 'leader-standing-auto-discord-weekly-2026-11-09'
 # Kraken is explicitly excluded from the 2026-10-26 standing activation (AGENTS.md), so it never
 # gets AUTH_SINGLE_EVENT -- each Kraken send needs its own explicit leader direction and gets its
 # own date-stamped one-time tag (must match AUTH_KRAKEN_ONETIME in api/discord/publish-event.js).
-AUTH_KRAKEN_ONETIME = 'leader-directed-onetime-kraken-2026-11-17'
+AUTH_KRAKEN_ONETIME = 'leader-directed-onetime-kraken-2026-11-18'
 
 
 def main():
@@ -44,6 +51,10 @@ def main():
     ap.add_argument('--body-file', required=True)
     ap.add_argument('--template', required=True)
     ap.add_argument('--date', help='Event (or first set) date YYYY-MM-DD for the file name; default from event id')
+    ap.add_argument('--suffix', default='',
+                     help="Appended to the asset filename before .png (e.g. 'Corrected'), to avoid "
+                          'colliding with an already-staged/sent file for the same clan/kind/date. '
+                          "Must match middleware.js's allowlist suffix group (currently Corrected or vN).")
     ap.add_argument('--week-space-event', help='weekly only: this week\'s space|<date> event id')
     ap.add_argument('--week-flash-set-id', help='weekly only: this week\'s Flash Set id, e.g. 2026-11-03-A')
     ap.add_argument('--week-piggy-event', help='weekly only: this week\'s piggy|<date> event id')
@@ -58,7 +69,10 @@ def main():
     date = a.date or re.search(r'\d{4}-\d{2}-\d{2}', a.event_id).group(0)
     d = dt.date.fromisoformat(date)
     clan = a.clan.replace('-', '')
-    name = f'{clan}_{NAMES[a.kind]}_{d.strftime("%B")}_{d.day}_{d.year}.png'
+    if a.suffix and not re.fullmatch(r'Corrected|v\d+', a.suffix):
+        raise SystemExit("--suffix must be 'Corrected' or 'vN' to match middleware.js's allowlist")
+    suffix = f'_{a.suffix}' if a.suffix else ''
+    name = f'{clan}_{NAMES[a.kind]}_{d.strftime("%B")}_{d.day}_{d.year}{suffix}.png'
     key = f'{a.kind}|{a.event_id}|{a.clan}'
     auth = AUTH_WEEKLY if a.kind == 'weekly' else AUTH_KRAKEN_ONETIME if a.kind == 'kraken' else AUTH_SINGLE_EVENT
     entry = dict(kind=a.kind, eventId=a.event_id, clan=a.clan, file=name, sha256=hashlib.sha256(src).hexdigest(),

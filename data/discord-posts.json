@@ -148,6 +148,32 @@
       "approved": true,
       "authorization": "leader-directed-onetime-kraken-2026-11-17",
       "description": "AV-2 Kraken November 15 2026 results"
+    },
+    "kraken|kraken|nov-corrected|AVENGERS": {
+      "kind": "kraken",
+      "eventId": "kraken|nov-corrected",
+      "clan": "AVENGERS",
+      "file": "AVENGERS_Kraken_November_15_2026_Corrected.png",
+      "sha256": "fb8409394e723679763143550096d19150ab67a8573ba538ff5753457a17dacc",
+      "size": 1198417,
+      "template": "kraken-poster-v1-20261117-draft",
+      "body": "@everyone\n\n🦑 **AVENGERS Kraken — November 15** 🦑\n\n**📊 Headline**\n49 players dealt 230,573.4M total damage (avg 4,705.6M/player) — up 87.8% on our last-4 average. Clan total damage is #1 of 10 all-time logged AVENGERS Krakens (#1 of 4 in the Arena era).\n\n**🏆 Podium**\n🥇 J — 8,144.5M\n🥈 Addicted — 8,091.2M\n🥉 Adigarian — 7,764.1M\n\n**🌟 Standout Stories**\nJ's 8,144.5M is a new all-time AVENGERS Kraken record, breaking HarryBallsagna's 6,027.2M mark by +35.1%! HN had the biggest placement jump of the night — 28th to 5th (+23 places), a new best-ever finish for him — while STAR-LORD posted the biggest jump over his own average: +370.2% (1,251.2M avg over his last 9 Krakens to 5,883.1M).\n\n**💥 Personal Bests**\n28 new damage PBs this Kraken! Top gains:\n1. HN — 7,636.1M (+240.1%)\n2. Obajoba — 7,370.6M (+231.3%)\n3. Chuck — 6,565.9M (+190.6%)\n40 of 46 returning players beat their own average tonight! 13 new placement PBs too, led by HN's 28th → 5th.\n\n**🚩 Milestones**\n8,000M+ damage: 2 players this Kraken — the best Arena-era count ever in that tier.\n3 first-time Kraken results this month: McNasty, KKD and Squishy!\n\nFull results and PBs: https://avengersmobcontrol.github.io/avengers-stat-center/",
+      "approved": true,
+      "authorization": "leader-directed-onetime-kraken-2026-11-18",
+      "description": "AVENGERS Kraken November 15 2026 results"
+    },
+    "kraken|kraken|nov-corrected|AV-2": {
+      "kind": "kraken",
+      "eventId": "kraken|nov-corrected",
+      "clan": "AV-2",
+      "file": "AV2_Kraken_November_15_2026_Corrected.png",
+      "sha256": "38dc1f562f85b6d7bde5aaab96d30bcd4234355fafbe48964ac8f472bc40998f",
+      "size": 969667,
+      "template": "kraken-poster-v1-20261117-draft",
+      "body": "@everyone\n\n🦑 **AV-2 Kraken — November 15** 🦑\n\n**📊 Headline**\n27 players dealt 72,119.9M total damage (avg 2,671.1M/player) — up 340.1% on AV-2's only previous Kraken (October). Clan total damage is #1 of 2 logged AV-2 Krakens.\n\n**🏆 Podium**\n🥇 AV-SiFra — 7,488.3M\n🥈 AV-KNAVEN — 6,370.3M\n🥉 AV-Pablin — 6,339.6M\n\n**🌟 Standout Stories**\nAV-SiFra's 7,488.3M is a new all-time AV-2 Kraken record, breaking the previous mark of 2,259.3M by +231.4% — her climb from 10th to 1st (+9 places) is also the biggest placement jump on record for AV-2.\n\n**💥 Personal Bests**\n10 new damage PBs this Kraken! Top gains:\n1. AV-Pablin — 6,340M (+669.7%)\n2. AV-KNAVEN — 6,370M (+648.9%)\n3. TheHemperor — 291M (+599.5%)\n11 of 13 returning players beat their own average tonight! 3 new placement PBs too, led by AV-SiFra's 10th → 1st.\n\n**🚩 Milestones**\n7,000M+ damage: 1 player this Kraken (AV-SiFra) — the best Arena-era count ever in that tier.\n14 first-time Kraken results this month, as this is only AV-2's second clan-wide Kraken.\n\nFull results and PBs: https://avengersmobcontrol.github.io/avengers-stat-center/",
+      "approved": true,
+      "authorization": "leader-directed-onetime-kraken-2026-11-18",
+      "description": "AV-2 Kraken November 15 2026 results"
     }
   }
 }

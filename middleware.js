@@ -61,7 +61,12 @@ export default async function middleware(request){
     // Standing event publisher (api/discord/publish-event.js): only event poster PNGs, which it SHA-checks.
     // Kraken added 2026-11-17 alongside its own one-time publish authorization (AUTH_KRAKEN_ONETIME) --
     // still excluded from the standing automatic-posting activation (AGENTS.md), same as before.
-    /^\/assets\/reports\/(AVENGERS|AV2)_(Space_Race|Big_Pig|Piggy_Flashes|Kraken)_[A-Z][a-z]+_\d{1,2}_\d{4}\.png$/.test(p) ||
+    // Optional (_Corrected|_v2|_v3...) suffix added 2026-11-18, Kraken only: a prior Kraken Discord
+    // message can't be edited or deleted, so fixing wrong figures means posting a distinctly-identified
+    // follow-up under a NEW (kind, eventId, clan) key -- which needs its own, differently-named asset
+    // file alongside the original (never overwriting it) so the Neon send-once ledger sees a new key
+    // instead of colliding with the already-reserved original send.
+    /^\/assets\/reports\/(AVENGERS|AV2)_(Space_Race|Big_Pig|Piggy_Flashes|Kraken)_[A-Z][a-z]+_\d{1,2}_\d{4}(_(Corrected|v\d+))?\.png$/.test(p) ||
     p.startsWith('/api/guest/') ||
     p==='/mcp' ||
     p.startsWith('/.well-known/') ||

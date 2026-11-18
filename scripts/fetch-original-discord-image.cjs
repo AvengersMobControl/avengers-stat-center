@@ -28,8 +28,14 @@ function verifyDiscordUrl(raw,{channelId,attachmentId,expectedContentType}){
   ensure(filename&&filename.length<=255&&!/[/\\\x00-\x1f]/.test(filename)&&
     !filename.includes('..'),'Invalid attachment filename');
   const ext=filename.split('.').at(-1).toLowerCase();
-  ensure(TYPES.has(ext)&&TYPES.get(ext)===expectedContentType,
-    'Source filename extension does not match expected image type');
+  // Discord may retain the original .png filename after serving a JPEG/WebP
+  // rendition as the attachment's declared MIME. A path-extension mismatch
+  // is therefore NOT itself evidence of a modified image. We still require
+  // (1) an allowed image filename, (2) an allowed declared MIME,
+  // (3) a 200 direct CDN response with exactly that MIME and
+  // (4) magic bytes matching the response MIME before hashing.
+  ensure(TYPES.has(ext)&&[...TYPES.values()].includes(expectedContentType),
+    'Source filename extension or declared image MIME is unsupported');
   const keys=[...u.searchParams.keys()];
   ensure(keys.every(k=>['ex','is','hm'].includes(k))&&keys.length===new Set(keys).size,
     'Unexpected Discord CDN query parameters (possible image transformation)');

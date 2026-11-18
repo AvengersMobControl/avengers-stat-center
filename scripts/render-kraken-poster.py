@@ -55,13 +55,28 @@ def icon(p, box, flip=False):
     p.im.paste(im, (x0 + (x1 - x0 - im.width) // 2, y0 + (y1 - y0 - im.height) // 2), im)
 
 
+def has_score(r):
+    """True if this row has a real, countable Kraken damage result.
+
+    Leader-confirmed 2026-11-18: a row with score == 0 is not a real "dealt zero damage"
+    result -- it's a tail-of-screenshot listing (name + rank visible, damage not
+    legible/captured), confirmed against the raw ledger's per-row sourceImageSha256
+    clustering and the kraken|nov AV-2 event metadata's own av2FinalClanDamageMillion
+    (72120) vs av2VerifiedRowDamageMillion (70084.3) gap. These rows must not count
+    toward player counts, totals, averages, New Faces, damage PBs, placement PBs or
+    ranks for ANY clan/month -- excluding them here (not in the data file; the raw
+    ledger is never edited) keeps every number traceable back to real captured damage.
+    """
+    return r.get('score') not in (None, 0)
+
+
 def clan_ranks(e, clan):
     """This event's placements for `clan`, derived straight from the score data rather than
     `metadata.rank` — which is null for every Kraken before October even though the scores (and
     therefore the actual placements) are fully on file for all of them. Ties share a rank, the
     same convention `metadata.rank` itself uses (verified to match it exactly for Oct/Nov, the two
     months that do carry a real rank field)."""
-    scored = [r for r in e['rows'] if r['clan'] == clan and r.get('score') is not None]
+    scored = [r for r in e['rows'] if r['clan'] == clan and has_score(r)]
     return {r['player']: 1 + sum(1 for o in scored if o['score'] > r['score']) for r in scored}
 
 
@@ -79,18 +94,24 @@ def build_model(R, clan, event_id=None, exclude=None):
     if exclude:
         excl = set(exclude)
         event['rows'] = [r for r in event['rows'] if r['player'] not in excl]
-    rows = sorted([r for r in event['rows'] if r['clan'] == clan and r.get('score') is not None], key=lambda r: -r['score'])
+    rows = sorted([r for r in event['rows'] if r['clan'] == clan and has_score(r)], key=lambda r: -r['score'])
     if not rows: raise SystemExit(f'No {clan} rows in {event["id"]}')
     earlier = [e for e in kr if e['date'] < event['date']]
     ranks_by_event = {e['id']: clan_ranks(e, clan) for e in kr}
 
+    # Damage-PB history is cross-clan BY DESIGN (see the house rule below): a player's own best
+    # counts regardless of which clan they raced for that month, so this intentionally does NOT
+    # filter by `r['clan'] == clan` the way every other aggregate in this function does. Confirmed
+    # bug 2026-11-18: AV-neez played AVENGERS in Sept/Oct (1,886.8M peak) then AV-2 in November
+    # (3,498.9M) -- a real +85.5% PB that the old same-clan-only filter made invisible because her
+    # history lived under a different clan than this month's row.
     hist = {}
     for e in earlier:
         for r in e['rows']:
-            if r['clan'] == clan and r.get('score') is not None: hist.setdefault(r['player'], []).append((e['date'], r['score']))
+            if has_score(r): hist.setdefault(r['player'], []).append((e['date'], r['score']))
     # True all-time (no date floor) vs Arena-era (since 2026-08-01), both bounded to <= this event.
-    ever_scores = [r['score'] for e in kr if e['date'] <= event['date'] for r in e['rows'] if r['clan'] == clan and r.get('score') is not None]
-    arena_scores = [r['score'] for e in kr if ARENA_START <= e['date'] <= event['date'] for r in e['rows'] if r['clan'] == clan and r.get('score') is not None]
+    ever_scores = [r['score'] for e in kr if e['date'] <= event['date'] for r in e['rows'] if r['clan'] == clan and has_score(r)]
+    arena_scores = [r['score'] for e in kr if ARENA_START <= e['date'] <= event['date'] for r in e['rows'] if r['clan'] == clan and has_score(r)]
     def ever_rank(s): return 1 + sum(1 for x in ever_scores if x > s)
     def arena_rank(s): return 1 + sum(1 for x in arena_scores if x > s)
 
@@ -106,12 +127,12 @@ def build_model(R, clan, event_id=None, exclude=None):
     # This Kraken plus the clan's previous 4 (by date, skipping months with no clan rows).
     recent = []
     for e in [x for x in kr if x['date'] <= event['date']][::-1]:
-        rr = [r['score'] for r in e['rows'] if r['clan'] == clan and r.get('score') is not None]
+        rr = [r['score'] for r in e['rows'] if r['clan'] == clan and has_score(r)]
         if rr: recent.append(dict(date=e['date'], label=(e['metadata'] or {}).get('monthLabel', e['date']), n=len(rr), total=sum(rr), avg=sum(rr) / len(rr)))
         if len(recent) == 5: break
 
     # Clan total damage, ranked among this clan's own Kraken months (pot-equivalent ribbon stat).
-    totals = [(sum(r['score'] for r in e['rows'] if r['clan'] == clan and r.get('score') is not None), e['date'])
+    totals = [(sum(r['score'] for r in e['rows'] if r['clan'] == clan and has_score(r)), e['date'])
               for e in kr if e['date'] <= event['date']]
     totals = [(t, d) for t, d in totals if t > 0]
     this_total = sum(r['score'] for r in rows)
@@ -166,11 +187,11 @@ def build_model(R, clan, event_id=None, exclude=None):
 
     # Clan record watch: does this month's leader beat the best score from every STRICTLY
     # earlier month (not this one) — i.e. an actual new record, not just "today's leader".
-    prior_ever_scores = [r['score'] for e in earlier for r in e['rows'] if r['clan'] == clan and r.get('score') is not None]
+    prior_ever_scores = [r['score'] for e in earlier for r in e['rows'] if r['clan'] == clan and has_score(r)]
     prior_best = max(prior_ever_scores) if prior_ever_scores else None
     leader_is_record = prior_best is not None and rows[0]['score'] > prior_best
 
-    arena_counts = [[r['score'] for r in e['rows'] if r['clan'] == clan and r.get('score') is not None]
+    arena_counts = [[r['score'] for r in e['rows'] if r['clan'] == clan and has_score(r)]
                     for e in kr if ARENA_START <= e['date'] <= event['date']]
     arena_counts = [c for c in arena_counts if c]
     tiers = [(t, n, 1 + sum(1 for c in arena_counts if sum(1 for s in c if s >= t) > n), len(arena_counts),
@@ -190,20 +211,38 @@ def build_model(R, clan, event_id=None, exclude=None):
 
 
 def plan(m):
-    """Fixed layout: Personal Bests (damage) alone in the left column; Placement PBs, Damage
-    Milestones and New Faces stacked in the right column, in that order. Above Own Average lives
-    in the top KPI row, so it needs no box down here. Whichever column is shorter stretches to
-    match the taller one (same convention used throughout this poster)."""
+    """Fixed layout: Personal Bests (damage) alone in the left column; Placement PBs and Damage
+    Milestones stacked in the right column. Whichever column is shorter stretches to match the
+    taller one (same convention used throughout this poster). New Faces renders as a single table
+    the same width as the right column, stacked under Damage Milestones, when the list is short (4
+    or fewer) -- a short list in its own full-width row left an awkwardly large blank strip beside
+    it. Once there are enough rows (5+) that a single column would run long, it instead becomes its
+    own full-width row below both columns, split into two side-by-side tables -- stacking a LONG
+    list into the right column would stretch Personal Bests on the left to match it, which is the
+    wasted-space problem this layout avoided in the first place (leader feedback 2026-11-18, twice).
+    Above Own Average lives in the top KPI row, so it needs no box down here."""
     n10 = min(10, len(m['rows']))
     colW = (W - 2 * M - 24) // 2
     pbDamageH = 122 + 50 * max(1, len(m['pbs'])) + 20
     pbPlaceH = 122 + 50 * max(1, len(m['placePBs'])) + 20
     milesH = 116 + len(m['tiers']) * 48 + 16
-    newH = 140 + max(1, len(m['first'])) * 118
-    rightStack = pbPlaceH + 24 + milesH + 24 + newH
-    rowH = max(pbDamageH, rightStack)
-    return dict(colW=colW, pbDamageH=pbDamageH, pbPlaceH=pbPlaceH,
-                newH=newH, milesH=milesH, rightStack=rightStack, rowH=rowH, bottom=rowH, n10=n10)
+    # New Faces renders as one table (same width as the right column) when the list is short (4
+    # or fewer), or two side-by-side tables (full poster width) once there are enough rows for
+    # that split to meaningfully cut the box's height. Same row/header sizing as the PB tables
+    # above either way.
+    newCols = 1 if len(m['first']) <= 4 else 2
+    newRows = max(1, -(-len(m['first']) // newCols))
+    newH = 122 + 50 * newRows + 20
+    if newCols == 1:
+        rightStack = pbPlaceH + 24 + milesH + 24 + newH
+        rowH = max(pbDamageH, rightStack)
+        bottom = rowH
+    else:
+        rightStack = pbPlaceH + 24 + milesH
+        rowH = max(pbDamageH, rightStack)
+        bottom = rowH + 24 + newH
+    return dict(colW=colW, pbDamageH=pbDamageH, pbPlaceH=pbPlaceH, newCols=newCols,
+                newH=newH, milesH=milesH, rightStack=rightStack, rowH=rowH, bottom=bottom, n10=n10)
 
 
 def render(m, out):
@@ -352,20 +391,42 @@ def render(m, out):
             p.fit((x + 716, ry + 1), ordinal(q['newRank']), 110, 26, 'cyan', 'black', 'ra'); p.fit((x + w - 28, ry + 2), f'+{q["gain"]}', 90, 24, 'green', 'xbold', 'ra')
 
     def box_new(x, y0, w, h):
-        nf = m['first']; p.neon((x, y0, x + w, y0 + h), 'mag', width=4)
-        p.text((x + 26, y0 + 20), 'NEW FACES', 46, 'mag', 'black'); p.text((x + 26, y0 + 74), 'First tracked Kraken', 22, 'fg', 'semi')
-        icon(p, (x + w - 160, y0 + 10, x + w - 16, y0 + 120))
-        if not nf: p.text((x + 26, y0 + 136), 'No first-time Kraken results this month.', 24, 'mut', 'semi'); return
-        ch = max(70, min(118, (h - 150) // len(nf) - 14)); cw = w - 52
-        for i, r in enumerate(nf):
-            cx = x + 26; cy = y0 + 128 + i * (ch + 14)
-            d.rounded_rectangle((cx, cy, cx + cw, cy + ch), 14, fill=C['row'], outline=C['mag'], width=3)
-            p.fit((cx + 18, cy + 12), r['player'], cw - 220, 34, 'fg', 'black')
-            p.text((cx + cw - 18, cy + 10), dmg(r['score']), 36, 'cyan', 'black', 'ra')
-            if ch >= 90:
-                md = r['metadata']
-                bits = [f'{ordinal(md["rank"])} place' if md.get('rank') else None, f'{fmt(r["sparks"])} Sparks' if r.get('sparks') is not None else None]
-                p.fit((cx + 18, cy + ch - 38), '  ·  '.join(bt for bt in bits if bt), cw - 36, 22, 'mut', 'semi')
+        # Same table styling as the Personal Bests boxes above (same title/count treatment, same
+        # header row and 50px data rows, same text sizes) rather than the larger name/score cards
+        # from an earlier revision. A short list (4 or fewer) gets one table that fills this box's
+        # full width -- the caller sizes/places that box to match the right column (same width as
+        # Damage Milestones, stacked underneath it) instead of leaving it the full poster width with
+        # a big blank strip beside a short table. A longer list splits into two side-by-side tables,
+        # at which point the caller sizes this box to the full poster width instead.
+        nf = m['first']
+        p.neon((x, y0, x + w, y0 + h), 'mag', width=4)
+        p.title(x + 28, y0 + 22, 'NEW FACES', None, None, 34)
+        n = str(len(nf)); p.text((x + w - 28, y0 + 22), n, 40, 'mag', 'black', 'ra')
+        p.text((x + w - 40 - d.textlength(n, font=F(40, 'black')), y0 + 34), 'FIRST-TIME KRAKEN RESULTS', 22, 'fg', 'xbold', 'ra')
+        if not nf:
+            p.text((x + 28, y0 + 130), 'No first-time Kraken results this month.', 26, 'mut', 'semi')
+            return
+        if len(nf) <= 4:
+            groups = [(x, w, nf)]
+        else:
+            gap = 24; cw = (w - gap) // 2; half = -(-len(nf) // 2)
+            groups = [(x, cw, nf[:half]), (x + cw + gap, cw, nf[half:])]
+        for ci, (cx, cw, colRows) in enumerate(groups):
+            base_idx = sum(len(g[2]) for g in groups[:ci])
+            hdr = [(cx + 46, '#', 'ma'), (cx + 78, 'PLAYER', 'la'), (cx + cw * 0.56, 'PLACE', 'ra'),
+                   (cx + cw * 0.78, 'SPARKS', 'ra'), (cx + cw - 28, 'DAMAGE', 'ra')]
+            hy = y0 + 78; d.rectangle((cx + 20, hy - 6, cx + cw - 20, hy + 30), fill=C['row'])
+            for hx, lab, a in hdr: p.fit((hx, hy), lab, 150, 18, 'mut', 'semi', a)
+            for i, r in enumerate(colRows):
+                ry = y0 + 122 + i * 50
+                if i % 2 == 0: d.rectangle((cx + 20, ry - 8, cx + cw - 20, ry + 40), fill=C['row2'])
+                p.text((cx + 46, ry + 2), base_idx + i + 1, 22, 'mag', 'black', 'ma')
+                p.fit((cx + 78, ry + 1), r['player'], cw * 0.38, 26, 'fg', 'bold')
+                rank = (r.get('metadata') or {}).get('rank')
+                p.fit((cx + cw * 0.56, ry + 3), ordinal(rank) if rank else '—', cw * 0.16, 24, 'mut', 'semi', 'ra')
+                sp = r.get('sparks')
+                p.fit((cx + cw * 0.78, ry + 3), fmt(sp) if sp is not None else '—', cw * 0.16, 24, 'green', 'semi', 'ra')
+                p.fit((cx + cw - 28, ry + 1), dmgr(r['score']), cw * 0.18, 26, 'mag', 'black', 'ra')
 
     def box_miles(x, y0, w, h):
         p.neon((x, y0, x + w, y0 + h), 'gold'); p.text((x + 26, y0 + 18), 'DAMAGE MILESTONES', 30, 'fg', 'black')
@@ -381,12 +442,19 @@ def render(m, out):
 
     # Left column: Personal Bests (damage) alone, stretched to match the right column.
     box_pb_damage(M, y, L['colW'], L['rowH'])
-    # Right column: Placement PBs, Damage Milestones, New Faces, stacked.
+    # Right column: Placement PBs and Damage Milestones, stacked.
     rx = M + L['colW'] + 24
     box_pb_place(rx, y, L['colW'], L['pbPlaceH'])
     box_miles(rx, y + L['pbPlaceH'] + 24, L['colW'], L['milesH'])
-    box_new(rx, y + L['pbPlaceH'] + 24 + L['milesH'] + 24, L['colW'], L['newH'])
-    y += L['rowH'] + 30
+    if L['newCols'] == 1:
+        # Short list: stack New Faces under Damage Milestones, same width as the right column
+        # (leader-requested 2026-11-18), instead of its own full-width row with blank space beside it.
+        box_new(rx, y + L['pbPlaceH'] + 24 + L['milesH'] + 24, L['colW'], L['newH'])
+    else:
+        # Long list: its own full-width row below both columns, instead of stretching Personal
+        # Bests (left) to match a tall right-column stack.
+        box_new(M, y + L['rowH'] + 24, W - 2 * M, L['newH'])
+    y += L['bottom'] + 30
 
     p.neon((M, y, W - M, y + 250), 'cyan')
     icon(p, (M + 24, y + 18, M + 270, y + 232)); icon(p, (W - M - 270, y + 18, W - M - 24, y + 232), flip=True)

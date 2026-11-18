@@ -29,7 +29,11 @@ const AUTH_WEEKLY='leader-standing-auto-discord-weekly-2026-11-09';
 // "Kraken is not included") -- it gets its own one-time, date-stamped tag per leader-directed
 // send, so it can never silently inherit standing/automatic authorization in the audit trail.
 // A future Kraken month needs its own explicit leader direction and its own tag, not reuse of this one.
-const AUTH_KRAKEN_ONETIME='leader-directed-onetime-kraken-2026-11-17';
+// Bumped 2026-11-18: the leader's "resend them both" (corrected AVENGERS/AV-2 kraken|nov figures,
+// after the Nov 17 sends went out with excluded zero-score rows, missed cross-clan PBs and a missed
+// AV-2 row) is its own fresh explicit direction, not a continuation of the Nov 17 one -- same
+// never-silently-inherited principle the comment above already states.
+const AUTH_KRAKEN_ONETIME='leader-directed-onetime-kraken-2026-11-18';
 const authFor=kind=>kind==='weekly'?AUTH_WEEKLY:kind==='kraken'?AUTH_KRAKEN_ONETIME:AUTH_SINGLE_EVENT;
 const CHANNEL='1470175579058999386';
 const KINDS=new Set(['space','piggy','flash','weekly','kraken']);

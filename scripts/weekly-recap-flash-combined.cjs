@@ -25,7 +25,10 @@ function main() {
   const releasePath = process.argv[3] || path.join(ROOT, 'reports', 'approved-summary-release.json');
   const release = JSON.parse(fs.readFileSync(releasePath, 'utf8'));
 
-  const flashEvents = release.projection.events.filter(e => e.kind === 'flash');
+  // This source powers the numbered AVENGERS PF1–4 recap only. AV-2 uses
+  // a separate unnumbered weekly pool, never a fabricated PF0/PF1–4.
+  const flashEvents = release.projection.events.filter(e => e.kind === 'flash' &&
+    e.metadata?.pool !== 'av2-week');
   const events = flashEvents.map(e => ({
     id: e.id,
     flash: Number(e.metadata && e.metadata.flash),

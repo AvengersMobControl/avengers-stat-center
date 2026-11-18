@@ -33,7 +33,7 @@ function dateMinusDays(p,days){
 function activeWindow(nowMs=Date.now()){
   const p=local(nowMs),clock=p.hour*60+p.minute;
   let mode,startMinute,endMinute;
-  if(p.weekday==='Fri'&&clock>=360&&clock<=450){mode='friday';startMinute=360;endMinute=450;}
+  if(p.weekday==='Fri'&&clock>=120&&clock<=450){mode='friday';startMinute=120;endMinute=450;}
   else if(p.weekday==='Sun'&&clock>=960&&clock<=1110){mode='sunday';startMinute=960;endMinute=1110;}
   else return null;
   const start=centralWallMillis(p,Math.floor(startMinute/60),startMinute%60);
@@ -114,22 +114,44 @@ function publicationCoverage(w,checkpoints,sourceRows,ledgerEvents){
     [1,2,3,4].map(i=>({channel:'piggyFlash'+i,...matching('piggyFlash'+i,'flash',i)})):[];
   const primary=matching(w.primary,w.primary);
   const fallback=matching(w.fallback,w.fallback);
-  const main=(primary.confirmed?primary:fallback);
-  const selectedMain=primary.confirmed?w.primary:fallback.confirmed?w.fallback:w.primary;
-  const relevantChannels=[selectedMain,...flashes.map(x=>x.channel)];
+  // A fallback is valid ONLY when no primary result source was found.
+  // Never stop on a published Piggy while an observed Space source is still
+  // missing from the website (or vice versa). If both events have sources,
+  // reconcile both before declaring this window completed.
+  const observedPrimary=primary.total>0,observedFallback=fallback.total>0;
+  const mainKind=observedPrimary
+    ? (primary.confirmed?w.primary:null)
+    : (fallback.confirmed?w.fallback:null);
+  const allMainSourcesPublished=mainKind!==null &&
+    (!observedPrimary||primary.confirmed) &&
+    (!observedFallback||fallback.confirmed);
+  const relevantChannels=[w.primary,w.fallback,...flashes.map(x=>x.channel)];
   const missingOriginals=relevantChannels.reduce((n,k)=>n+(missingByChannel[k]||0),0);
   const requiredScan=w.channels.filter(k=>!['av2','kraken'].includes(k));
   const missingScan=requiredScan.filter(k=>!checkpoints[k]?.last_scan_complete);
   const uncheckedOptional=['av2','kraken'].filter(k=>w.channels.includes(k)&&!checkpoints[k]?.updated_at);
   const av2Hashes=[...new Set(hashesByChannel.av2||[])];
-  const av2Matches=av2Hashes.filter(h=>ledger.some(e=>e.sourceHashSet.has(h))).length;
-  // AV-2 partial collection must not block AVENGERS publication.
+  const krakenHashes=[...new Set(hashesByChannel.kraken||[])];
+  const matchesAnyPublishedSource=h=>ledger.some(e=>e.sourceHashSet.has(h));
+  const av2Matches=av2Hashes.filter(matchesAnyPublishedSource).length;
+  const krakenMatches=krakenHashes.filter(matchesAnyPublishedSource).length;
+  // AV-2 may post fewer screenshots than expected: publish all VERIFIED
+  // available rows without waiting for a missing lobby. But do not STOP
+  // collection while an ALREADY RETRIEVED AV-2/Kraken source is not yet
+  // accounted for in the live website ledger (unless separately held/reviewed
+  // through publication). Source capture alone is never publication.
+  const optionalSourcesPublished=av2Matches===av2Hashes.length &&
+    krakenMatches===krakenHashes.length;
   const canStop=missingScan.length===0 && uncheckedOptional.length===0 && missingOriginals===0 &&
-    (w.mode!=='friday'||flashes.every(x=>x.confirmed)) && main.confirmed;
-  return {websitePublished:canStop,mainKind:primary.confirmed?w.primary:fallback.confirmed?w.fallback:null,
+    (w.mode!=='friday'||flashes.every(x=>x.confirmed)) &&
+    allMainSourcesPublished && optionalSourcesPublished;
+  return {websitePublished:canStop,mainKind,
     missingScan,uncheckedOptional,missingOriginals,flashes,primary,fallback,
     av2:{observed:av2Hashes.length,publishedSourceMatches:av2Matches,partial:av2Matches<av2Hashes.length},
-    // Immutable source evidence is the only valid publication-completion basis.
-    reason:canStop?'source-hashes-present-in-live-versioned-ledger':'awaiting-source-or-publication'};
+    kraken:{observed:krakenHashes.length,publishedSourceMatches:krakenMatches,
+      partial:krakenMatches<krakenHashes.length},
+    // This validates source-to-live-ledger coverage, NOT player-by-player
+    // visual completeness; the publication task must audit every visible row.
+    reason:canStop?'all-observed-sources-published-in-live-ledger':'awaiting-source-or-publication'};
 }
 module.exports={local,activeWindow,channelCutoff,scopedKey,chooseNext,publicationCoverage,centralWallMillis};

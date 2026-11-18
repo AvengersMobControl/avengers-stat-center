@@ -42,7 +42,7 @@
   "crons": [
     {
       "path": "/api/discord/result-intake-friday",
-      "schedule": "*/5 11-13 * * 5"
+      "schedule": "*/5 7-13 * * 5"
     },
     {
       "path": "/api/discord/result-intake-sunday",

@@ -47,7 +47,7 @@ async function handler(req,res){
   // No background network, database, or Discord activity outside the windows.
   const window=cron?activeWindow(Date.now()):null;
   if(cron&&!window)return respond(res,200,{status:'outside-approved-windows',networkActivity:false,
-    next:'Friday 06:00–07:30 or Sunday 16:00–18:30 America/Chicago'});
+    next:'Friday 02:00–07:30 or Sunday 16:00–18:30 America/Chicago'});
   if(!process.env.AVENGERS_RESULTS_DATABASE_URL||!process.env.DISCORD_BOT_TOKEN){
     console.error('[source-intake] configuration-missing');
     return respond(res,503,{error:'private-intake-not-configured'});
@@ -121,7 +121,8 @@ async function handler(req,res){
         missingOriginals:coverage?.missingOriginals??null,
         flashChannelsAwaitingPublication:coverage?.flashes?.filter(f=>!f.confirmed).map(f=>f.channel)||[],
         primaryAwaitingPublication:!coverage?.mainKind,
-        av2Incomplete:coverage?.av2?.partial??null
+        av2Incomplete:coverage?.av2?.partial??null,
+        krakenIncomplete:coverage?.kraken?.partial??null
       },minutesRemaining:window.minutesLeft};
     // This is the actionable failure signal for end-of-window ChatGPT
     // publication watchdogs; it does not claim to notify the user itself.

@@ -10,8 +10,8 @@ and checks whether a guarded publication run reached the live website.
 
 | Window | Priority, lookbacks and fallback |
 | --- | --- |
-| Friday **06:00–07:30** | **First all four Piggy Flash channels**: every posted screenshot since prior Monday 06:00. **Then Space Race**: every posted screenshot since prior Wednesday 06:00, including all lobbies (6 typical, 7+ possible). Space usually ends Friday 02:00 but can end earlier. If no final Space result, use Friday Piggy (same Wednesday lookback) instead. **Always check delayed AV-2** (plus relevant Kraken-channel sources). |
-| Sunday **16:00–18:30** | **Big Piggy first**, usually ending at 16:00, with posted screenshots since prior Friday 06:00. If no final Piggy, check Sunday Space (since prior Wednesday 06:00). **Always check AV-2** and relevant Kraken-channel sources, even when AV-2 is late/incomplete. |
+| Friday **02:00–07:30** | **First all four Piggy Flash channels**: every posted screenshot since prior Monday 06:00. **Then Space Race**: every posted screenshot since prior Wednesday 06:00, including all lobbies (6 typical, 7+ possible). Space usually ends Friday 02:00 but can end earlier. If no final Space result, use Friday Piggy (same Wednesday lookback) instead. **Always check delayed AV-2** (plus relevant Kraken-channel sources). |
+| Sunday **16:00–18:30** | **Big Piggy first**, usually ending at 16:00, with posted screenshots since prior Friday 02:00. If no final Piggy, check Sunday Space (since prior Wednesday 06:00). **Always check AV-2** and relevant Kraken-channel sources, even when AV-2 is late/incomplete. |
 
 The first AV-2 source window uses a conservatively extended 21-day lookback,
 then the last successfully published and fully accounted AV-2 checkpoint
@@ -40,10 +40,10 @@ Every collection tick independently requests the public GitHub Pages release
 manifest and immutable versioned event ledger. It may record private
 website-published state and stop future Discord requests only when:
 1. Required channel source windows have been fully scanned and original images
-   verified (AV-2/Kraken need at least one scan attempt; partial remains explicit).
+   verified (AV-2/Kraken need at least one scan attempt; known uploaded images must be published or explicitly held before collection stops).
 2. All four Friday Flash result sources appear in the appropriate four live
    Flash events after the Monday cutoff.
-3. The actual primary Space/Piggy event (or verified fallback) appears in the
+3. Every already-retrieved AV-2/Kraken original source is accounted for in the public ledger (any unresolved source remains pending; unposted late AV-2 lobbies cannot be invented). The actual primary Space/Piggy event (or verified fallback) appears in the
    public ledger with every required verified final source hash.
 4. The manifest's exact Git commit, export version, and returned ledger version
    agree. A Vercel READY deployment, successful scan, GitHub PR or job-complete
@@ -59,7 +59,7 @@ separate ChatGPT Friday/Sunday website-publication tasks.
 ## Failure alert to the leader
 
 The TWO existing ChatGPT automations were rescheduled, not duplicated:
-Friday 06:00 and 07:30 Central; Sunday 16:00 and 18:30 Central. The early run
+Friday 02:00 and 07:30 Central; Sunday 16:00 and 18:30 Central. The early run
 is responsible for final screenshots and website publication. The window-end
 run checks the live Pages manifest, event ledger/projection, Flash channel
 coverage and AV-2 source holds. If any required result did not reach the site,

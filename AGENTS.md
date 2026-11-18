@@ -3,7 +3,7 @@
 ## 2026-11-18 — Leader-approved bounded collection and publication windows
 
 - STOP 24/7 Discord polling. Vercel source collection is now allowed only
-  Friday 06:00–07:30 or Sunday 16:00–18:30 America/Chicago,
+  Friday 02:00–07:30 or Sunday 16:00–18:30 America/Chicago,
   every five minutes INSIDE those windows only. Hard CST/CDT local guard,
   no Discord/Neon access outside them, and no more scans after a verified
   website-publication stop receipt. Native cron remains source-only:

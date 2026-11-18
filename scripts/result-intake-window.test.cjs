@@ -8,11 +8,11 @@ const {scanChannel}=require('../server/result-source-intake.cjs');
 const H=3600000;
 function ts(x){return Date.parse(x);}
 function stamp(t){return new Date(t).toISOString();}
-const winterFriday=ts('2026-11-20T12:00:00.000Z');
-const summerFriday=ts('2027-07-02T11:00:00.000Z');
+const winterFriday=ts('2026-11-20T08:00:00.000Z');
+const summerFriday=ts('2027-07-02T07:00:00.000Z');
 const winterSunday=ts('2026-11-22T22:00:00.000Z');
 const summerSunday=ts('2027-07-04T21:00:00.000Z');
-test('Friday 06:00–07:30 Chicago correctly tracks winter, summer and precise boundaries',()=>{
+test('Friday 02:00–07:30 Chicago correctly tracks winter, summer and precise boundaries',()=>{
  const a=activeWindow(winterFriday),b=activeWindow(summerFriday);
  assert.equal(a.id,'friday-2026-11-20');assert.equal(b.id,'friday-2027-07-02');
  assert.equal(a.startMs,winterFriday);assert.equal(b.startMs,summerFriday);
@@ -38,12 +38,14 @@ test('Sunday 16:00–18:30 Chicago tracks winter, summer and Monday UTC spill',(
  assert.deepEqual(a.channels.slice(0,2),['piggy','space']);
 });
 test('outside the two scheduled windows cannot start a source scan',()=>{
- for(const s of ['2026-11-18T16:00:00Z','2026-11-20T10:55:00Z','2026-11-20T14:00:00Z',
-  '2026-11-22T19:00:00Z','2026-11-23T01:00:00Z','2027-07-02T10:55:00Z']){
+ for(const s of ['2026-11-18T16:00:00Z','2026-11-20T07:55:00Z','2026-11-20T14:00:00Z',
+  '2026-11-22T19:00:00Z','2026-11-23T01:00:00Z','2027-07-02T06:55:00Z']){
   assert.equal(activeWindow(ts(s)),null,s);
  }
  const v=JSON.parse(fs.readFileSync('vercel.json','utf8'));
  assert.equal(v.crons.length,3);
+ assert.equal(v.crons.find(x=>x.path==='/api/discord/result-intake-friday')?.schedule,
+  '*/5 7-13 * * 5','UTC Friday cron covers 02:00 CT in both CST and CDT');
  assert(!v.crons.some(x=>x.schedule==='*/5 * * * *'),'no always-on every-5-minute cron');
  assert(v.crons.every(x=>/result-intake-(friday|sunday|monday)/.test(x.path)));
  assert.equal(new Set(v.crons.map(x=>x.path)).size,3,'each UTC cron path distinct');
@@ -85,9 +87,18 @@ test('publication gate requires all four Flash images and final Space source in 
   sources:['reviewed-image-sha256:'+hashes[i-1]]}));
  events.push({kind:'space',id:'space|2026-11-20',date:'2026-11-20',
   sources:['reviewed-image-sha256:'+hashes[4]]});
+ const unposted=publicationCoverage(w,allDone(w),source,events);
+ assert.equal(unposted.websitePublished,false,
+   'publication of AVENGERS is independent, but collector cannot stop with an observed unpublished AV-2 image');
+ assert.equal(unposted.av2.partial,true);
+ // The independent publisher can include every verified AV-2 image while
+ // leaving unposted/unknown *other* AV-2 lobbies as partial.
+ events.push({kind:'space',id:'space|2026-11-20',date:'2026-11-20',
+   sources:['reviewed-image-sha256:'+hashes[5]]});
  const good=publicationCoverage(w,allDone(w),source,events);
- assert.equal(good.websitePublished,true,'partial AV-2 may not block verified AVENGERS');
- assert.equal(good.av2.partial,true);
+ assert.equal(good.websitePublished,true,
+   'stop only after every retrieved eligible final source is published on live site');
+ assert.equal(good.av2.partial,false);
  assert.equal(good.mainKind,'space');
  assert.equal(good.flashes.filter(x=>x.confirmed).length,4);
  const missed=publicationCoverage(w,allDone(w),source,events.slice(0,3).concat(events.slice(4)));
@@ -151,4 +162,41 @@ test('public publication verification requires immutable versioned ledger and ma
   String(u).includes('release-manifest.json')?{sourceCommit:sha,version,exports:{ledger:path}}:
    {version:'f'.repeat(64),data:{events:[]}}});
  await assert.rejects(publicLedger(bad),/version-mismatch/);
+});
+
+test('published fallback cannot hide an observed and unpublished primary result',()=>{
+ const w=activeWindow(winterFriday);
+ const published='a'.repeat(64),pending='b'.repeat(64);
+ const sources=rows(w,[
+  ['space','2026-11-20T11:00:00Z',pending,21],
+  ['piggy','2026-11-20T11:05:00Z',published,22]
+ ]);
+ const events=[{kind:'piggy',id:'piggy|2026-11-20',date:'2026-11-20',
+  sources:['reviewed-image-sha256:'+published]}];
+ const all=allDone(w);
+ const r=publicationCoverage(w,all,sources,events);
+ assert.equal(r.websitePublished,false);
+ assert.equal(r.mainKind,null,'Space is primary if its screenshots were observed');
+ assert.equal(r.primary.total,1);
+ assert.equal(r.fallback.confirmed,true);
+});
+test('window can stop as soon as all found final sources are published, without waiting for unposted AV-2 lobbies',()=>{
+ const w=activeWindow(winterSunday);
+ const pig='a'.repeat(64),av2='b'.repeat(64),kraken='c'.repeat(64);
+ const sources=rows(w,[
+  ['piggy','2026-11-22T21:00:00Z',pig,51],
+  ['av2','2026-11-22T22:00:00Z',av2,52],
+  ['kraken','2026-11-22T22:02:00Z',kraken,53]
+ ]);
+ const events=[
+  {kind:'piggy',id:'piggy|2026-11-22',date:'2026-11-22',sources:['reviewed-image-sha256:'+pig,'reviewed-image-sha256:'+av2]},
+  {kind:'kraken',id:'kraken|nov',date:'2026-11-15',sources:['reviewed-image-sha256:'+kraken]}
+ ];
+ const done=publicationCoverage(w,allDone(w),sources,events);
+ assert.equal(done.websitePublished,true);
+ assert.equal(done.av2.partial,false);
+ assert.equal(done.kraken.partial,false);
+ const bad=publicationCoverage(w,allDone(w),sources,events.slice(0,1));
+ assert.equal(bad.websitePublished,false,'known Kraken source cannot be ignored for early stop');
+ assert.equal(bad.kraken.partial,true);
 });

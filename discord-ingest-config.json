@@ -103,7 +103,7 @@
     "authorization": {
       "id": "leader-standing-website-publication-2026-10-22",
       "date": "2026-10-22",
-      "scope": "AVENGERS Piggy, Space and Flash; AV-2 Piggy, Space and Flash; monthly Kraken for either clan only on explicit leader request; website-only",
+      "scope": "AVENGERS numbered PF1–4, Piggy and Space; AV-2 unnumbered weekly Flash pool (max four source-bound results/member), Piggy and Space; monthly Kraken on explicit leader request only; website only",
       "perResultCommissionerApprovalRequired": false
     },
     "sourceReviewRequired": true,
@@ -118,7 +118,7 @@
     "pngGeneration": false,
     "discordMessages": false,
     "discordAutoSend": false,
-    "flashAttribution": "AVENGERS PF1–4: dedicated channel anchor and prior established final posting. AV-2 Flash: mixed AV-2-channel final screenshots; cross-match actual event date and Flash set number to independently established PF1–4 timing/source evidence; never infer from mere post date if multiple sets possible. Hold ambiguous attribution privately, publish every verified source-bound row independently, including late AV-2 uploads.",
+    "flashAttribution": "AVENGERS: four numbered PF1–4 channel-anchored events. AV-2: ONE independent UNNUMBERED weekly pool (flash|week-ending-Friday|av2pool), with up to FOUR distinct source-verified results PER MEMBER keyed by poolSlot 1–4. Pool slots are personal result identifiers, never PF1–4 assignments; do not assign results to numbered AVENGERS Flash events or infer missing results from posts.",
     "displayTagPolicy": "Ignore S9 display tags when matching an independently established canonical account; preserve original source spelling and never merge ambiguous identities.",
     "weeklyEligibilityExceptions": [
       {
@@ -135,6 +135,22 @@
         },
         "authorization": "leader instruction 2026-10-23"
       }
-    ]
+    ],
+    "av2FlashPool": {
+      "enabled": true,
+      "kind": "flash",
+      "eventIdPattern": "flash|YYYY-MM-DD|av2pool",
+      "dateMeaning": "source-supported week-ending Friday",
+      "eventMetadata": {
+        "pool": "av2-week",
+        "poolWeek": "YYYY-MM-DD"
+      },
+      "maxResultsPerPlayerPerWeek": 4,
+      "entryKey": "canonical player + independently assigned personal poolSlot 1–4 + original image SHA-256",
+      "numberedPfLinkage": false,
+      "source": "mixed AV-2 results channel, final CLAIM images only; late posts remain eligible",
+      "oneLineFlashExclusion": true,
+      "monthlyKrakenManualOnly": true
+    }
   }
 }

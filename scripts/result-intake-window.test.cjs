@@ -215,7 +215,7 @@ test('AV-2 Flash pool is collected separately and verified by its source hashes'
  assert(config.websitePublication.authorization.scope.includes('AV-2 unnumbered weekly Flash pool'));
  assert.equal(config.websitePublication.av2FlashPool.maxResultsPerPlayerPerWeek,4);
  assert.equal(config.websitePublication.av2FlashPool.numberedPfLinkage,false);
- assert(config.websitePublication.flashAttribution.includes('AV-2 Flash'));
+ assert(config.websitePublication.flashAttribution.includes('AV-2: ONE independent UNNUMBERED weekly pool'));
  const fri=activeWindow(winterFriday),sun=activeWindow(winterSunday);
  assert(fri.channels.includes('av2')&&sun.channels.includes('av2'),
    'retain late AV-2 source scans in both weekly windows');

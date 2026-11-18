@@ -129,6 +129,11 @@
       const useAv2Pot=mode==='AV-2' && ev.av2PotStars!=null;
       return {
         ...ev,
+        // Historical legacy source rows attached AV-2 to numbered PFs before
+        // the leader clarified one unnumbered pool. Preserve their immutable
+        // source elsewhere for audit, but NEVER display them as PF1–PF4.
+        entries:window.AVENGERS_EVENT_PROJECTION&&ev.pool!=='av2-week'
+          ?(ev.entries||[]).filter(r=>r.clan!=='AV-2'):(ev.entries||[]),
         flash:Number(ev.flash)||Number(String(channelLabels[ev.channelId]||'').replace(/\D/g,''))||0,
         potStars:useAv2Pot?Number(ev.av2PotStars):ev.potStars,
         potStarsDisplay:useAv2Pot?(ev.av2PotStarsDisplay||ev.potStarsDisplay):ev.potStarsDisplay

@@ -78,7 +78,7 @@ test('filename exception never accepts transformed bytes or unrelated MIME',asyn
    fetchImpl:async()=>okResponse(Buffer.from('not-an-image'))}),
    /Invalid image file signature/);
  assert.throws(()=>verifyDiscordUrl(namedPng,{...opts,expectedContentType:'image/avif'}),
-   /unsupported image MIME/);
+   /image MIME is unsupported/);
 });
 test('validates HTTP 200 and explicitly declines redirects and unauthorized results',async()=>{
  for(const status of [302,403,404,429,500]){

@@ -99,10 +99,16 @@ def build_model(R, clan, event_id=None, exclude=None):
     earlier = [e for e in kr if e['date'] < event['date']]
     ranks_by_event = {e['id']: clan_ranks(e, clan) for e in kr}
 
+    # Damage-PB history is cross-clan BY DESIGN (see the house rule below): a player's own best
+    # counts regardless of which clan they raced for that month, so this intentionally does NOT
+    # filter by `r['clan'] == clan` the way every other aggregate in this function does. Confirmed
+    # bug 2026-11-18: AV-neez played AVENGERS in Sept/Oct (1,886.8M peak) then AV-2 in November
+    # (3,498.9M) -- a real +85.5% PB that the old same-clan-only filter made invisible because her
+    # history lived under a different clan than this month's row.
     hist = {}
     for e in earlier:
         for r in e['rows']:
-            if r['clan'] == clan and has_score(r): hist.setdefault(r['player'], []).append((e['date'], r['score']))
+            if has_score(r): hist.setdefault(r['player'], []).append((e['date'], r['score']))
     # True all-time (no date floor) vs Arena-era (since 2026-08-01), both bounded to <= this event.
     ever_scores = [r['score'] for e in kr if e['date'] <= event['date'] for r in e['rows'] if r['clan'] == clan and has_score(r)]
     arena_scores = [r['score'] for e in kr if ARENA_START <= e['date'] <= event['date'] for r in e['rows'] if r['clan'] == clan and has_score(r)]
@@ -214,7 +220,8 @@ def plan(m):
     pbDamageH = 122 + 50 * max(1, len(m['pbs'])) + 20
     pbPlaceH = 122 + 50 * max(1, len(m['placePBs'])) + 20
     milesH = 116 + len(m['tiers']) * 48 + 16
-    newH = 140 + max(1, len(m['first'])) * 118
+    newRows = max(1, -(-len(m['first']) // 2))  # New Faces renders 2 cards per row now, so height
+    newH = 140 + newRows * 118                  # scales with rows, not with the raw player count.
     rightStack = pbPlaceH + 24 + milesH + 24 + newH
     rowH = max(pbDamageH, rightStack)
     return dict(colW=colW, pbDamageH=pbDamageH, pbPlaceH=pbPlaceH,
@@ -367,13 +374,17 @@ def render(m, out):
             p.fit((x + 716, ry + 1), ordinal(q['newRank']), 110, 26, 'cyan', 'black', 'ra'); p.fit((x + w - 28, ry + 2), f'+{q["gain"]}', 90, 24, 'green', 'xbold', 'ra')
 
     def box_new(x, y0, w, h):
+        # Two cards per row (side by side) instead of one long stacked column -- same card count,
+        # about half the box height, so New Faces stops being the tallest thing in the right stack.
         nf = m['first']; p.neon((x, y0, x + w, y0 + h), 'mag', width=4)
         p.text((x + 26, y0 + 20), 'NEW FACES', 46, 'mag', 'black'); p.text((x + 26, y0 + 74), 'First tracked Kraken', 22, 'fg', 'semi')
         icon(p, (x + w - 160, y0 + 10, x + w - 16, y0 + 120))
         if not nf: p.text((x + 26, y0 + 136), 'No first-time Kraken results this month.', 24, 'mut', 'semi'); return
-        ch = max(70, min(118, (h - 150) // len(nf) - 14)); cw = w - 52
+        rows = max(1, -(-len(nf) // 2))
+        ch = max(70, min(118, (h - 150) // rows - 14)); gap = 26; cw = (w - 26 - 26 - gap) // 2
         for i, r in enumerate(nf):
-            cx = x + 26; cy = y0 + 128 + i * (ch + 14)
+            col, row = i % 2, i // 2
+            cx = x + 26 + col * (cw + gap); cy = y0 + 128 + row * (ch + 14)
             d.rounded_rectangle((cx, cy, cx + cw, cy + ch), 14, fill=C['row'], outline=C['mag'], width=3)
             p.fit((cx + 18, cy + 12), r['player'], cw - 220, 34, 'fg', 'black')
             p.text((cx + cw - 18, cy + 10), dmg(r['score']), 36, 'cyan', 'black', 'ra')

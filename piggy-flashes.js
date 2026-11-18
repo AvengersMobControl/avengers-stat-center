@@ -149,7 +149,8 @@
           name:resolveName(r.name),
           clan,
           eventDate:ev.date||'',
-          setId:ev.setId||((ev.date||'')+'-A'),
+          setId:ev.pool==='av2-week'?(ev.poolWeek||ev.date):ev.setId||((ev.date||'')+'-A'),
+          pool:ev.pool||null,
           flash:Number(ev.flash)||0,
           complete:!!ev.complete,
           coverage:ev.coverage||'',
@@ -259,7 +260,7 @@
           <div class="flash-pb-bar" style="width:${Math.max(1.5,r.best/max*100)}%"></div>
         </div>
         <div class="flash-pb-value">${fmt(r.best)}</div>
-        <div class="flash-pb-flash">${daily?'':'<span class="flash-chip">PF'+r.pbFlash+'</span>'}</div>
+        <div class="flash-pb-flash">${daily?'':'<span class="flash-chip">'+(r.pbFlash?'PF'+r.pbFlash:'Pool')+'</span>'}</div>
         <div class="flash-pb-date">${shortDate(r.pbDate)}</div>
       </div>`).join('')}</div>`;
   }
@@ -347,6 +348,8 @@
   function render(){
     const root=document.getElementById('piggyFlashesContent');
     if(!root)return;
+    if(clanMode()==='AV-2')state.tab='pool';
+    else if(state.tab==='pool')state.tab='all';
 
     const evs=selectedEvents();
     const rows=rowsForEvents(evs);
@@ -408,16 +411,16 @@
     root.innerHTML=`
       ${tabsHtml()}
       ${dayFilterHtml()}
-      <div class="records-note"><strong>Flash Set:</strong> one PF1→PF4 cycle in roughly 24 hours. Eight-flash calendar weeks are split into two independent Flash Sets.</div>
+      <div class="records-note">${isPool?'<strong>AV-2 weekly pool:</strong> up to four recorded results per member each week. Pool entry numbers do not correspond to PF1–PF4.':'<strong>Flash Set:</strong> one PF1→PF4 cycle in roughly 24 hours. Eight-flash calendar weeks are split into two independent Flash Sets.'}</div>
       <div class="flash-metric-strip">
         <div class="flash-metric"><span>${isDaily?'Flash Sets':'Events'}</span><strong>${fmt(isDaily?setMap.size:uniqueEvents)}</strong><em>${isDaily?completeSets+' complete 4/4 sets':'recorded in this view'}</em></div>
         <div class="flash-metric"><span>Players</span><strong>${fmt(players)}</strong><em>unique players</em></div>
         <div class="flash-metric"><span>${isDaily?'Total lines':'Avg result'}</span><strong>${isDaily?fmtCompact(totalLines):fmt(Math.round(avgResult))}</strong><em>${isDaily?'all imported flashes':fmt(Math.round(medResult))+' median'}</em></div>
         ${isDaily?'<div class="flash-metric"><span>Best daily PB</span><strong>'+fmt(Math.max(0,...pbItems.map(x=>x.best)))+'</strong><em>combined flash lines</em></div>':''}
-        <div class="flash-metric"><span>Avg pot</span><strong>${avgPot?fmtCompact(avgPot):'—'}</strong><em>AVENGERS-dominant lobbies</em></div>
+        ${isPool?'':'<div class="flash-metric"><span>Avg pot</span><strong>'+ (avgPot?fmtCompact(avgPot):'—')+'</strong><em>AVENGERS-dominant lobbies</em></div>'}
       </div>
 
-      ${podiumsHtml(rows)}
+      ${isPool?'<div class="flash-note">Finishing places reflect the original AV-2 leaderboard. PF1–PF4 podium comparisons do not apply to this weekly pool.</div>':podiumsHtml(rows)}
       ${clanMode()==='AV-2'?'':'<div id="flashHistoricalReporting" class="flash-history-root"></div>'}
 
       <div class="flash-grid">
@@ -426,8 +429,8 @@
           <div class="flash-chart-body">${pbChart(pbItems,isDaily)}</div>
         </div>
         <div class="flash-chart-card">
-          <div class="flash-chart-head"><h2>${isDaily?'Flash Set Star Trend':'Pot Stars Trend'}</h2><div class="small-muted">${isDaily?'Combined recorded player stars per Flash Set.':'AVENGERS-dominant lobby pot totals over time.'}</div></div>
-          <div class="flash-chart-body">${trendSvg(trendPoints,isDaily?'stars':'pot stars')}${state.tab==='all'?'<hr style="border:0;border-top:1px solid rgba(255,255,255,.08);margin:12px 0 14px"><strong style="font-size:12px">PF comparison</strong><div style="margin-top:10px">'+flashComparison(allEvs)+'</div>':''}</div>
+          <div class="flash-chart-head"><h2>${isPool?'Weekly Lines Trend':isDaily?'Flash Set Star Trend':'Pot Stars Trend'}</h2><div class="small-muted">${isPool?'Sum of captured AV-2 weekly pool results. Partial weeks can increase.':isDaily?'Combined recorded player stars per Flash Set.':'AVENGERS-dominant lobby pot totals over time.'}</div></div>
+          <div class="flash-chart-body">${trendSvg(trendPoints,isPool?'lines':isDaily?'stars':'pot stars')}${state.tab==='all'&&!isPool?'<hr style="border:0;border-top:1px solid rgba(255,255,255,.08);margin:12px 0 14px"><strong style="font-size:12px">PF comparison</strong><div style="margin-top:10px">'+flashComparison(allEvs.filter(e=>e.pool!=='av2-week'))+'</div>':''}</div>
         </div>
       </div>
 
@@ -447,11 +450,11 @@
       </div>
       <div class="table-card" style="margin-top:16px">
         <div class="table-titlebar"><div><h2>Individual Results</h2><div class="small-muted">Recorded player-level Flash results, including original finishing ranks where supplied; missing ranks display —.</div></div></div>
-        <div class="table-wrap"><table><thead><tr><th>Event</th><th>Flash</th><th class="num">Rank</th><th>Member</th><th class="num">Lines</th><th class="num">Stars</th><th class="num">Sparks</th></tr></thead><tbody>${resultBody||'<tr><td colspan="7" class="empty">No results in this view.</td></tr>'}</tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>${isPool?'Week ending':'Event'}</th><th>${isPool?'Pool entry':'Flash'}</th><th class="num">Rank</th><th>Member</th><th class="num">Lines</th><th class="num">Stars</th><th class="num">Sparks</th></tr></thead><tbody>${resultBody||'<tr><td colspan="7" class="empty">No results in this view.</td></tr>'}</tbody></table></div>
       </div>`}
     `;
 
-    if(clanMode()!=='AV-2')window.AVENGERS_FLASH_HISTORY_VIEW?.render(root.querySelector('#flashHistoricalReporting'),DATA.events||[],state.day,state.tab,resolveName);
+    if(clanMode()!=='AV-2')window.AVENGERS_FLASH_HISTORY_VIEW?.render(root.querySelector('#flashHistoricalReporting'),(DATA.events||[]).filter(e=>e.pool!=='av2-week'),state.day,state.tab,resolveName);
 
     root.querySelectorAll('[data-flash-tab]').forEach(btn=>btn.addEventListener('click',()=>{
       state.tab=btn.dataset.flashTab;

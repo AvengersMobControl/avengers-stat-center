@@ -13,7 +13,9 @@ and checks whether a guarded publication run reached the live website.
 | Friday **02:00–07:30** | **First all four Piggy Flash channels**: every posted screenshot since prior Monday 06:00. **Then Space Race**: every posted screenshot since prior Wednesday 06:00, including all lobbies (6 typical, 7+ possible). Space usually ends Friday 02:00 but can end earlier. If no final Space result, use Friday Piggy (same Wednesday lookback) instead. **Always check delayed AV-2** (monthly Kraken channel excluded; leader provides its results manually). |
 | Sunday **16:00–18:30** | **Big Piggy first**, usually ending at 16:00, with posted screenshots since prior Friday 02:00. If no final Piggy, check Sunday Space (since prior Wednesday 06:00). **Always check AV-2** and no Kraken-channel scans, even when AV-2 is late/incomplete. |
 
-**Monthly Kraken is manual only**: neither Friday nor Sunday scheduled polling accesses the Kraken channel or treats Kraken as a required website-publication result. When the leader provides the monthly AVENGERS/AV-2 screenshots separately, use the existing manual import and verification process; preserve all Kraken records. The direct authenticated manual Kraken source path remains available.\n\nThe first AV-2 source window uses a conservatively extended 21-day lookback,
+**Monthly Kraken is manual only**: neither Friday nor Sunday scheduled polling accesses the Kraken channel or treats Kraken as a required website-publication result. When the leader provides the monthly AVENGERS/AV-2 screenshots separately, use the existing manual import and verification process; preserve all Kraken records. The direct authenticated manual Kraken source path remains available.
+
+The first AV-2 source window uses a conservatively extended 21-day lookback,
 then the last successfully published and fully accounted AV-2 checkpoint
 (where available). A partial AV-2 cycle does NOT advance that cutoff; its
 unresolved sources remain eligible for a later collection window.

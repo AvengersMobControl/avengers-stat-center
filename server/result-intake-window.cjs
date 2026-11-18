@@ -7,8 +7,9 @@
 const TZ='America/Chicago';
 const FORMAT=new Intl.DateTimeFormat('en-US',{timeZone:TZ,year:'numeric',month:'2-digit',
   day:'2-digit',weekday:'short',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
-const FRIDAY=['piggyFlash1','piggyFlash2','piggyFlash3','piggyFlash4','space','piggy','av2','kraken'];
-const SUNDAY=['piggy','space','av2','kraken'];
+const FRIDAY=['piggyFlash1','piggyFlash2','piggyFlash3','piggyFlash4','space','piggy','av2'];
+// Kraken is monthly and manual-only; keep its channel configuration for explicit imports.
+const SUNDAY=['piggy','space','av2'];
 function local(nowMs){
   const p=Object.fromEntries(FORMAT.formatToParts(new Date(nowMs))
     .filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
@@ -47,8 +48,7 @@ function activeWindow(nowMs=Date.now()){
     piggy:centralWallMillis(mode==='friday'?wed:fri,6),
     // AV-2 is extended to the previous verified publication checkpoint by
     // the controller. 21 days is a safe initial bound, not a weekly cutoff.
-    av2:start-21*86400000,
-    kraken:start-21*86400000
+    av2:start-21*86400000
   };
   const channels=mode==='friday'?FRIDAY:SUNDAY;
   return {id:mode+'-'+localStamp(p),mode,timeZone:TZ,startMs:start,endMs:end,
@@ -127,29 +127,24 @@ function publicationCoverage(w,checkpoints,sourceRows,ledgerEvents){
     (!observedFallback||fallback.confirmed);
   const relevantChannels=[w.primary,w.fallback,...flashes.map(x=>x.channel)];
   const missingOriginals=relevantChannels.reduce((n,k)=>n+(missingByChannel[k]||0),0);
-  const requiredScan=w.channels.filter(k=>!['av2','kraken'].includes(k));
+  const requiredScan=w.channels.filter(k=>k!=='av2');
   const missingScan=requiredScan.filter(k=>!checkpoints[k]?.last_scan_complete);
-  const uncheckedOptional=['av2','kraken'].filter(k=>w.channels.includes(k)&&!checkpoints[k]?.updated_at);
+  const uncheckedOptional=['av2'].filter(k=>w.channels.includes(k)&&!checkpoints[k]?.updated_at);
   const av2Hashes=[...new Set(hashesByChannel.av2||[])];
-  const krakenHashes=[...new Set(hashesByChannel.kraken||[])];
   const matchesAnyPublishedSource=h=>ledger.some(e=>e.sourceHashSet.has(h));
   const av2Matches=av2Hashes.filter(matchesAnyPublishedSource).length;
-  const krakenMatches=krakenHashes.filter(matchesAnyPublishedSource).length;
   // AV-2 may post fewer screenshots than expected: publish all VERIFIED
   // available rows without waiting for a missing lobby. But do not STOP
-  // collection while an ALREADY RETRIEVED AV-2/Kraken source is not yet
+  // collection while an ALREADY RETRIEVED AV-2 source is not yet
   // accounted for in the live website ledger (unless separately held/reviewed
   // through publication). Source capture alone is never publication.
-  const optionalSourcesPublished=av2Matches===av2Hashes.length &&
-    krakenMatches===krakenHashes.length;
+  const optionalSourcesPublished=av2Matches===av2Hashes.length;
   const canStop=missingScan.length===0 && uncheckedOptional.length===0 && missingOriginals===0 &&
     (w.mode!=='friday'||flashes.every(x=>x.confirmed)) &&
     allMainSourcesPublished && optionalSourcesPublished;
   return {websitePublished:canStop,mainKind,
     missingScan,uncheckedOptional,missingOriginals,flashes,primary,fallback,
     av2:{observed:av2Hashes.length,publishedSourceMatches:av2Matches,partial:av2Matches<av2Hashes.length},
-    kraken:{observed:krakenHashes.length,publishedSourceMatches:krakenMatches,
-      partial:krakenMatches<krakenHashes.length},
     // This validates source-to-live-ledger coverage, NOT player-by-player
     // visual completeness; the publication task must audit every visible row.
     reason:canStop?'all-observed-sources-published-in-live-ledger':'awaiting-source-or-publication'};

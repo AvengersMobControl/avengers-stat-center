@@ -172,13 +172,15 @@
       }));
     }
     if(state.day!=='all')evs=evs.filter(e=>String(e.setId||e.date+'-A').startsWith(state.day)||e.date===state.day);
+    if(mode==='AV-2'||state.tab==='pool')return evs.filter(e=>e.pool==='av2-week');
     if(/^pf[1-4]$/.test(state.tab))return evs.filter(e=>e.flash===Number(state.tab.slice(2)));
     return evs;
   }
 
   function dayFilterHtml(){
     const days=[...new Set(allEvents().map(e=>String(e.setId||e.date+'-A').slice(0,10)).filter(Boolean))].sort().reverse();
-    return '<div class="flash-day-filter"><label for="flashDaySelect">Flash Set Day</label><select id="flashDaySelect"><option value="all">All days</option>'+days.map(d=>'<option value="'+esc(d)+'" '+(state.day===d?'selected':'')+'>'+esc(shortDate(d))+'</option>').join('')+'</select><span class="flash-day-note">Choose a day to see only that PF1–PF4 Flash Set.</span></div>';
+    const pool=clanMode()==='AV-2';
+    return '<div class="flash-day-filter"><label for="flashDaySelect">'+(pool?'Week ending':'Flash Set Day')+'</label><select id="flashDaySelect"><option value="all">All '+(pool?'weeks':'days')+'</option>'+days.map(d=>'<option value="'+esc(d)+'" '+(state.day===d?'selected':'')+'>'+esc(shortDate(d))+'</option>').join('')+'</select><span class="flash-day-note">'+(pool?'AV-2 has one unnumbered pool per week, with up to four independent results per member.':'Choose a day to see only that PF1–PF4 Flash Set.')+'</span></div>';
   }
 
   function aggregateByPlayer(rows){
@@ -337,7 +339,8 @@
   }
 
   function tabsHtml(){
-    const tabs=[['all','All'],['pf1','PF1'],['pf2','PF2'],['pf3','PF3'],['pf4','PF4'],['daily','Daily Total']];
+    const tabs=clanMode()==='AV-2'?[['pool','AV-2 Weekly Pool']]:
+      [['all','All'],['pf1','PF1'],['pf2','PF2'],['pf3','PF3'],['pf4','PF4'],['daily','Daily Total']];
     return '<div class="flash-tabs">'+tabs.map(([id,label])=>'<button class="flash-tab '+(state.tab===id?'active':'')+'" data-flash-tab="'+id+'">'+label+'</button>').join('')+'</div>';
   }
 
@@ -367,8 +370,9 @@
     const completeSets=[...setMap.values()].filter(s=>s.flashes.size===4).length;
 
     const pbItems=isDaily?dailyPlayerPBs(setMap):aggregateByPlayer(rows);
-    const chartTitle=isDaily?'Daily Total PB by Player':state.tab==='all'?'Single-Flash PB by Player':' '+state.tab.toUpperCase()+' PB by Player';
-    const chartSub=isDaily?'Best combined PF1 + PF2 + PF3 + PF4 lines within one 24-hour Flash Set.':state.tab==='all'?'Each player’s best single Flash result, regardless of PF1/PF2/PF3/PF4.':'Personal best lines within this Flash channel.';
+    const isPool=clanMode()==='AV-2'||state.tab==='pool';
+    const chartTitle=isPool?'AV-2 Weekly Pool PB by Player':isDaily?'Daily Total PB by Player':state.tab==='all'?'Single-Flash PB by Player':' '+state.tab.toUpperCase()+' PB by Player';
+    const chartSub=isPool?'Best separately recorded AV-2 result; each member may have up to four each week with no PF1–4 assignment.':isDaily?'Best combined PF1 + PF2 + PF3 + PF4 lines within one 24-hour Flash Set.':state.tab==='all'?'Each player’s best single Flash result, regardless of PF1/PF2/PF3/PF4.':'Personal best lines within this Flash channel.';
 
     const potTrend=allEvs.filter(e=>e.potStars!=null)
       .sort((a,b)=>String(a.date).localeCompare(String(b.date))||a.flash-b.flash)
@@ -380,7 +384,8 @@
       flashes:s.flashes.size
     }));
 
-    const trendPoints=isDaily?dailyTrend:(state.tab==='all'?potTrend:evs.filter(e=>e.potStars!=null).sort((a,b)=>String(a.date).localeCompare(String(b.date))).map(e=>({label:e.date,value:Number(e.potStars)||0})));
+    const poolTrend=[...buildSetMap(rows).values()].sort((a,b)=>String(a.date).localeCompare(String(b.date))).map(x=>({label:x.id,value:x.rows.reduce((n,r)=>n+(Number(r.lines)||0),0)}));
+    const trendPoints=isPool?poolTrend:isDaily?dailyTrend:(state.tab==='all'?potTrend:evs.filter(e=>e.potStars!=null).sort((a,b)=>String(a.date).localeCompare(String(b.date))).map(e=>({label:e.date,value:Number(e.potStars)||0})));
 
     const performanceBody=sortedOverall.map((r,i)=>{
       const total=isDaily?r.total:r.lines;
@@ -389,7 +394,7 @@
       return '<tr><td class="num">'+(i+1)+'</td><td><strong>'+esc(r.name)+'</strong></td><td class="num">'+fmt(events)+'</td><td class="num">'+fmt(total)+'</td><td class="num">'+fmt(Math.round(r.avg))+'</td><td class="num">'+fmt(best)+'</td><td>'+shortDate(r.pbDate)+'</td>'+(isDaily?'':'<td class="num">'+fmt(r.stars)+'</td><td class="num">'+fmt(r.sparks)+'</td>')+'</tr>';
     }).join('');
 
-    const resultBody=isDaily?'':rows.slice().sort((a,b)=>String(b.eventDate).localeCompare(String(a.eventDate))||(Number(a.rank)||999)-(Number(b.rank)||999)).map(r=>'<tr><td>'+esc(r.eventDate||'—')+'</td><td>PF'+r.flash+'</td><td class="num">'+(r.rank??'—')+'</td><td><strong>'+esc(r.name||'—')+'</strong></td><td class="num">'+fmt(r.lines)+'</td><td class="num">'+fmt(r.stars)+'</td><td class="num">'+fmt(r.sparks)+'</td></tr>').join('');
+    const resultBody=isDaily?'':rows.slice().sort((a,b)=>String(b.eventDate).localeCompare(String(a.eventDate))||(Number(a.rank)||999)-(Number(b.rank)||999)).map(r=>'<tr><td>'+esc(r.eventDate||'—')+'</td><td>'+(r.pool==='av2-week'?'Pool entry '+(r.poolSlot||'—'):'PF'+r.flash)+'</td><td class="num">'+(r.rank??'—')+'</td><td><strong>'+esc(r.name||'—')+'</strong></td><td class="num">'+fmt(r.lines)+'</td><td class="num">'+fmt(r.stars)+'</td><td class="num">'+fmt(r.sparks)+'</td></tr>').join('');
 
     const dailyRows=[];
     [...setMap.values()].sort((a,b)=>String(b.date).localeCompare(String(a.date))).forEach(s=>{

@@ -9,8 +9,9 @@ On 2026-11-09 the leader extended this to the weekly recap, to be sent **alongsi
 | When | First look for | If not there |
 | --- | --- | --- |
 | Sunday 7:00 PM | Big Pig | Space Race |
-| Tuesday–Friday 8:00 AM | Piggy Flash Set | — |
-| Wednesday–Friday 8:00 AM (same run) | Space Race | Big Pig |
+| Friday 8:00 AM | Piggy Flash Set, then Space Race | Big Pig |
+
+(Leader, 2026-11-18: only these two posting runs. The screenshot source intake runs an hour before each — Sunday 6 PM and Friday 7 AM.)
 
 "There" means the event has final results on the site (imported under the standing website authorization) and has not been posted yet. A Flash Set is posted only once **all four PFs** have final results. Each event is posted at most once (Neon `publication_slots`).
 

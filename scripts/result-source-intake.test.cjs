@@ -1,7 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict');
 const {scanChannel}=require('../server/result-source-intake.cjs');
-const {authorized}=require('../api/discord/result-intake.js');
+const {authorized,inIntakeWindow,sweepAll}=require('../api/discord/result-intake.js');
 const NOW=Date.parse('2026-11-16T04:30:00Z');
 const channel='1425022130717855836',msg='1571646884089438258';
 const validTime=new Date(NOW-3600000).toISOString();
@@ -60,7 +60,7 @@ test('incremental private cursor resumes without re-fetching previous page',asyn
    [{id:'1571646884089438250',timestamp:new Date(NOW-10*86400000).toISOString(),attachments:[]}]];
  let step=0,seen=[];
  const fetchImpl=async(url)=>{seen.push(url);return transport(pages[step++])(url);};
- const opts={channelKey:'piggy',store:s,token:'test',nowMs:NOW,fetchImpl,downloadOriginal:original};
+ const opts={channelKey:'piggy',store:s,token:'test',nowMs:NOW,fetchImpl,downloadOriginal:original,maxMessages:5};
  const a=await scanChannel(opts);
  assert.equal(a.nextPagePending,true);assert.equal(s.state.next_before,'1571646884089438254');
  const b=await scanChannel(opts);
@@ -77,4 +77,26 @@ test('Neon JSONB summary parameters carry explicit SQL types',()=>{
   const src=require('node:fs').readFileSync(require('node:path').join(__dirname,'../server/result-source-store.cjs'),'utf8');
   for(const cast of ['$2::text','$3::text','$4::boolean','$5::integer','$6::integer'])assert(src.includes(cast),'missing JSONB parameter cast '+cast);
   assert(!src.includes("\\'channel\\',$2)"),'variadic JSONB call cannot infer an untyped channel parameter');
+});
+
+test('scheduled intake only runs Sunday 6 PM and Friday 7 AM Chicago, across DST',()=>{
+  assert.equal(inIntakeWindow(Date.parse('2026-11-23T00:00:00Z')),true);  // Sun 6:00 PM CST
+  assert.equal(inIntakeWindow(Date.parse('2026-11-22T23:40:00Z')),false); // Sun 5:40 PM CST
+  assert.equal(inIntakeWindow(Date.parse('2026-11-20T13:20:00Z')),true);  // Fri 7:20 AM CST
+  assert.equal(inIntakeWindow(Date.parse('2026-11-20T12:20:00Z')),false); // Fri 6:20 AM CST
+  assert.equal(inIntakeWindow(Date.parse('2027-06-06T23:00:00Z')),true);  // Sun 6:00 PM CDT
+  assert.equal(inIntakeWindow(Date.parse('2027-06-04T12:40:00Z')),true);  // Fri 7:40 AM CDT
+  assert.equal(inIntakeWindow(Date.parse('2027-06-07T00:00:00Z')),false); // Sun 7:00 PM CDT
+  assert.equal(inIntakeWindow(Date.parse('2026-11-18T13:00:00Z')),false); // Wednesday
+});
+test('sweep reads every channel to the end of its window, page after page',async()=>{
+  const calls={};
+  const scan=async({channelKey})=>{calls[channelKey]=(calls[channelKey]||0)+1;
+    return {status:'source-captured',cycleComplete:calls[channelKey]>=3,newOriginalProofs:1,attachmentsAccounted:1};};
+  const r=await sweepAll({keys:['a','b'],scan,deadline:Date.now()+60000});
+  assert.deepEqual(calls,{a:3,b:3});assert.equal(r.complete,true);assert.equal(r.newOriginalProofs,6);
+});
+test('sweep stops at the deadline and reports what is left',async()=>{
+  const r=await sweepAll({keys:['a','b'],scan:async()=>({status:'source-captured',cycleComplete:false}),deadline:Date.now()-1});
+  assert.equal(r.complete,false);assert.deepEqual(r.unfinished,['a','b']);
 });

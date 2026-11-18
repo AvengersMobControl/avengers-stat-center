@@ -42,12 +42,20 @@
   "crons": [
     {
       "path": "/api/discord/result-intake",
-      "schedule": "*/5 * * * *"
+      "schedule": "0,20,40 23 * * 0"
+    },
+    {
+      "path": "/api/discord/result-intake",
+      "schedule": "0,20,40 0 * * 1"
+    },
+    {
+      "path": "/api/discord/result-intake",
+      "schedule": "0,20,40 12,13 * * 5"
     }
   ],
   "functions": {
     "api/discord/result-intake.js": {
-      "maxDuration": 60
+      "maxDuration": 300
     }
   }
 }

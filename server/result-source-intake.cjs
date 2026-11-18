@@ -6,7 +6,7 @@ const {retrieveOriginal}=require('../scripts/fetch-original-discord-image.cjs');
 const IMAGE=/\.(png|jpe?g|webp|gif)$/i;
 const SNO=/^\d{15,22}$/;
 const CONTENT_TYPES=new Set(['image/png','image/jpeg','image/webp','image/gif']);
-const MAX_MESSAGES=5;
+const MAX_MESSAGES=50; // Discord allows up to 100 per page
 const DAYS=9;
 function assert(value,message){if(!value)throw Error(message);}
 function isImage(a){return CONTENT_TYPES.has(a.content_type) || IMAGE.test(String(a.filename||''));}

@@ -7,9 +7,13 @@ Only independently verified website releases constitute publication.
 
 ## Collector
 
-- Vercel cron every five minutes invokes the private server-side GET endpoint,
-  protected by production CRON_SECRET. Channel selection rotates through all
-  eight configured channels. Each call processes at most five messages.
+- **Schedule (leader, 2026-11-18):** runs only in the hour before each posting
+  run — Sunday 6 PM and Friday 7 AM America/Chicago. Vercel cron fires at
+  :00/:20/:40 in both the CST and CDT UTC hours; the handler ignores calls
+  outside the window, so it stays correct across daylight saving. Each call
+  sweeps all eight channels, paging (50 messages a page) until every message
+  inside the lookback is accounted for; if a sweep runs out of time the
+  checkpoints carry over to the :20/:40 calls. Protected by CRON_SECRET.
 - It reads the Discord API directly, bypassing the client connector's eight
   image cap. All original attachments are accounted for; each supported
   image is fetched from its authenticated CDN URL through the existing

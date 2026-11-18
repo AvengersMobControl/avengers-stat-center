@@ -6,6 +6,11 @@
 - Kraken remains **outside** the standing 2026-10-26 automatic-posting activation and uses its own date-stamped one-time authorization tag (`AUTH_KRAKEN_ONETIME`, currently `leader-directed-onetime-kraken-2026-11-17`), never the standing single-event or weekly tags — a future month needs a fresh tag and its own explicit leader direction, same as this one did. AV-2 posting remains on its separate standing hold; this send was AVENGERS only.
 - Saved the full format + pipeline (including the two fixes above and the Vercel env/redeploy gotcha) to `docs/KRAKEN_DISCORD_POSTING.md` so a future Kraken month's "send it" doesn't need to rediscover any of this.
 
+
+## 2026-11-18 — Two posting runs a week; screenshot intake an hour before each
+
+Leader: only two posting runs — **Sunday 7 PM and Friday 8 AM** (America/Chicago). The Friday scheduled task moved from 9:31 AM to 8:00 AM; the Sunday task was already 7 PM. The private screenshot source intake (`/api/discord/result-intake`, previously every five minutes, one 5-message page per call) now runs only **Sunday 6 PM and Friday 7 AM** and sweeps every channel for everything posted since the last run (9-day lookback; already-verified originals are skipped, so only new screenshots are downloaded). The intake still never imports results or posts to Discord; ChatGPT's import step is unchanged by this.
+
 ## 2026-11-17 — All OlRose spellings are one canonical identity
 
 - Leader reaffirmed that **any spelling containing OlRose** (including plain `OlRose`, `AV2-OlRose`, and `AV-OlRose`) is the same player, canonical `AV-OlRose`. This applies to Kraken, Piggy, Space, histories, profiles and future result ingestion. Original screenshot spelling, score, date and clan remain source evidence.

@@ -18,7 +18,7 @@
   const validDate=d=>/^\d{4}-\d{2}-\d{2}$/.test(String(d||''));
   const clanName=s=>{const k=String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');return k==='av2'?'AV-2':k==='avengers'||k==='av'?'AVENGERS':null;};
   const scoreLabel=(kind,value)=>kind==='space'?num(value,1)+'B':kind==='kraken'?num(value,1):num(value);
-  const kindLabel=kind=>({piggy:'Piggy Race',space:'Space Race',kraken:'Kraken'}[kind]||kind.replace(/^pf/,'Piggy Flash '));
+  const kindLabel=kind=>({piggy:'Piggy Race',space:'Space Race',kraken:'Kraken',pfpool:'AV-2 Flash weekly pool'}[kind]||kind.replace(/^pf/,'Piggy Flash '));
   const icon=kind=>kind==='piggy'?'🐷':kind==='space'?'🚀':kind==='kraken'?'🐙':kind==='sparks'?'✨':kind==='streak'?'🔥':'⚡';
   const achievementArt=(item,className='ach-inline-art')=>item.image?
     '<img class="'+className+'" src="'+esc(item.image)+'" alt="" aria-hidden="true" decoding="async">':esc(item.icon||'🏅');
@@ -47,17 +47,22 @@
   });
   (F.events||[]).forEach(ev=>(ev.entries||[]).forEach(r=>{
     const clan=clanName(r.clan||ev.clan||ev.rosterScope)||'AVENGERS';
-    addRow({name:resolve(r.name),date:ev.date,kind:'pf'+Number(ev.flash),clan,value:Number(r.lines)||0,
-      stars:Number(r.stars)||0,sparks:Number(r.sparks)||0,eventId:'flash|'+ev.id,group:ev.setId,partial:ev.complete===false});
+    const pooled=ev.pool==='av2-week';
+    addRow({name:resolve(r.name),date:ev.date,kind:pooled?'pfpool':'pf'+Number(ev.flash),clan,value:Number(r.lines)||0,
+      stars:Number(r.stars)||0,sparks:Number(r.sparks)||0,eventId:'flash|'+ev.id,
+      group:pooled?r.poolSlot:ev.setId,
+      ...(pooled?{personalResultId:'flash|'+ev.id+'|slot:'+r.poolSlot}:{}),partial:ev.complete===false});
   }));
   // Published release records supersede independent legacy streams. Every
   // recap, achievement and record sees the same corrected/revoked events.
   if(window.AVENGERS_EVENT_PROJECTION){
     rowMap.clear();
     for(const ev of window.AVENGERS_EVENT_PROJECTION.events.filter(e=>e.status!=='revoked'))for(const r of ev.rows){
-      const kind=ev.kind==='flash'?'pf'+(ev.metadata?.flash||''):ev.kind;
+      const pooled=ev.kind==='flash'&&ev.metadata?.pool==='av2-week';
+      const kind=pooled?'pfpool':ev.kind==='flash'?'pf'+(ev.metadata?.flash||''):ev.kind;
       addRow({name:r.player||'Unassigned account',date:ev.date,kind,clan:r.clan||'Unknown',value:r.score||0,stars:r.stars||0,sparks:r.sparks||0,
-        eventId:ev.id,group:r.metadata?.group,partial:ev.status==='partial'});
+        eventId:ev.id,group:pooled?r.metadata?.poolSlot:r.metadata?.group,
+        ...(pooled?{personalResultId:ev.id+'|slot:'+r.metadata.poolSlot}:{}),partial:ev.status==='partial'});
     }
   }
   const records=[...rowMap.values()].sort((a,b)=>a.date.localeCompare(b.date)||a.eventId.localeCompare(b.eventId));
@@ -71,7 +76,8 @@
     else if(item.score>old.score)Object.assign(old,item,{eventId:id});
     streams.set(key,rows);
   }
-  records.filter(r=>r.value>0).forEach(r=>pushStream(r.name,r.kind,{...r,score:pbScore(r.kind,r),eventId:r.kind.startsWith('pf')?r.eventId:r.kind+'|'+r.date}));
+  records.filter(r=>r.value>0).forEach(r=>pushStream(r.name,r.kind,{...r,score:pbScore(r.kind,r),
+    eventId:r.personalResultId||(r.kind.startsWith('pf')?r.eventId:r.kind+'|'+r.date)}));
   // Histories can cover early events whose result tables have not been imported.
   ['piggy','space'].forEach(kind=>Object.entries(D[kind]?.history||{}).forEach(([name,rows])=>(rows||[]).forEach(r=>{
     const value=primary(kind,r);
@@ -155,8 +161,9 @@
     const pbs=[],improvements=[];
     const seen=new Set();
     rows.filter(r=>r.value>0).forEach(r=>{
-      const personal=(streams.get(r.name+'|'+r.kind)||[]).find(p=>p.eventId===(r.kind.startsWith('pf')?r.eventId:r.kind+'|'+r.date));
-      const key=r.name+'|'+r.kind+'|'+r.date;
+      const personal=(streams.get(r.name+'|'+r.kind)||[]).find(p=>p.eventId===
+        (r.personalResultId||(r.kind.startsWith('pf')?r.eventId:r.kind+'|'+r.date)));
+      const key=r.name+'|'+r.kind+'|'+r.date+(r.personalResultId?'|'+r.personalResultId:'');
       if(!personal||seen.has(key)||pbScore(r.kind,r)!==personal.score)return;seen.add(key);
       if(personal.newPB)pbs.push({...personal,clan:r.clan});
       if(personal.averageIncrease>0)improvements.push({...personal,clan:r.clan});

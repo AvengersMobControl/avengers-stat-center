@@ -226,8 +226,8 @@ def plan(m):
     milesH = 116 + len(m['tiers']) * 48 + 16
     rightStack = pbPlaceH + 24 + milesH
     rowH = max(pbDamageH, rightStack)
-    newRows = max(1, -(-len(m['first']) // 2))  # New Faces renders 2 cards per row, full poster
-    newH = 140 + newRows * 118                  # width, so height scales with rows, not players.
+    newRows = max(1, -(-len(m['first']) // 2))  # New Faces renders as two side-by-side tables
+    newH = 122 + 50 * newRows + 20              # (same row/header sizing as the PB tables above).
     bottom = rowH + 24 + newH
     return dict(colW=colW, pbDamageH=pbDamageH, pbPlaceH=pbPlaceH,
                 newH=newH, milesH=milesH, rightStack=rightStack, rowH=rowH, bottom=bottom, n10=n10)
@@ -379,24 +379,36 @@ def render(m, out):
             p.fit((x + 716, ry + 1), ordinal(q['newRank']), 110, 26, 'cyan', 'black', 'ra'); p.fit((x + w - 28, ry + 2), f'+{q["gain"]}', 90, 24, 'green', 'xbold', 'ra')
 
     def box_new(x, y0, w, h):
-        # Two cards per row (side by side) instead of one long stacked column -- same card count,
-        # about half the box height, so New Faces stops being the tallest thing in the right stack.
-        nf = m['first']; p.neon((x, y0, x + w, y0 + h), 'mag', width=4)
-        p.text((x + 26, y0 + 20), 'NEW FACES', 46, 'mag', 'black'); p.text((x + 26, y0 + 74), 'First tracked Kraken', 22, 'fg', 'semi')
-        icon(p, (x + w - 160, y0 + 10, x + w - 16, y0 + 120))
-        if not nf: p.text((x + 26, y0 + 136), 'No first-time Kraken results this month.', 24, 'mut', 'semi'); return
-        rows = max(1, -(-len(nf) // 2))
-        ch = max(70, min(118, (h - 150) // rows - 14)); gap = 26; cw = (w - 26 - 26 - gap) // 2
-        for i, r in enumerate(nf):
-            col, row = i % 2, i // 2
-            cx = x + 26 + col * (cw + gap); cy = y0 + 128 + row * (ch + 14)
-            d.rounded_rectangle((cx, cy, cx + cw, cy + ch), 14, fill=C['row'], outline=C['mag'], width=3)
-            p.fit((cx + 18, cy + 12), r['player'], cw - 220, 34, 'fg', 'black')
-            p.text((cx + cw - 18, cy + 10), dmg(r['score']), 36, 'cyan', 'black', 'ra')
-            if ch >= 90:
-                md = r['metadata']
-                bits = [f'{ordinal(md["rank"])} place' if md.get('rank') else None, f'{fmt(r["sparks"])} Sparks' if r.get('sparks') is not None else None]
-                p.fit((cx + 18, cy + ch - 38), '  ·  '.join(bt for bt in bits if bt), cw - 36, 22, 'mut', 'semi')
+        # Same table styling as the Personal Bests boxes above (same title/count treatment, same
+        # header row and 50px data rows, same text sizes) rather than the larger name/score cards
+        # from the previous revision. Still split into two side-by-side tables -- leader-requested
+        # 2026-11-18 -- so the box doesn't run as tall as one long single-column list would.
+        nf = m['first']
+        p.neon((x, y0, x + w, y0 + h), 'mag', width=4)
+        p.title(x + 28, y0 + 22, 'NEW FACES', None, None, 34)
+        n = str(len(nf)); p.text((x + w - 28, y0 + 22), n, 40, 'mag', 'black', 'ra')
+        p.text((x + w - 40 - d.textlength(n, font=F(40, 'black')), y0 + 34), 'FIRST-TIME KRAKEN RESULTS', 22, 'fg', 'xbold', 'ra')
+        if not nf:
+            p.text((x + 28, y0 + 130), 'No first-time Kraken results this month.', 26, 'mut', 'semi')
+            return
+        gap = 24; cw = (w - gap) // 2
+        half = -(-len(nf) // 2)
+        for ci, colRows in enumerate((nf[:half], nf[half:])):
+            cx = x + ci * (cw + gap)
+            hdr = [(cx + 46, '#', 'ma'), (cx + 78, 'PLAYER', 'la'), (cx + cw * 0.56, 'PLACE', 'ra'),
+                   (cx + cw * 0.78, 'SPARKS', 'ra'), (cx + cw - 28, 'DAMAGE', 'ra')]
+            hy = y0 + 78; d.rectangle((cx + 20, hy - 6, cx + cw - 20, hy + 30), fill=C['row'])
+            for hx, lab, a in hdr: p.fit((hx, hy), lab, 150, 18, 'mut', 'semi', a)
+            for i, r in enumerate(colRows):
+                ry = y0 + 122 + i * 50
+                if i % 2 == 0: d.rectangle((cx + 20, ry - 8, cx + cw - 20, ry + 40), fill=C['row2'])
+                p.text((cx + 46, ry + 2), ci * half + i + 1, 22, 'mag', 'black', 'ma')
+                p.fit((cx + 78, ry + 1), r['player'], cw * 0.38, 26, 'fg', 'bold')
+                rank = (r.get('metadata') or {}).get('rank')
+                p.fit((cx + cw * 0.56, ry + 3), ordinal(rank) if rank else '—', cw * 0.16, 24, 'mut', 'semi', 'ra')
+                sp = r.get('sparks')
+                p.fit((cx + cw * 0.78, ry + 3), fmt(sp) if sp is not None else '—', cw * 0.16, 24, 'green', 'semi', 'ra')
+                p.fit((cx + cw - 28, ry + 1), dmgr(r['score']), cw * 0.18, 26, 'mag', 'black', 'ra')
 
     def box_miles(x, y0, w, h):
         p.neon((x, y0, x + w, y0 + h), 'gold'); p.text((x + 26, y0 + 18), 'DAMAGE MILESTONES', 30, 'fg', 'black')

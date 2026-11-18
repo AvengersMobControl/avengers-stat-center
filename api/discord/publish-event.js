@@ -96,7 +96,16 @@ function sourceDigest(post){
   ];
   return sha(JSON.stringify(parts.map(u=>[u.event.id,u.expectedRevision,u.event.rows.length])));
  }
- const ups=matchApprovedUpdates(post.kind,post.kind==='flash'?post.eventId.replace(/^flash\|/,''):post.eventId,post.clan);
+ // A corrected resend (see docs/KRAKEN_DISCORD_POSTING.md's --suffix note) deliberately uses a
+ // distinct post.eventId -- e.g. "kraken|nov-corrected" -- so its Neon publication_slots row and
+ // asset filename never collide with the original send's already-reserved ones. The approved-source
+ // ledger (data/approved-event-updates.json) is keyed by the real underlying site event id, not by
+ // that dedup-only label, so strip a trailing correction suffix for this lookup ONLY; post.eventId
+ // itself (Neon key, asset naming, audit trail) is never touched. Added 2026-11-18 alongside the
+ // leader-approved kraken|nov-corrected resend rather than mirroring the real event under a second
+ // id in the live ledger, which would have duplicated it on the public site.
+ const ref=(post.kind==='flash'?post.eventId.replace(/^flash\|/,''):post.eventId).replace(/-(?:[Cc]orrected|v\d+)$/,'');
+ const ups=matchApprovedUpdates(post.kind,ref,post.clan);
  return sha(JSON.stringify(ups.map(u=>[u.event.id,u.expectedRevision,u.event.rows.length])));
 }
 async function discord(token,url,method='GET',body){

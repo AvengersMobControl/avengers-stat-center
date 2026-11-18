@@ -72,3 +72,18 @@ test('weekly sourceDigest verifies all three constituent events against the appr
   assert.throws(() => sourceDigest({ ...goodWeekly, weekRefs: { ...goodWeekly.weekRefs, space: 'space|2099-01-01' } }),
     /Approved source event missing/);
 });
+
+test('a corrected resend\'s eventId resolves to the real approved event, without touching the live ledger', () => {
+  // kraken|nov is the real, approved-source-backed site event. A corrected resend uses
+  // kraken|nov-corrected (and, in future, a -vN suffix) purely so its Neon dedup key and asset
+  // filename never collide with the original send's already-reserved ones -- see
+  // docs/KRAKEN_DISCORD_POSTING.md. sourceDigest must resolve both back to the SAME approved-source
+  // lookup and produce the identical digest, with no new entry required under the suffixed id.
+  const real = sourceDigest(goodKraken);
+  assert.match(real, /^[a-f0-9]{64}$/);
+  assert.equal(sourceDigest({ ...goodKraken, eventId: 'kraken|nov-corrected' }), real);
+  assert.equal(sourceDigest({ ...goodKraken, eventId: 'kraken|nov-v2' }), real);
+  // A bogus suffix, or a genuinely unknown base id, still fails closed.
+  assert.throws(() => sourceDigest({ ...goodKraken, eventId: 'kraken|nov-bogus' }), /Approved source event missing/);
+  assert.throws(() => sourceDigest({ ...goodKraken, eventId: 'kraken|dec-corrected' }), /Approved source event missing/);
+});

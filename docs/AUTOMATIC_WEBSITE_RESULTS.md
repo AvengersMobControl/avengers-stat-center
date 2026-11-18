@@ -1,4 +1,8 @@
-## 2026-11-18 — Latest leader instruction: Kraken is manual-only\n\nMonthly Kraken results are supplied separately by the leader and are **not** a Friday or Sunday scheduled Discord channel, final-results requirement, publication hold, or watchdog failure condition. Continue to ingest AVENGERS and AV-2 Kraken only when the leader explicitly requests the manual import. Preserve `discord-ingest-config.json` Kraken channel for manual access and all historical Kraken records. Weekly Flash, Space/Piggy fallback and AV-2 results still use the existing Friday 02:00–07:30 and Sunday 16:00–18:30 Central windows.\n\n## 2026-11-18 — Leader-approved bounded collection and publication windows
+## 2026-11-18 — Latest leader instruction: Kraken is manual-only
+
+Monthly Kraken results are supplied separately by the leader and are **not** a Friday or Sunday scheduled Discord channel, final-results requirement, publication hold, or watchdog failure condition. Continue to ingest AVENGERS and AV-2 Kraken only when the leader explicitly requests the manual import. Preserve `discord-ingest-config.json` Kraken channel for manual access and all historical Kraken records. Weekly Flash, Space/Piggy fallback and AV-2 results still use the existing Friday 02:00–07:30 and Sunday 16:00–18:30 Central windows.
+
+## 2026-11-18 — Leader-approved bounded collection and publication windows
 
 - STOP 24/7 Discord polling. Vercel source collection is now allowed only
   Friday 02:00–07:30 or Sunday 16:00–18:30 America/Chicago,

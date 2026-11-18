@@ -74,7 +74,8 @@
     }
     rec.events++;
     p.events.add(kind+'|'+date+'|'+clan);
-    p.eventMembers.add(kind+'|'+date+'|'+clan+'|'+name);
+    p.eventMembers.add(kind+'|'+date+'|'+clan+'|'+name+
+      (kind==='flash'&&Number.isInteger(r.poolSlot)?'|AV2pool:'+r.poolSlot:''));
     if(kind!=='kraken'){
       const prev=p.lastKnownClan.get(name);
       if(!prev||date>prev.date)p.lastKnownClan.set(name,{date,clan});
@@ -122,7 +123,9 @@
         if(!r||!r.name||r.name==='Total'||r.name==='#N/A')return;
         const name=canonical(r.name);
         const clan=eventClan({...r,clan:r.clan||ev.clan||ev.rosterScope||'AVENGERS'},'flash');
-        const key=clan+'|'+name;
+        // Pooled AV-2 Flash has up to four different performances for each
+        // member in ONE weekly pool. The slot is per-player, not a PF1–4 ID.
+        const key=clan+'|'+name+(ev.pool==='av2-week'?'|AV2pool:'+r.poolSlot:'');
         const prev=unique.get(key);
         // Screenshots sometimes have overlapping results; count each member
         // only once per Flash event, preferring the fuller reward record.

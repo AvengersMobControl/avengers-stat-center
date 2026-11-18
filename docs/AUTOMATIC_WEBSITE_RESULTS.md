@@ -1,4 +1,4 @@
-## 2026-11-18 — Leader-approved bounded collection and publication windows
+## 2026-11-18 — Latest leader instruction: Kraken is manual-only\n\nMonthly Kraken results are supplied separately by the leader and are **not** a Friday or Sunday scheduled Discord channel, final-results requirement, publication hold, or watchdog failure condition. Continue to ingest AVENGERS and AV-2 Kraken only when the leader explicitly requests the manual import. Preserve `discord-ingest-config.json` Kraken channel for manual access and all historical Kraken records. Weekly Flash, Space/Piggy fallback and AV-2 results still use the existing Friday 02:00–07:30 and Sunday 16:00–18:30 Central windows.\n\n## 2026-11-18 — Leader-approved bounded collection and publication windows
 
 - STOP 24/7 Discord polling. Vercel source collection is now allowed only
   Friday 02:00–07:30 or Sunday 16:00–18:30 America/Chicago,
@@ -10,11 +10,11 @@
   Space screenshots since Wednesday 06:00 (all 6+ lobbies, including solos).
   If no final Space Race, use Friday Piggy instead. Always check AV-2
   late sources since last successful published/fully accounted checkpoint,
-  including relevant Kraken results. AV-2 Flash remains excluded.
+  excluding monthly Kraken. AV-2 Flash remains excluded.
 - Sunday: Big Pig at 16:00 first, Space fallback if no final Piggy;
   inspect AV-2 late posts too. Partial AV-2 is not a blocker to separately
   verified AVENGERS website rows; preserve source-bound private holds.
-- User alert: Existing Friday/Sunday automations now start at 06:00/16:00
+- User alert: Existing Friday/Sunday automations now start at 02:00/16:00
   and run an explicit end-of-window check at 07:30/18:30. Any failure to get
   expected final results on the live GitHub Pages site must be brought to the
   leader's attention as FAILED PUBLICATION before Claude discovers it.

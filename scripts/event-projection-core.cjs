@@ -16,6 +16,9 @@ const clone=x=>JSON.parse(JSON.stringify(x));
 function requireThat(ok,message){if(!ok)throw Error(message);}
 function day(x){return typeof x==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x)&&Number.isFinite(Date.parse(x))&&new Date(x).toISOString().slice(0,10)===x;}
 function amount(x,label){requireThat(x===null||(typeof x==='number'&&Number.isFinite(x)&&x>=0),'Invalid '+label+' (use null for unknown)');return x;}
+// The weekly AV-2 Flash pool has FOUR independent results per player, not
+// invented AVENGERS PF1-4 identities. The Friday date identifies the week.
+function isAv2FlashPool(event){return event?.kind==='flash'&&event?.metadata?.pool==='av2-week';}
 function canonical(raw,aliases={}){
   let name=String(raw||'').trim();const seen=new Set();
   // Leader-confirmed: EVERY OlRose display spelling/prefix is AV-OlRose.
@@ -33,6 +36,15 @@ function normalize(event,aliases={}){
   requireThat(event.unit===UNITS[event.kind],'Incorrect score unit');
   requireThat(Array.isArray(event.sources)&&event.sources.length>0&&event.sources.every(s=>typeof s==='string'&&s.trim()),'Missing source references');
   requireThat(Array.isArray(event.rows),'Missing event rows');
+  const av2Pool=isAv2FlashPool(event);
+  if(av2Pool){
+    requireThat(event.id==='flash|'+event.date+'|av2pool','Invalid AV-2 weekly pool identity');
+    requireThat(new Date(event.date+'T00:00:00Z').getUTCDay()===5,
+      'AV-2 Flash pool date must be week-ending Friday');
+    requireThat(event.metadata.poolWeek===event.date,'AV-2 Flash pool week mismatch');
+    requireThat(event.metadata.flash===undefined,'AV-2 weekly pool cannot have a PF1-4 number');
+  }
+  const poolImagesByPlayer=new Map();
   const rows=new Map();
   for(const raw of event.rows){
     const unassigned=raw.player===null&&typeof raw.sourceIdentity==='string'&&raw.sourceIdentity.trim();
@@ -51,13 +63,29 @@ function normalize(event,aliases={}){
     if(raw.estimatedSparks===true)r.estimatedSparks=true;
     if(raw.metadata)r.metadata=clone(raw.metadata);
     requireThat(event.kind!=='kraken'||r.stars===null,'Kraken has no Stars');
-    const key=r.player||'unassigned:'+r.sourceIdentity;
+    if(av2Pool){
+      requireThat(r.player&&r.clan==='AV-2','AV-2 Flash pool requires a canonical AV-2 member');
+      requireThat(Number.isInteger(r.metadata?.poolSlot)&&r.metadata.poolSlot>=1&&r.metadata.poolSlot<=4,
+        'AV-2 Flash pool requires independent per-player result slot 1–4');
+      const proof=r.metadata?.sourceImageSha256;
+      requireThat(typeof proof==='string'&&/^[a-f0-9]{64}$/i.test(proof),
+        'AV-2 Flash pool requires original source image SHA-256 for each result');
+      const key=r.player+'|'+proof.toLowerCase(),seen=poolImagesByPlayer.get(key);
+      requireThat(seen===undefined||seen===r.metadata.poolSlot,
+        'One original AV-2 Flash result cannot occupy two pool slots: '+r.player);
+      poolImagesByPlayer.set(key,r.metadata.poolSlot);
+    }
+    const key=(r.player||'unassigned:'+r.sourceIdentity)+(av2Pool?'|slot:'+r.metadata.poolSlot:'');
     const identity=x=>({player:x.player,clan:x.clan,score:x.score,sparks:x.sparks,stars:x.stars});
-    requireThat(!rows.has(key)||stable(identity(rows.get(key)))===stable(identity(r)),'Conflicting duplicate player result: '+r.player);
+    requireThat(!rows.has(key)||stable(identity(rows.get(key)))===stable(identity(r)),
+      'Conflicting duplicate player result: '+r.player);
+    if(av2Pool&&rows.has(key))requireThat(rows.get(key).metadata?.sourceImageSha256===r.metadata.sourceImageSha256,
+      'Duplicate AV-2 pool result slot has conflicting original source: '+r.player);
     rows.set(key,r);
   }
   return {id:event.id,kind:event.kind,date:event.date,status:event.status,unit:event.unit,
-    ...(event.metadata?{metadata:clone(event.metadata)}:{}),sources:[...new Set(event.sources)].sort(),rows:[...rows.values()].sort((a,b)=>String(a.player||a.sourceIdentity).localeCompare(String(b.player||b.sourceIdentity)))};
+    ...(event.metadata?{metadata:clone(event.metadata)}:{}),sources:[...new Set(event.sources)].sort(),rows:[...rows.values()].sort((a,b)=>String(a.player||a.sourceIdentity).localeCompare(String(b.player||b.sourceIdentity))||
+      (a.metadata?.poolSlot||0)-(b.metadata?.poolSlot||0))};
 }
 function empty(){return {schemaVersion:1,events:[],changes:[]};}
 function validate(ledger,aliases={}){
@@ -101,7 +129,11 @@ function recentClanEvents(events,kind,count){
 function flashDailyTotals(history,eventById,arenaStart){
   const bySet=new Map();
   for(const r of history.filter(r=>r.kind==='flash'&&Number.isFinite(r.score)&&r.score>1)){
-    const id=eventById.get(r.eventId)?.metadata?.setId||r.date+'-A';
+    const event=eventById.get(r.eventId);
+    // Pooled AV-2 results are separate per-player performances despite their
+    // shared weekly event: never sum all four into one artificial PF score.
+    const id=isAv2FlashPool(event)?r.eventId+'|slot:'+r.metadata.poolSlot:
+      event?.metadata?.setId||r.date+'-A';
     const prior=bySet.get(id)||{date:r.date,lines:0};
     prior.lines+=r.score;
     bySet.set(id,prior);
@@ -314,4 +346,4 @@ function project(ledger,{aliases={},members=[],snapshots={},priorToLogging=null,
   output.version=hash({ledger,aliases,members:[...members].sort((a,b)=>a.name.localeCompare(b.name)),snapshots,arenaStart,projection:output});
   return output;
 }
-module.exports={empty,apply,project,normalize,canonical,stable,UNITS,periods,RATING_BENCHMARKS,awardRatingCrowns};
+module.exports={empty,apply,project,normalize,canonical,stable,UNITS,periods,RATING_BENCHMARKS,awardRatingCrowns,isAv2FlashPool};

@@ -207,6 +207,33 @@ test('weekly window stops when published AV-2 results are verified, without chec
  assert.equal(missingAv2.websitePublished,false,
    'already-retrieved AV-2 results still require website verification');
 });
+test('AV-2 Flash is collected from AV-2 results and published in the shared Flash ledger',()=>{
+ const config=require('../discord-ingest-config.json');
+ assert.deepEqual(config.channels.av2.allowedEventTypes,['space','piggy','flash','kraken']);
+ assert(config.rules.trackedEventKindsByClan['AV-2'].includes('flash'));
+ assert.equal(config.rules.ignoreFlashInAv2Channel,false);
+ assert(config.websitePublication.authorization.scope.includes('AV-2 Piggy, Space and Flash'));
+ assert(config.websitePublication.flashAttribution.includes('AV-2 Flash'));
+ const fri=activeWindow(winterFriday),sun=activeWindow(winterSunday);
+ assert(fri.channels.includes('av2')&&sun.channels.includes('av2'),
+   'retain late AV-2 source scans in both weekly windows');
+ assert(!fri.channels.includes('kraken')&&!sun.channels.includes('kraken'),
+   'monthly Kraken must remain manual only');
+ const h1='a'.repeat(64),h2='b'.repeat(64);
+ const source=rows(fri,[['av2','2026-11-19T18:00:00Z',h1,61],['av2','2026-11-19T19:00:00Z',h2,62]]);
+ const event=[{kind:'flash',date:'2026-11-19',id:'flash|2026-11-19|2',
+   sources:['reviewed-image-sha256:'+h1,'reviewed-image-sha256:'+h2],
+   rows:[{player:'AV-Lin',clan:'AV-2',score:2425}]}];
+ const checkpoints=allDone(fri);
+ const coverage=publicationCoverage(fri,checkpoints,source,event);
+ assert.equal(coverage.av2.observed,2);
+ assert.equal(coverage.av2.publishedSourceMatches,2);
+ assert.equal(coverage.av2.partial,false,
+   'AV-2 Flash source evidence must count as website-published');
+ const missing=publicationCoverage(fri,checkpoints,source,[]);
+ assert.equal(missing.av2.partial,true,
+   'AV-2 Flash missing from live ledger must remain an outstanding publication');
+});
 test('Kraken remains configured for leader-requested manual imports only',()=>{
  const config=require('../discord-ingest-config.json');
  assert(config.channels.kraken,'the monthly Kraken channel remains manually accessible');

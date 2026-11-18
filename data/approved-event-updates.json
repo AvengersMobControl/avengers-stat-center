@@ -27409,7 +27409,7 @@
           "monthLabel": "November",
           "complete": false,
           "leaderConfirmedFinal": true,
-          "coverageNote": "AVENGERS: all 51 final visible rank entries recorded, including leader-confirmed Supreeth position correction. AV-2: final Discord CLAIM screenshots show ranks 1-44, 40 source-bound identities recorded, 5 unconfirmed historical identities held privately; no unseen results or unknown names invented. AV-2 Kraken added by the leader November 16, 2026.",
+          "coverageNote": "AVENGERS: all 51 final visible rank entries recorded, including leader-confirmed Supreeth position correction. AV-2: final Discord CLAIM screenshots show ranks 1-44, 40 source-bound identities recorded, 4 unconfirmed historical identities held privately; rank 14 (AV-OlRose) was leader-confirmed 2026-11-18 and released from hold. No unseen results or unknown names invented. AV-2 Kraken added by the leader November 16, 2026.",
           "dateBasis": "Leader-confirmed final Sunday November 15, 2026 Kraken result screenshots; leader explicitly confirmed set final on Nov 16.",
           "visiblePositions": 51,
           "verifiedDamageMillion": 230573.4,
@@ -27418,7 +27418,7 @@
           "av2ResultsScope": "leader-requested November 16 inclusion of final AV-2 Kraken",
           "av2ScreenRankCount": 44,
           "av2ImportedSourceBoundRows": 40,
-          "av2PrivateIdentityHolds": 5,
+          "av2PrivateIdentityHolds": 4,
           "av2FinalClanDamageMillion": 72120,
           "av2VisibleRoundedDamageMillion": 72119.9,
           "av2VerifiedRowDamageMillion": 72119.9,
@@ -29005,7 +29005,7 @@
         "kind": "standing-website-only",
         "id": "leader-standing-website-publication-2026-10-22",
         "date": "2026-10-22",
-        "leaderConfirmedCorrection": "2026-11-18: leader supplied the in-game AV-2 Players Leaderboard screenshot (same image already in this event's sources, reviewed-image-sha256:03b6dec4933086e4950df31b18bfad3a7e82952abecf06fe6acc48c6ac42b88e) showing AV-OlRose at rank 14 with 2,035.6M damage -- a row the original AV-2 Kraken import skipped (the same screenshot's neighboring ranks 13/15/16/17/18 were captured, 14 was not). Added as a new update rather than editing the original entry, to preserve the original approved submission.",
+        "leaderConfirmedCorrection": "2026-11-18: AV-OlRose's AV-2 Kraken Nov 15 result (rank 14, 2,035.6M) was one of this event's 5 originally av2PrivateIdentityHolds -- not captured at import time because of the AV2/AV-2 identity-matching confusion already called out in this event's coverageNote. The leader supplied the in-game AV-2 Players Leaderboard screenshot showing her by name (same image already in this event's sources, reviewed-image-sha256:03b6dec4933086e4950df31b18bfad3a7e82952abecf06fe6acc48c6ac42b88e -- the leader re-sent the same image this session), explicitly resolving the identity. Released from hold and added here as a new update (expectedRevision: 1) rather than editing the original entry, so the original approved submission stays intact with its own audit trail -- same convention as every other post-send correction in this ledger. av2PrivateIdentityHolds drops from 5 to 4.",
         "sourceAttachmentSha256": "03b6dec4933086e4950df31b18bfad3a7e82952abecf06fe6acc48c6ac42b88e"
       }
     }

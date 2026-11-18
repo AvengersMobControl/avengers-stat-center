@@ -178,7 +178,7 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
   for(const name of ['AV-OlRose','AV-2.SURVIVOR','AV2-Thoszi']){
     assert.equal(R.byName[name]?.status,'AV2',name+' confirmed AV-2 roster');
     assert.equal(people.filter(p=>p.name===name&&p.status==='AV2').length,1,name+' existing event identity is current AV-2 member');
-    assert.deepEqual(people.find(p=>p.name===name).history.filter(h=>h.date>='2026-11-06').map(h=>h.kind).sort(),name==='AV-2.SURVIVOR'?['kraken','piggy','space']:name==='AV2-Thoszi'?['kraken','piggy','space','space']:['piggy','space','space'],name+' source-verified results retained, including November 13 when present');
+    assert.deepEqual(people.find(p=>p.name===name).history.filter(h=>h.date>='2026-11-06').map(h=>h.kind).sort(),name==='AV-2.SURVIVOR'?['kraken','piggy','space']:name==='AV2-Thoszi'?['kraken','piggy','space','space']:['kraken','piggy','space','space'],name+' source-verified results retained, including November 13 when present, and OlRose\'s released rank-14 Kraken hold (2026-11-18)');
   }
   assert.equal(R.byName['TheHemperor']?.status,'AV2','TheHemperor is a current AV-2 participant');
   assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV2-TheHemperor'),'TheHemperor');
@@ -821,20 +821,26 @@ test('November 15 Big Pig final screenshots preserve source completeness, canoni
 test('November 15 Kraken has 51 final positions, corrected Supreeth and canonical player identities',()=>{
   const e=BASE.ledger.events.find(x=>x.id==='kraken|nov');
   assert(e&&e.date==='2026-11-15','leader-confirmed November Kraken exists');
-  assert.equal(e.rows.length,90,'51 AVENGERS plus 39 independently identified AV-2 Kraken rows');
+  assert.equal(e.rows.length,91,'51 AVENGERS plus 40 independently identified AV-2 Kraken rows');
   const main=e.rows.filter(r=>r.clan==='AVENGERS');
   const av2=e.rows.filter(r=>r.clan==='AV-2');
   assert.equal(main.length,51);
-  assert.equal(av2.length,39);
-  assert.equal(new Set(e.rows.map(r=>r.clan+'|'+r.player)).size,90);
+  assert.equal(av2.length,40);
+  assert.equal(new Set(e.rows.map(r=>r.clan+'|'+r.player)).size,91);
   assert.equal(new Set(main.map(r=>r.metadata?.rank)).size,51);
   assert.deepEqual(main.map(r=>r.metadata?.rank).sort((a,b)=>a-b),
     Array.from({length:51},(_,i)=>i+1));
+  // Rank 14 (AV-OlRose) was leader-confirmed 2026-11-18 and released from its private identity
+  // hold -- see the kraken|nov expectedRevision:1 update -- so only 4 holds remain, not 5.
   assert.deepEqual(av2.map(r=>r.metadata?.rank).sort((a,b)=>a-b),
-    Array.from({length:44},(_,i)=>i+1).filter(n=>![14,29,37,38,41].includes(n)),
-    'all 44 AV-2 ranks are either verified or one of five private identity holds');
+    Array.from({length:44},(_,i)=>i+1).filter(n=>![29,37,38,41].includes(n)),
+    'all 44 AV-2 ranks are either verified or one of four remaining private identity holds');
   assert.equal(e.metadata?.av2ScreenRankCount,44);
-  assert.equal(e.metadata?.av2PrivateIdentityHolds,5);
+  assert.equal(e.metadata?.av2PrivateIdentityHolds,4);
+  const olrose=e.rows.find(r=>r.player==='AV-OlRose'&&r.clan==='AV-2');
+  assert(olrose,'AV-OlRose rank-14 hold released 2026-11-18');
+  assert.equal(olrose.score,2035.6);
+  assert.equal(olrose.metadata.rank,14);
   const supreeth=e.rows.find(r=>r.player==='AV-Supreeth');
   assert.equal(supreeth.score,4688.9);
   assert.equal(supreeth.metadata.rank,24,'leader-confirmed later screenshot supersedes earlier rank 30');
@@ -842,8 +848,8 @@ test('November 15 Kraken has 51 final positions, corrected Supreeth and canonica
   assert.equal(jamo.score,4595.1);
   assert.equal(jamo.metadata.rank,25);
   assert.equal(main.reduce((total,r)=>total+r.sparks,0),172930050);
-  assert.equal(av2.reduce((total,r)=>total+r.sparks,0),35042150);
-  assert.equal(av2.reduce((total,r)=>total+r.score,0).toFixed(1),'70084.3');
+  assert.equal(av2.reduce((total,r)=>total+r.sparks,0),36059950);
+  assert.equal(av2.reduce((total,r)=>total+r.score,0).toFixed(1),'72119.9');
   assert(e.rows.every(r=>r.stars===null),'Kraken has no Stars');
   assert.equal(e.rows.find(r=>r.player==='AV-Finnie').score,0);
   assert.equal(e.rows.find(r=>r.player==='AV-Timmy').score,0);

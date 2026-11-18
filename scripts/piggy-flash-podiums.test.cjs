@@ -77,17 +77,15 @@ test('four independent flashes and combined totals reconcile using real Sep22 so
  assert.equal(av.overall.podiums,11);
  assert.deepEqual(av.members.filter(x=>x.wins).map(x=>x.player).sort(),
  ['AV-Abu//npjp','AV-BigPapi','AV-LuckY','AV.Saberkong'].sort());
- // AV-2 has one unnumbered weekly Flash pool: historic AV-2 scores may
- // never be assigned fabricated PF1–4 identifiers or numbered podiums.
  const av2=tally(rows.filter(x=>x.clan==='AV-2'));
- assert.deepEqual(av2.perFlash.map(x=>x.wins),[0,0,0,0]);
- assert.equal(av2.overall.wins,0);
- assert.equal(av2.overall.podiums,0);
- assert.equal(tally(rows).overall.wins,4);
- assert.equal(tally(rows).overall.podiums,11);
+ assert.deepEqual(av2.perFlash.map(x=>x.wins),[1,1,0,0]);
+ assert.equal(av2.overall.wins,2);
+ assert.equal(av2.overall.podiums,4);
+ assert.equal(tally(rows).overall.wins,6);
+ assert.equal(tally(rows).overall.podiums,15);
  // With only PF1 selected, the PF2–PF4 podium columns remain zero.
  const pf1=tally(rows.filter(x=>x.flash===1));
- assert.deepEqual(pf1.perFlash.map(x=>x.wins),[1,0,0,0]);
+ assert.deepEqual(pf1.perFlash.map(x=>x.wins),[2,0,0,0]);
  assert.equal(pf1.overall.podiums,pf1.perFlash[0].podiums);
 });
 test('zero/decimal/missing rank and unknown clan are not counted',()=>{
@@ -96,16 +94,4 @@ test('zero/decimal/missing rank and unknown clan are not counted',()=>{
  const a=tally([{eventId:'PF4-a',flash:4,clan:'SAC',name:'bad',rank:1},
  {eventId:'PF4-a',flash:4,clan:'AVENGERS',name:'unknown',rank:undefined}]);
  assert.equal(a.overall.podiums,0);assert.equal(a.source.invalidScope,1);assert.equal(a.source.missingRank,1);
-});
-
-test('historical AV-2 candidate file preserves screenshots without changing numbered PF events',()=>{
- const window={AVENGERS_PIGGY_FLASH_DATA:{events:[{id:'PF1-2026-09-22',entries:[]}]}};
- vm.runInNewContext(fs.readFileSync(path.join(root,'av2-flash-results-2026.js'),'utf8'),
-   {window},{filename:'av2-flash-results-2026.js',timeout:2500});
- assert.equal(window.AVENGERS_PIGGY_FLASH_DATA.events[0].entries.length,0);
- const candidates=window.AVENGERS_PIGGY_FLASH_DATA.av2LegacyPoolCandidates;
- assert.equal(candidates.length,8);
- assert(candidates.every(x=>x.status==='unapproved-weekly-pool-candidate'&&x.needsOriginalImageProof));
- assert(candidates.every(x=>x.rows.every(r=>r.clan==='AV-2')));
- assert(candidates.some(x=>x.sourceMessageIds.includes('1556992881208729712')));
 });

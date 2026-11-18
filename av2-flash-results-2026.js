@@ -2,8 +2,8 @@
   'use strict';
   const DATA=window.AVENGERS_PIGGY_FLASH_DATA=window.AVENGERS_PIGGY_FLASH_DATA||{events:[]};
 
-  // Full AV-2 Piggy Flash history pulled from the AV-2 Discord results channel.
-  // Rows are appended to the matching Flash event but retain explicit AV-2 event-time clan.
+  // Retained AV-2 historic source candidates (not a numbered PF assignment).
+  // The verified player results are published only in separate weekly pools.
   const patches={
     'PF1-2026-09-22':{
       potStars:287210,potDisplay:'287.21K',messageIds:['1551919368580108371'],
@@ -58,20 +58,16 @@
     }
   };
 
-  Object.entries(patches).forEach(([id,p])=>{
-    const ev=(DATA.events||[]).find(e=>e.id===id);
-    if(!ev) return;
-    ev.entries=ev.entries||[];
-    ev.av2PotStars=p.potStars;
-    ev.av2PotStarsDisplay=p.potDisplay;
-    ev.av2MessageIds=p.messageIds;
-    p.rows.forEach(src=>{
-      const row={...src,clan:'AV-2'};
-      const existing=ev.entries.find(x=>x && x.name===row.name && String(x.clan||'')==='AV-2' && Number(x.rank)===Number(row.rank));
-      if(existing) Object.assign(existing,row);
-      else ev.entries.push(row);
-    });
-    const note='AV-2 rows and AV-2 lobby pot verified from the AV-2 Discord results channel.';
-    if(!String(ev.coverage||'').includes(note)) ev.coverage=(ev.coverage?ev.coverage+' ':'')+note;
-  });
+  // Historical source-only candidates: previously these were incorrectly
+  // attached to AVENGERS numbered PF1–4. The leader has clarified AV-2 cannot
+  // identify those PF rounds, so NEVER mutate the numbered Flash event list.
+  // Retain prior screenshot/message evidence for guarded weekly-pool backfill;
+  // candidates are NOT published or counted until original bytes, identity and
+  // week-ending Friday are independently reviewed.
+  DATA.av2LegacyPoolCandidates=Object.entries(patches).map(([sourceLabel,p])=>({
+    sourceLabel,sourceMessageIds:p.messageIds.slice(),poolPotStars:p.potStars,
+    rows:p.rows.map(r=>({...r,clan:'AV-2'})),
+    status:'unapproved-weekly-pool-candidate',
+    needsOriginalImageProof:true,needsWeekVerification:true
+  }));
 })();

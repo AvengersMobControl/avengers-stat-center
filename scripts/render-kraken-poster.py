@@ -213,28 +213,35 @@ def build_model(R, clan, event_id=None, exclude=None):
 def plan(m):
     """Fixed layout: Personal Bests (damage) alone in the left column; Placement PBs and Damage
     Milestones stacked in the right column. Whichever column is shorter stretches to match the
-    taller one (same convention used throughout this poster). New Faces used to be stacked under
-    those two in the right column, but that meant its height was tacked onto one side of a
-    two-column row, stretching the OTHER (usually shorter) column with wasted blank space just to
-    match it. Leader-requested 2026-11-18: give New Faces its own full-width row below instead, so
-    it uses the space without forcing a stretch on Personal Bests. Above Own Average lives in the
-    top KPI row, so it needs no box down here."""
+    taller one (same convention used throughout this poster). New Faces renders as a single table
+    the same width as the right column, stacked under Damage Milestones, when the list is short (4
+    or fewer) -- a short list in its own full-width row left an awkwardly large blank strip beside
+    it. Once there are enough rows (5+) that a single column would run long, it instead becomes its
+    own full-width row below both columns, split into two side-by-side tables -- stacking a LONG
+    list into the right column would stretch Personal Bests on the left to match it, which is the
+    wasted-space problem this layout avoided in the first place (leader feedback 2026-11-18, twice).
+    Above Own Average lives in the top KPI row, so it needs no box down here."""
     n10 = min(10, len(m['rows']))
     colW = (W - 2 * M - 24) // 2
     pbDamageH = 122 + 50 * max(1, len(m['pbs'])) + 20
     pbPlaceH = 122 + 50 * max(1, len(m['placePBs'])) + 20
     milesH = 116 + len(m['tiers']) * 48 + 16
-    rightStack = pbPlaceH + 24 + milesH
-    rowH = max(pbDamageH, rightStack)
-    # New Faces renders as one full-width table when the list is short (4 or fewer) -- splitting
-    # a short list into two tables leaves one mostly empty, which is its own kind of wasted space
-    # -- and as two side-by-side tables once there are enough rows for that to meaningfully cut
-    # the box's height. Same row/header sizing as the PB tables above either way.
+    # New Faces renders as one table (same width as the right column) when the list is short (4
+    # or fewer), or two side-by-side tables (full poster width) once there are enough rows for
+    # that split to meaningfully cut the box's height. Same row/header sizing as the PB tables
+    # above either way.
     newCols = 1 if len(m['first']) <= 4 else 2
     newRows = max(1, -(-len(m['first']) // newCols))
     newH = 122 + 50 * newRows + 20
-    bottom = rowH + 24 + newH
-    return dict(colW=colW, pbDamageH=pbDamageH, pbPlaceH=pbPlaceH,
+    if newCols == 1:
+        rightStack = pbPlaceH + 24 + milesH + 24 + newH
+        rowH = max(pbDamageH, rightStack)
+        bottom = rowH
+    else:
+        rightStack = pbPlaceH + 24 + milesH
+        rowH = max(pbDamageH, rightStack)
+        bottom = rowH + 24 + newH
+    return dict(colW=colW, pbDamageH=pbDamageH, pbPlaceH=pbPlaceH, newCols=newCols,
                 newH=newH, milesH=milesH, rightStack=rightStack, rowH=rowH, bottom=bottom, n10=n10)
 
 
@@ -386,11 +393,11 @@ def render(m, out):
     def box_new(x, y0, w, h):
         # Same table styling as the Personal Bests boxes above (same title/count treatment, same
         # header row and 50px data rows, same text sizes) rather than the larger name/score cards
-        # from an earlier revision. A short list (4 or fewer -- e.g. a clan with only a couple of
-        # first-timers this Kraken) renders as one full-width table instead of being split into two
-        # side-by-side tables, since splitting a short list just leaves one column mostly empty --
-        # its own kind of wasted space. A longer list still splits into two, since that meaningfully
-        # cuts the box's height (leader-requested 2026-11-18) without leaving either side empty.
+        # from an earlier revision. A short list (4 or fewer) gets one table that fills this box's
+        # full width -- the caller sizes/places that box to match the right column (same width as
+        # Damage Milestones, stacked underneath it) instead of leaving it the full poster width with
+        # a big blank strip beside a short table. A longer list splits into two side-by-side tables,
+        # at which point the caller sizes this box to the full poster width instead.
         nf = m['first']
         p.neon((x, y0, x + w, y0 + h), 'mag', width=4)
         p.title(x + 28, y0 + 22, 'NEW FACES', None, None, 34)
@@ -399,15 +406,10 @@ def render(m, out):
         if not nf:
             p.text((x + 28, y0 + 130), 'No first-time Kraken results this month.', 26, 'mut', 'semi')
             return
-        # Column width always matches the two-table split's width, even with one table, so row
-        # density (name field, gaps between PLACE/SPARKS/DAMAGE) stays the same either way -- a
-        # single table just doesn't stretch its columns out to fill the full box width, which
-        # would leave odd gaps of its own between sparse columns.
-        gap = 24; cw = (w - gap) // 2
         if len(nf) <= 4:
-            groups = [(x, cw, nf)]
+            groups = [(x, w, nf)]
         else:
-            half = -(-len(nf) // 2)
+            gap = 24; cw = (w - gap) // 2; half = -(-len(nf) // 2)
             groups = [(x, cw, nf[:half]), (x + cw + gap, cw, nf[half:])]
         for ci, (cx, cw, colRows) in enumerate(groups):
             base_idx = sum(len(g[2]) for g in groups[:ci])
@@ -444,8 +446,14 @@ def render(m, out):
     rx = M + L['colW'] + 24
     box_pb_place(rx, y, L['colW'], L['pbPlaceH'])
     box_miles(rx, y + L['pbPlaceH'] + 24, L['colW'], L['milesH'])
-    # New Faces: its own full-width row below, instead of stacked into the right column.
-    box_new(M, y + L['rowH'] + 24, W - 2 * M, L['newH'])
+    if L['newCols'] == 1:
+        # Short list: stack New Faces under Damage Milestones, same width as the right column
+        # (leader-requested 2026-11-18), instead of its own full-width row with blank space beside it.
+        box_new(rx, y + L['pbPlaceH'] + 24 + L['milesH'] + 24, L['colW'], L['newH'])
+    else:
+        # Long list: its own full-width row below both columns, instead of stretching Personal
+        # Bests (left) to match a tall right-column stack.
+        box_new(M, y + L['rowH'] + 24, W - 2 * M, L['newH'])
     y += L['bottom'] + 30
 
     p.neon((M, y, W - M, y + 250), 'cyan')

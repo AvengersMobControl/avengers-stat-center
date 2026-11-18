@@ -1,5 +1,11 @@
 # AVENGERS Mob Control — Agent Operating Instructions
 
+## 2026-11-18 — Leader correction: monthly Kraken is MANUAL ONLY
+
+- Remove `kraken` from both Friday and Sunday **scheduled** source-channel scans and publication stop conditions. Do not poll/retrieve Kraken results on either recurring results automation. Leader will supply the once-per-month Kraken screenshots explicitly; process those on manual request only.
+- Keep the Kraken channel configured for explicit manual retrieval, existing accepted AVENGERS/AV-2 Kraken event types, canonical identities, and historical results. Do not remove Kraken from the website or modify Discord/PNG posting rules.
+- Friday remains 02:00–07:30 Central, Sunday 16:00–18:30; weekly Flash/Space/Piggy/AV-2 schedule unchanged.
+
 ## 2026-11-18 — Leader-approved bounded collection and publication windows
 
 - STOP 24/7 Discord polling. Vercel source collection is now allowed only
@@ -12,11 +18,11 @@
   Space screenshots since Wednesday 06:00 (all 6+ lobbies, including solos).
   If no final Space Race, use Friday Piggy instead. Always check AV-2
   late sources since last successful published/fully accounted checkpoint,
-  including relevant Kraken results. AV-2 Flash remains excluded.
+  excluding monthly Kraken. AV-2 Flash remains excluded.
 - Sunday: Big Pig at 16:00 first, Space fallback if no final Piggy;
   inspect AV-2 late posts too. Partial AV-2 is not a blocker to separately
   verified AVENGERS website rows; preserve source-bound private holds.
-- User alert: Existing Friday/Sunday automations now start at 06:00/16:00
+- User alert: Existing Friday/Sunday automations now start at 02:00/16:00
   and run an explicit end-of-window check at 07:30/18:30. Any failure to get
   expected final results on the live GitHub Pages site must be brought to the
   leader's attention as FAILED PUBLICATION before Claude discovers it.

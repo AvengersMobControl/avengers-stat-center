@@ -4,6 +4,8 @@
  * Vercel's UTC cron covers the two Central-time windows. The local time gate
  * runs BEFORE any Discord, Neon or remote website IO. Exit after a genuinely
  * verified published event source coverage receipt, never on download alone.
+ * The monthly Kraken channel is NEVER polled by cron; explicit manual POST
+ * requests may still retrieve Kraken results when directed by the leader.
  */
 const crypto=require('node:crypto');
 const config=require('../../discord-ingest-config.json');
@@ -74,7 +76,7 @@ async function handler(req,res){
     const prior=await store.previousWebsitePublication();
     if(Number.isFinite(prior)&&prior<window.startMs){
       const earlier=Math.max(window.cutoffs.av2,prior);
-      window.cutoffs.av2=earlier; window.cutoffs.kraken=earlier;
+      window.cutoffs.av2=earlier;
     }
     let checkpoints=await store.windowCheckpoints(window,scopedKey);
     const selected=chooseNext(window,checkpoints,2);
@@ -121,8 +123,7 @@ async function handler(req,res){
         missingOriginals:coverage?.missingOriginals??null,
         flashChannelsAwaitingPublication:coverage?.flashes?.filter(f=>!f.confirmed).map(f=>f.channel)||[],
         primaryAwaitingPublication:!coverage?.mainKind,
-        av2Incomplete:coverage?.av2?.partial??null,
-        krakenIncomplete:coverage?.kraken?.partial??null
+        av2Incomplete:coverage?.av2?.partial??null
       },minutesRemaining:window.minutesLeft};
     // This is the actionable failure signal for end-of-window ChatGPT
     // publication watchdogs; it does not claim to notify the user itself.

@@ -25,6 +25,8 @@ test('Friday 02:00–07:30 Chicago correctly tracks winter, summer and precise b
  assert.equal(stamp(a.cutoffs.piggy),'2026-11-18T12:00:00.000Z');
  assert.equal(stamp(b.cutoffs.flash),'2027-06-28T11:00:00.000Z');
  assert.equal(a.channels.slice(0,4).join(','),'piggyFlash1,piggyFlash2,piggyFlash3,piggyFlash4');
+ assert.deepEqual(a.channels,['piggyFlash1','piggyFlash2','piggyFlash3','piggyFlash4','space','piggy','av2']);
+ assert(!a.channels.includes('kraken'));
  assert.equal(a.primary,'space');assert.equal(a.fallback,'piggy');
 });
 test('Sunday 16:00–18:30 Chicago tracks winter, summer and Monday UTC spill',()=>{
@@ -35,7 +37,8 @@ test('Sunday 16:00–18:30 Chicago tracks winter, summer and Monday UTC spill',(
  assert(activeWindow(a.endMs));assert(!activeWindow(a.endMs+60000));
  assert.equal(stamp(a.cutoffs.piggy),'2026-11-20T12:00:00.000Z');
  assert.equal(stamp(a.cutoffs.space),'2026-11-18T12:00:00.000Z');
- assert.deepEqual(a.channels.slice(0,2),['piggy','space']);
+ assert.deepEqual(a.channels,['piggy','space','av2']);
+ assert(!a.channels.includes('kraken'));
 });
 test('outside the two scheduled windows cannot start a source scan',()=>{
  for(const s of ['2026-11-18T16:00:00Z','2026-11-20T07:55:00Z','2026-11-20T14:00:00Z',
@@ -180,23 +183,35 @@ test('published fallback cannot hide an observed and unpublished primary result'
  assert.equal(r.primary.total,1);
  assert.equal(r.fallback.confirmed,true);
 });
-test('window can stop as soon as all found final sources are published, without waiting for unposted AV-2 lobbies',()=>{
+test('weekly window stops when published AV-2 results are verified, without checking monthly Kraken',()=>{
  const w=activeWindow(winterSunday);
  const pig='a'.repeat(64),av2='b'.repeat(64),kraken='c'.repeat(64);
  const sources=rows(w,[
   ['piggy','2026-11-22T21:00:00Z',pig,51],
   ['av2','2026-11-22T22:00:00Z',av2,52],
+  // Simulate unexpected Kraken data: it is not eligible for scheduled checks.
   ['kraken','2026-11-22T22:02:00Z',kraken,53]
  ]);
  const events=[
-  {kind:'piggy',id:'piggy|2026-11-22',date:'2026-11-22',sources:['reviewed-image-sha256:'+pig,'reviewed-image-sha256:'+av2]},
-  {kind:'kraken',id:'kraken|nov',date:'2026-11-15',sources:['reviewed-image-sha256:'+kraken]}
+  {kind:'piggy',id:'piggy|2026-11-22',date:'2026-11-22',
+   sources:['reviewed-image-sha256:'+pig,'reviewed-image-sha256:'+av2]}
  ];
  const done=publicationCoverage(w,allDone(w),sources,events);
  assert.equal(done.websitePublished,true);
  assert.equal(done.av2.partial,false);
- assert.equal(done.kraken.partial,false);
- const bad=publicationCoverage(w,allDone(w),sources,events.slice(0,1));
- assert.equal(bad.websitePublished,false,'known Kraken source cannot be ignored for early stop');
- assert.equal(bad.kraken.partial,true);
+ assert(!('kraken' in done),'monthly Kraken is never part of scheduled completion');
+ const missingAv2=publicationCoverage(w,allDone(w),sources,[
+  {kind:'piggy',id:'piggy|2026-11-22',date:'2026-11-22',
+   sources:['reviewed-image-sha256:'+pig]}
+ ]);
+ assert.equal(missingAv2.websitePublished,false,
+   'already-retrieved AV-2 results still require website verification');
+});
+test('Kraken remains configured for leader-requested manual imports only',()=>{
+ const config=require('../discord-ingest-config.json');
+ assert(config.channels.kraken,'the monthly Kraken channel remains manually accessible');
+ assert(config.rules.trackedEventKindsByClan.AVENGERS.includes('kraken'));
+ assert(config.rules.trackedEventKindsByClan['AV-2'].includes('kraken'));
+ assert(!activeWindow(winterFriday).channels.includes('kraken'));
+ assert(!activeWindow(winterSunday).channels.includes('kraken'));
 });

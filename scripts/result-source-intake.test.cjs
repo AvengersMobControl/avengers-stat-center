@@ -78,3 +78,15 @@ test('Neon JSONB summary parameters carry explicit SQL types',()=>{
   for(const cast of ['$2::text','$3::text','$4::boolean','$5::integer','$6::integer'])assert(src.includes(cast),'missing JSONB parameter cast '+cast);
   assert(!src.includes("\\'channel\\',$2)"),'variadic JSONB call cannot infer an untyped channel parameter');
 });
+test('scoped source collection honors a fixed event window cutoff without changing raw channel identity',async()=>{
+ const s=store();
+ let urls=[];
+ const result=await scanChannel({channelKey:'piggy',checkpointKey:'window:friday-2026-11-20:piggy',
+  cutoffMs:NOW-1800000,store:s,token:'test',nowMs:NOW,maxMessages:5,
+  fetchImpl:async url=>{urls.push(url);return transport(fixture(1,NOW===0?'':validTime))(url);},
+  downloadOriginal:original});
+ assert.equal(result.newOriginalProofs,0,'older image is outside the window');
+ assert.equal(result.cycleComplete,true);
+ assert.equal(s.state.receipts.size,0);
+ assert.equal(urls.length,1);
+});

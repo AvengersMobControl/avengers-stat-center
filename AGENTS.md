@@ -1,5 +1,31 @@
 # AVENGERS Mob Control — Agent Operating Instructions
 
+## 2026-11-18 — Leader-approved bounded collection and publication windows
+
+- STOP 24/7 Discord polling. Vercel source collection is now allowed only
+  Friday 06:00–07:30 or Sunday 16:00–18:30 America/Chicago,
+  every five minutes INSIDE those windows only. Hard CST/CDT local guard,
+  no Discord/Neon access outside them, and no more scans after a verified
+  website-publication stop receipt. Native cron remains source-only:
+  separate existing ChatGPT jobs own player verification and website apply.
+- Friday: Flash1–4 first, ALL screenshots since Monday 06:00; then
+  Space screenshots since Wednesday 06:00 (all 6+ lobbies, including solos).
+  If no final Space Race, use Friday Piggy instead. Always check AV-2
+  late sources since last successful published/fully accounted checkpoint,
+  including relevant Kraken results. AV-2 Flash remains excluded.
+- Sunday: Big Pig at 16:00 first, Space fallback if no final Piggy;
+  inspect AV-2 late posts too. Partial AV-2 is not a blocker to separately
+  verified AVENGERS website rows; preserve source-bound private holds.
+- User alert: Existing Friday/Sunday automations now start at 06:00/16:00
+  and run an explicit end-of-window check at 07:30/18:30. Any failure to get
+  expected final results on the live GitHub Pages site must be brought to the
+  leader's attention as FAILED PUBLICATION before Claude discovers it.
+  Claude alone handles PNG/Discord posting after website release.
+- Details and DST/retry/stop logic: docs/RESULTS_SOURCE_INTAKE.md.
+  These November 18 rules supersede prior all-day cron, daily review, Friday
+  Space-only priority, and AV-2 Kraken exclusion guidance.
+
+
 These instructions apply to all work in `AvengersMobControl/avengers-stat-center`. Keep SAC / Lock It In (`sac-club`) separate.
 
 ## Claude takeover — 2026-10-25

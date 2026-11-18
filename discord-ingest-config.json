@@ -26,7 +26,8 @@
       "rosterScope": "AV-2",
       "allowedEventTypes": [
         "space",
-        "piggy"
+        "piggy",
+        "kraken"
       ]
     },
     "piggyFlash1": {
@@ -75,7 +76,8 @@
       ],
       "AV-2": [
         "space",
-        "piggy"
+        "piggy",
+        "kraken"
       ]
     },
     "ignoreFlashInAv2Channel": true
@@ -84,9 +86,9 @@
     "enabled": true,
     "runner": "ChatGPT scheduled review",
     "timezone": "America/Chicago",
-    "localTime": "08:00",
-    "timing": "flexible morning window",
-    "cadence": "daily",
+    "localTime": "Friday 06:00 & 07:30; Sunday 16:00 & 18:30",
+    "timing": "Friday 06:00\u201307:30; Sunday 16:00\u201318:30",
+    "cadence": "twice-weekly publication windows with final watchdog checks",
     "autoImport": true,
     "parsedResultApprovalRequired": false,
     "purpose": "automatic-website-publication",
@@ -99,7 +101,7 @@
     "authorization": {
       "id": "leader-standing-website-publication-2026-10-22",
       "date": "2026-10-22",
-      "scope": "AVENGERS all event kinds; AV-2 Space and Big Piggy only; website only",
+      "scope": "AVENGERS full event scope; AV-2 Space, Big Pig and Kraken (no AV-2 Flash); website only",
       "perResultCommissionerApprovalRequired": false
     },
     "sourceReviewRequired": true,

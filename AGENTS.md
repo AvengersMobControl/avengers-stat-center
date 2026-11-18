@@ -1,5 +1,13 @@
 # AVENGERS Mob Control — Agent Operating Instructions
 
+## 2026-11-18 — LATEST: AV-2 Piggy Flash is ONE unnumbered weekly pool, four results per member
+
+- AV-2 Flash results CANNOT be differentiated as PF1, PF2, PF3 or PF4. Never assign AV-2 Flash to one of the four numbered AVENGERS events, and never hold a valid AV-2 Flash score solely because a PF number is absent.
+- Use a separate `flash|YYYY-MM-DD|av2pool` event per **source-supported week-ending Friday**. Event metadata: `{pool:"av2-week",poolWeek:"YYYY-MM-DD"}`. Store up to four distinct result entries per canonical player in that event, differentiated by `metadata.poolSlot` 1–4. Slots are personal arbitrary identifiers, NOT a shared chronology, round number or correspondence with PF1–4; each entry must reference the actual source original image SHA-256. Deduplicate repeat/overlapping screenshots and reject fifth results, copied originals across slots, or imagined scores.
+- Include each verified entry independently in history, Flash effort, PB, ratings, totals, Sparks/Stars, achievements and recap. Exclude exactly one-line Flash placeholders for either clan. Preserve original AVENGERS PF1–4 events and Kraken monthly manual-only rule; Friday/Sunday schedules remain unchanged. Late AV-2 screenshots may join an older verified weekly pool.
+- This rule SUPERSEDES the November 18 earlier requirement to find an AVENGERS PF number and append AV-2 rows to that event. No AV-2 PF-number matching is needed or permitted.
+
+
 ## 2026-11-18 — AV-2 Flash inclusion (newest leader correction)
 
 - Collect and import final AV-2 Piggy Flash screenshots from the mixed `av2` channel alongside the existing four AVENGERS Flash channels. AV-2 Flash is **not** excluded. Late screenshots remain eligible since the last full AV-2 result checkpoint; keep original source SHA, rank, Score lines, Stars, Sparks and Share metadata. Exclude only **one-line Flash** results for either clan; do NOT exclude 1-line Big Pig.

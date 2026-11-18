@@ -129,6 +129,11 @@
       const useAv2Pot=mode==='AV-2' && ev.av2PotStars!=null;
       return {
         ...ev,
+        // Historical legacy source rows attached AV-2 to numbered PFs before
+        // the leader clarified one unnumbered pool. Preserve their immutable
+        // source elsewhere for audit, but NEVER display them as PF1–PF4.
+        entries:window.AVENGERS_EVENT_PROJECTION&&ev.pool!=='av2-week'
+          ?(ev.entries||[]).filter(r=>r.clan!=='AV-2'):(ev.entries||[]),
         flash:Number(ev.flash)||Number(String(channelLabels[ev.channelId]||'').replace(/\D/g,''))||0,
         potStars:useAv2Pot?Number(ev.av2PotStars):ev.potStars,
         potStarsDisplay:useAv2Pot?(ev.av2PotStarsDisplay||ev.potStarsDisplay):ev.potStarsDisplay
@@ -149,7 +154,8 @@
           name:resolveName(r.name),
           clan,
           eventDate:ev.date||'',
-          setId:ev.setId||((ev.date||'')+'-A'),
+          setId:ev.pool==='av2-week'?(ev.poolWeek||ev.date):ev.setId||((ev.date||'')+'-A'),
+          pool:ev.pool||null,
           flash:Number(ev.flash)||0,
           complete:!!ev.complete,
           coverage:ev.coverage||'',
@@ -172,13 +178,15 @@
       }));
     }
     if(state.day!=='all')evs=evs.filter(e=>String(e.setId||e.date+'-A').startsWith(state.day)||e.date===state.day);
+    if(mode==='AV-2'||state.tab==='pool')return evs.filter(e=>e.pool==='av2-week');
     if(/^pf[1-4]$/.test(state.tab))return evs.filter(e=>e.flash===Number(state.tab.slice(2)));
     return evs;
   }
 
   function dayFilterHtml(){
     const days=[...new Set(allEvents().map(e=>String(e.setId||e.date+'-A').slice(0,10)).filter(Boolean))].sort().reverse();
-    return '<div class="flash-day-filter"><label for="flashDaySelect">Flash Set Day</label><select id="flashDaySelect"><option value="all">All days</option>'+days.map(d=>'<option value="'+esc(d)+'" '+(state.day===d?'selected':'')+'>'+esc(shortDate(d))+'</option>').join('')+'</select><span class="flash-day-note">Choose a day to see only that PF1–PF4 Flash Set.</span></div>';
+    const pool=clanMode()==='AV-2';
+    return '<div class="flash-day-filter"><label for="flashDaySelect">'+(pool?'Week ending':'Flash Set Day')+'</label><select id="flashDaySelect"><option value="all">All '+(pool?'weeks':'days')+'</option>'+days.map(d=>'<option value="'+esc(d)+'" '+(state.day===d?'selected':'')+'>'+esc(shortDate(d))+'</option>').join('')+'</select><span class="flash-day-note">'+(pool?'AV-2 has one unnumbered pool per week, with up to four independent results per member.':'Choose a day to see only that PF1–PF4 Flash Set.')+'</span></div>';
   }
 
   function aggregateByPlayer(rows){
@@ -257,7 +265,7 @@
           <div class="flash-pb-bar" style="width:${Math.max(1.5,r.best/max*100)}%"></div>
         </div>
         <div class="flash-pb-value">${fmt(r.best)}</div>
-        <div class="flash-pb-flash">${daily?'':'<span class="flash-chip">PF'+r.pbFlash+'</span>'}</div>
+        <div class="flash-pb-flash">${daily?'':'<span class="flash-chip">'+(r.pbFlash?'PF'+r.pbFlash:'Pool')+'</span>'}</div>
         <div class="flash-pb-date">${shortDate(r.pbDate)}</div>
       </div>`).join('')}</div>`;
   }
@@ -337,13 +345,16 @@
   }
 
   function tabsHtml(){
-    const tabs=[['all','All'],['pf1','PF1'],['pf2','PF2'],['pf3','PF3'],['pf4','PF4'],['daily','Daily Total']];
+    const tabs=clanMode()==='AV-2'?[['pool','AV-2 Weekly Pool']]:
+      [['all','All'],['pf1','PF1'],['pf2','PF2'],['pf3','PF3'],['pf4','PF4'],['daily','Daily Total']];
     return '<div class="flash-tabs">'+tabs.map(([id,label])=>'<button class="flash-tab '+(state.tab===id?'active':'')+'" data-flash-tab="'+id+'">'+label+'</button>').join('')+'</div>';
   }
 
   function render(){
     const root=document.getElementById('piggyFlashesContent');
     if(!root)return;
+    if(clanMode()==='AV-2')state.tab='pool';
+    else if(state.tab==='pool')state.tab='all';
 
     const evs=selectedEvents();
     const rows=rowsForEvents(evs);
@@ -367,8 +378,9 @@
     const completeSets=[...setMap.values()].filter(s=>s.flashes.size===4).length;
 
     const pbItems=isDaily?dailyPlayerPBs(setMap):aggregateByPlayer(rows);
-    const chartTitle=isDaily?'Daily Total PB by Player':state.tab==='all'?'Single-Flash PB by Player':' '+state.tab.toUpperCase()+' PB by Player';
-    const chartSub=isDaily?'Best combined PF1 + PF2 + PF3 + PF4 lines within one 24-hour Flash Set.':state.tab==='all'?'Each player’s best single Flash result, regardless of PF1/PF2/PF3/PF4.':'Personal best lines within this Flash channel.';
+    const isPool=clanMode()==='AV-2'||state.tab==='pool';
+    const chartTitle=isPool?'AV-2 Weekly Pool PB by Player':isDaily?'Daily Total PB by Player':state.tab==='all'?'Single-Flash PB by Player':' '+state.tab.toUpperCase()+' PB by Player';
+    const chartSub=isPool?'Best separately recorded AV-2 result; each member may have up to four each week with no PF1–4 assignment.':isDaily?'Best combined PF1 + PF2 + PF3 + PF4 lines within one 24-hour Flash Set.':state.tab==='all'?'Each player’s best single Flash result, regardless of PF1/PF2/PF3/PF4.':'Personal best lines within this Flash channel.';
 
     const potTrend=allEvs.filter(e=>e.potStars!=null)
       .sort((a,b)=>String(a.date).localeCompare(String(b.date))||a.flash-b.flash)
@@ -380,7 +392,8 @@
       flashes:s.flashes.size
     }));
 
-    const trendPoints=isDaily?dailyTrend:(state.tab==='all'?potTrend:evs.filter(e=>e.potStars!=null).sort((a,b)=>String(a.date).localeCompare(String(b.date))).map(e=>({label:e.date,value:Number(e.potStars)||0})));
+    const poolTrend=[...buildSetMap(rows).values()].sort((a,b)=>String(a.date).localeCompare(String(b.date))).map(x=>({label:x.id,value:x.rows.reduce((n,r)=>n+(Number(r.lines)||0),0)}));
+    const trendPoints=isPool?poolTrend:isDaily?dailyTrend:(state.tab==='all'?potTrend:evs.filter(e=>e.potStars!=null).sort((a,b)=>String(a.date).localeCompare(String(b.date))).map(e=>({label:e.date,value:Number(e.potStars)||0})));
 
     const performanceBody=sortedOverall.map((r,i)=>{
       const total=isDaily?r.total:r.lines;
@@ -389,7 +402,7 @@
       return '<tr><td class="num">'+(i+1)+'</td><td><strong>'+esc(r.name)+'</strong></td><td class="num">'+fmt(events)+'</td><td class="num">'+fmt(total)+'</td><td class="num">'+fmt(Math.round(r.avg))+'</td><td class="num">'+fmt(best)+'</td><td>'+shortDate(r.pbDate)+'</td>'+(isDaily?'':'<td class="num">'+fmt(r.stars)+'</td><td class="num">'+fmt(r.sparks)+'</td>')+'</tr>';
     }).join('');
 
-    const resultBody=isDaily?'':rows.slice().sort((a,b)=>String(b.eventDate).localeCompare(String(a.eventDate))||(Number(a.rank)||999)-(Number(b.rank)||999)).map(r=>'<tr><td>'+esc(r.eventDate||'—')+'</td><td>PF'+r.flash+'</td><td class="num">'+(r.rank??'—')+'</td><td><strong>'+esc(r.name||'—')+'</strong></td><td class="num">'+fmt(r.lines)+'</td><td class="num">'+fmt(r.stars)+'</td><td class="num">'+fmt(r.sparks)+'</td></tr>').join('');
+    const resultBody=isDaily?'':rows.slice().sort((a,b)=>String(b.eventDate).localeCompare(String(a.eventDate))||(Number(a.rank)||999)-(Number(b.rank)||999)).map(r=>'<tr><td>'+esc(r.eventDate||'—')+'</td><td>'+(r.pool==='av2-week'?'Pool entry '+(r.poolSlot||'—'):'PF'+r.flash)+'</td><td class="num">'+(r.rank??'—')+'</td><td><strong>'+esc(r.name||'—')+'</strong></td><td class="num">'+fmt(r.lines)+'</td><td class="num">'+fmt(r.stars)+'</td><td class="num">'+fmt(r.sparks)+'</td></tr>').join('');
 
     const dailyRows=[];
     [...setMap.values()].sort((a,b)=>String(b.date).localeCompare(String(a.date))).forEach(s=>{
@@ -403,16 +416,16 @@
     root.innerHTML=`
       ${tabsHtml()}
       ${dayFilterHtml()}
-      <div class="records-note"><strong>Flash Set:</strong> one PF1→PF4 cycle in roughly 24 hours. Eight-flash calendar weeks are split into two independent Flash Sets.</div>
+      <div class="records-note">${isPool?'<strong>AV-2 weekly pool:</strong> up to four recorded results per member each week. Pool entry numbers do not correspond to PF1–PF4.':'<strong>Flash Set:</strong> one PF1→PF4 cycle in roughly 24 hours. Eight-flash calendar weeks are split into two independent Flash Sets.'}</div>
       <div class="flash-metric-strip">
         <div class="flash-metric"><span>${isDaily?'Flash Sets':'Events'}</span><strong>${fmt(isDaily?setMap.size:uniqueEvents)}</strong><em>${isDaily?completeSets+' complete 4/4 sets':'recorded in this view'}</em></div>
         <div class="flash-metric"><span>Players</span><strong>${fmt(players)}</strong><em>unique players</em></div>
         <div class="flash-metric"><span>${isDaily?'Total lines':'Avg result'}</span><strong>${isDaily?fmtCompact(totalLines):fmt(Math.round(avgResult))}</strong><em>${isDaily?'all imported flashes':fmt(Math.round(medResult))+' median'}</em></div>
         ${isDaily?'<div class="flash-metric"><span>Best daily PB</span><strong>'+fmt(Math.max(0,...pbItems.map(x=>x.best)))+'</strong><em>combined flash lines</em></div>':''}
-        <div class="flash-metric"><span>Avg pot</span><strong>${avgPot?fmtCompact(avgPot):'—'}</strong><em>AVENGERS-dominant lobbies</em></div>
+        ${isPool?'':'<div class="flash-metric"><span>Avg pot</span><strong>'+ (avgPot?fmtCompact(avgPot):'—')+'</strong><em>AVENGERS-dominant lobbies</em></div>'}
       </div>
 
-      ${podiumsHtml(rows)}
+      ${isPool?'<div class="flash-note">Finishing places reflect the original AV-2 leaderboard. PF1–PF4 podium comparisons do not apply to this weekly pool.</div>':podiumsHtml(rows)}
       ${clanMode()==='AV-2'?'':'<div id="flashHistoricalReporting" class="flash-history-root"></div>'}
 
       <div class="flash-grid">
@@ -421,8 +434,8 @@
           <div class="flash-chart-body">${pbChart(pbItems,isDaily)}</div>
         </div>
         <div class="flash-chart-card">
-          <div class="flash-chart-head"><h2>${isDaily?'Flash Set Star Trend':'Pot Stars Trend'}</h2><div class="small-muted">${isDaily?'Combined recorded player stars per Flash Set.':'AVENGERS-dominant lobby pot totals over time.'}</div></div>
-          <div class="flash-chart-body">${trendSvg(trendPoints,isDaily?'stars':'pot stars')}${state.tab==='all'?'<hr style="border:0;border-top:1px solid rgba(255,255,255,.08);margin:12px 0 14px"><strong style="font-size:12px">PF comparison</strong><div style="margin-top:10px">'+flashComparison(allEvs)+'</div>':''}</div>
+          <div class="flash-chart-head"><h2>${isPool?'Weekly Lines Trend':isDaily?'Flash Set Star Trend':'Pot Stars Trend'}</h2><div class="small-muted">${isPool?'Sum of captured AV-2 weekly pool results. Partial weeks can increase.':isDaily?'Combined recorded player stars per Flash Set.':'AVENGERS-dominant lobby pot totals over time.'}</div></div>
+          <div class="flash-chart-body">${trendSvg(trendPoints,isPool?'lines':isDaily?'stars':'pot stars')}${state.tab==='all'&&!isPool?'<hr style="border:0;border-top:1px solid rgba(255,255,255,.08);margin:12px 0 14px"><strong style="font-size:12px">PF comparison</strong><div style="margin-top:10px">'+flashComparison(allEvs.filter(e=>e.pool!=='av2-week'))+'</div>':''}</div>
         </div>
       </div>
 
@@ -442,11 +455,11 @@
       </div>
       <div class="table-card" style="margin-top:16px">
         <div class="table-titlebar"><div><h2>Individual Results</h2><div class="small-muted">Recorded player-level Flash results, including original finishing ranks where supplied; missing ranks display —.</div></div></div>
-        <div class="table-wrap"><table><thead><tr><th>Event</th><th>Flash</th><th class="num">Rank</th><th>Member</th><th class="num">Lines</th><th class="num">Stars</th><th class="num">Sparks</th></tr></thead><tbody>${resultBody||'<tr><td colspan="7" class="empty">No results in this view.</td></tr>'}</tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>${isPool?'Week ending':'Event'}</th><th>${isPool?'Pool entry':'Flash'}</th><th class="num">Rank</th><th>Member</th><th class="num">Lines</th><th class="num">Stars</th><th class="num">Sparks</th></tr></thead><tbody>${resultBody||'<tr><td colspan="7" class="empty">No results in this view.</td></tr>'}</tbody></table></div>
       </div>`}
     `;
 
-    if(clanMode()!=='AV-2')window.AVENGERS_FLASH_HISTORY_VIEW?.render(root.querySelector('#flashHistoricalReporting'),DATA.events||[],state.day,state.tab,resolveName);
+    if(clanMode()!=='AV-2')window.AVENGERS_FLASH_HISTORY_VIEW?.render(root.querySelector('#flashHistoricalReporting'),(DATA.events||[]).filter(e=>e.pool!=='av2-week'),state.day,state.tab,resolveName);
 
     root.querySelectorAll('[data-flash-tab]').forEach(btn=>btn.addEventListener('click',()=>{
       state.tab=btn.dataset.flashTab;

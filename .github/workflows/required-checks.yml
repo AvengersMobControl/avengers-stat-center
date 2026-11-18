@@ -40,7 +40,7 @@ jobs:
         run: >-
           node --test
           scripts/guest-pass-create.test.cjs scripts/guest-pass-atomic.test.cjs scripts/guest-pass-redeem.test.cjs
-          scripts/member-profile-insights.test.cjs scripts/reward-metrics.test.cjs scripts/event-projection-core.test.cjs
+          scripts/member-profile-insights.test.cjs scripts/reward-metrics.test.cjs scripts/event-projection-core.test.cjs scripts/av2-weekly-flash-pool.test.cjs
           scripts/council-minimums-core.test.cjs scripts/roster-event-breakdown.test.cjs scripts/roster-piggy-pb-rank.test.cjs
           scripts/piggy-flash-podiums.test.cjs scripts/piggy-flash-history.test.cjs scripts/space-rank-history.test.cjs
           scripts/sparks-ui-source.test.cjs scripts/site-release.test.cjs scripts/fullsite-accepted-ingestion-gate.test.cjs

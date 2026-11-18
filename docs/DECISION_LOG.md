@@ -1,3 +1,8 @@
+## 2026-11-18 — LATEST leader clarification: AV-2 Flash weekly pool, not PF1–PF4
+
+- AV-2 Flash cannot be reliably mapped to PF1, PF2, PF3 or PF4. The immediately prior Nov 18 instruction to map those rows onto matching numbered AVENGERS events is **replaced**. Keep AVENGERS numbered Flash events unchanged. Record AV-2 Flash in an independent **one-pool-per-week** event (`flash|week-ending-Friday|av2pool`) with **up to four distinct per-member results**, identified by `metadata.poolSlot` 1–4 and original SHA-256 source. No fictitious shared PF mapping or zero results.
+- Existing Flash line-one exclusion applies. Ratings, individual histories, Sparks/Stars, participation and clan totals count all independently verified AV-2 results. Hold unresolved week and account identity privately without blocking other verified rows. Late screenshots may update the correct prior weekly pool. Kraken manual-only, schedules and Discord/PNG responsibilities unchanged.
+
 ## 2026-11-18 — AV-2 Piggy Flash included in website results
 
 - The leader confirmed AV-2 Piggy Flash must be logged. The historical website ledger contained **275 AVENGERS Flash rows and zero AV-2 Flash rows**, so the previous exclusion was incorrect.

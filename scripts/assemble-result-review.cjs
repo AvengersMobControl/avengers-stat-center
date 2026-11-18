@@ -3,16 +3,17 @@
 // Build an UNAPPROVED event candidate from independently reviewed FINAL images.
 // This module does not access Discord, interpret images, approve results or publish.
 const fs=require('node:fs'),path=require('node:path');
-const {normalize,canonical,stable,UNITS}=require('./event-projection-core.cjs');
+const {normalize,canonical,stable,UNITS,isAv2FlashPool}=require('./event-projection-core.cjs');
 const {root}=require('./load-site-data.cjs');
 
 function check(condition,message){if(!condition)throw Error(message);}
 function safeMetadata(raw){
   const data=raw&&typeof raw==='object'?raw:{},out={};
-  for(const key of ['rank','group','share','lobby']){
+  for(const key of ['rank','group','share','lobby','poolSlot']){
     if(data[key]===undefined)continue;
     const value=data[key];
     if(key==='rank'||key==='group')check(Number.isInteger(value)&&value>=1&&value<=1000,'Invalid public '+key);
+    if(key==='poolSlot')check(Number.isInteger(value)&&value>=1&&value<=4,'Invalid AV-2 pool slot (max four results per player)');
     if(key==='share')check(typeof value==='number'&&Number.isFinite(value)&&value>=0&&value<=1,'Invalid public share');
     if(key==='lobby')check(typeof value==='string'&&/^[A-Za-z0-9-]{1,12}$/.test(value),'Invalid public lobby label');
     out[key]=value;
@@ -22,6 +23,11 @@ function safeMetadata(raw){
     check(typeof data[key]==='string'&&data[key].length>0&&data[key].length<=100&&
       [...data[key]].every(ch=>ch.charCodeAt(0)>=32),'Invalid public '+key);
     out[key]=data[key];
+  }
+  if(data.sourceImageSha256!==undefined){
+    check(typeof data.sourceImageSha256==='string'&&/^[a-f0-9]{64}$/i.test(data.sourceImageSha256),
+      'Invalid original image SHA-256');
+    out.sourceImageSha256=data.sourceImageSha256.toLowerCase();
   }
   return Object.keys(out).length?out:null;
 }
@@ -80,9 +86,16 @@ function assemble(review,{existingEvent=null,aliases={},knownPlayers=[]}={}){
   check(Object.hasOwn(UNITS,e.kind),'Unrecognized event type');
   check(e.unit===UNITS[e.kind],'Incorrect event score unit');
   if(e.kind==='piggy'||e.kind==='space')check(e.id===e.kind+'|'+e.date,'Event id must match kind and date');
-  if(e.kind==='flash'){
+  const av2Pool=isAv2FlashPool(e);
+  if(e.kind==='flash'&&!av2Pool){
     check(Number.isInteger(e.metadata?.flash)&&e.metadata.flash>=1&&e.metadata.flash<=20,'Flash number required');
     check(e.id==='flash|'+e.date+'|'+e.metadata.flash,'Flash identity mismatch');
+  }
+  if(av2Pool){
+    check(e.id==='flash|'+e.date+'|av2pool','AV-2 pool event identity mismatch');
+    check(e.metadata?.poolWeek===e.date,'AV-2 pool needs source-supported week-ending Friday');
+    check(new Date(e.date+'T00:00:00Z').getUTCDay()===5,'AV-2 pool date must be Friday');
+    check(e.metadata?.flash===undefined,'AV-2 pool MUST NOT infer an AVENGERS PF set number');
   }
   if(e.kind==='kraken'){
     check(typeof e.metadata?.monthKey==='string'&&/^[a-z0-9-]{2,24}$/.test(e.metadata.monthKey),'Kraken month key required');
@@ -100,6 +113,7 @@ function assemble(review,{existingEvent=null,aliases={},knownPlayers=[]}={}){
     check(prior.status!=='revoked','A revoked event requires a separate explicit correction review');
   }
   const seenImages=new Map(),accepted=new Map();
+  const rowKey=row=>row.player+(av2Pool?'|slot:'+row.metadata?.poolSlot:'');
   let preliminary=0,reposts=0,repeatedPlayers=0,finalImages=0;
   for(const screen of review.screens){
     check(screen&&typeof screen==='object','Invalid screenshot review entry');
@@ -114,7 +128,17 @@ function assemble(review,{existingEvent=null,aliases={},knownPlayers=[]}={}){
     check(Array.isArray(screen.rows)&&screen.rows.length>0,'Final screenshot has no parsed rows');
     // Hash is an evidence reference, not a replacement for visual inspection.
     const key=screen.imageSha256.toLowerCase();
-    const sanitized=screen.rows.map(row=>publicRow(row,aliases,e,knownPlayers));
+    const sanitized=screen.rows.map(raw=>{
+      const row=publicRow(raw,aliases,e,knownPlayers);
+      if(av2Pool){
+        check(row.clan==='AV-2','Only AV-2 member results belong in the AV-2 Flash weekly pool');
+        check(Number.isInteger(row.metadata?.poolSlot),'Every AV-2 pool result needs its own per-player slot');
+        check(!row.metadata.sourceImageSha256||row.metadata.sourceImageSha256===key,
+          'AV-2 pooled row proof does not match reviewed screenshot original bytes');
+        row.metadata={...row.metadata,sourceImageSha256:key};
+      }
+      return row;
+    });
     if(e.kind==='kraken')check(sanitized.every(r=>r.stars===null),'Kraken has no Stars');
     const signatures=sanitized.map(fingerprint).sort();
     const previous=seenImages.get(key);
@@ -124,19 +148,19 @@ function assemble(review,{existingEvent=null,aliases={},knownPlayers=[]}={}){
     }
     seenImages.set(key,signatures);finalImages++;
     for(const row of sanitized){
-      const old=accepted.get(row.player);
+      const old=accepted.get(rowKey(row));
       if(old){
         check(fingerprint(old)===fingerprint(row),'Conflicting final screenshots for '+row.player);
         repeatedPlayers++;continue;
       }
-      accepted.set(row.player,row);
+      accepted.set(rowKey(row),row);
     }
   }
   check(finalImages>0,'No verified final-claim screenshots; progress images excluded');
-  const oldRows=new Map((prior?.rows||[]).filter(r=>r.player).map(r=>[r.player,r]));
+  const oldRows=new Map((prior?.rows||[]).filter(r=>r.player).map(r=>[rowKey(r),r]));
   let inserted=0;
   for(const row of accepted.values()){
-    const old=oldRows.get(row.player);
+    const old=oldRows.get(rowKey(row));
     if(old){
       check(fingerprint(old)===fingerprint(row),
         'Existing result for '+row.player+' differs; requires explicit correction/revision review');
@@ -147,7 +171,7 @@ function assemble(review,{existingEvent=null,aliases={},knownPlayers=[]}={}){
   const oldMetadata=prior?.metadata||{};
   const eventMetadata={...oldMetadata};
   if(!prior){
-    for(const key of ['flash','monthKey','monthLabel']){
+    for(const key of ['flash','monthKey','monthLabel','pool','poolWeek']){
       if(e.metadata?.[key]!==undefined)eventMetadata[key]=e.metadata[key];
     }
   }
@@ -164,7 +188,7 @@ function assemble(review,{existingEvent=null,aliases={},knownPlayers=[]}={}){
   const event=normalize({
     id:e.id,kind:e.kind,date:e.date,unit:e.unit,status,
     metadata,sources,
-    rows:unchanged?prior.rows:[...(prior?.rows||[]),...[...accepted.values()].filter(r=>!oldRows.has(r.player))]
+    rows:unchanged?prior.rows:[...(prior?.rows||[]),...[...accepted.values()].filter(r=>!oldRows.has(rowKey(r)))]
   },aliases);
   return {update:{approved:false,expectedRevision:existingEvent?.revision||0,event},
     report:{eventId:e.id,finalImages,excludedPreliminary:preliminary,repostImages:reposts,

@@ -207,13 +207,15 @@ test('weekly window stops when published AV-2 results are verified, without chec
  assert.equal(missingAv2.websitePublished,false,
    'already-retrieved AV-2 results still require website verification');
 });
-test('AV-2 Flash is collected from AV-2 results and published in the shared Flash ledger',()=>{
+test('AV-2 Flash pool is collected separately and verified by its source hashes',()=>{
  const config=require('../discord-ingest-config.json');
  assert.deepEqual(config.channels.av2.allowedEventTypes,['space','piggy','flash','kraken']);
  assert(config.rules.trackedEventKindsByClan['AV-2'].includes('flash'));
  assert.equal(config.rules.ignoreFlashInAv2Channel,false);
- assert(config.websitePublication.authorization.scope.includes('AV-2 Piggy, Space and Flash'));
- assert(config.websitePublication.flashAttribution.includes('AV-2 Flash'));
+ assert(config.websitePublication.authorization.scope.includes('AV-2 unnumbered weekly Flash pool'));
+ assert.equal(config.websitePublication.av2FlashPool.maxResultsPerPlayerPerWeek,4);
+ assert.equal(config.websitePublication.av2FlashPool.numberedPfLinkage,false);
+ assert(config.websitePublication.flashAttribution.includes('AV-2: ONE independent UNNUMBERED weekly pool'));
  const fri=activeWindow(winterFriday),sun=activeWindow(winterSunday);
  assert(fri.channels.includes('av2')&&sun.channels.includes('av2'),
    'retain late AV-2 source scans in both weekly windows');
@@ -221,7 +223,8 @@ test('AV-2 Flash is collected from AV-2 results and published in the shared Flas
    'monthly Kraken must remain manual only');
  const h1='a'.repeat(64),h2='b'.repeat(64);
  const source=rows(fri,[['av2','2026-11-19T18:00:00Z',h1,61],['av2','2026-11-19T19:00:00Z',h2,62]]);
- const event=[{kind:'flash',date:'2026-11-19',id:'flash|2026-11-19|2',
+ const event=[{kind:'flash',date:'2026-11-20',id:'flash|2026-11-20|av2pool',
+   metadata:{pool:'av2-week',poolWeek:'2026-11-20'},
    sources:['reviewed-image-sha256:'+h1,'reviewed-image-sha256:'+h2],
    rows:[{player:'AV-Lin',clan:'AV-2',score:2425}]}];
  const checkpoints=allDone(fri);

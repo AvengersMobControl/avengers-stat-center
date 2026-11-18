@@ -211,21 +211,26 @@ def build_model(R, clan, event_id=None, exclude=None):
 
 
 def plan(m):
-    """Fixed layout: Personal Bests (damage) alone in the left column; Placement PBs, Damage
-    Milestones and New Faces stacked in the right column, in that order. Above Own Average lives
-    in the top KPI row, so it needs no box down here. Whichever column is shorter stretches to
-    match the taller one (same convention used throughout this poster)."""
+    """Fixed layout: Personal Bests (damage) alone in the left column; Placement PBs and Damage
+    Milestones stacked in the right column. Whichever column is shorter stretches to match the
+    taller one (same convention used throughout this poster). New Faces used to be stacked under
+    those two in the right column, but that meant its height was tacked onto one side of a
+    two-column row, stretching the OTHER (usually shorter) column with wasted blank space just to
+    match it. Leader-requested 2026-11-18: give New Faces its own full-width row below instead, so
+    it uses the space without forcing a stretch on Personal Bests. Above Own Average lives in the
+    top KPI row, so it needs no box down here."""
     n10 = min(10, len(m['rows']))
     colW = (W - 2 * M - 24) // 2
     pbDamageH = 122 + 50 * max(1, len(m['pbs'])) + 20
     pbPlaceH = 122 + 50 * max(1, len(m['placePBs'])) + 20
     milesH = 116 + len(m['tiers']) * 48 + 16
-    newRows = max(1, -(-len(m['first']) // 2))  # New Faces renders 2 cards per row now, so height
-    newH = 140 + newRows * 118                  # scales with rows, not with the raw player count.
-    rightStack = pbPlaceH + 24 + milesH + 24 + newH
+    rightStack = pbPlaceH + 24 + milesH
     rowH = max(pbDamageH, rightStack)
+    newRows = max(1, -(-len(m['first']) // 2))  # New Faces renders 2 cards per row, full poster
+    newH = 140 + newRows * 118                  # width, so height scales with rows, not players.
+    bottom = rowH + 24 + newH
     return dict(colW=colW, pbDamageH=pbDamageH, pbPlaceH=pbPlaceH,
-                newH=newH, milesH=milesH, rightStack=rightStack, rowH=rowH, bottom=rowH, n10=n10)
+                newH=newH, milesH=milesH, rightStack=rightStack, rowH=rowH, bottom=bottom, n10=n10)
 
 
 def render(m, out):
@@ -407,12 +412,13 @@ def render(m, out):
 
     # Left column: Personal Bests (damage) alone, stretched to match the right column.
     box_pb_damage(M, y, L['colW'], L['rowH'])
-    # Right column: Placement PBs, Damage Milestones, New Faces, stacked.
+    # Right column: Placement PBs and Damage Milestones, stacked.
     rx = M + L['colW'] + 24
     box_pb_place(rx, y, L['colW'], L['pbPlaceH'])
     box_miles(rx, y + L['pbPlaceH'] + 24, L['colW'], L['milesH'])
-    box_new(rx, y + L['pbPlaceH'] + 24 + L['milesH'] + 24, L['colW'], L['newH'])
-    y += L['rowH'] + 30
+    # New Faces: its own full-width row below, instead of stacked into the right column.
+    box_new(M, y + L['rowH'] + 24, W - 2 * M, L['newH'])
+    y += L['bottom'] + 30
 
     p.neon((M, y, W - M, y + 250), 'cyan')
     icon(p, (M + 24, y + 18, M + 270, y + 232)); icon(p, (W - M - 270, y + 18, W - M - 24, y + 232), flip=True)

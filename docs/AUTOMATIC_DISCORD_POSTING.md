@@ -54,6 +54,17 @@ Once a week's six events (one Space, four Flash PFs, one Big Pig) have all been 
 5. **Stage it**: `python3 scripts/stage-discord-post.py --kind weekly --event-id 'weekly|<ISO Monday>' --clan AVENGERS --png <out>-REVIEW.png --body-file … --template weekly-recap-poster-v1-20261109 --week-space-event 'space|<date>' --week-flash-set-id '<setId>' --week-piggy-event 'piggy|<date>'`. The three `--week-*` refs are the week's actual Space/Flash-Set/Big-Pig event ids; the publisher verifies all three against `data/approved-event-updates.json` before it will send.
 6. **Everything else is identical** to the single-event flow: `git add -f`, PR, arm the token (the same `AVENGERS_AUTO_PUBLISH_POST` can list a weekly key alongside the Big Pig key for one armed run), merge, wait for deploy, sandboxed preflight/send, confirm the Neon receipt, burn the token, notify the leader.
 
+## Player Power Ratings (sent with the weekly recap; leader 2026-11-19)
+
+Every Sunday that the AVENGERS weekly recap goes out, also send the updated Player Power Ratings poster (the approved Nov 17 100-player design). If no weekly recap goes out that Sunday, skip ratings too.
+
+1. **Export + snapshot.** `node scripts/export-ratings-poster.cjs <Sunday YYYY-MM-DD> --save-snapshot`. Writes `reports/ratings-<date>.json` (poster data + changes) and the immutable `data/ratings-history/ratings-<date>.json`. Selection is automatic (`data/ratings-poster-selection.json`): every Active member, the top 32 AV-2, alumni filling to 100. Changes compare against the newest earlier snapshot, using rank among all current Active + AV-2 members (poster churn is never a "climb").
+2. **Render.** `python3 scripts/render-ratings-poster.py reports/ratings-<date>.json reports/ratings-<date>.png` → 1800×4000 Discord PNG, a 3600×8000 `-FULL.png`, and a `-poster.json` sidecar (templateVersion `ratings-poster-v1-20261119`). Background: `assets/ratings/RATINGS_MASTER_APPROVED_2026-11-17_3600x8000.png`.
+3. **Check the poster** as usual: leaders, both panels, footer counts, no clipping.
+4. **Write the message** from `reports/ratings-<date>.json` → `changes`: significant climbs (`climbs[].significant`: ≥5 places or ≥0.25 rating among current members), new crowns, and any perfect 10s (`perfectTen`, `newPerfectTen`). First week (`firstWeek: true`): no climbs exist yet, so highlight perfect 10s only. Never invent a climb for `newlyRanked` players; welcome them instead.
+5. **Stage**: `python3 scripts/stage-discord-post.py --kind ratings --event-id 'ratings|<date>' --clan AVENGERS --png reports/ratings-<date>.png --body-file … --template ratings-poster-v1-20261119`. It records the snapshot's SHA-256 (`ratingsRef`), which the publisher checks. Commit the snapshot with the post.
+6. **Everything else is identical** to the weekly recap: same PR, same armed token (list the ratings key alongside the weekly key), same send/receipt/burn steps. Authorization tag: `leader-standing-auto-discord-ratings-2026-11-19`.
+
 ## Safety properties
 
 - **Content is fixed by the repo.** The deployed repo (`data/discord-posts.json` plus the SHA-pinned PNG) decides what gets posted. Callers only pick which staged post to send.

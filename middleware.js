@@ -66,7 +66,7 @@ export default async function middleware(request){
     // follow-up under a NEW (kind, eventId, clan) key -- which needs its own, differently-named asset
     // file alongside the original (never overwriting it) so the Neon send-once ledger sees a new key
     // instead of colliding with the already-reserved original send.
-    /^\/assets\/reports\/(AVENGERS|AV2)_(Space_Race|Big_Pig|Piggy_Flashes|Kraken)_[A-Z][a-z]+_\d{1,2}_\d{4}(_(Corrected|v\d+))?\.png$/.test(p) ||
+    /^\/assets\/reports\/(AVENGERS|AV2)_(Space_Race|Big_Pig|Piggy_Flashes|Kraken|Weekly_Recap|Player_Ratings)_[A-Z][a-z]+_\d{1,2}_\d{4}(_(Corrected|v\d+))?\.png$/.test(p) ||
     p.startsWith('/api/guest/') ||
     p==='/mcp' ||
     p.startsWith('/.well-known/') ||

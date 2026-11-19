@@ -3,6 +3,15 @@
 - AV-2 Flash cannot be reliably mapped to PF1, PF2, PF3 or PF4. The immediately prior Nov 18 instruction to map those rows onto matching numbered AVENGERS events is **replaced**. Keep AVENGERS numbered Flash events unchanged. Record AV-2 Flash in an independent **one-pool-per-week** event (`flash|week-ending-Friday|av2pool`) with **up to four distinct per-member results**, identified by `metadata.poolSlot` 1–4 and original SHA-256 source. No fictitious shared PF mapping or zero results.
 - Existing Flash line-one exclusion applies. Ratings, individual histories, Sparks/Stars, participation and clan totals count all independently verified AV-2 results. Hold unresolved week and account identity privately without blocking other verified rows. Late screenshots may update the correct prior weekly pool. Kraken manual-only, schedules and Discord/PNG responsibilities unchanged.
 
+
+## 2026-11-19 — Weekly Player Power Ratings with the Sunday recap; posting schedule; emojis
+
+- **Ratings:** leader directed the updated Player Power Ratings poster to go out with the weekly summary each Sunday, highlighting significant climbs and perfect 10s. Built a repeatable export (`scripts/export-ratings-poster.cjs`), immutable weekly snapshots (`data/ratings-history/`) and a renderer over the approved Nov 17 master art (`scripts/render-ratings-poster.py`). The selection rule (all Active + top 32 AV-2 + top alumni to 100) reproduces the approved Nov 17 names exactly (Chat's handoff transcription had three typos: AV-DrDetroit, AV-CLJM, AV-STI44ERS). Standing authorization tag `leader-standing-auto-discord-ratings-2026-11-19`.
+- **Found while building:** the weekly recap could never have posted. Neon `publication_slots_kind_check` allowed only piggy/flash/kraken/space, and `middleware.js` blocked `Weekly_Recap` PNGs. Migration `007_publication_kinds_weekly_ratings.sql` widens the check to add weekly + ratings; middleware now allows `Weekly_Recap` and `Player_Ratings` posters.
+- **Schedule (leader, 2026-11-18/19):** posting runs Friday 8 AM and Sunday 7 PM Central only, with backup runs Friday 9 AM / Sunday 8 PM that act only if the main run posted nothing.
+- **AV-2:** leader wants only the weekly summary and Kraken posted for AV-2 (Kraken stays manual for at least one more month). The AV-2 weekly recap (Space + Big Piggy + pooled Flash) is not built yet; it needs its own approved layout.
+- Write-ups use the AVENGERS custom server emojis (list kept in the private scheduled-task instructions).
+
 ## 2026-11-18 — AV-2 Piggy Flash included in website results
 
 - The leader confirmed AV-2 Piggy Flash must be logged. The historical website ledger contained **275 AVENGERS Flash rows and zero AV-2 Flash rows**, so the previous exclusion was incorrect.

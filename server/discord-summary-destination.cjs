@@ -10,7 +10,7 @@
  */
 const CHANNEL_ENV_KEY = 'AVENGERS_DISCORD_SUMMARY_CHANNEL_ID';
 const ALLOWED_CLANS = Object.freeze(['AVENGERS', 'AV-2']);
-const ALLOWED_KINDS = Object.freeze(['piggy', 'space', 'flash', 'kraken', 'weekly']);
+const ALLOWED_KINDS = Object.freeze(['piggy', 'space', 'flash', 'kraken', 'weekly', 'ratings']);
 
 function resolveSummaryDestination(request, env = process.env) {
   if (!request || typeof request !== 'object' || Array.isArray(request)) {

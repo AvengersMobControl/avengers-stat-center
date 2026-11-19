@@ -34,9 +34,11 @@ const AUTH_WEEKLY='leader-standing-auto-discord-weekly-2026-11-09';
 // AV-2 row) is its own fresh explicit direction, not a continuation of the Nov 17 one -- same
 // never-silently-inherited principle the comment above already states.
 const AUTH_KRAKEN_ONETIME='leader-directed-onetime-kraken-2026-11-18';
-const authFor=kind=>kind==='weekly'?AUTH_WEEKLY:kind==='kraken'?AUTH_KRAKEN_ONETIME:AUTH_SINGLE_EVENT;
+// Weekly Player Power Ratings poster, sent with the Sunday weekly recap (leader 2026-11-19).
+const AUTH_RATINGS='leader-standing-auto-discord-ratings-2026-11-19';
+const authFor=kind=>kind==='weekly'?AUTH_WEEKLY:kind==='ratings'?AUTH_RATINGS:kind==='kraken'?AUTH_KRAKEN_ONETIME:AUTH_SINGLE_EVENT;
 const CHANNEL='1470175579058999386';
-const KINDS=new Set(['space','piggy','flash','weekly','kraken']);
+const KINDS=new Set(['space','piggy','flash','weekly','kraken','ratings']);
 
 function answer(res,code,data){
  res.statusCode=code;
@@ -71,6 +73,14 @@ function validPost(key,post){
   if(!/^piggy\|\d{4}-\d{2}-\d{2}$/.test(w.piggy||''))throw Error('Bad weekRefs.piggy');
   if(!/^\d{4}-\d{2}-\d{2}-[A-Za-z]$/.test(w.flashSetId||''))throw Error('Bad weekRefs.flashSetId');
  }
+ if(post.kind==='ratings'){
+  // Ratings come from the whole projection, not one event: bind to the committed weekly
+  // snapshot (data/ratings-history/ratings-<date>.json) recorded when the post was staged.
+  const r=post.ratingsRef;
+  if(!/^ratings\|\d{4}-\d{2}-\d{2}$/.test(post.eventId))throw Error('Bad ratings eventId');
+  if(!r||r.snapshot!=='data/ratings-history/ratings-'+post.eventId.slice(8)+'.json'||!/^[a-f0-9]{64}$/.test(r.snapshotSha256||''))
+   throw Error('Ratings post missing snapshot ref');
+ }
  return post;
 }
 function mentions(body){
@@ -87,6 +97,7 @@ function matchApprovedUpdates(kind,ref,clan){
  return ups;
 }
 function sourceDigest(post){
+ if(post.kind==='ratings')return sha(JSON.stringify(['ratings',post.ratingsRef.snapshot,post.ratingsRef.snapshotSha256]));
  if(post.kind==='weekly'){
   const w=post.weekRefs;
   const parts=[

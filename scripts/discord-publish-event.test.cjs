@@ -87,3 +87,12 @@ test('a corrected resend\'s eventId resolves to the real approved event, without
   assert.throws(() => sourceDigest({ ...goodKraken, eventId: 'kraken|nov-bogus' }), /Approved source event missing/);
   assert.throws(() => sourceDigest({ ...goodKraken, eventId: 'kraken|dec-corrected' }), /Approved source event missing/);
 });
+
+test('ratings posts bind to their committed weekly snapshot', () => {
+  const r = { kind: 'ratings', eventId: 'ratings|2026-11-23', clan: 'AVENGERS', file: 'AVENGERS_Player_Ratings_November_23_2026.png',
+    sha256: 'a'.repeat(64), size: 10, body: '@everyone ratings', approved: true, template: 't',
+    ratingsRef: { snapshot: 'data/ratings-history/ratings-2026-11-23.json', snapshotSha256: 'b'.repeat(64) } };
+  assert.equal(validPost('ratings|ratings|2026-11-23|AVENGERS', r), r);
+  assert.throws(() => validPost('ratings|ratings|2026-11-23|AVENGERS', { ...r, ratingsRef: undefined }));
+  assert.throws(() => validPost('ratings|ratings|2026-11-23|AVENGERS', { ...r, ratingsRef: { ...r.ratingsRef, snapshot: 'data/ratings-history/ratings-2026-11-16.json' } }));
+});

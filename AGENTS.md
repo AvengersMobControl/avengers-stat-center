@@ -71,6 +71,8 @@ The leader approved the Space, Big Pig and Flash Set poster templates and activa
 
 **2026-11-09 addition:** the weekly recap (six events: Space, four Flash PFs, Big Pig) is now sent automatically too, **alongside** that week's Sunday/Big Pig post, under its own authorization tag (`leader-standing-auto-discord-weekly-2026-11-09`). Build it with `scripts/build-weekly-recap-facts.py` + `scripts/render-weekly-recap-poster.py` — see `docs/AUTOMATIC_DISCORD_POSTING.md`'s "Weekly recap" section. `docs/WEEKLY_RECAP_PREVIEW.md` and `scripts/render-weekly-event-review.py` are an earlier, never-approved prototype; do not use them for this.
 
+**2026-11-19 addition:** the weekly **Player Power Ratings** poster now goes out with the Sunday weekly recap (own tag `leader-standing-auto-discord-ratings-2026-11-19`); see `docs/AUTOMATIC_DISCORD_POSTING.md` → "Player Power Ratings". Posting runs are Friday 8 AM and Sunday 7 PM Central only, plus backup runs Friday 9 AM / Sunday 8 PM that post only if the main run posted nothing.
+
 **2026-11-17 addition:** Kraken still is **not** part of this standing activation — every Kraken month/clan needs its own fresh explicit leader direction. The poster format, write-up conventions and full one-time send pipeline (including the two stale pre-Kraken guards that had to be fixed — the publisher's `KINDS` check and `middleware.js`'s static-asset allowlist, both now Kraken-ready) are written up in `docs/KRAKEN_DISCORD_POSTING.md` so a future "send it" doesn't have to rediscover them.
 
 ## Current Discord authorization policy — 2026-10-22 (supersedes conflicting older manual-send wording)

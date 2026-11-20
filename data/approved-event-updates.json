@@ -29008,6 +29008,117 @@
         "leaderConfirmedCorrection": "2026-11-18: AV-OlRose's AV-2 Kraken Nov 15 result (rank 14, 2,035.6M) was one of this event's 5 originally av2PrivateIdentityHolds -- not captured at import time because of the AV2/AV-2 identity-matching confusion already called out in this event's coverageNote. The leader supplied the in-game AV-2 Players Leaderboard screenshot showing her by name (same image already in this event's sources, reviewed-image-sha256:03b6dec4933086e4950df31b18bfad3a7e82952abecf06fe6acc48c6ac42b88e -- the leader re-sent the same image this session), explicitly resolving the identity. Released from hold and added here as a new update (expectedRevision: 1) rather than editing the original entry, so the original approved submission stays intact with its own audit trail -- same convention as every other post-send correction in this ledger. av2PrivateIdentityHolds drops from 5 to 4.",
         "sourceAttachmentSha256": "03b6dec4933086e4950df31b18bfad3a7e82952abecf06fe6acc48c6ac42b88e"
       }
+    },
+    {
+      "approved": true,
+      "expectedRevision": 0,
+      "event": {
+        "id": "flash|2026-11-20|av2pool",
+        "kind": "flash",
+        "date": "2026-11-20",
+        "status": "partial",
+        "unit": "lines",
+        "metadata": {
+          "pool": "av2-week",
+          "poolWeek": "2026-11-20",
+          "complete": false,
+          "coverageNote": "Partial final screenshot coverage; absent or cropped results remain unknown."
+        },
+        "sources": [
+          "reviewed-image-sha256:3b023f508a4f857db624c491ec35a67de6d3f20f1ef64d797a42041acc916a01"
+        ],
+        "rows": [
+          {
+            "player": "AV-Dubai",
+            "clan": "AV-2",
+            "score": 1919,
+            "sparks": 13315,
+            "stars": 133147,
+            "metadata": {
+              "rank": 3,
+              "share": 0.081,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-Dubai",
+              "sourceImageSha256": "3b023f508a4f857db624c491ec35a67de6d3f20f1ef64d797a42041acc916a01"
+            }
+          },
+          {
+            "player": "AV-EventHorizon",
+            "clan": "AV-2",
+            "score": 1236,
+            "sparks": 7490,
+            "stars": 74895,
+            "metadata": {
+              "rank": 5,
+              "share": 0.046,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-EventHorizon",
+              "sourceImageSha256": "3b023f508a4f857db624c491ec35a67de6d3f20f1ef64d797a42041acc916a01"
+            }
+          },
+          {
+            "player": "AV-Pablin",
+            "clan": "AV-2",
+            "score": 1906,
+            "sparks": 8322,
+            "stars": 83217,
+            "metadata": {
+              "rank": 4,
+              "share": 0.05,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-2-AVENGER",
+              "sourceImageSha256": "3b023f508a4f857db624c491ec35a67de6d3f20f1ef64d797a42041acc916a01"
+            }
+          },
+          {
+            "player": "AV-SiFra",
+            "clan": "AV-2",
+            "score": 5123,
+            "sparks": 16643,
+            "stars": 166434,
+            "metadata": {
+              "rank": 1,
+              "share": 0.101,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-SiFra",
+              "sourceImageSha256": "3b023f508a4f857db624c491ec35a67de6d3f20f1ef64d797a42041acc916a01"
+            }
+          },
+          {
+            "player": "AV-SweetiePL",
+            "clan": "AV-2",
+            "score": 2346,
+            "sparks": 14979,
+            "stars": 149790,
+            "metadata": {
+              "rank": 2,
+              "share": 0.091,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-2-SweetiePL",
+              "sourceImageSha256": "3b023f508a4f857db624c491ec35a67de6d3f20f1ef64d797a42041acc916a01"
+            }
+          },
+          {
+            "player": "AV.atarIX",
+            "clan": "AV-2",
+            "score": 1056,
+            "sparks": 7157,
+            "stars": 71566,
+            "metadata": {
+              "rank": 7,
+              "share": 0.044,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV.atarIX",
+              "sourceImageSha256": "3b023f508a4f857db624c491ec35a67de6d3f20f1ef64d797a42041acc916a01"
+            }
+          }
+        ]
+      },
+      "authorization": {
+        "kind": "standing-website-only",
+        "id": "leader-standing-website-publication-2026-10-22",
+        "date": "2026-10-22"
+      }
     }
   ]
 }

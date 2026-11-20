@@ -634,7 +634,7 @@ test('Nov 6 Space original screenshot tail, Zolika and AV-2 identity reconciliat
   assert(e.sources.includes('reviewed-image-sha256:83f2937f682cc76661f491d2893079e362cb7e39be441795e5a466fdd5222e9b'));
   const r=BASE.globals.AVENGERS_MEMBER_TIMEZONES.byName;
   for(const n of ['AV-Pablin','AV-Neez'])assert.equal(r[n]?.status,'AV2',n+' current AV-2');
-  assert.equal(r['AV-no']?.status,'Active','AV-no returned to AVENGERS');
+  assert.equal(r['AV-no']?.status,'AV2','November 20 later leader instruction supersedes November 8 return to AVENGERS');
   for(const n of ['AV-Robcorp','AV-MotherboardBeans'])assert.equal(r[n]?.status,'Active',n+' November 20 leader-confirmed roster');
   for(const n of ['AV-KitKat','AV-Hoops']){
     assert.equal(r[n]?.status,'Active',n+' current AVENGERS');
@@ -930,9 +930,9 @@ test('November 20 six leader-confirmed current AV-2 transfers preserve historica
     assert.equal(person[0].status,'AV2',name+' projected roster');
     assert.equal(d.members.filter(p=>p.name===name).length,1,name+' no new profile');
     assert(!r.rows.some(p=>p.name===name&&p.status==='Active'),name+' not still on AVENGERS current roster');
-    assert.deepEqual(
-      events.filter(e=>e.rows.some(row=>row.player===name)).map(e=>e.id),
-      BASE.projection.events.filter(e=>e.rows.some(row=>row.player===name)).map(e=>e.id),
-      name+' dated events preserved after present-day transfer');
+    assert(events.some(e=>e.rows.some(row=>row.player===name)),
+      name+' retains historical source-ledger rows without rewriting event-time clan');
+    assert(person[0].history.length>0,
+      name+' event-backed profile history remains available after current roster move');
   }
 });

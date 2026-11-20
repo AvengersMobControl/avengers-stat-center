@@ -68,9 +68,9 @@ test('unsafe, prereviewed or incorrect revision inputs cannot create user approv
 test('AV-2 weekly pool approval reports one row per player slot',()=>{
  const e={id:'flash|2026-10-16|av2pool',kind:'flash',date:'2026-10-16',
    status:'partial',unit:UNITS.flash,metadata:{pool:'av2-week',poolWeek:'2026-10-16'},
-   sources:['reviewed-image-sha256:'+'b'.repeat(64)],
+   sources:['b','c'].map(digest=>'reviewed-image-sha256:'+digest.repeat(64)),
    rows:[1,2].map(poolSlot=>({...row(),score:1200+poolSlot,
-      metadata:{poolSlot,rank:4,sourceImageSha256:'b'.repeat(64)}}))};
+      metadata:{poolSlot,rank:4,sourceImageSha256:(poolSlot===1?'b':'c').repeat(64)}}))};
  const m=make(accepted,{approved:false,expectedRevision:0,event:e});
  assert.equal(m.counts.newRows,2);
  assert.deepEqual(m.rows.map(r=>r.poolSlot),[1,2]);

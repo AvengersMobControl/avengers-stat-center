@@ -24,12 +24,14 @@ test('J-Zo resolves to established J and does not make duplicate profile',()=>{
  assert.equal(byName('AV-J-Zo'),undefined);
  assert.equal(release.globals.AVENGERS_DATA.aliasMap['AV-J-Zo'],'AV-J');
 });
-test('JR is included without invented game results or false clan attribution',()=>{
+test('JR keeps the unassigned roster status and the verified event-time clan',()=>{
  const jr=byName('AV-$JR.$');
  assert.ok(jr);
  assert.equal(jr.status,'Unassigned');
- assert.equal(jr.history.length,0);
- assert.equal(jr.earned.sparks,0);
+ const flash=jr.history.find(row=>row.eventId==='flash|2026-11-11|4');
+ assert.equal(flash?.clan,'AVENGERS');
+ assert.equal(flash?.score,278);
+ assert.equal(flash?.sparks,1697);
  const counts=people.reduce((o,p)=>(o[p.status]=(o[p.status]||0)+1,o),{});
  assert.equal(counts.Active,47,'Six leader-confirmed members moved from main to AV-2 on November 20');
  assert.equal(counts.AV2,52,'Six leader-confirmed transfers join AV-2 without losing historical identities');

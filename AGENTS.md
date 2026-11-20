@@ -1,5 +1,12 @@
 # AVENGERS Mob Control — Agent Operating Instructions
 
+## November 20, 2026 — REQUIRED identity/roster exception report on each result pull
+
+- While pulling weekly final screenshots, immediately give the leader a concise **Uncertain names / roster discrepancies** list, with raw displayed spelling, possible existing canonical identity, source event/rank and precise reason for the question. Do this before the final no-show list or claiming complete row coverage, even if previously known profiles are involved. Do not silently drop suspicious results, create guessed new members or mislabel existing players as new.
+- Check full canonical historical and alias coverage, and current roster assignment independently. Confirmed matching rows may publish; unconfirmed identity, event week or club stays a **private source-bound hold** until resolved. Keep original results and source proofs; hold no-shows until full source-lobby/rank reconciliation and current roster accounting.
+- Example November 20 review issues: established members displayed as currently inactive/AV-2 despite leader-confirmed moves; a shortened name that may be a different member; new-looking exact names not found in canonical history; a suffixed name variant that could be a second account. Do not infer equivalence by visual similarity alone.
+- This reporting obligation applies to Friday/Sunday scheduled imports and ad hoc leader-requested catch-ups without changing the website-only/no-Discord-post scope.
+
 ## 2026-11-18 — LATEST: AV-2 Piggy Flash is ONE unnumbered weekly pool, four results per member
 
 - AV-2 Flash results CANNOT be differentiated as PF1, PF2, PF3 or PF4. Never assign AV-2 Flash to one of the four numbered AVENGERS events, and never hold a valid AV-2 Flash score solely because a PF number is absent.

@@ -371,6 +371,7 @@
 
     const evs=selectedEvents();
     const rows=rowsForEvents(evs);
+    const allEvs=clanEvents();
     const allRows=rowsForEvents(eventsForDay());
     const setMap=buildSetMap(allRows);
     const isDaily=state.tab==='daily';

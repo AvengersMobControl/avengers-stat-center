@@ -51,7 +51,30 @@ def build_model(R, clan, set_id=None):
     P = R['projection']
     fl = sorted([e for e in P['events'] if e['kind'] == 'flash' and e['status'] != 'revoked'],
                 key=lambda e: (e['date'], (e.get('metadata') or {}).get('flash') or 0))
-    sid = lambda e: e['metadata']['setId']
+    # Some imports omit metadata.setId on individual PF events (seen first with the
+    # 2026-11-17/18 import). Fall back to the same PF1-date-based set-id convention
+    # used elsewhere in the site (scripts/event-projection-core.cjs:
+    # `event?.metadata?.setId||r.date+'-A'`), grouping consecutive date-adjacent
+    # (gap <= 2 days) events that are missing it into one set keyed by its earliest date.
+    _fallback_sid = {}
+    _cluster_start = None
+    _prev_date = None
+    for e in fl:
+        md = e.get('metadata') or {}
+        if md.get('setId'):
+            continue
+        d = dt.date.fromisoformat(e['date'])
+        if not isinstance(md.get('flash'), int):
+            # Not a numbered PF1-4 event (e.g. an AV-2 weekly pool entry); it never
+            # belongs to a numbered set, so give it a standalone id and don't let it
+            # perturb date-adjacency clustering for the real PF1-4 chain below.
+            _fallback_sid[e['id']] = d.isoformat() + '-' + str(md.get('pool') or 'solo')
+            continue
+        if _prev_date is None or (d - _prev_date).days > 2:
+            _cluster_start = d
+        _fallback_sid[e['id']] = _cluster_start.isoformat() + '-A'
+        _prev_date = d
+    sid = lambda e: (e.get('metadata') or {}).get('setId') or _fallback_sid[e['id']]
     order = []
     for e in fl:
         if sid(e) not in order: order.append(sid(e))

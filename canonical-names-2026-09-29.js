@@ -170,6 +170,13 @@
 
   // Leader-confirmed November 13 Space rank 2 spelling; retain the established profile.
   D.aliasMap=Object.assign({},D.aliasMap||{},aliases,{'AV-Zoliika':'AV-Zolika.x.TheBoss'});
+  // November 20 direct leader-confirmed identity resolutions. Do not
+  // invent new profiles for these raw screenshot spellings.
+  Object.assign(D.aliasMap,{
+    'AV-SiLeNTBaNDiT':'AV-SMILINGBANDIT',
+    'AV-SILENTBANDIT':'AV-SMILINGBANDIT',
+    'AV-Zoliika.#1':'AV-Zolika.x.TheBoss'
+  });
 
   const resolve=name=>{
     let x=String(name||'');

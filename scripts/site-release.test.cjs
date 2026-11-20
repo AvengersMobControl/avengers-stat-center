@@ -161,14 +161,14 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
   const R=BASE.globals.AVENGERS_MEMBER_TIMEZONES,D=BASE.globals.AVENGERS_DATA;
   const people=BASE.projection.people;
   const active=R.rows.filter(r=>r.status==='Active'),av2=R.rows.filter(r=>r.status==='AV2');
-  assert.equal(active.length,53);assert.equal(av2.length,46);
-  for(const name of ['AV-Lin','AV-Chuck','AV-no','AV-TRINITY','AV-istanbuL','AV-KKD','AV-KitKat','AV-Hoops','AV-JAMO','AV.ziyad','AV.atarIX','AV-Dreadrixter-UA','AV-Dubai','AV-Robcorp','AV-MotherboardBeans','AV-V8','AV-AnotherRound']){
+  assert.equal(active.length,47);assert.equal(av2.length,52);
+  for(const name of ['AV-Lin','AV-Chuck','AV-istanbuL','AV-KKD','AV-KitKat','AV-Hoops','AV-JAMO','AV.ziyad','AV.atarIX','AV-Dreadrixter-UA','AV-Dubai','AV-Robcorp','AV-MotherboardBeans','AV-V8','AV-AnotherRound']){
     assert.equal(R.byName[name]?.status,'Active',name+' roster');
     assert.equal(D.members.filter(m=>m.name===name&&m.status==='Active').length,1,name+' unique profile');
     assert.equal(people.find(p=>p.name===name)?.status,'Active',name+' projection');
     assert(!av2.some(r=>r.name===name),name+' no current AV-2 listing');
   }
-  for(const name of ['AV#Rafa#Tun','AV-Oakcliff','AV-Royal','AV-SiFra','AV-Pablin','AV-Neez','AV-JefhKintz05'])assert.equal(R.byName[name]?.status,'AV2',name+' transferred or retained in AV-2');
+  for(const name of ['AV#Rafa#Tun','AV-Oakcliff','AV-Royal','AV-SiFra','AV-Pablin','AV-Neez','AV-JefhKintz05','AV-BigPapi','AV-Finnie','AV-Rita','AV-SweetiePL','AV-TRINITY','AV-no'])assert.equal(R.byName[name]?.status,'AV2',name+' transferred or retained in AV-2');
   for(const name of ['AV-23','AV-Timmy']){
     assert.equal(R.byName[name]?.status,'Inactive',name+' removed from current rosters');
     assert.equal(people.find(p=>p.name===name)?.status,'Inactive');
@@ -317,7 +317,7 @@ test('November 13 AV-2 departures retain inactive profiles and history',()=>{
 });
 test('current roster and every materialized PB/reward agree with independent canonical source sums',()=>{
   const D=BASE.globals.AVENGERS_DATA,R=BASE.globals.AVENGERS_MEMBER_TIMEZONES;
-  assert.equal(R.rows.filter(r=>r.status==='Active').length,53);assert.equal(R.rows.filter(r=>r.status==='AV2').length,46);
+  assert.equal(R.rows.filter(r=>r.status==='Active').length,47);assert.equal(R.rows.filter(r=>r.status==='AV2').length,52);
   const events=BASE.projection.events.filter(e=>e.status!=='revoked');
   for(const m of D.members){
     // Approved overlays may retain their original source alias; compare canonically.
@@ -914,5 +914,25 @@ test('November 20 confirmed identity variants, two new members, and exact origin
     assert.equal(r.metadata.rank,rank);assert.equal(r.score,lines);
     assert.equal(r.stars,stars);assert.equal(r.sparks,sparks);
     assert.equal(r.metadata.sourceImageSha256,'bb645749827d706fde5987e1c4eca7a2a8be9bd3d6917ce10e9230c47b6e93c5');
+  }
+});
+
+
+test('November 20 six leader-confirmed current AV-2 transfers preserve historical source events and identity',()=>{
+  const names=['AV-BigPapi','AV-Finnie','AV-Rita','AV-SweetiePL','AV-TRINITY','AV-no'];
+  const r=BASE.globals.AVENGERS_MEMBER_TIMEZONES;
+  const d=BASE.globals.AVENGERS_DATA;
+  const events=BASE.ledger.events;
+  for(const name of names){
+    assert.equal(r.byName[name]?.status,'AV2',name+' current roster');
+    const person=BASE.projection.people.filter(p=>p.name===name);
+    assert.equal(person.length,1,name+' exactly one historical profile');
+    assert.equal(person[0].status,'AV2',name+' projected roster');
+    assert.equal(d.members.filter(p=>p.name===name).length,1,name+' no new profile');
+    assert(!r.rows.some(p=>p.name===name&&p.status==='Active'),name+' not still on AVENGERS current roster');
+    assert.deepEqual(
+      events.filter(e=>e.rows.some(row=>row.player===name)).map(e=>e.id),
+      BASE.projection.events.filter(e=>e.rows.some(row=>row.player===name)).map(e=>e.id),
+      name+' dated events preserved after present-day transfer');
   }
 });

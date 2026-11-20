@@ -1,3 +1,10 @@
+## 2026-11-20 — Friday Flash and Space Race recovery
+
+- The released ledger had no numbered Flash records for November 10–11 even though Discord had final-claim screenshots for PF1–PF4. Recovered 95 verified AVENGERS rows (17, 29, 28, 21), with partial result coverage preserved.
+- Reconciled the November 20 Space Race with 20 more screenshot-backed rows (one AVENGERS result and 19 AV-2 results by event-time clan). Added ten results to the AV-2 Flash pool, bringing it to 16. Unresolved identities and unreadable scores remain held.
+- The Flash selector now uses the same clan filter as the results. The November 17–18 numbered events share the November 17 set day. The November 20 pool is visible in AV-2 scope. The guarded review sheet now distinguishes AV-2 results by member and pool slot.
+- Friday and Sunday remain on their existing connected schedules. The connected automation controls did not expose a persistent reasoning-effort setting.
+
 ## 2026-11-17 — OlRose identity and November Kraken attendance correction
 
 - The leader explicitly reconfirmed that **every name containing OlRose** refers to canonical `AV-OlRose`, no matter AV-2/AV2 prefix or capitalization.

@@ -409,6 +409,13 @@ async function main(){
     // despite its result being dated Sep23. Do not fabricate unranked podiums.
     await page.selectOption('#globalStatusFilter','active');
     await page.click('.nav-btn[data-page="piggyFlashes"]');
+    const flashSetDays=await page.locator('#flashDaySelect option').evaluateAll(options=>options.map(o=>o.value));
+    assert(flashSetDays.includes('2026-11-10'),'Recovered November 10 Flash Set is visible');
+    assert(flashSetDays.includes('2026-11-17'),'November 17 Flash Set is visible');
+    assert(!flashSetDays.includes('2026-11-18'),'PF4 uses its Flash Set day');
+    assert(!flashSetDays.includes('2026-11-20'),'AV-2 weekly pool excluded from AVENGERS selector');
+    await page.selectOption('#flashDaySelect','2026-11-10');
+    assert.equal(await page.locator('#page-piggyFlashes .flash-metric').first().locator('strong').textContent(),'4');
     await page.selectOption('#flashDaySelect','2026-09-22');
     assert.equal(await page.locator('#page-piggyFlashes .flash-podium-kpi').count(),5);
     let podiumCards=await page.locator('#page-piggyFlashes .flash-podium-kpi').allTextContents();

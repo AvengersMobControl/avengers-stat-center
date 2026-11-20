@@ -939,3 +939,18 @@ test('November 20 six leader-confirmed current AV-2 transfers preserve historica
       name+' event-backed profile history remains available after current roster move');
   }
 });
+
+test('November numbered Flash events share one set per week and AV-2 retains its own pool',()=>{
+  const events=BASE.globals.AVENGERS_PIGGY_FLASH_DATA.events;
+  for(const [setId,dates] of [
+    ['2026-11-10-A',['2026-11-10','2026-11-11']],
+    ['2026-11-17-A',['2026-11-17','2026-11-18']]
+  ]){
+    const numbered=events.filter(event=>dates.includes(event.date)&&[1,2,3,4].includes(event.flash));
+    assert.deepEqual(numbered.map(event=>event.flash).sort(),[1,2,3,4]);
+    assert.deepEqual([...new Set(numbered.map(event=>event.setId))],[setId]);
+  }
+  const pool=events.find(event=>event.date==='2026-11-20'&&event.pool==='av2-week');
+  assert.equal(pool.poolWeek,'2026-11-20');
+  assert.equal(pool.setId,undefined);
+});

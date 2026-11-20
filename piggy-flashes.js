@@ -168,23 +168,34 @@
     return out;
   }
 
-  function selectedEvents(){
-    let evs=allEvents();
+  function clanEvents(){
+    const events=allEvents();
     const mode=clanMode();
-    if(mode!=='all'){
-      evs=evs.filter(ev=>(ev.entries||[]).some(r=>{
-        const clan=r.clan||ev.clan||ev.rosterScope||'AVENGERS';
-        return clan===mode;
-      }));
-    }
-    if(state.day!=='all')evs=evs.filter(e=>String(e.setId||e.date+'-A').startsWith(state.day)||e.date===state.day);
+    if(mode==='all')return events;
+    return events.filter(ev=>(ev.entries||[]).some(row=>
+      (row.clan||ev.clan||ev.rosterScope||'AVENGERS')===mode));
+  }
+
+  function setDay(event){
+    const key=event.pool==='av2-week'?(event.poolWeek||event.date):(event.setId||event.date);
+    return String(key||'').slice(0,10);
+  }
+
+  function eventsForDay(){
+    const events=clanEvents();
+    return state.day==='all'?events:events.filter(event=>setDay(event)===state.day);
+  }
+
+  function selectedEvents(){
+    const evs=eventsForDay();
+    const mode=clanMode();
     if(mode==='AV-2'||state.tab==='pool')return evs.filter(e=>e.pool==='av2-week');
     if(/^pf[1-4]$/.test(state.tab))return evs.filter(e=>e.flash===Number(state.tab.slice(2)));
     return evs;
   }
 
   function dayFilterHtml(){
-    const days=[...new Set(allEvents().map(e=>String(e.setId||e.date+'-A').slice(0,10)).filter(Boolean))].sort().reverse();
+    const days=[...new Set(clanEvents().map(setDay).filter(Boolean))].sort().reverse();
     const pool=clanMode()==='AV-2';
     return '<div class="flash-day-filter"><label for="flashDaySelect">'+(pool?'Week ending':'Flash Set Day')+'</label><select id="flashDaySelect"><option value="all">All '+(pool?'weeks':'days')+'</option>'+days.map(d=>'<option value="'+esc(d)+'" '+(state.day===d?'selected':'')+'>'+esc(shortDate(d))+'</option>').join('')+'</select><span class="flash-day-note">'+(pool?'AV-2 has one unnumbered pool per week, with up to four independent results per member.':'Choose a day to see only that PF1–PF4 Flash Set.')+'</span></div>';
   }
@@ -360,9 +371,7 @@
 
     const evs=selectedEvents();
     const rows=rowsForEvents(evs);
-    const allEvs=allEvents();
-    const dayEvs=state.day==='all'?allEvs:allEvs.filter(e=>String(e.setId||e.date+'-A').startsWith(state.day)||e.date===state.day);
-    const allRows=rowsForEvents(dayEvs);
+    const allRows=rowsForEvents(eventsForDay());
     const setMap=buildSetMap(allRows);
     const isDaily=state.tab==='daily';
     const agg=isDaily?dailyPlayerPBs(setMap):aggregateByPlayer(rows);

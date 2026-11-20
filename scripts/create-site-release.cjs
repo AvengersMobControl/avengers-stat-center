@@ -6,6 +6,30 @@ const {apply,project,canonical,normalize}=require('./event-projection-core.cjs')
 const {applyChanges}=require('../server/roster-changes.cjs');
 const sum=(rs,key)=>rs.reduce((s,r)=>s+(number(r[key])||0),0);
 const average=xs=>xs.length?xs.reduce((a,b)=>a+b,0)/xs.length:0;
+function numberedFlashSetIds(events){
+  const weeks=new Map();
+  for(const event of events){
+    if(event.kind!=='flash'||event.metadata?.pool==='av2-week'||event.date==null||
+       ![1,2,3,4].includes(Number(event.metadata?.flash)))continue;
+    const monday=new Date(event.date+'T00:00:00Z');
+    if(!Number.isFinite(monday.getTime()))continue;
+    monday.setUTCDate(monday.getUTCDate()-(monday.getUTCDay()+6)%7);
+    const week=monday.toISOString().slice(0,10);
+    if(!weeks.has(week))weeks.set(week,[]);
+    weeks.get(week).push(event);
+  }
+  const ids=new Map();
+  for(const events of weeks.values()){
+    const explicit=new Set(events.map(event=>event.metadata.setId).filter(Boolean));
+    const flashNumbers=new Set(events.map(event=>Number(event.metadata.flash)));
+    if(explicit.size>1||flashNumbers.size!==events.length)continue;
+    const start=events.map(event=>event.date).sort()[0];
+    const setId=[...explicit][0]||start+'-A';
+    for(const event of events)if(!event.metadata.setId)ids.set(event.id,setId);
+  }
+  return ids;
+}
+
 function refreshHistoricalPayouts(ledger){
   const live=ledger.events.filter(e=>e.status!=='revoked'),proof=new Map();
   for(const e of live.filter(e=>e.kind!=='kraken'))for(const r of e.rows){
@@ -252,7 +276,8 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
   }
   assert.deepEqual([...assigned].sort(),[...sheHer].sort(),'All verified pronoun members must resolve to an existing canonical profile');
   D.meta.eventProjectionVersion=p.version;D.meta.latestResult=activeEvents.at(-1)?.date||null;D.meta.source='Approved Event Ledger';D.aliasMap=aliases;
-  const F={...copy(legacy.AVENGERS_PIGGY_FLASH_DATA),events:activeEvents.filter(e=>e.kind==='flash').map(e=>({...e.metadata,id:e.id.slice(6),date:e.date,complete:e.status==='final',entries:e.rows.map(r=>({...r.metadata,name:r.player,lines:r.score,sparks:r.sparks,stars:r.stars,clan:r.clan||'Unknown'}))}))};
+  const flashSetIds=numberedFlashSetIds(activeEvents);
+  const F={...copy(legacy.AVENGERS_PIGGY_FLASH_DATA),events:activeEvents.filter(e=>e.kind==='flash').map(e=>({...e.metadata,...(flashSetIds.has(e.id)?{setId:flashSetIds.get(e.id)}:{}),id:e.id.slice(6),date:e.date,complete:e.status==='final',entries:e.rows.map(r=>({...r.metadata,name:r.player,lines:r.score,sparks:r.sparks,stars:r.stars,clan:r.clan||'Unknown'}))}))};
   const breakdowns=Object.fromEntries(p.people.map(person=>{
     const c=person.categories,kraken=person.history.filter(r=>r.kind==='kraken'),oct=kraken.filter(r=>r.eventId==='kraken|oct'),june=kraken.filter(r=>r.eventId==='kraken|june'&&r.estimatedSparks),historic=kraken.filter(r=>r.estimatedSparks);
     return [person.name,{piggySparks:c.piggy.sparks,spaceSparks:c.space.sparks,flashSparks:c.flash.sparks,krakenSparks:c.kraken.sparks,eventLoggedSparks:person.earned.sparks,

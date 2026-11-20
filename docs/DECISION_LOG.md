@@ -1,3 +1,8 @@
+## 2026-11-20 — Numbered Flash set dates and AV-2 review slots
+
+- Preserve each confirmed event date. Use the explicit Flash set ID when present. A calendar week with one distinct result event per PF number and no conflicting explicit set IDs can use its earliest numbered event date for the shared display key. Ambiguous weeks keep their source grouping.
+- Derive the Flash date selector from events visible in the current clan scope. Continue using a Friday week ending for the separate AV-2 pool. In an AV-2 pool approval review, compare rows by clan, canonical member and pool slot so all four results can be reviewed and counted independently.
+
 ## 2026-11-18 — LATEST leader clarification: AV-2 Flash weekly pool, not PF1–PF4
 
 - AV-2 Flash cannot be reliably mapped to PF1, PF2, PF3 or PF4. The immediately prior Nov 18 instruction to map those rows onto matching numbered AVENGERS events is **replaced**. Keep AVENGERS numbered Flash events unchanged. Record AV-2 Flash in an independent **one-pool-per-week** event (`flash|week-ending-Friday|av2pool`) with **up to four distinct per-member results**, identified by `metadata.poolSlot` 1–4 and original SHA-256 source. No fictitious shared PF mapping or zero results.

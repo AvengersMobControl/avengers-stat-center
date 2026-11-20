@@ -432,11 +432,14 @@ async function main(){
     await page.selectOption('#globalStatusFilter','av2');
     await page.click('.nav-btn[data-page="piggyFlashes"]');
     podiumCards=await page.locator('#page-piggyFlashes .flash-podium-kpi').allTextContents();
-    assert(podiumCards[0].includes('1 wins')&&podiumCards[0].includes('2 podiums'),'AV-2 PF1 distinct lobby');
-    assert(podiumCards[4].includes('2 wins')&&podiumCards[4].includes('4 podiums'),'AV-2 separate PF1–PF4 totals');
-    assert.equal(await page.locator('#flashHistoricalReporting').count(),0,'AV-2 view remains unchanged; AVENGERS-only report not mixed');
-    assert(podiumCards[2].includes('No source rows')&&podiumCards[3].includes('No source rows'),
-      'AV-2 unrecorded PF3/PF4 display missing coverage, not zero finishes');
+    assert.equal(podiumCards.length,0,'AV-2 independent weekly pool must not show fabricated PF1–PF4 podiums');
+    const av2PoolText=await page.locator('#page-piggyFlashes').innerText();
+    assert(av2PoolText.includes('AV-2 Weekly Pool PB by Player'),'AV-2 weekly pool appears in rendered Flash view');
+    assert(av2PoolText.includes('5,123')&&av2PoolText.includes('AV-SiFra'),
+      'original-verified November 17 AV-2 Flash row appears in weekly pool');
+    assert(av2PoolText.includes('AV-Pablin'),'canonical AV-2-AVENGER identity appears in pool');
+    assert.equal(await page.locator('#flashHistoricalReporting').count(),0,
+      'AV-2 pool does not mix into AVENGERS-only PF1–PF4 historical reporting');
     await page.selectOption('#globalStatusFilter','active');
 
     await page.selectOption('#globalStatusFilter','active');

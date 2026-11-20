@@ -207,9 +207,8 @@ if(require.main===module){
     const review=bindOriginalProofs(JSON.parse(fs.readFileSync(args[0],'utf8')),
       JSON.parse(fs.readFileSync(args[2],'utf8')));
     const {create}=require('./create-site-release.cjs');
-    const {migrate}=require('./migrate-event-ledger.cjs');
-    const {load}=require('./load-site-data.cjs');
-    const aliases=migrate(load()).aliases,baseline=create();
+
+    const baseline=create(),aliases=baseline.globals.AVENGERS_DATA.aliasMap;
     const existing=baseline.ledger.events.find(e=>e.id===review.event?.id)||null;
     const result=assemble(review,{existingEvent:existing,aliases,knownPlayers:baseline.projection.people.map(p=>p.name)});
     const accepted=JSON.parse(fs.readFileSync(path.join(root,'data/approved-event-updates.json'),'utf8')).updates;

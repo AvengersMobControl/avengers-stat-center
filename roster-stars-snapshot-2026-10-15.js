@@ -256,6 +256,15 @@
     }
     fixedIds.add(id);
   }
+  // November 20 leader-confirmed new in-game AVENGERS identities.
+  // The two profiles start here, with no fabricated historical results.
+  for(const name of ['AV-V8','AV-AnotherRound']){
+    const profileName=canonical(name);
+    if(rosterEntries.some(x=>x.profileName===profileName))
+      throw new Error('Expected distinct new November 20 member: '+name);
+    rosterEntries.push({name,profileName,status:'Active'});
+    fixedIds.add(profileName);
+  }
   const currentIds=new Set(rosterEntries.map(x=>x.profileName));
   if(currentIds.size!==rosterEntries.length)
     throw new Error('Dynamic Discord roster identities overlap');

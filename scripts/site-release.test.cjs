@@ -161,14 +161,14 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
   const R=BASE.globals.AVENGERS_MEMBER_TIMEZONES,D=BASE.globals.AVENGERS_DATA;
   const people=BASE.projection.people;
   const active=R.rows.filter(r=>r.status==='Active'),av2=R.rows.filter(r=>r.status==='AV2');
-  assert.equal(active.length,51);assert.equal(av2.length,46);
-  for(const name of ['AV-Lin','AV-Chuck','AV-no','AV-TRINITY','AV-istanbuL','AV-KKD','AV-KitKat','AV-Hoops','AV-JAMO','AV.ziyad','AV.atarIX','AV-Dreadrixter-UA','AV-Dubai','AV-Robcorp','AV-MotherboardBeans']){
+  assert.equal(active.length,47);assert.equal(av2.length,52);
+  for(const name of ['AV-Lin','AV-Chuck','AV-istanbuL','AV-KKD','AV-KitKat','AV-Hoops','AV-JAMO','AV.ziyad','AV.atarIX','AV-Dreadrixter-UA','AV-Dubai','AV-Robcorp','AV-MotherboardBeans','AV-V8','AV-AnotherRound']){
     assert.equal(R.byName[name]?.status,'Active',name+' roster');
     assert.equal(D.members.filter(m=>m.name===name&&m.status==='Active').length,1,name+' unique profile');
     assert.equal(people.find(p=>p.name===name)?.status,'Active',name+' projection');
     assert(!av2.some(r=>r.name===name),name+' no current AV-2 listing');
   }
-  for(const name of ['AV#Rafa#Tun','AV-Oakcliff','AV-Royal','AV-SiFra','AV-Pablin','AV-Neez','AV-JefhKintz05'])assert.equal(R.byName[name]?.status,'AV2',name+' transferred or retained in AV-2');
+  for(const name of ['AV#Rafa#Tun','AV-Oakcliff','AV-Royal','AV-SiFra','AV-Pablin','AV-Neez','AV-JefhKintz05','AV-BigPapi','AV-Finnie','AV-Rita','AV-SweetiePL','AV-TRINITY','AV-no'])assert.equal(R.byName[name]?.status,'AV2',name+' transferred or retained in AV-2');
   for(const name of ['AV-23','AV-Timmy']){
     assert.equal(R.byName[name]?.status,'Inactive',name+' removed from current rosters');
     assert.equal(people.find(p=>p.name===name)?.status,'Inactive');
@@ -317,7 +317,7 @@ test('November 13 AV-2 departures retain inactive profiles and history',()=>{
 });
 test('current roster and every materialized PB/reward agree with independent canonical source sums',()=>{
   const D=BASE.globals.AVENGERS_DATA,R=BASE.globals.AVENGERS_MEMBER_TIMEZONES;
-  assert.equal(R.rows.filter(r=>r.status==='Active').length,51);assert.equal(R.rows.filter(r=>r.status==='AV2').length,46);
+  assert.equal(R.rows.filter(r=>r.status==='Active').length,47);assert.equal(R.rows.filter(r=>r.status==='AV2').length,52);
   const events=BASE.projection.events.filter(e=>e.status!=='revoked');
   for(const m of D.members){
     // Approved overlays may retain their original source alias; compare canonically.
@@ -382,8 +382,8 @@ test('Adigarian does not get artificial gap from a reset returning-clan counter'
 const {audit:transferAudit}=require('./audit-transfer-restorations.cjs');
 test('transfer restoration reconciles every current member, not only Hoops',()=>{
  const result=transferAudit(BASE);
-  assert.equal(result.summary.roster,97);
-  assert.equal(result.rows.length,97);
+  assert.equal(result.summary.roster,99);
+  assert.equal(result.rows.length,99);
  for(const r of result.rows){
   const player=BASE.projection.people.find(p=>p.name===r.name);
   assert(player,'Missing member '+r.name);
@@ -634,7 +634,7 @@ test('Nov 6 Space original screenshot tail, Zolika and AV-2 identity reconciliat
   assert(e.sources.includes('reviewed-image-sha256:83f2937f682cc76661f491d2893079e362cb7e39be441795e5a466fdd5222e9b'));
   const r=BASE.globals.AVENGERS_MEMBER_TIMEZONES.byName;
   for(const n of ['AV-Pablin','AV-Neez'])assert.equal(r[n]?.status,'AV2',n+' current AV-2');
-  assert.equal(r['AV-no']?.status,'Active','AV-no returned to AVENGERS');
+  assert.equal(r['AV-no']?.status,'AV2','November 20 later leader instruction supersedes November 8 return to AVENGERS');
   for(const n of ['AV-Robcorp','AV-MotherboardBeans'])assert.equal(r[n]?.status,'Active',n+' November 20 leader-confirmed roster');
   for(const n of ['AV-KitKat','AV-Hoops']){
     assert.equal(r[n]?.status,'Active',n+' current AVENGERS');
@@ -873,4 +873,66 @@ test('November 15 Kraken has 51 final positions, corrected Supreeth and canonica
   assert(!av2.some(r=>['AV-OIRose','Keyler','Blade','AV-AC3','AV-Derya(onVACATIO...'].includes(r.player)),
     'unverified identities must not be introduced as new member profiles');
   assert.equal(BASE.projection.people.filter(p=>p.name==='AV-Abu//npjp').length,1);
+});
+
+
+test('November 20 confirmed identity variants, two new members, and exact original-backed Flash/Space rows',()=>{
+  const aliases=BASE.globals.AVENGERS_DATA.aliasMap;
+  const expected=[['AV-SiLeNTBaNDiT','AV-SMILINGBANDIT'],['AV-Zoliika.#1','AV-Zolika.x.TheBoss']];
+  for(const [raw,id] of expected){
+    assert.equal(aliases[raw],id);
+    assert(!BASE.projection.people.some(p=>p.name===raw),'no duplicate alias profile '+raw);
+  }
+  for(const name of ['AV-V8','AV-AnotherRound']){
+    const found=BASE.projection.people.filter(p=>p.name===name);
+    assert.equal(found.length,1,'new member gets exactly one canonical profile');
+    assert.equal(found[0].status,'Active');
+  }
+  const space=BASE.ledger.events.find(e=>e.id==='space|2026-11-20');
+  assert.equal(space.rows.length,48);
+  for(const [name,rank,lobby,score,sparks,stars,sha] of [
+    ['AV-V8',1,'A',490,375006,3750060,'2ddc7c3002779eb6402fe7c9b260b66fa12ce8bd226dd96962e644a1a891ce60'],
+    ['AV-AnotherRound',2,'A',463.6,300005,3000050,'2ddc7c3002779eb6402fe7c9b260b66fa12ce8bd226dd96962e644a1a891ce60'],
+    ['AV-Zolika.x.TheBoss',4,'C',345.3,202548,2025480,'53f9853edee741bd173ebe77d4f9af97d5aad0434520aa1d396c8d92f0406365'],
+    ['AV-SMILINGBANDIT',1,'solo',102.8,19273,192248,'f89d37f40452a158e177f29d2445515617eb607916f096cf7ed759b55fbc282a']
+  ]){
+    const rows=space.rows.filter(r=>r.player===name);
+    assert.equal(rows.length,1,'one source-grounded Space row '+name);
+    const r=rows[0];
+    assert.equal(r.score,score);assert.equal(r.sparks,sparks);assert.equal(r.stars,stars);
+    assert.equal(r.metadata.rank,rank);assert.equal(r.metadata.lobby,lobby);
+    assert.equal(r.metadata.sourceImageSha256,sha);
+    assert(space.sources.includes('reviewed-image-sha256:'+sha));
+  }
+  assert.equal(space.rows.find(r=>r.player==='AV-SMILINGBANDIT').stars,192248,'direct visible Stars override 10× Sparks');
+  const flash=BASE.ledger.events.find(e=>e.id==='flash|2026-11-17|2');
+  assert.equal(flash.rows.length,23);
+  for(const [name,rank,lines,stars,sparks] of [['AV-V8',4,2209,108156,10816],['AV-SMILINGBANDIT',23,229,36773,3677]]){
+    const rows=flash.rows.filter(r=>r.player===name);
+    assert.equal(rows.length,1);
+    const r=rows[0];
+    assert.equal(r.metadata.rank,rank);assert.equal(r.score,lines);
+    assert.equal(r.stars,stars);assert.equal(r.sparks,sparks);
+    assert.equal(r.metadata.sourceImageSha256,'bb645749827d706fde5987e1c4eca7a2a8be9bd3d6917ce10e9230c47b6e93c5');
+  }
+});
+
+
+test('November 20 six leader-confirmed current AV-2 transfers preserve historical source events and identity',()=>{
+  const names=['AV-BigPapi','AV-Finnie','AV-Rita','AV-SweetiePL','AV-TRINITY','AV-no'];
+  const r=BASE.globals.AVENGERS_MEMBER_TIMEZONES;
+  const d=BASE.globals.AVENGERS_DATA;
+  const events=BASE.ledger.events;
+  for(const name of names){
+    assert.equal(r.byName[name]?.status,'AV2',name+' current roster');
+    const person=BASE.projection.people.filter(p=>p.name===name);
+    assert.equal(person.length,1,name+' exactly one historical profile');
+    assert.equal(person[0].status,'AV2',name+' projected roster');
+    assert.equal(d.members.filter(p=>p.name===name).length,1,name+' no new profile');
+    assert(!r.rows.some(p=>p.name===name&&p.status==='Active'),name+' not still on AVENGERS current roster');
+    assert(events.some(e=>e.rows.some(row=>row.player===name)),
+      name+' retains historical source-ledger rows without rewriting event-time clan');
+    assert(person[0].history.length>0,
+      name+' event-backed profile history remains available after current roster move');
+  }
 });

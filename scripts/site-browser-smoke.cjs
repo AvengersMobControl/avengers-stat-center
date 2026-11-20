@@ -40,7 +40,7 @@ async function main(){
         nov8Av2J:P.events.find(e=>e.id==='piggy|2026-11-08')?.rows.some(r=>r.player==='AV-J'&&r.clan==='AV-2'&&r.score===53),
         tavito:P.events.filter(e=>e.metadata?.setId==='2026-10-20-A').flatMap(e=>e.rows).filter(r=>/tavito/i.test(r.player||'')).length};
     });
-    assert.deepEqual(participation,{timmy:'Inactive',member23:'Inactive',jeff:'AV2',chuck:'Active',avNo:'Active',frank:'Active',flashPlaceholders:0,nov8BigPigOneLine:4,nov8Av2J:true,tavito:0});
+    assert.deepEqual(participation,{timmy:'Inactive',member23:'Inactive',jeff:'AV2',chuck:'Active',avNo:'AV2',frank:'Active',flashPlaceholders:0,nov8BigPigOneLine:4,nov8Av2J:true,tavito:0});
     // Nov 13 leader-verified AV-2 kick log: membership changes only; all
     // historical event-time clans and contributions remain in the ledger.
     const departures=await page.evaluate(()=>{

@@ -256,6 +256,25 @@
     }
     fixedIds.add(id);
   }
+  // November 20 leader-confirmed new in-game AVENGERS identities.
+  // The two profiles start here, with no fabricated historical results.
+  for(const name of ['AV-V8','AV-AnotherRound']){
+    const profileName=canonical(name);
+    if(rosterEntries.some(x=>x.profileName===profileName))
+      throw new Error('Expected distinct new November 20 member: '+name);
+    rosterEntries.push({name,profileName,status:'Active'});
+    fixedIds.add(profileName);
+  }
+  // November 20 leader-confirmed six moves to AV-2. This changes current
+  // roster assignment only; all prior event-time clans, rewards and history stay.
+  for(const name of ['AV-BigPapi','AV-Finnie','AV-Rita','AV-SweetiePL','AV-TRINITY','AV-no']){
+    const id=canonical(name);
+    const matches=rosterEntries.filter(row=>row.profileName===id);
+    if(matches.length!==1||matches[0].status!=='Active')
+      throw new Error('Unexpected November 20 AV-2 transfer identity/status: '+name);
+    matches[0].status='AV2';
+    fixedIds.add(id);
+  }
   const currentIds=new Set(rosterEntries.map(x=>x.profileName));
   if(currentIds.size!==rosterEntries.length)
     throw new Error('Dynamic Discord roster identities overlap');

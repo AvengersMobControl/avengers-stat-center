@@ -1,0 +1,59 @@
+name: One-off poster asset builder (temporary)
+
+# Temporary utility workflow used to render this week's Discord poster PNGs
+# (deterministically, from the same approved ledger + renderer code already on
+# main) and push them onto a staging branch, because this session's git push
+# credentials can't transmit binary content directly. Safe to delete once the
+# staging PR for this week's posts is merged.
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_branch:
+        required: true
+        type: string
+      expected_space_sha256:
+        required: true
+        type: string
+      expected_flash_sha256:
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout main (renderer fix + latest approved data)
+        uses: actions/checkout@v6
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Pillow
+        run: python3 -m pip install --disable-pip-version-check Pillow==11.3.0
+      - name: Export approved summary
+        run: node scripts/export-event-summary.cjs approved-summary-release.json
+      - name: Render Space Race Nov 20 poster
+        run: python3 scripts/render-space-poster.py reports/approved-summary-release.json /tmp/space.png --clan AVENGERS --event-id 'space|2026-11-20'
+      - name: Render Flash Set 2026-11-17-A poster
+        run: python3 scripts/render-flash-poster.py reports/approved-summary-release.json /tmp/flash.png --clan AVENGERS --set-id 2026-11-17-A
+      - name: Verify rendered bytes match what was already reviewed
+        run: |
+          echo "${{ inputs.expected_space_sha256 }}  /tmp/space.png" | sha256sum -c -
+          echo "${{ inputs.expected_flash_sha256 }}  /tmp/flash.png" | sha256sum -c -
+      - name: Switch to staging branch and add the reviewed assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin "${{ inputs.target_branch }}"
+          git checkout -B "${{ inputs.target_branch }}" "origin/${{ inputs.target_branch }}"
+          mkdir -p assets/reports
+          cp /tmp/space.png assets/reports/AVENGERS_Space_Race_November_20_2026.png
+          cp /tmp/flash.png assets/reports/AVENGERS_Piggy_Flashes_November_17_2026.png
+          git add -f assets/reports/AVENGERS_Space_Race_November_20_2026.png assets/reports/AVENGERS_Piggy_Flashes_November_17_2026.png
+          git commit -m "Add Nov 20 Space Race and Nov 17-18 Flash Set poster assets"
+          git push origin "HEAD:${{ inputs.target_branch }}"

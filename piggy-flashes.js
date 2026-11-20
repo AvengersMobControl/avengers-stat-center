@@ -9,7 +9,7 @@
     '1425021793835552868':'PF3',
     '1425021900463013919':'PF4'
   };
-  const state={tab:'all',day:'all'};
+  const state={tab:'all',day:'all',mode:null};
   const fmt=v=>v==null?'—':(Number(v)||0).toLocaleString();
   const fmtCompact=v=>{
     const n=Number(v)||0;
@@ -353,7 +353,9 @@
   function render(){
     const root=document.getElementById('piggyFlashesContent');
     if(!root)return;
-    if(clanMode()==='AV-2')state.tab='pool';
+    const mode=clanMode();
+    if(state.mode!==mode){state.day='all';state.mode=mode;}
+    if(mode==='AV-2')state.tab='pool';
     else if(state.tab==='pool')state.tab='all';
 
     const evs=selectedEvents();

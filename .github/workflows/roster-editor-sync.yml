@@ -1,0 +1,55 @@
+name: Publish owner roster changes
+
+on:
+  schedule:
+    - cron: '3-58/5 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/roster-editor-sync.yml']
+
+permissions:
+  contents: write
+  actions: write
+  id-token: write
+  statuses: read
+
+concurrency:
+  group: roster-editor-sync
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Read owner-approved changes and validate the projection
+        run: node scripts/sync-roster-editor.cjs
+      - name: Commit roster data and request Pages deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if ! git diff --quiet -- data/roster-changes.json; then
+            git config user.name "AVENGERS roster editor"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -- data/roster-changes.json
+            git commit -m "Publish owner roster changes"
+            git push origin HEAD:main
+            gh workflow run pages.yml --ref main
+          elif [ "$(git log -1 --format=%s)" = "Publish owner roster changes" ]; then
+            sha=$(git rev-parse HEAD)
+            status=$(gh api "repos/$GITHUB_REPOSITORY/commits/$sha/status" \
+              --jq '[.statuses[]|select(.context=="AVENGERS GitHub Pages production")][0].state // empty')
+            running=$(gh run list --workflow pages.yml --commit "$sha" --limit 1 --json status \
+              --jq '.[0].status // empty')
+            if [ "$status" != success ] && { [ -z "$running" ] || [ "$running" = completed ]; }; then
+              gh workflow run pages.yml --ref main
+            fi
+          fi

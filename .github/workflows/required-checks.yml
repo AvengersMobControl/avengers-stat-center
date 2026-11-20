@@ -23,6 +23,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - name: Owner roster authorization and canonical projection
+        run: npm install --no-audit --no-fund && node --test scripts/roster-editor.test.cjs
       - name: Syntax-check server functions
         run: |
           set -e

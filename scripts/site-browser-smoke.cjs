@@ -27,6 +27,19 @@ async function main(){
     assert.equal(await page.evaluate(()=>window.AVENGERS_REWARD_METRICS.efficiency(100,25)),4);
     const version=await page.evaluate(()=>window.AVENGERS_EVENT_PROJECTION.version);
     if(!process.env.AVENGERS_SMOKE_URL)assert.equal(version,built.manifest.version);
+    // Fixed historical standings below are a fixture. Verify the actual
+    // release independently once the owner starts editing that roster.
+    if(built.manifest.rosterRevision){
+      assert.equal(version,built.manifest.version);
+      const actual=await page.evaluate(()=>window.AVENGERS_EVENT_PROJECTION.people.map(({name,status})=>({name,status})));
+      assert.deepEqual(actual,built.release.projection.people.map(({name,status})=>({name,status})));
+      assert.equal(new Set(actual.map(row=>row.name.toLowerCase())).size,actual.length);
+      await page.locator('[data-page="rosters"]').first().click();
+      await page.locator('#rostersContent table').first().waitFor();
+      assert.equal(await page.getByRole('link',{name:'Manage rosters'}).count(),0);
+      assert.deepEqual(errors,[]);
+      return;
+    }
     const participation=await page.evaluate(()=>{
       const P=window.AVENGERS_EVENT_PROJECTION,D=window.AVENGERS_DATA;
       return {timmy:P.people.find(p=>p.name==='AV-Timmy')?.status,

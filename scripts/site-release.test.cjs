@@ -1,12 +1,15 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),os=require('node:os'),path=require('node:path');
-const {create}=require('./create-site-release.cjs'),{build,browserSource}=require('./build-site.cjs'),{UNITS}=require('./event-projection-core.cjs');
+const {create:createRelease}=require('./create-site-release.cjs'),{build:buildRelease,browserSource}=require('./build-site.cjs'),{UNITS}=require('./event-projection-core.cjs');
 const {load}=require('./load-site-data.cjs');
 function boot(r){
   const sandbox={window:{},console};vm.createContext(sandbox);vm.runInContext(browserSource(r),sandbox);
   for(const file of ['community-highlights.js','clan-league-rewards.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'..',file),'utf8'),sandbox);
   return sandbox.window;
 }
+// These assertions exercise the historical source fixture.
+const create=options=>createRelease({...options,rosterChanges:{revision:0,changes:[]}});
+const build=options=>buildRelease({...options,rosterChanges:{revision:0,changes:[]}});
 const APPROVED=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/approved-event-updates.json'))).updates;
 const BASE=create(),BASEW=boot(BASE),member=(r,name)=>r.globals.AVENGERS_DATA.members.find(m=>m.name===name);
 test('gold/silver rating crowns and adjusted ranking project consistently to every member',()=>{

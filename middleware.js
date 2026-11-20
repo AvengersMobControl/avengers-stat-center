@@ -45,6 +45,7 @@ export default async function middleware(request){
   // These endpoints perform their own authentication/authorization.
   if(
     p.startsWith('/api/auth/') ||
+    p==='/api/roster-editor' ||
     p.startsWith('/api/discord/') ||
     // Single-purpose CANARY endpoint enforces its own strong, expiring token,
     // verified restricted runtime role, channel allowlist and send-once ledger.

@@ -1,6 +1,8 @@
 'use strict';
 const {test}=require('node:test'),assert=require('node:assert/strict');
-const {create}=require('./create-site-release.cjs');
+const {create:createRelease}=require('./create-site-release.cjs');
+// These assertions exercise the historical source fixture.
+const create=options=>createRelease({...options,rosterChanges:{revision:0,changes:[]}});
 const release=create(),people=release.projection.people,byName=n=>people.find(p=>p.name===n);
 test('Leader-confirmed Frenchie(-4) merges into USA, not Frenchie2',()=>{
  assert.equal(byName('AV-Frenchie(-4)'),undefined,'No duplicate retired -4 profile');

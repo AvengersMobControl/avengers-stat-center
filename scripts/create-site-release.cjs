@@ -2,7 +2,8 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const {load,root}=require('./load-site-data.cjs');
 const {migrate,copy,number}=require('./migrate-event-ledger.cjs');
-const {apply,project,canonical}=require('./event-projection-core.cjs');
+const {apply,project,canonical,normalize}=require('./event-projection-core.cjs');
+const {applyChanges}=require('../server/roster-changes.cjs');
 const sum=(rs,key)=>rs.reduce((s,r)=>s+(number(r[key])||0),0);
 const average=xs=>xs.length?xs.reduce((a,b)=>a+b,0)/xs.length:0;
 function refreshHistoricalPayouts(ledger){
@@ -21,7 +22,8 @@ function refreshHistoricalPayouts(ledger){
     else{delete r.estimatedSparks;r.clanAttribution='unknown';delete r.metadata.clanEvidenceEvent;}
   }
 }
-function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approved-event-updates.json'),'utf8')).updates}={}){
+function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approved-event-updates.json'),'utf8')).updates,
+  rosterChanges=JSON.parse(fs.readFileSync(path.join(root,'data/roster-changes.json'),'utf8'))}={}){
   const legacy=load(),migration=migrate(legacy);
   // Leader-confirmed identity: TheBoss; Kira and LoveKira are historical aliases.
   const aliases={...migration.aliases};
@@ -51,11 +53,19 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
   delete aliases['AV-Zolika.x.TheBoss']; // remove reverse mapping to avoid cycles
   aliases['AV-Zolika.x.Kira']='AV-Zolika.x.TheBoss';
   aliases['AV-ZolikaLoveKira']='AV-Zolika.x.TheBoss';
+  assert(Number.isInteger(rosterChanges.revision)&&rosterChanges.revision===rosterChanges.changes.length,'Invalid roster revision');
+  const historicalAliases={...aliases};
+  const candidates=[...migration.ledger.events,...updates.map(u=>u.event)].flatMap(e=>
+    e.rows.filter(row=>row.player).map(row=>({name:row.player,status:'Inactive'})));
+  candidates.push(...(legacy.AVENGERS_DATA.members||[]),...(legacy.AVENGERS_MEMBER_TIMEZONES.rows||[])
+    .map(row=>({name:row.profileName||row.name,status:row.status})));
+  const managed=applyChanges(candidates,aliases,rosterChanges.changes);
+  Object.assign(aliases,managed.aliases);
   const resolve=n=>canonical(n,aliases);
   let ledger=migration.ledger;
   for(const update of updates){
     if(update.approved!==true)throw Error('Unreviewed event update cannot be published');
-    ledger=apply(ledger,update.event,{approved:true,expectedRevision:update.expectedRevision,aliases}).ledger;
+    ledger=apply(ledger,update.event,{approved:true,expectedRevision:update.expectedRevision,aliases:historicalAliases}).ledger;
   }
   // Leader-directed complete public removal (2026-11-06). Canonical accepted
   // original evidence stays in Git history, but must never surface in the
@@ -71,6 +81,15 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
   }
   for(const key of Object.keys(aliases))if(publicExcluded(key)||publicExcluded(aliases[key]))delete aliases[key];
   refreshHistoricalPayouts(ledger);
+  if(rosterChanges.changes.some(change=>change.kind==='link')){
+    const rekey=event=>({...normalize({...event,rows:event.rows.map(row=>row.player&&resolve(row.player)!==row.player
+      ? {...row,metadata:{...row.metadata,sourceDisplayName:row.metadata?.sourceDisplayName||row.player}}:row)},aliases),revision:event.revision});
+    ledger.events=ledger.events.map(rekey);
+    for(const change of ledger.changes||[]){
+      if(change.before?.rows)change.before=rekey(change.before);
+      if(change.after?.rows)change.after=rekey(change.after);
+    }
+  }
   const D=copy(legacy.AVENGERS_DATA),K=copy(legacy.AVENGERS_KRAKEN_DATA),S=copy(legacy.AVENGERS_SPARKS_SNAPSHOT),R=copy(legacy.AVENGERS_MEMBER_TIMEZONES);
   // Update today's roster label, but retain historical source-name evidence.
   const boss='AV-Zolika.x.TheBoss';
@@ -92,8 +111,10 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
   for(const row of R.rows){
     const name=resolve(row.profileName||row.name),prior=canonicalRoster.get(name);
     const retiredLabels=new Set(['AV-#ZOLISTAR','AV-Adiagrion','AV-BXI','AV-FenXistentiel','AV-Frenchie(-4)','AV-J-Zo','AV-JustSomeGuy']);
-    const displayName=retiredLabels.has(row.name)?name:row.name;
-    const next={...row,name:displayName,profileName:name,canonicalName:name,sourceName:row.sourceName||row.name};
+    const linked=Object.hasOwn(managed.aliases,row.name)&&managed.aliases[row.name]!==historicalAliases[row.name];
+    const displayName=retiredLabels.has(row.name)||linked?name:row.name;
+    const next={...row,name:displayName,profileName:name,canonicalName:name,sourceName:row.sourceName||row.name,
+      status:managed.overrides.get(name)??row.status};
     if(!prior){canonicalRoster.set(name,next);continue;}
     const p=statusRank[prior.status]??-1,n=statusRank[next.status]??-1;
     if((p>=2&&n>=2)&&prior.status!==next.status)
@@ -103,7 +124,21 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
     else for(const k of ['utc','tzg','state','location','city','timeZoneId','timeZoneLabel'])
       if((prior[k]==null||prior[k]==='')&&next[k]!=null&&next[k]!=='')prior[k]=next[k];
   }
+  for(const [name,status] of managed.overrides){
+    if(publicExcluded(name))continue;
+    const row=canonicalRoster.get(name)??{name,profileName:name,canonicalName:name,sourceName:name};
+    row.status=status;
+    canonicalRoster.set(name,row);
+    R.byName[name]=row;
+  }
   R.rows=[...canonicalRoster.values()];
+  for(const name of Object.keys(R.byName||{})){
+    const canonicalName=resolve(R.byName[name]?.profileName||name);
+    if(managed.overrides.has(canonicalName)){
+      if(Object.hasOwn(managed.aliases,name)&&managed.aliases[name]!==historicalAliases[name])delete R.byName[name];
+      else R.byName[name]={...R.byName[name],status:managed.overrides.get(canonicalName)};
+    }
+  }
   for(const name of Object.keys(R.byName||{}))
     if(publicExcluded(name)||publicExcluded(R.byName[name]?.canonicalName))delete R.byName[name];
   for(const name of Object.keys(D.aliasMap||{}))if(publicExcluded(name)||publicExcluded(D.aliasMap[name]))delete D.aliasMap[name];
@@ -113,6 +148,7 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
   const memberMap=new Map();for(const m of D.members){const name=resolve(m.name);if(!memberMap.has(name))memberMap.set(name,{...m,name});}
   // Current roster authority is applied only to current status, not past events.
   for(const r of R.rows||[]){const name=resolve(r.profileName||r.name);if(memberMap.has(name))memberMap.get(name).status=r.status;}
+  for(const [name,status] of managed.overrides){if(!publicExcluded(name))memberMap.set(name,{...memberMap.get(name),name,status});}
   // Game "All time" clan Sparks reset when a player moves between clans.
   // Screenshots are per-clan contribution balances, NOT account lifetime totals.
   // Keep old-clan evidence on the canonical player when the member transfers.
@@ -144,6 +180,12 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
   }
   // Screenshots remain provenance only. Historical Sparks are frozen on
   // approval and are never recalculated after new events or clan transfers.
+  for(const name of Object.keys(priorToLogging)){
+    const target=resolve(name);
+    if(target===canonical(name,historicalAliases)||!managed.overrides.has(target))continue;
+    priorToLogging[target]=(priorToLogging[target]||0)+priorToLogging[name];
+    delete priorToLogging[name];
+  }
   const p=project(ledger,{aliases,members:[...memberMap.values()].map(m=>({name:m.name,status:m.status})),snapshots,priorToLogging,arenaStart:D.meta.arenaStart});
   const metrics=require('../event-reward-metrics.js');
   for(const person of p.people)person.effort=Object.fromEntries(['piggy','space','flash'].map(kind=>[kind,metrics.summarize(person.history.filter(r=>r.kind===kind))]));
@@ -202,7 +244,8 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
   // from names, avatars, clans, locations, or historical results.
   const pronounSource=JSON.parse(fs.readFileSync(path.join(root,'data/member-pronouns-2026-11-02.json'),'utf8'));
   const sheHer=new Set(pronounSource.sheHer.map(resolve));
-  assert.equal(sheHer.size,pronounSource.sheHer.length,'Verified pronoun source must have unique canonical members');
+  if(!rosterChanges.changes.some(change=>change.kind==='link'))
+    assert.equal(sheHer.size,pronounSource.sheHer.length,'Verified pronoun source must have unique canonical members');
   const assigned=new Set();
   for(const m of D.members){
     if(sheHer.has(m.name)){m.pronouns='she/her';assigned.add(m.name);}

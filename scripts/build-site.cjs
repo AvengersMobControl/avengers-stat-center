@@ -19,8 +19,9 @@ function browserSource(release){
     window.AVENGERS_ROSTER_SPARKS_LEDGER={version:R.version,forMember(raw){const b=R.breakdowns[resolve(raw)]||{};return {flashSparks:b.flashSparks||0,octKrakenSparks:b.krakenOctoberSparks||0,juneKrakenSparks:b.krakenJuneReconstructedSparks||0};}};
   })();\n`;
 }
-function build({destination=path.join(root,'dist'),updates}={}){
-  const release=create(updates===undefined?{}:{updates}),P=release.projection;
+function build({destination=path.join(root,'dist'),updates,
+  rosterChanges=JSON.parse(fs.readFileSync(path.join(root,'data/roster-changes.json'),'utf8'))}={}){
+  const release=create({updates,rosterChanges}),P=release.projection;
   // Match a deployed Pages/Vercel build to its exact commit, not just the
   // data projection version (which can remain stable across code-only changes).
   const commitCandidate=process.env.GITHUB_SHA||process.env.VERCEL_GIT_COMMIT_SHA||null;
@@ -71,13 +72,14 @@ function build({destination=path.join(root,'dist'),updates}={}){
   }
   // Every JS/CSS reference has an immutable content address. No legacy source
   // scripts are loaded beside the newly projected release data.
+  html=html.replace('</body>','<script src="roster-editor-link.js" defer></script>\n</body>');
   const referenced=[...html.matchAll(/(?:src|href)="([^"?#]+\.(?:js|css))"/g)].map(m=>m[1]);
   const assets={};
   for(const file of new Set(referenced)){
     const code=fs.readFileSync(path.join(destination,file));const ext=path.extname(file),name=file.slice(0,-ext.length)+'.'+digest(code).slice(0,16)+ext;
     if(file===bundle){assets[file]=file;continue;}fs.writeFileSync(path.join(destination,name),code);assets[file]=name;html=html.replaceAll('"'+file+'"','"'+name+'"');
   }
-  const manifest={version:P.version,sourceCommit,assets,exports:exportFiles,coverage:P.coverage,unattendedIngestionEnabled:false};
+  const manifest={version:P.version,sourceCommit,rosterRevision:rosterChanges.revision,assets,exports:exportFiles,coverage:P.coverage,unattendedIngestionEnabled:false};
   fs.writeFileSync(path.join(destination,'index.html'),html);
   fs.writeFileSync(path.join(destination,'release-manifest.json'),JSON.stringify(manifest));
   return {release,manifest,destination};

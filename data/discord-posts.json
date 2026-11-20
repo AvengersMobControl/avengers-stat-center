@@ -174,6 +174,32 @@
       "approved": true,
       "authorization": "leader-directed-onetime-kraken-2026-11-18",
       "description": "AV-2 Kraken November 15 2026 results"
+    },
+    "space|space|2026-11-20|AVENGERS": {
+      "kind": "space",
+      "eventId": "space|2026-11-20",
+      "clan": "AVENGERS",
+      "file": "AVENGERS_Space_Race_November_20_2026.png",
+      "sha256": "a004306fa3e595c2110456b48d6115f11a5e0b599086d10f5a3002a7619ff5d2",
+      "size": 1309928,
+      "template": "space-poster-v4-20261026-candidate",
+      "body": "@everyone\n<:Silvericebluerocketemojicutout3:1566910561059475456> **AVENGERS Space Race — November 20** <:Silvericebluerocketemojicutout3:1566910561059475456>\n\n**📊 The Numbers**\n43 racers covered **8,169.2B lightyears** — averaging **190.0B** per racer, down **7.6%** from our last-4-race pace (total lightyears -12.2%). Lobby C ran away with the week's standout pot: **16.88M Stars**!\n\n**<:AV_Crown:1557571339500392568> Podium**\n🥇 Vadik-UA — 441.7B\n🥈 7-STAR — 412.2B\n🥉 KKD — 370.1B\n\n**✨ Standout Stories**\nVadik-UA blew away the field at 441.7B — a new PB (+72.8% on his old best of 255.6B) and his biggest jump over his own average all season at **+375.3%**. Dubai wasn't far behind on the PB charts, climbing to 242.4B for a **+66.0%** personal best.\n\n**<:Glossy3DFlameEmoji2:1566910556496072846> Personal Bests**\n7 new PBs, and 30 of 43 returning racers beat their own average:\n1. Vadik-UA +72.8%\n2. Dubai +66.0%\n3. ziyad +49.0%\n4. istanbuL +48.8%\n5. ShielDBreaker +28.1%\n6. Robcorp +26.4%\n7. Megalodon +1.8%\n\n**🎖️ Milestones**\n100B+ this race: 34 racers (#6 Arena-era for that tier). 200B+: 16 (T-#7). 300B+: 9 (T-#5). 400B+: 2 (T-#10).\n\n**<:AV_ThumbsUp:1557571088488206356> Effort Shoutout**\nBiggest grind-for-less-reward: Robcorp, covering 126.4B at just **125.1 Sparks/B**! Fred (136.1B, 248.0 Sp/B) and Hoops (126.7B, 249.5 Sp/B) also ground hard for modest payouts.\n\nFull results and PBs: https://avengersmobcontrol.github.io/avengers-stat-center/ <:GoldenRetrieverCodingSticker:1559680187820675102>",
+      "approved": true,
+      "authorization": "leader-standing-auto-discord-2026-10-26",
+      "description": "AVENGERS Space Race November 20 2026 results"
+    },
+    "flash|flash|2026-11-17-A|AVENGERS": {
+      "kind": "flash",
+      "eventId": "flash|2026-11-17-A",
+      "clan": "AVENGERS",
+      "file": "AVENGERS_Piggy_Flashes_November_17_2026.png",
+      "sha256": "f3140f1ad1ccf0204ba7468ed1894352b126e077a556adfb504a805a1b56a577",
+      "size": 1248505,
+      "template": "flash-poster-v2-20261026-candidate",
+      "body": "@everyone\n<:Goldenglasspiggybankemoji2:1566910563437649951> **AVENGERS Piggy Flashes — November 17–18** <:Goldenglasspiggybankemoji2:1566910563437649951>\n\n📊 **The Headline**\n33 racers piled up **88,182 lines** across the four Flashes — **2,672 per racer**, up **0.7%** on the last-4-set average (total lines -14.2%).\n\n🏆 **Flash Winners**\nPF1 — INTEN (3,876) · PF2 — INTEN (3,652) · PF3 — Saberkong (5,925) · PF4 — INTEN (4,167)\nPlus solo-lobby finishes from Dreadrixter-UA in PF1 and ColdCreeps and KKD in PF3!\n\n👑 **INTEN Tops the Set Board**\nINTEN's **11,695-line set** is #5 all-time (5 of 609 in the Arena era) and leads the league this cycle in both Flash lines (11,695) and Flash Sparks (64,362). HarryBallsagna (8,680) and Saberkong (5,925) round out the podium. ColdCreeps posted the set's biggest jump over his own average: **+246.0%** (3,589 vs. a 1,037 average over 19 sets).\n\n<:Glossy3DFlameEmoji2:1566910556496072846> **Personal Bests**\n3 set-total PBs and 3 single-Flash PBs:\n• Fred — 872 set (+671.7%) and 872 in PF2 (+671.7%)\n• ColdCreeps — 3,589 set (+24.1%)\n• Vadik-UA — 2,841 set (+1.4%)\n• KKD — 4,109 in PF4 (+25.8%)\n• Saberkong — 5,925 in PF3 (+23.3%)\n16 of 31 set totals and 33 of 69 single-Flash results beat the player's own average.\n\n<:AV_HighFive:1557570978815414322> **New Faces**\nWelcome Dreadrixter-UA and Dubai! Dreadrixter-UA put up 3,534 lines over three PFs (best 1,892 in PF2, 186,240 Stars), and Dubai posted 2,800 lines in PF4 alone (104,774 Stars).\n\n🎯 **Milestones**\n24 racers cleared 1K, 18 cleared 2K, 11 cleared 3K, 4 cleared 5K, 2 cleared 7.5K and 1 cleared 10K this set — the 10K+ count ties for #3 in the Arena era.\n\nFull results and PBs: https://avengersmobcontrol.github.io/avengers-stat-center/ <:GoldenRetrieverCodingSticker:1559680187820675102>",
+      "approved": true,
+      "authorization": "leader-standing-auto-discord-2026-10-26",
+      "description": "AVENGERS Piggy Flashes November 17 2026 results"
     }
   }
 }

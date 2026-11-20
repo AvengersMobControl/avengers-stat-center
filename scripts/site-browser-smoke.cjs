@@ -418,7 +418,15 @@ async function main(){
       'combined-day leader excludes one-line nonparticipation: '+JSON.stringify({leaderText,leaderIdentity}));
     assert((await hist.innerText()).includes('9,879'),'top recorded combined-day score');
     assert((await hist.innerText()).includes('4,936'),'top single-race score');
-    assert((await hist.innerText()).includes('8/2,963'),'top single-race historical rank excludes one-line nonparticipants and Tavito (2,963 after the Nov3-4 set): '+(await hist.innerText()).match(/\d+\/[\d,]+/g));
+    const singleSummary=await hist.locator('details[data-hist-open="singles"] summary').innerText();
+    const singleCountMatch=singleSummary.match(/([\d,]+) tracked/);
+    assert(singleCountMatch,'Historical single-race archive reports its live denominator');
+    const singleCount=Number(singleCountMatch[1].replaceAll(',',''));
+    assert(singleCount>=3036,'new eligible November 17–18 Flash finishes extend the 2,963-race archive; one-line nonparticipants remain excluded');
+    const topSingleRanks=await hist.locator('.flash-history-panel').filter({has:page.locator('h3',{hasText:'Top Ten Single-Race Lines'})}).locator('tbody tr td:last-child').allTextContents();
+    assert.equal(topSingleRanks.length,10,'top ten single-race historic ranks displayed');
+    assert(topSingleRanks.every(s=>{const match=s.trim().match(/^(\d+)\/([\d,]+)$/);return match&&Number(match[1])>0&&Number(match[2].replaceAll(',',''))===singleCount;}),
+      'all displayed historical rank denominators reflect the current independently tracked archive, not a stale prior-week count');
     const potDetail=hist.locator('details[data-hist-open="pots"]');
     await potDetail.locator('summary').click();
     assert.equal(await potDetail.locator('tbody tr[data-hist-row]').count(),173,'173 recorded main lobby header pots retained (Oct26-27 PF1-PF4 added)');

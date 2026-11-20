@@ -5,10 +5,12 @@
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {preview}=require('./stage-event-update.cjs');
 const {root}=require('./load-site-data.cjs');
+const {isAv2FlashPool}=require('./event-projection-core.cjs');
 function assert(ok,message){if(!ok)throw Error(message)}
 const keys=['piggy','space','flash','kraken'],clans=['AVENGERS','AV-2','Unknown'];
 const num=x=>typeof x==='number'&&Number.isFinite(x)?x:0;
-const key=r=>(r.clan||'Unknown')+'|'+(r.player||r.sourceIdentity||'unidentified');
+const key=(row,pool)=>(row.clan||'Unknown')+'|'+(row.player||row.sourceIdentity||'unidentified')+
+  (pool?'|'+row.metadata?.poolSlot:'');
 const sum=(rows,field)=>rows.reduce((n,r)=>n+num(r[field]),0);
 const ordered=xs=>xs.sort((a,b)=>a.name.localeCompare(b.name)||String(a.clan).localeCompare(String(b.clan)));
 function viewEvent(ledger,id){const e=ledger.events.find(x=>x.id===id);return e&&e.status!=='revoked'?e:null}
@@ -34,7 +36,8 @@ function make(current,update,{enforceUnapproved=true}={}){
  const original=viewEvent(run.before.ledger,id),replacement=viewEvent(run.after.ledger,id);
  const oldRows=original?.rows||[],newRows=replacement?.rows||[];
  const clans=[...new Set(['AVENGERS','AV-2','Unknown',...oldRows.map(r=>r.clan).filter(Boolean),...newRows.map(r=>r.clan).filter(Boolean)])];
- const before=new Map(oldRows.map(x=>[key(x),x])),after=new Map(newRows.map(x=>[key(x),x]));
+ const pool=isAv2FlashPool(replacement||original);
+ const before=new Map(oldRows.map(row=>[key(row,pool),row])),after=new Map(newRows.map(row=>[key(row,pool),row]));
  assert(before.size===oldRows.length&&after.size===newRows.length,'Ambiguous duplicate identities; refuse to produce approval sheet');
  const rows=[...new Set([...before.keys(),...after.keys()])].sort().map(k=>{
    const old=before.get(k),now=after.get(k);
@@ -43,6 +46,7 @@ function make(current,update,{enforceUnapproved=true}={}){
      scoreBefore:old?.score??null,scoreAfter:now?.score??null,
      sparksBefore:old?.sparks??null,sparksAfter:now?.sparks??null,
      starsBefore:old?.stars??null,starsAfter:now?.stars??null,
+     ...(pool?{poolSlot:(now||old).metadata.poolSlot}:{}),
      originalLobbyFinish:now?.metadata?.rank??null};
  });
  const count=(kind)=>rows.filter(r=>r.change===kind).length;

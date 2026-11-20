@@ -181,7 +181,7 @@ test('linked Lin and corrected Jeff canonical history and first AVENGERS Piggy a
   for(const name of ['AV-OlRose','AV-2.SURVIVOR','AV2-Thoszi']){
     assert.equal(R.byName[name]?.status,'AV2',name+' confirmed AV-2 roster');
     assert.equal(people.filter(p=>p.name===name&&p.status==='AV2').length,1,name+' existing event identity is current AV-2 member');
-    assert.deepEqual(people.find(p=>p.name===name).history.filter(h=>h.date>='2026-11-06').map(h=>h.kind).sort(),name==='AV-2.SURVIVOR'?['kraken','piggy','space']:name==='AV2-Thoszi'?['kraken','piggy','space','space']:['kraken','piggy','space','space'],name+' source-verified results retained, including November 13 when present, and OlRose\'s released rank-14 Kraken hold (2026-11-18)');
+    assert.deepEqual(people.find(p=>p.name===name).history.filter(h=>h.date>='2026-11-06'&&h.date<='2026-11-18').map(h=>h.kind).sort(),name==='AV-2.SURVIVOR'?['kraken','piggy','space']:name==='AV2-Thoszi'?['kraken','piggy','space','space']:['kraken','piggy','space','space'],name+' source-verified results retained, including November 13 when present, and OlRose\'s released rank-14 Kraken hold (2026-11-18)');
   }
   assert.equal(R.byName['TheHemperor']?.status,'AV2','TheHemperor is a current AV-2 participant');
   assert.equal(BASEW.AVENGERS_DATA.resolvePlayerName('AV2-TheHemperor'),'TheHemperor');
@@ -653,9 +653,9 @@ test('Nov 6 Space original screenshot tail, Zolika and AV-2 identity reconciliat
   assert.equal(dreadrix[0].metadata.lobby,'A');
   assert.equal(dreadrix[0].metadata.share,0.02);
   assert.equal(dreadrix[0].clan,'AVENGERS');
-  // Dubai's roster shell has one verified Nov 8 Piggy and one Nov 13 Space result.
+  // Dubai's early history includes the recovered November 10 PF2 result.
   const dubaiRows=BASE.ledger.events.filter(event=>event.date<'2026-11-15').flatMap(event=>event.rows.filter(row=>row.player==='AV-Dubai').map(row=>({eventId:event.id,...row})));
-  assert.equal(dubaiRows.length,2,'Dubai has precisely two verified pre-November-15 events, without invented history');
+  assert.equal(dubaiRows.find(row=>row.eventId==='flash|2026-11-10|2')?.score,1701);
   const dubaiPiggy=dubaiRows.find(row=>row.eventId==='piggy|2026-11-08');
   assert.equal(dubaiPiggy?.score,9960);
   assert.equal(dubaiPiggy?.sparks,63224);
@@ -892,7 +892,9 @@ test('November 20 confirmed identity variants, two new members, and exact origin
     assert.equal(found[0].status,'Active');
   }
   const space=BASE.ledger.events.find(e=>e.id==='space|2026-11-20');
-  assert.equal(space.rows.length,48);
+  assert.equal(space.rows.filter(row=>row.clan==='AVENGERS').length,49);
+  assert.equal(space.rows.filter(row=>row.clan==='AV-2').length,19);
+  assert.equal(space.rows.find(row=>row.player==='AV-SiFra')?.clan,'AVENGERS');
   for(const [name,rank,lobby,score,sparks,stars,sha] of [
     ['AV-V8',1,'A',490,375006,3750060,'2ddc7c3002779eb6402fe7c9b260b66fa12ce8bd226dd96962e644a1a891ce60'],
     ['AV-AnotherRound',2,'A',463.6,300005,3000050,'2ddc7c3002779eb6402fe7c9b260b66fa12ce8bd226dd96962e644a1a891ce60'],
@@ -938,4 +940,19 @@ test('November 20 six leader-confirmed current AV-2 transfers preserve historica
     assert(person[0].history.length>0,
       name+' event-backed profile history remains available after current roster move');
   }
+});
+
+test('November numbered Flash events share one set per week and AV-2 retains its own pool',()=>{
+  const events=BASE.globals.AVENGERS_PIGGY_FLASH_DATA.events;
+  for(const [setId,dates] of [
+    ['2026-11-10-A',['2026-11-10','2026-11-11']],
+    ['2026-11-17-A',['2026-11-17','2026-11-18']]
+  ]){
+    const numbered=events.filter(event=>dates.includes(event.date)&&[1,2,3,4].includes(event.flash));
+    assert.deepEqual(numbered.map(event=>event.flash).sort(),[1,2,3,4]);
+    assert.deepEqual([...new Set(numbered.map(event=>event.setId))],[setId]);
+  }
+  const pool=events.find(event=>event.date==='2026-11-20'&&event.pool==='av2-week');
+  assert.equal(pool.poolWeek,'2026-11-20');
+  assert.equal(pool.setId,undefined);
 });

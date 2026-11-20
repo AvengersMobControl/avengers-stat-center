@@ -43,7 +43,11 @@ function browser(){
       const selected=input.value;
       input.replaceChildren();
       if(input.tagName==='SELECT')input.add(new Option('Select a member',''));
-      for(const member of data.people)input.append(new Option(member.name,member.name));
+      const statusLabel={Active:'AVENGERS',AV2:'AV-2',Inactive:'Inactive',Unassigned:'Unassigned'};
+      for(const member of data.people){
+        const label=input.tagName==='SELECT'?member.name+' · '+(statusLabel[member.status]||member.status):member.name;
+        input.append(new Option(label,member.name));
+      }
       if(selected)input.value=selected;
     }
     controls.forEach(control=>{control.disabled=false;});

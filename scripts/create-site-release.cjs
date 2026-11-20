@@ -182,7 +182,7 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
   // approval and are never recalculated after new events or clan transfers.
   for(const name of Object.keys(priorToLogging)){
     const target=resolve(name);
-    if(target===name||!managed.overrides.has(target))continue;
+    if(target===canonical(name,historicalAliases)||!managed.overrides.has(target))continue;
     priorToLogging[target]=(priorToLogging[target]||0)+priorToLogging[name];
     delete priorToLogging[name];
   }

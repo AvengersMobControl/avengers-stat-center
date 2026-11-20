@@ -29,6 +29,6 @@ test('JR is included without invented game results or false clan attribution',()
  assert.equal(jr.history.length,0);
  assert.equal(jr.earned.sparks,0);
  const counts=people.reduce((o,p)=>(o[p.status]=(o[p.status]||0)+1,o),{});
- assert.equal(counts.Active,51,'Both November 20 leader-confirmed transfers are Active without replacing a member');
+ assert.equal(counts.Active,53,'Two additional confirmed new members join the two restored current AVENGERS profiles');
  assert.equal(counts.AV2,46,'November 20 MotherboardBeans transfer does not invent another AV-2 profile');
 });

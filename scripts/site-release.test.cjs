@@ -956,3 +956,20 @@ test('November numbered Flash events share one set per week and AV-2 retains its
   assert.equal(pool.poolWeek,'2026-11-20');
   assert.equal(pool.setId,undefined);
 });
+
+test('November AVENGERS Flash pots use corroborated reward shares and exclude the AV-2 pool',()=>{
+  const events=BASE.globals.AVENGERS_PIGGY_FLASH_DATA.events;
+  const ids=['2026-11-03-A','2026-11-10-A','2026-11-17-A'];
+  const expected=[
+    [1706196,3216430,2074198,2448188],
+    [2232510,3126610,2469735,2658290],
+    [2160833,2141693,2386750,2282647]
+  ];
+  ids.forEach((id,index)=>{
+    const group=events.filter(event=>event.setId===id).sort((a,b)=>a.flash-b.flash);
+    assert.deepEqual(group.map(event=>event.potStars),expected[index]);
+    assert(group.every(event=>event.clan==='AVENGERS'&&event.estimatedPotStars));
+  });
+  assert.equal(events.find(event=>event.pool==='av2-week'&&event.date==='2026-11-20').potStars,undefined);
+  assert.equal(events.find(event=>event.setId==='2026-10-26-A'&&event.flash===1).potStars,2213941);
+});

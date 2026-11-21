@@ -1,3 +1,7 @@
+## 2026-11-21 — Recover missing Flash Star pots
+
+The November 3, 10 and 17 AVENGERS sets had confirmed participant rewards/shares but no event-level pot. The release derives missing main-lobby estimates from corroborated reward/share pairs. The primary estimate uses the highest-share corroborated AVENGERS result and excludes separately tagged lobbies and payout outliers. Previously recorded pots retain their existing sources. AV-2's independent pool has no shared lobby pot.
+
 ## 2026-11-20 — Friday Flash and Space Race recovery
 
 - The released ledger had no numbered Flash records for November 10–11 even though Discord had final-claim screenshots for PF1–PF4. Recovered 95 verified AVENGERS rows (17, 29, 28, 21), with partial result coverage preserved.

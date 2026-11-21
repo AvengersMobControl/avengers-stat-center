@@ -24,15 +24,16 @@ function analyze(events,options={}){
         eventId:String(ev.id||ev.setId+'|PF'+ev.flash),
         lobby:String(raw.lobbyId||raw.metadata?.lobby||raw.lobby||'main'),
         lines,stars:integer(raw.stars),sparks:integer(raw.sparks),
-        finish:integer(raw.rank),sourceComplete:!!ev.complete});
+        share:Number(raw.share??raw.metadata?.share)||null,finish:integer(raw.rank),sourceComplete:!!ev.complete});
     }
   }
   const pots=source.filter(e=>integer(e.potStars)!==null&&Number(e.potStars)>0&&e.clan==='AVENGERS').map(e=>{
     const pot=Number(e.potStars);
-    const awards=rows.filter(r=>r.eventId===e.id);
+    const awards=rows.filter(r=>r.eventId===e.id&&(!e.estimatedPotStars||
+      (r.lobby==='main'&&r.stars>0&&r.share>0&&Math.abs(r.stars/r.share/pot-1)<=0.03)));
     const stars=awards.reduce((n,r)=>n+(r.stars||0),0);
     return {eventId:String(e.id),setId:e.setId,date:String(e.date),flash:e.flash,
-      lobby:'AVENGERS main (source header)',potStars:pot,potStarsDisplay:String(e.potStarsDisplay||''),
+      lobby:e.estimatedPotStars?'AVENGERS main (reward ÷ share)':'AVENGERS main (source header)',potStars:pot,potStarsDisplay:String(e.potStarsDisplay||''),
       awardedStars:stars,awardedCount:awards.filter(x=>x.stars!==null).length,
       rakePercent:100*stars/pot,approximate:true,sourceComplete:!!e.complete,
       source:e.source||'',sourceMessageIds:(e.messageIds||[e.messageId]).filter(Boolean)};

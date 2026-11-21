@@ -423,7 +423,7 @@
       });
     });
 
-    const potRows=potEvents.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))||a.flash-b.flash).map(e=>'<tr><td>'+esc(e.date)+'</td><td>PF'+e.flash+'</td><td>'+esc(e.setId||'—')+'</td><td class="num">'+fmt(e.potStars)+'</td></tr>').join('');
+    const potRows=potEvents.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))||a.flash-b.flash).map(e=>'<tr><td>'+esc(e.date)+'</td><td>PF'+e.flash+'</td><td>'+esc(e.setId||'—')+'</td><td class="num">'+esc(e.potStarsDisplay||fmt(e.potStars))+'</td></tr>').join('');
 
     root.innerHTML=`
       ${tabsHtml()}

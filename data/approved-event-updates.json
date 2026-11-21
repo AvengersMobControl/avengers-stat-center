@@ -29132,7 +29132,8 @@
         "metadata": {
           "flash": 1,
           "complete": false,
-          "coverageNote": "Partial final screenshot coverage; absent or cropped results remain unknown."
+          "coverageNote": "Partial final screenshot coverage; absent or cropped results remain unknown.",
+          "setId": "2026-11-17-A"
         },
         "sources": [
           "reviewed-image-sha256:2a0d4af60472f3990ed5000c7e4361bfdcca7d6bb0f390e70e18cfd5cecea4a6",
@@ -29344,7 +29345,8 @@
         "metadata": {
           "flash": 2,
           "complete": false,
-          "coverageNote": "Partial final screenshot coverage; absent or cropped results remain unknown."
+          "coverageNote": "Partial final screenshot coverage; absent or cropped results remain unknown.",
+          "setId": "2026-11-17-A"
         },
         "sources": [
           "reviewed-image-sha256:bb645749827d706fde5987e1c4eca7a2a8be9bd3d6917ce10e9230c47b6e93c5"
@@ -29664,7 +29666,8 @@
         "metadata": {
           "flash": 3,
           "complete": false,
-          "coverageNote": "Partial final screenshot coverage; absent or cropped results remain unknown."
+          "coverageNote": "Partial final screenshot coverage; absent or cropped results remain unknown.",
+          "setId": "2026-11-17-A"
         },
         "sources": [
           "reviewed-image-sha256:7f5998850aa61d389284c6efc36786c412cb0b4997e724b6bb3a47dd85b50409",
@@ -30014,7 +30017,8 @@
         "metadata": {
           "flash": 4,
           "complete": false,
-          "coverageNote": "Partial final screenshot coverage; absent or cropped results remain unknown."
+          "coverageNote": "Partial final screenshot coverage; absent or cropped results remain unknown.",
+          "setId": "2026-11-17-A"
         },
         "sources": [
           "reviewed-image-sha256:841991424387e72aa6bcd4a2206361c12614b9372feaa0c90af31a64ec4daf85"
@@ -32272,7 +32276,8 @@
         "metadata": {
           "flash": 2,
           "complete": false,
-          "coverageNote": "Partial final screenshot coverage; absent or cropped results remain unknown."
+          "coverageNote": "Partial final screenshot coverage; absent or cropped results remain unknown.",
+          "setId": "2026-11-17-A"
         },
         "sources": [
           "reviewed-image-sha256:bb645749827d706fde5987e1c4eca7a2a8be9bd3d6917ce10e9230c47b6e93c5"

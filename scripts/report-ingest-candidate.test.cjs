@@ -71,7 +71,7 @@ test('AV-2 weekly pool approval reports one row per player slot',()=>{
    sources:['b','c'].map(digest=>'reviewed-image-sha256:'+digest.repeat(64)),
    rows:[1,2].map(poolSlot=>({...row(),score:1200+poolSlot,
       metadata:{poolSlot,rank:4,sourceImageSha256:(poolSlot===1?'b':'c').repeat(64)}}))};
- const m=make(accepted,{approved:false,expectedRevision:0,event:e});
+ const m=make([],{approved:false,expectedRevision:0,event:e});
  assert.equal(m.counts.newRows,2);
  assert.deepEqual(m.rows.map(r=>r.poolSlot),[1,2]);
 });

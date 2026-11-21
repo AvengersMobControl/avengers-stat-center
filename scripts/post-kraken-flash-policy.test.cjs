@@ -38,8 +38,9 @@ test('all nine first post-Kraken Flash sets drop Sparks, retain scores, Stars, s
   assert(ordinary.length>0&&ordinary.some(e=>e.rows.some(r=>r.sparks>0)),'normal Flash reward unchanged');
 });
 test('four October flashes are zero for both event-time clans and all derived projections',()=>{
- const r=create(),events=r.projection.events,oct=events.filter(e=>e.kind==='flash'&&e.date>='2026-10-13'&&e.date<='2026-10-14');
- assert.equal(oct.length,4);
+ const r=create(),events=r.projection.events,oct=events.filter(e=>e.kind==='flash'&&(
+   (e.date>='2026-10-13'&&e.date<='2026-10-14')||e.id==='flash|2026-10-16|av2pool'));
+ assert.equal(oct.filter(e=>e.metadata.flash).length,4);
  let former=0;
  for(const e of oct)for(const row of e.rows){
   assert.equal(row.sparks,0);

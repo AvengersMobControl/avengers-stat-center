@@ -35439,6 +35439,1334 @@
         "id": "leader-standing-website-publication-2026-10-22",
         "date": "2026-10-22"
       }
+    },
+    {
+      "approved": true,
+      "expectedRevision": 0,
+      "event": {
+        "id": "flash|2026-09-25|av2pool",
+        "kind": "flash",
+        "date": "2026-09-25",
+        "status": "partial",
+        "unit": "lines",
+        "metadata": {
+          "pool": "av2-week",
+          "poolWeek": "2026-09-25",
+          "complete": false,
+          "coverageNote": "Partial final screenshot coverage; absent or cropped results remain unknown."
+        },
+        "sources": [
+          "reviewed-image-sha256:c2f69f4789aef13063df751320b3607db5c8619f517ea92ce6065381f6e9ede8",
+          "reviewed-image-sha256:e38fc880acc586a4a4471d146565d9afba48a45fdbe0d54bdac6f3d6ae446a05"
+        ],
+        "rows": [
+          {
+            "player": "AV-HECKTO",
+            "clan": "AV-2",
+            "score": 97,
+            "sparks": 1482,
+            "stars": 14820,
+            "metadata": {
+              "rank": 4,
+              "share": 0.052,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-HECKTO",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "c2f69f4789aef13063df751320b3607db5c8619f517ea92ce6065381f6e9ede8",
+              "legacyFlashEventId": "flash|PF1-2026-09-22"
+            }
+          },
+          {
+            "player": "AV-KitKat",
+            "clan": "AV-2",
+            "score": 1012,
+            "sparks": 2668,
+            "stars": 26676,
+            "metadata": {
+              "rank": 2,
+              "share": 0.093,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-KitKat",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "c2f69f4789aef13063df751320b3607db5c8619f517ea92ce6065381f6e9ede8",
+              "legacyFlashEventId": "flash|PF1-2026-09-22"
+            }
+          },
+          {
+            "player": "AV-TigerMx",
+            "clan": "AV-2",
+            "score": 1988,
+            "sparks": 11903,
+            "stars": 119034,
+            "metadata": {
+              "rank": 1,
+              "share": 0.1,
+              "poolSlot": 1,
+              "sourceDisplayName": "Av-TigerMx",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "e38fc880acc586a4a4471d146565d9afba48a45fdbe0d54bdac6f3d6ae446a05",
+              "legacyFlashEventId": "flash|PF2-2026-09-22"
+            }
+          },
+          {
+            "player": "AV-Vadik-UA",
+            "clan": "AV-2",
+            "score": 1599,
+            "sparks": 2964,
+            "stars": 29640,
+            "metadata": {
+              "rank": 1,
+              "share": 0.103,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-Vadik-UA",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "c2f69f4789aef13063df751320b3607db5c8619f517ea92ce6065381f6e9ede8",
+              "legacyFlashEventId": "flash|PF1-2026-09-22"
+            }
+          },
+          {
+            "player": "AV-Vadik-UA",
+            "clan": "AV-2",
+            "score": 1202,
+            "sparks": 9523,
+            "stars": 95227,
+            "metadata": {
+              "rank": 3,
+              "share": 0.08,
+              "poolSlot": 2,
+              "sourceDisplayName": "AV-Vadik-UA",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "e38fc880acc586a4a4471d146565d9afba48a45fdbe0d54bdac6f3d6ae446a05",
+              "legacyFlashEventId": "flash|PF2-2026-09-22"
+            }
+          }
+        ]
+      },
+      "authorization": {
+        "kind": "standing-website-only",
+        "id": "leader-standing-website-publication-2026-10-22",
+        "date": "2026-10-22"
+      }
+    },
+    {
+      "approved": true,
+      "expectedRevision": 0,
+      "event": {
+        "id": "flash|2026-10-02|av2pool",
+        "kind": "flash",
+        "date": "2026-10-02",
+        "status": "partial",
+        "unit": "lines",
+        "metadata": {
+          "pool": "av2-week",
+          "poolWeek": "2026-10-02",
+          "complete": false,
+          "coverageNote": "Partial final screenshot coverage; absent or cropped results remain unknown."
+        },
+        "sources": [
+          "reviewed-image-sha256:c4af03a1f663e190afdd1a760e6f418542667885091e6aae01f33e9ad37dc413"
+        ],
+        "rows": [
+          {
+            "player": "AV-KitKat",
+            "clan": "AV-2",
+            "score": 1297,
+            "sparks": 1843,
+            "stars": 18430,
+            "metadata": {
+              "rank": 1,
+              "share": 0.103,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-KitKat",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "c4af03a1f663e190afdd1a760e6f418542667885091e6aae01f33e9ad37dc413",
+              "legacyFlashEventId": "flash|PF1-2026-09-28"
+            }
+          }
+        ]
+      },
+      "authorization": {
+        "kind": "standing-website-only",
+        "id": "leader-standing-website-publication-2026-10-22",
+        "date": "2026-10-22"
+      }
+    },
+    {
+      "approved": true,
+      "expectedRevision": 0,
+      "event": {
+        "id": "flash|2026-10-09|av2pool",
+        "kind": "flash",
+        "date": "2026-10-09",
+        "status": "partial",
+        "unit": "lines",
+        "metadata": {
+          "pool": "av2-week",
+          "poolWeek": "2026-10-09",
+          "complete": false,
+          "coverageNote": "Partial final screenshot coverage; absent or cropped results remain unknown."
+        },
+        "sources": [
+          "reviewed-image-sha256:0c94c5b1918f39fd496de0c0605cf79687d8fadb5208e063a1ff3e42ace0bf78",
+          "reviewed-image-sha256:12ca6b9c0f1e694543b082ca41cfcb26cc876c8581307f8d684bdab8b5465a27",
+          "reviewed-image-sha256:2771b3d6f513f05ab80692a6ce116d34ad9c145723fec76ab1bbaa26643a0b47",
+          "reviewed-image-sha256:37ea979c1cab88181945c167301a2fb9c8155a4875c545017767f9c019f6fff3",
+          "reviewed-image-sha256:67686ef1d4b8278c4b9715ceafc51a724cd8f1def7ec9549a7dbc0d8cfe5900b",
+          "reviewed-image-sha256:ead7cfc12041b0a13de00240183860f2ce20445a8c91905b78d10980d78a3941"
+        ],
+        "rows": [
+          {
+            "player": "AV-EXCALIBUR",
+            "clan": "AV-2",
+            "score": 229,
+            "sparks": 2458,
+            "stars": 24574,
+            "metadata": {
+              "rank": 8,
+              "share": 0.037,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-2-EXCALIBUR",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "2771b3d6f513f05ab80692a6ce116d34ad9c145723fec76ab1bbaa26643a0b47",
+              "legacyFlashEventId": "flash|PF2-2026-10-06"
+            }
+          },
+          {
+            "player": "AV-EXCALIBUR",
+            "clan": "AV-2",
+            "score": 513,
+            "sparks": 1641,
+            "stars": 16413,
+            "metadata": {
+              "rank": 2,
+              "share": 0.091,
+              "poolSlot": 2,
+              "sourceDisplayName": "AV-2-EXCALIBUR",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "37ea979c1cab88181945c167301a2fb9c8155a4875c545017767f9c019f6fff3",
+              "legacyFlashEventId": "flash|PF4-2026-10-07"
+            }
+          },
+          {
+            "player": "AV-Fahad",
+            "clan": "AV-2",
+            "score": 103,
+            "sparks": 2281,
+            "stars": 22805,
+            "metadata": {
+              "rank": 7,
+              "share": 0.044,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-Fahad",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "67686ef1d4b8278c4b9715ceafc51a724cd8f1def7ec9549a7dbc0d8cfe5900b",
+              "legacyFlashEventId": "flash|PF1-2026-10-06"
+            }
+          },
+          {
+            "player": "AV-JefhKintz05",
+            "clan": "AV-2",
+            "score": 284,
+            "sparks": 2989,
+            "stars": 29888,
+            "metadata": {
+              "rank": 5,
+              "share": 0.046,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-JefhKintz05",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "ead7cfc12041b0a13de00240183860f2ce20445a8c91905b78d10980d78a3941",
+              "legacyFlashEventId": "flash|PF2-2026-10-06"
+            }
+          },
+          {
+            "player": "AV-JefhKintz05",
+            "clan": "AV-2",
+            "score": 1007,
+            "sparks": 4243,
+            "stars": 42429,
+            "metadata": {
+              "rank": 3,
+              "share": 0.081,
+              "poolSlot": 2,
+              "sourceDisplayName": "AV-JefhKintz05",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "67686ef1d4b8278c4b9715ceafc51a724cd8f1def7ec9549a7dbc0d8cfe5900b",
+              "legacyFlashEventId": "flash|PF1-2026-10-06"
+            }
+          },
+          {
+            "player": "AV-JefhKintz05",
+            "clan": "AV-2",
+            "score": 520,
+            "sparks": 1824,
+            "stars": 18236,
+            "metadata": {
+              "rank": 1,
+              "share": 0.101,
+              "poolSlot": 3,
+              "sourceDisplayName": "AV-JefhKintz05",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "37ea979c1cab88181945c167301a2fb9c8155a4875c545017767f9c019f6fff3",
+              "legacyFlashEventId": "flash|PF4-2026-10-07"
+            }
+          },
+          {
+            "player": "AV-JefhKintz05",
+            "clan": "AV-2",
+            "score": 264,
+            "sparks": 1392,
+            "stars": 13914,
+            "metadata": {
+              "rank": 1,
+              "share": 0.1,
+              "poolSlot": 4,
+              "sourceDisplayName": "AV-JefhKintz05",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "12ca6b9c0f1e694543b082ca41cfcb26cc876c8581307f8d684bdab8b5465a27",
+              "legacyFlashEventId": "flash|PF3-2026-10-06"
+            }
+          },
+          {
+            "player": "AV-Lin",
+            "clan": "AV-2",
+            "score": 1493,
+            "sparks": 5314,
+            "stars": 53133,
+            "metadata": {
+              "rank": 3,
+              "share": 0.08,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-2Lin",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "ead7cfc12041b0a13de00240183860f2ce20445a8c91905b78d10980d78a3941",
+              "legacyFlashEventId": "flash|PF2-2026-10-06"
+            }
+          },
+          {
+            "player": "AV-Lin",
+            "clan": "AV-2",
+            "score": 661,
+            "sparks": 2387,
+            "stars": 23866,
+            "metadata": {
+              "rank": 5,
+              "share": 0.046,
+              "poolSlot": 2,
+              "sourceDisplayName": "AV-2Lin",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "67686ef1d4b8278c4b9715ceafc51a724cd8f1def7ec9549a7dbc0d8cfe5900b",
+              "legacyFlashEventId": "flash|PF1-2026-10-06"
+            }
+          },
+          {
+            "player": "AV-Pablin",
+            "clan": "AV-2",
+            "score": 2141,
+            "sparks": 6642,
+            "stars": 66417,
+            "metadata": {
+              "rank": 1,
+              "share": 0.101,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-Pablin",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "ead7cfc12041b0a13de00240183860f2ce20445a8c91905b78d10980d78a3941",
+              "legacyFlashEventId": "flash|PF2-2026-10-06"
+            }
+          },
+          {
+            "player": "AV-Pablin",
+            "clan": "AV-2",
+            "score": 2274,
+            "sparks": 5304,
+            "stars": 53036,
+            "metadata": {
+              "rank": 1,
+              "share": 0.101,
+              "poolSlot": 2,
+              "sourceDisplayName": "AV-Pablin",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "67686ef1d4b8278c4b9715ceafc51a724cd8f1def7ec9549a7dbc0d8cfe5900b",
+              "legacyFlashEventId": "flash|PF1-2026-10-06"
+            }
+          },
+          {
+            "player": "AV-SiFra",
+            "clan": "AV-2",
+            "score": 1787,
+            "sparks": 5978,
+            "stars": 59775,
+            "metadata": {
+              "rank": 2,
+              "share": 0.091,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-SiFra",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "ead7cfc12041b0a13de00240183860f2ce20445a8c91905b78d10980d78a3941",
+              "legacyFlashEventId": "flash|PF2-2026-10-06"
+            }
+          },
+          {
+            "player": "AV-SiFra",
+            "clan": "AV-2",
+            "score": 1144,
+            "sparks": 4774,
+            "stars": 47732,
+            "metadata": {
+              "rank": 2,
+              "share": 0.091,
+              "poolSlot": 2,
+              "sourceDisplayName": "AV-SiFra",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "67686ef1d4b8278c4b9715ceafc51a724cd8f1def7ec9549a7dbc0d8cfe5900b",
+              "legacyFlashEventId": "flash|PF1-2026-10-06"
+            }
+          },
+          {
+            "player": "TheHemperor",
+            "clan": "AV-2",
+            "score": 45,
+            "sparks": 1273,
+            "stars": 12729,
+            "metadata": {
+              "rank": 16,
+              "share": 0.024,
+              "poolSlot": 1,
+              "sourceDisplayName": "TheHemperor",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "0c94c5b1918f39fd496de0c0605cf79687d8fadb5208e063a1ff3e42ace0bf78",
+              "legacyFlashEventId": "flash|PF1-2026-10-06"
+            }
+          }
+        ]
+      },
+      "authorization": {
+        "kind": "standing-website-only",
+        "id": "leader-standing-website-publication-2026-10-22",
+        "date": "2026-10-22"
+      }
+    },
+    {
+      "approved": true,
+      "expectedRevision": 0,
+      "event": {
+        "id": "flash|2026-10-16|av2pool",
+        "kind": "flash",
+        "date": "2026-10-16",
+        "status": "partial",
+        "unit": "lines",
+        "metadata": {
+          "pool": "av2-week",
+          "poolWeek": "2026-10-16",
+          "complete": false,
+          "coverageNote": "Partial final screenshot coverage; absent or cropped results remain unknown."
+        },
+        "sources": [
+          "reviewed-image-sha256:1b36b08992f0c54e179b4cc7e2884f45616105f5c2e1970104f7711acff59950",
+          "reviewed-image-sha256:599357226a53c89c3a6d9403036fe3aeda2619406a84549397211b266dba735c",
+          "reviewed-image-sha256:7dd49e347a472813ea3d725ab7aa2d2296ff04f4908122052e80c9e47bd4802a",
+          "reviewed-image-sha256:a94aab741df2859e6163a0d9752e775608aba75b66c2f9ddff6478d1c7b9cd62",
+          "reviewed-image-sha256:ba29bc30422859d7a99b02d005231da657ec227a04f8f87de1ddc8ba71c6b517"
+        ],
+        "rows": [
+          {
+            "player": "AV-Caklet",
+            "clan": "AV-2",
+            "score": 728,
+            "sparks": 0,
+            "stars": 34480,
+            "metadata": {
+              "rank": 5,
+              "share": 0.047,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-Caklet",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "599357226a53c89c3a6d9403036fe3aeda2619406a84549397211b266dba735c",
+              "legacyFlashEventId": "flash|PF1-2026-10-13"
+            }
+          },
+          {
+            "player": "AV-Chuck",
+            "clan": "AV-2",
+            "score": 1367,
+            "sparks": 0,
+            "stars": 61298,
+            "metadata": {
+              "rank": 3,
+              "share": 0.083,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-CHUCK",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "599357226a53c89c3a6d9403036fe3aeda2619406a84549397211b266dba735c",
+              "legacyFlashEventId": "flash|PF1-2026-10-13"
+            }
+          },
+          {
+            "player": "AV-EventHorizon",
+            "clan": "AV-2",
+            "score": 408,
+            "sparks": 0,
+            "stars": 21827,
+            "metadata": {
+              "rank": 2,
+              "share": 0.092,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-EventHorizon",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "7dd49e347a472813ea3d725ab7aa2d2296ff04f4908122052e80c9e47bd4802a",
+              "legacyFlashEventId": "flash|PF3-2026-10-13"
+            }
+          },
+          {
+            "player": "AV-EXCALIBUR",
+            "clan": "AV-2",
+            "score": 301,
+            "sparks": 0,
+            "stars": 12126,
+            "metadata": {
+              "rank": 4,
+              "share": 0.051,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-EXCALIBUR",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "7dd49e347a472813ea3d725ab7aa2d2296ff04f4908122052e80c9e47bd4802a",
+              "legacyFlashEventId": "flash|PF3-2026-10-13"
+            }
+          },
+          {
+            "player": "AV-Hoops",
+            "clan": "AV-2",
+            "score": 869,
+            "sparks": 0,
+            "stars": 38311,
+            "metadata": {
+              "rank": 4,
+              "share": 0.052,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-Hoops",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "599357226a53c89c3a6d9403036fe3aeda2619406a84549397211b266dba735c",
+              "legacyFlashEventId": "flash|PF1-2026-10-13"
+            }
+          },
+          {
+            "player": "AV-Hoops",
+            "clan": "AV-2",
+            "score": 162,
+            "sparks": 0,
+            "stars": 10914,
+            "metadata": {
+              "rank": 5,
+              "share": 0.046,
+              "poolSlot": 2,
+              "sourceDisplayName": "AV-Hoops",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "7dd49e347a472813ea3d725ab7aa2d2296ff04f4908122052e80c9e47bd4802a",
+              "legacyFlashEventId": "flash|PF3-2026-10-13"
+            }
+          },
+          {
+            "player": "AV-J",
+            "clan": "AV-2",
+            "score": 605,
+            "sparks": 0,
+            "stars": 24167,
+            "metadata": {
+              "rank": 1,
+              "share": 0.105,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-J",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "ba29bc30422859d7a99b02d005231da657ec227a04f8f87de1ddc8ba71c6b517",
+              "legacyFlashEventId": "flash|PF4-2026-10-14"
+            }
+          },
+          {
+            "player": "AV-J",
+            "clan": "AV-2",
+            "score": 367,
+            "sparks": 0,
+            "stars": 26143,
+            "metadata": {
+              "rank": 4,
+              "share": 0.054,
+              "poolSlot": 2,
+              "sourceDisplayName": "AV-J",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "1b36b08992f0c54e179b4cc7e2884f45616105f5c2e1970104f7711acff59950",
+              "legacyFlashEventId": "flash|PF2-2026-10-13"
+            }
+          },
+          {
+            "player": "AV-JefhKintz05",
+            "clan": "AV-2",
+            "score": 257,
+            "sparks": 0,
+            "stars": 33714,
+            "metadata": {
+              "rank": 6,
+              "share": 0.046,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-JefhKintz05",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "599357226a53c89c3a6d9403036fe3aeda2619406a84549397211b266dba735c",
+              "legacyFlashEventId": "flash|PF1-2026-10-13"
+            }
+          },
+          {
+            "player": "AV-KO",
+            "clan": "AV-2",
+            "score": 193,
+            "sparks": 0,
+            "stars": 19346,
+            "metadata": {
+              "rank": 8,
+              "share": 0.04,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV2-KO",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "a94aab741df2859e6163a0d9752e775608aba75b66c2f9ddff6478d1c7b9cd62",
+              "legacyFlashEventId": "flash|PF2-2026-10-13"
+            }
+          },
+          {
+            "player": "AV-Lin",
+            "clan": "AV-2",
+            "score": 1916,
+            "sparks": 0,
+            "stars": 68960,
+            "metadata": {
+              "rank": 2,
+              "share": 0.094,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-2Lin",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "599357226a53c89c3a6d9403036fe3aeda2619406a84549397211b266dba735c",
+              "legacyFlashEventId": "flash|PF1-2026-10-13"
+            }
+          },
+          {
+            "player": "AV-Lin",
+            "clan": "AV-2",
+            "score": 818,
+            "sparks": 0,
+            "stars": 24252,
+            "metadata": {
+              "rank": 1,
+              "share": 0.102,
+              "poolSlot": 2,
+              "sourceDisplayName": "AV-2Lin",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "7dd49e347a472813ea3d725ab7aa2d2296ff04f4908122052e80c9e47bd4802a",
+              "legacyFlashEventId": "flash|PF3-2026-10-13"
+            }
+          },
+          {
+            "player": "AV-Lin",
+            "clan": "AV-2",
+            "score": 1211,
+            "sparks": 0,
+            "stars": 47057,
+            "metadata": {
+              "rank": 2,
+              "share": 0.097,
+              "poolSlot": 3,
+              "sourceDisplayName": "AV-2Lin",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "1b36b08992f0c54e179b4cc7e2884f45616105f5c2e1970104f7711acff59950",
+              "legacyFlashEventId": "flash|PF2-2026-10-13"
+            }
+          },
+          {
+            "player": "AV-OblivX",
+            "clan": "AV-2",
+            "score": 234,
+            "sparks": 0,
+            "stars": 22483,
+            "metadata": {
+              "rank": 7,
+              "share": 0.046,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-OblivX",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "a94aab741df2859e6163a0d9752e775608aba75b66c2f9ddff6478d1c7b9cd62",
+              "legacyFlashEventId": "flash|PF2-2026-10-13"
+            }
+          },
+          {
+            "player": "AV-SiFra",
+            "clan": "AV-2",
+            "score": 3005,
+            "sparks": 0,
+            "stars": 76622,
+            "metadata": {
+              "rank": 1,
+              "share": 0.104,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-SiFra",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "599357226a53c89c3a6d9403036fe3aeda2619406a84549397211b266dba735c",
+              "legacyFlashEventId": "flash|PF1-2026-10-13"
+            }
+          },
+          {
+            "player": "AV-SiFra",
+            "clan": "AV-2",
+            "score": 2655,
+            "sparks": 0,
+            "stars": 52286,
+            "metadata": {
+              "rank": 1,
+              "share": 0.108,
+              "poolSlot": 2,
+              "sourceDisplayName": "AV-SiFra",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "1b36b08992f0c54e179b4cc7e2884f45616105f5c2e1970104f7711acff59950",
+              "legacyFlashEventId": "flash|PF2-2026-10-13"
+            }
+          },
+          {
+            "player": "AV-Squishy",
+            "clan": "AV-2",
+            "score": 372,
+            "sparks": 0,
+            "stars": 19333,
+            "metadata": {
+              "rank": 3,
+              "share": 0.084,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-Squishy",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "ba29bc30422859d7a99b02d005231da657ec227a04f8f87de1ddc8ba71c6b517",
+              "legacyFlashEventId": "flash|PF4-2026-10-14"
+            }
+          },
+          {
+            "player": "AV-TigerMx",
+            "clan": "AV-2",
+            "score": 374,
+            "sparks": 0,
+            "stars": 19402,
+            "metadata": {
+              "rank": 3,
+              "share": 0.082,
+              "poolSlot": 1,
+              "sourceDisplayName": "Av-TigerMx",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "7dd49e347a472813ea3d725ab7aa2d2296ff04f4908122052e80c9e47bd4802a",
+              "legacyFlashEventId": "flash|PF3-2026-10-13"
+            }
+          }
+        ]
+      },
+      "authorization": {
+        "kind": "standing-website-only",
+        "id": "leader-standing-website-publication-2026-10-22",
+        "date": "2026-10-22"
+      }
+    },
+    {
+      "approved": true,
+      "expectedRevision": 0,
+      "event": {
+        "id": "flash|2026-10-23|av2pool",
+        "kind": "flash",
+        "date": "2026-10-23",
+        "status": "partial",
+        "unit": "lines",
+        "metadata": {
+          "pool": "av2-week",
+          "poolWeek": "2026-10-23",
+          "complete": false,
+          "coverageNote": "Partial final screenshot coverage; absent or cropped results remain unknown."
+        },
+        "sources": [
+          "reviewed-image-sha256:0fff17c223ead9511b2ba35a81518caa3fca5133182f945bb66c0eeb4b6a1ce7",
+          "reviewed-image-sha256:2eeef35d241d40bd6b5f2c18510cc90dcb1abf3e2a70b02216e2ec6905a22398",
+          "reviewed-image-sha256:7a57637579767b99c2ea796d1b46b84353925fc10b3b55726925357928260ac5",
+          "reviewed-image-sha256:96244e9f8e115f315f894b694a1c90abab1add5921f23736c5b7cc4fdf5d9b15",
+          "reviewed-image-sha256:b2592bdb111c392005a60097a3756effc1c45bec3dbcf5867a65cc350e64431d"
+        ],
+        "rows": [
+          {
+            "player": "AV-braa",
+            "clan": "AV-2",
+            "score": 157,
+            "sparks": 1719,
+            "stars": 17184,
+            "metadata": {
+              "rank": 10,
+              "share": 0.03,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-braa",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "b2592bdb111c392005a60097a3756effc1c45bec3dbcf5867a65cc350e64431d"
+            }
+          },
+          {
+            "player": "AV-Brisket",
+            "clan": "AV-2",
+            "score": 514,
+            "sparks": 1442,
+            "stars": 14412,
+            "metadata": {
+              "rank": 1,
+              "share": 0.101,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV2-Brisket",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "0fff17c223ead9511b2ba35a81518caa3fca5133182f945bb66c0eeb4b6a1ce7"
+            }
+          },
+          {
+            "player": "AV-Brisket",
+            "clan": "AV-2",
+            "score": 225,
+            "sparks": 2521,
+            "stars": 25203,
+            "metadata": {
+              "rank": 6,
+              "share": 0.045,
+              "poolSlot": 2,
+              "sourceDisplayName": "AV2-Brisket",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "96244e9f8e115f315f894b694a1c90abab1add5921f23736c5b7cc4fdf5d9b15"
+            }
+          },
+          {
+            "player": "AV-Chuck",
+            "clan": "AV-2",
+            "score": 440,
+            "sparks": 2864,
+            "stars": 28640,
+            "metadata": {
+              "rank": 4,
+              "share": 0.05,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-CHUCK",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "96244e9f8e115f315f894b694a1c90abab1add5921f23736c5b7cc4fdf5d9b15"
+            }
+          },
+          {
+            "player": "AV-EventHorizon",
+            "clan": "AV-2",
+            "score": 417,
+            "sparks": 1310,
+            "stars": 13089,
+            "metadata": {
+              "rank": 1,
+              "share": 0.101,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-EventHorizon",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "2eeef35d241d40bd6b5f2c18510cc90dcb1abf3e2a70b02216e2ec6905a22398"
+            }
+          },
+          {
+            "player": "AV-EXCALIBUR",
+            "clan": "AV-2",
+            "score": 172,
+            "sparks": 2005,
+            "stars": 20048,
+            "metadata": {
+              "rank": 9,
+              "share": 0.036,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-EXCALIBUR",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "b2592bdb111c392005a60097a3756effc1c45bec3dbcf5867a65cc350e64431d"
+            }
+          },
+          {
+            "player": "AV-EXCALIBUR",
+            "clan": "AV-2",
+            "score": 303,
+            "sparks": 1232,
+            "stars": 12314,
+            "metadata": {
+              "rank": 2,
+              "share": 0.1,
+              "poolSlot": 2,
+              "sourceDisplayName": "AV-EXCALIBUR",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "7a57637579767b99c2ea796d1b46b84353925fc10b3b55726925357928260ac5"
+            }
+          },
+          {
+            "player": "AV-Hoops",
+            "clan": "AV-2",
+            "score": 1569,
+            "sparks": 5156,
+            "stars": 51552,
+            "metadata": {
+              "rank": 2,
+              "share": 0.092,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-Hoops",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "96244e9f8e115f315f894b694a1c90abab1add5921f23736c5b7cc4fdf5d9b15"
+            }
+          },
+          {
+            "player": "AV-KitKat",
+            "clan": "AV-2",
+            "score": 2170,
+            "sparks": 5728,
+            "stars": 57280,
+            "metadata": {
+              "rank": 1,
+              "share": 0.102,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-KitKat",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "96244e9f8e115f315f894b694a1c90abab1add5921f23736c5b7cc4fdf5d9b15"
+            }
+          },
+          {
+            "player": "AV-KO",
+            "clan": "AV-2",
+            "score": 224,
+            "sparks": 2463,
+            "stars": 24630,
+            "metadata": {
+              "rank": 7,
+              "share": 0.044,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV2-KO",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "96244e9f8e115f315f894b694a1c90abab1add5921f23736c5b7cc4fdf5d9b15"
+            }
+          },
+          {
+            "player": "AV-TigerMx",
+            "clan": "AV-2",
+            "score": 295,
+            "sparks": 1095,
+            "stars": 10945,
+            "metadata": {
+              "rank": 3,
+              "share": 0.089,
+              "poolSlot": 1,
+              "sourceDisplayName": "Av-TigerMx",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "7a57637579767b99c2ea796d1b46b84353925fc10b3b55726925357928260ac5"
+            }
+          },
+          {
+            "player": "TheHemperor",
+            "clan": "AV-2",
+            "score": 149,
+            "sparks": 1661,
+            "stars": 16611,
+            "metadata": {
+              "rank": 11,
+              "share": 0.029,
+              "poolSlot": 1,
+              "sourceDisplayName": "TheHemperor",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "b2592bdb111c392005a60097a3756effc1c45bec3dbcf5867a65cc350e64431d"
+            }
+          },
+          {
+            "player": "TheHemperor",
+            "clan": "AV-2",
+            "score": 75,
+            "sparks": 684,
+            "stars": 6841,
+            "metadata": {
+              "rank": 4,
+              "share": 0.056,
+              "poolSlot": 2,
+              "sourceDisplayName": "TheHemperor",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "7a57637579767b99c2ea796d1b46b84353925fc10b3b55726925357928260ac5"
+            }
+          }
+        ]
+      },
+      "authorization": {
+        "kind": "standing-website-only",
+        "id": "leader-standing-website-publication-2026-10-22",
+        "date": "2026-10-22"
+      }
+    },
+    {
+      "approved": true,
+      "expectedRevision": 0,
+      "event": {
+        "id": "flash|2026-11-13|av2pool",
+        "kind": "flash",
+        "date": "2026-11-13",
+        "status": "partial",
+        "unit": "lines",
+        "metadata": {
+          "pool": "av2-week",
+          "poolWeek": "2026-11-13",
+          "complete": false,
+          "coverageNote": "Partial final screenshot coverage; absent or cropped results remain unknown."
+        },
+        "sources": [
+          "reviewed-image-sha256:059a7e467ae3316e2a273a97bb22c34d9b0c1505bc85f3c0b974d54ba746c4e7",
+          "reviewed-image-sha256:56bf15f4ab2148e58024eef9ba7a6b9f7d811170b7098c51e187d27830082c8f",
+          "reviewed-image-sha256:9b06fe8281bbbe39ea7bcb8153c6114e0ecbd7ecfd577b3ed02d61fa515b868e"
+        ],
+        "rows": [
+          {
+            "player": "AV-EXCALIBUR",
+            "clan": "AV-2",
+            "score": 408,
+            "sparks": 2038,
+            "stars": 20382,
+            "metadata": {
+              "rank": 3,
+              "share": 0.08,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-EXCALIBUR",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "56bf15f4ab2148e58024eef9ba7a6b9f7d811170b7098c51e187d27830082c8f"
+            }
+          },
+          {
+            "player": "AV-JefhKintz05",
+            "clan": "AV-2",
+            "score": 731,
+            "sparks": 2293,
+            "stars": 22929,
+            "metadata": {
+              "rank": 2,
+              "share": 0.09,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-JefhKintz05",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "56bf15f4ab2148e58024eef9ba7a6b9f7d811170b7098c51e187d27830082c8f"
+            }
+          },
+          {
+            "player": "AV-JefhKintz05",
+            "clan": "AV-2",
+            "score": 1324,
+            "sparks": 7002,
+            "stars": 70018,
+            "metadata": {
+              "rank": 6,
+              "share": 0.044,
+              "poolSlot": 2,
+              "sourceDisplayName": "AV-JefhKintz05",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "059a7e467ae3316e2a273a97bb22c34d9b0c1505bc85f3c0b974d54ba746c4e7"
+            }
+          },
+          {
+            "player": "AV.ziyad",
+            "clan": "AV-2",
+            "score": 2020,
+            "sparks": 16709,
+            "stars": 167091,
+            "metadata": {
+              "rank": 3,
+              "share": 0.08,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV.ziyad",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "9b06fe8281bbbe39ea7bcb8153c6114e0ecbd7ecfd577b3ed02d61fa515b868e"
+            }
+          },
+          {
+            "player": "AV.ziyad",
+            "clan": "AV-2",
+            "score": 1840,
+            "sparks": 7957,
+            "stars": 79565,
+            "metadata": {
+              "rank": 4,
+              "share": 0.05,
+              "poolSlot": 2,
+              "sourceDisplayName": "AV.ziyad",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "059a7e467ae3316e2a273a97bb22c34d9b0c1505bc85f3c0b974d54ba746c4e7"
+            }
+          }
+        ]
+      },
+      "authorization": {
+        "kind": "standing-website-only",
+        "id": "leader-standing-website-publication-2026-10-22",
+        "date": "2026-10-22"
+      }
+    },
+    {
+      "approved": true,
+      "expectedRevision": 1,
+      "event": {
+        "id": "flash|2026-10-09|av2pool",
+        "kind": "flash",
+        "date": "2026-10-09",
+        "status": "partial",
+        "unit": "lines",
+        "metadata": {
+          "pool": "av2-week",
+          "poolWeek": "2026-10-09",
+          "complete": false,
+          "coverageNote": "Partial final screenshot coverage; absent or cropped results remain unknown."
+        },
+        "sources": [
+          "reviewed-image-sha256:0c94c5b1918f39fd496de0c0605cf79687d8fadb5208e063a1ff3e42ace0bf78",
+          "reviewed-image-sha256:12ca6b9c0f1e694543b082ca41cfcb26cc876c8581307f8d684bdab8b5465a27",
+          "reviewed-image-sha256:2771b3d6f513f05ab80692a6ce116d34ad9c145723fec76ab1bbaa26643a0b47",
+          "reviewed-image-sha256:37ea979c1cab88181945c167301a2fb9c8155a4875c545017767f9c019f6fff3",
+          "reviewed-image-sha256:60b02706dfcf10ed39f8a216ded5a65c03cc4003de4a660caf6eb51d6727285d",
+          "reviewed-image-sha256:67686ef1d4b8278c4b9715ceafc51a724cd8f1def7ec9549a7dbc0d8cfe5900b",
+          "reviewed-image-sha256:ead7cfc12041b0a13de00240183860f2ce20445a8c91905b78d10980d78a3941"
+        ],
+        "rows": [
+          {
+            "player": "AV-Brisket",
+            "clan": "AV-2",
+            "score": 471,
+            "sparks": 1668,
+            "stars": 16672,
+            "metadata": {
+              "rank": 1,
+              "share": 0.1,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-Brisket",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "60b02706dfcf10ed39f8a216ded5a65c03cc4003de4a660caf6eb51d6727285d"
+            }
+          },
+          {
+            "player": "AV-EXCALIBUR",
+            "clan": "AV-2",
+            "score": 229,
+            "sparks": 2458,
+            "stars": 24574,
+            "metadata": {
+              "rank": 8,
+              "share": 0.037,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-2-EXCALIBUR",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "2771b3d6f513f05ab80692a6ce116d34ad9c145723fec76ab1bbaa26643a0b47",
+              "legacyFlashEventId": "flash|PF2-2026-10-06"
+            }
+          },
+          {
+            "player": "AV-EXCALIBUR",
+            "clan": "AV-2",
+            "score": 513,
+            "sparks": 1641,
+            "stars": 16413,
+            "metadata": {
+              "rank": 2,
+              "share": 0.091,
+              "poolSlot": 2,
+              "sourceDisplayName": "AV-2-EXCALIBUR",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "37ea979c1cab88181945c167301a2fb9c8155a4875c545017767f9c019f6fff3",
+              "legacyFlashEventId": "flash|PF4-2026-10-07"
+            }
+          },
+          {
+            "player": "AV-Fahad",
+            "clan": "AV-2",
+            "score": 103,
+            "sparks": 2281,
+            "stars": 22805,
+            "metadata": {
+              "rank": 7,
+              "share": 0.044,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-Fahad",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "67686ef1d4b8278c4b9715ceafc51a724cd8f1def7ec9549a7dbc0d8cfe5900b",
+              "legacyFlashEventId": "flash|PF1-2026-10-06"
+            }
+          },
+          {
+            "player": "AV-JefhKintz05",
+            "clan": "AV-2",
+            "score": 284,
+            "sparks": 2989,
+            "stars": 29888,
+            "metadata": {
+              "rank": 5,
+              "share": 0.046,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-JefhKintz05",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "ead7cfc12041b0a13de00240183860f2ce20445a8c91905b78d10980d78a3941",
+              "legacyFlashEventId": "flash|PF2-2026-10-06"
+            }
+          },
+          {
+            "player": "AV-JefhKintz05",
+            "clan": "AV-2",
+            "score": 1007,
+            "sparks": 4243,
+            "stars": 42429,
+            "metadata": {
+              "rank": 3,
+              "share": 0.081,
+              "poolSlot": 2,
+              "sourceDisplayName": "AV-JefhKintz05",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "67686ef1d4b8278c4b9715ceafc51a724cd8f1def7ec9549a7dbc0d8cfe5900b",
+              "legacyFlashEventId": "flash|PF1-2026-10-06"
+            }
+          },
+          {
+            "player": "AV-JefhKintz05",
+            "clan": "AV-2",
+            "score": 520,
+            "sparks": 1824,
+            "stars": 18236,
+            "metadata": {
+              "rank": 1,
+              "share": 0.101,
+              "poolSlot": 3,
+              "sourceDisplayName": "AV-JefhKintz05",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "37ea979c1cab88181945c167301a2fb9c8155a4875c545017767f9c019f6fff3",
+              "legacyFlashEventId": "flash|PF4-2026-10-07"
+            }
+          },
+          {
+            "player": "AV-JefhKintz05",
+            "clan": "AV-2",
+            "score": 264,
+            "sparks": 1392,
+            "stars": 13914,
+            "metadata": {
+              "rank": 1,
+              "share": 0.1,
+              "poolSlot": 4,
+              "sourceDisplayName": "AV-JefhKintz05",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "12ca6b9c0f1e694543b082ca41cfcb26cc876c8581307f8d684bdab8b5465a27",
+              "legacyFlashEventId": "flash|PF3-2026-10-06"
+            }
+          },
+          {
+            "player": "AV-Lin",
+            "clan": "AV-2",
+            "score": 1493,
+            "sparks": 5314,
+            "stars": 53133,
+            "metadata": {
+              "rank": 3,
+              "share": 0.08,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-2Lin",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "ead7cfc12041b0a13de00240183860f2ce20445a8c91905b78d10980d78a3941",
+              "legacyFlashEventId": "flash|PF2-2026-10-06"
+            }
+          },
+          {
+            "player": "AV-Lin",
+            "clan": "AV-2",
+            "score": 661,
+            "sparks": 2387,
+            "stars": 23866,
+            "metadata": {
+              "rank": 5,
+              "share": 0.046,
+              "poolSlot": 2,
+              "sourceDisplayName": "AV-2Lin",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "67686ef1d4b8278c4b9715ceafc51a724cd8f1def7ec9549a7dbc0d8cfe5900b",
+              "legacyFlashEventId": "flash|PF1-2026-10-06"
+            }
+          },
+          {
+            "player": "AV-Pablin",
+            "clan": "AV-2",
+            "score": 2141,
+            "sparks": 6642,
+            "stars": 66417,
+            "metadata": {
+              "rank": 1,
+              "share": 0.101,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-Pablin",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "ead7cfc12041b0a13de00240183860f2ce20445a8c91905b78d10980d78a3941",
+              "legacyFlashEventId": "flash|PF2-2026-10-06"
+            }
+          },
+          {
+            "player": "AV-Pablin",
+            "clan": "AV-2",
+            "score": 2274,
+            "sparks": 5304,
+            "stars": 53036,
+            "metadata": {
+              "rank": 1,
+              "share": 0.101,
+              "poolSlot": 2,
+              "sourceDisplayName": "AV-Pablin",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "67686ef1d4b8278c4b9715ceafc51a724cd8f1def7ec9549a7dbc0d8cfe5900b",
+              "legacyFlashEventId": "flash|PF1-2026-10-06"
+            }
+          },
+          {
+            "player": "AV-SiFra",
+            "clan": "AV-2",
+            "score": 1787,
+            "sparks": 5978,
+            "stars": 59775,
+            "metadata": {
+              "rank": 2,
+              "share": 0.091,
+              "poolSlot": 1,
+              "sourceDisplayName": "AV-SiFra",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "ead7cfc12041b0a13de00240183860f2ce20445a8c91905b78d10980d78a3941",
+              "legacyFlashEventId": "flash|PF2-2026-10-06"
+            }
+          },
+          {
+            "player": "AV-SiFra",
+            "clan": "AV-2",
+            "score": 1144,
+            "sparks": 4774,
+            "stars": 47732,
+            "metadata": {
+              "rank": 2,
+              "share": 0.091,
+              "poolSlot": 2,
+              "sourceDisplayName": "AV-SiFra",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "67686ef1d4b8278c4b9715ceafc51a724cd8f1def7ec9549a7dbc0d8cfe5900b",
+              "legacyFlashEventId": "flash|PF1-2026-10-06"
+            }
+          },
+          {
+            "player": "TheHemperor",
+            "clan": "AV-2",
+            "score": 45,
+            "sparks": 1273,
+            "stars": 12729,
+            "metadata": {
+              "rank": 16,
+              "share": 0.024,
+              "poolSlot": 1,
+              "sourceDisplayName": "TheHemperor",
+              "starsProvenance": "direct-visible-integer-stars",
+              "sourceImageSha256": "0c94c5b1918f39fd496de0c0605cf79687d8fadb5208e063a1ff3e42ace0bf78",
+              "legacyFlashEventId": "flash|PF1-2026-10-06"
+            }
+          }
+        ]
+      },
+      "authorization": {
+        "kind": "standing-website-only",
+        "id": "leader-standing-website-publication-2026-10-22",
+        "date": "2026-10-22"
+      }
     }
   ]
 }

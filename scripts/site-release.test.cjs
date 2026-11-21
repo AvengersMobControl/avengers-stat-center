@@ -973,3 +973,20 @@ test('November AVENGERS Flash pots use corroborated reward shares and exclude th
   assert.equal(events.find(event=>event.pool==='av2-week'&&event.date==='2026-11-20').potStars,undefined);
   assert.equal(events.find(event=>event.setId==='2026-10-26-A'&&event.flash===1).potStars,2213941);
 });
+
+test('archived AV-2 Flash results are counted once in the corresponding weekly pools',()=>{
+  const counts={'2026-09-25':5,'2026-10-02':1,'2026-10-09':15,'2026-10-16':18,'2026-10-23':13,'2026-11-13':5};
+  const events=BASE.ledger.events;
+  for(const [date,count] of Object.entries(counts)){
+    const pool=events.find(event=>event.id==='flash|'+date+'|av2pool');
+    assert.equal(pool?.rows.length,count,date);
+    for(const row of pool.rows){
+      assert.equal(row.clan,'AV-2');
+      assert.match(row.metadata.sourceImageSha256,/^[a-f0-9]{64}$/);
+      if(row.metadata.legacyFlashEventId){
+        const previous=events.find(event=>event.id===row.metadata.legacyFlashEventId);
+        assert(previous&&!previous.rows.some(prior=>prior.clan==='AV-2'&&prior.player===row.player&&prior.score===row.score));
+      }
+    }
+  }
+});

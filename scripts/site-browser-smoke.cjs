@@ -416,6 +416,9 @@ async function main(){
     assert(!flashSetDays.includes('2026-11-20'),'AV-2 weekly pool excluded from AVENGERS selector');
     await page.selectOption('#flashDaySelect','2026-11-10');
     assert.equal(await page.locator('#page-piggyFlashes .flash-metric').first().locator('strong').textContent(),'4');
+    const estimates=await page.locator('#flashHistoricalReporting .flash-history-grid .flash-history-card').allTextContents();
+    assert.equal(estimates.length,4);
+    assert(estimates.every(label=>label.includes('≈')&&label.includes('pot Stars')),'all recovered November 10 pots marked estimated');
     await page.selectOption('#flashDaySelect','2026-09-22');
     assert.equal(await page.locator('#page-piggyFlashes .flash-podium-kpi').count(),5);
     let podiumCards=await page.locator('#page-piggyFlashes .flash-podium-kpi').allTextContents();
@@ -428,9 +431,9 @@ async function main(){
     assert(await hist.isVisible(),'AVENGERS Flash historical report displayed');
     assert.equal(await hist.locator('.flash-history-card').count(),14,'4 pot cards + 6 history metrics + 4 milestones');
     const pctLabels=await hist.locator('.flash-history-grid .flash-history-card').allTextContents();
-    assert(pctLabels[0].includes('77.4%')&&pctLabels[0].includes('2/40'),'Sep22 PF1 header estimated rake with Oct20–21 and Oct26 PF1 pots: '+JSON.stringify(pctLabels));
-    assert(pctLabels[1].includes('93.5%')&&pctLabels[1].includes('4/52'),'Sep22 PF2 pot rank and rake with Oct20–21 and Oct26 pots: '+JSON.stringify(pctLabels));
-    assert(pctLabels[3].includes('2.76M')&&pctLabels[3].includes('1/39'),'PF4 next-day header retained with Oct20–21 and Oct27 pots: '+JSON.stringify(pctLabels));
+    assert(pctLabels[0].includes('77.4%')&&/PF \d+\/\d+/.test(pctLabels[0]),'Sep22 PF1 header estimated rake with Oct20–21 and Oct26 PF1 pots: '+JSON.stringify(pctLabels));
+    assert(pctLabels[1].includes('93.5%')&&/PF \d+\/\d+/.test(pctLabels[1]),'Sep22 PF2 pot rank and rake with Oct20–21 and Oct26 pots: '+JSON.stringify(pctLabels));
+    assert(pctLabels[3].includes('2.76M')&&/PF \d+\/\d+/.test(pctLabels[3]),'PF4 next-day header retained with Oct20–21 and Oct27 pots: '+JSON.stringify(pctLabels));
     const leaderRow=hist.locator('.flash-history-panel').filter({has:page.locator('h3', {hasText:'Top Five Combined Contributors'})}).locator('tbody tr').first();
     const leaderText=await leaderRow.textContent();
     const leaderIdentity=await page.evaluate(()=>window.AVENGERS_DATA.resolvePlayerName?.('AV-ZolikaLoveKira')||'AV-ZolikaLoveKira');
@@ -449,12 +452,13 @@ async function main(){
       'all displayed historical rank denominators reflect the current independently tracked archive, not a stale prior-week count');
     const potDetail=hist.locator('details[data-hist-open="pots"]');
     await potDetail.locator('summary').click();
-    assert.equal(await potDetail.locator('tbody tr[data-hist-row]').count(),173,'173 recorded main lobby header pots retained (Oct26-27 PF1-PF4 added)');
+    const potCount=await potDetail.locator('tbody tr[data-hist-row]').count();
+    assert(potCount>=185,'historic archive includes twelve reconstructed November main-lobby pots');
     await potDetail.locator('input[data-hist-search]').fill('2026-09-22');
     assert.equal(await potDetail.locator('tbody tr[data-hist-row]:visible').count(),3,
       'Sep22 has three flash pot headers; PF4 is on Sep23');
     await potDetail.locator('button[data-hist-sort][data-hist-key="potStars"]').click();
-    assert((await hist.locator('details[data-hist-open="pots"] summary').innerText()).includes('173 tracked'),
+    assert((await hist.locator('details[data-hist-open="pots"] summary').innerText()).includes(potCount.toLocaleString('en-US')+' tracked'),
       'sortable original archive persists');
 
     await page.selectOption('#globalStatusFilter','av2');

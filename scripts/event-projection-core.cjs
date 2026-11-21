@@ -253,9 +253,11 @@ function rewards(rows){
     if(r.kind!=='kraken'){if(r.stars===null)totals.unknownStars++;else totals.stars+=r.stars;}}
   return totals;
 }
+const resultDate=(event,row)=>isAv2FlashPool(event)&&day(row.metadata?.legacyFlashEventDate)?
+  row.metadata.legacyFlashEventDate:event.date;
 function project(ledger,{aliases={},members=[],snapshots={},priorToLogging=null,arenaStart='2026-08-01'}={}){
   validate(ledger,aliases);requireThat(day(arenaStart),'Invalid arena start');
-  const originalRows=ledger.events.filter(e=>e.status!=='revoked').flatMap(e=>normalize(e,aliases).rows.map(r=>({...r,date:e.date,kind:e.kind})));
+  const originalRows=ledger.events.filter(e=>e.status!=='revoked').flatMap(e=>normalize(e,aliases).rows.map(r=>({...r,date:resultDate(e,r),kind:e.kind})));
   // Leader correction (2026-11-08): one-line Big Pig is a valid result.
   // Only one-line Flash placeholders count as nonparticipation. Preserve the
   // original source evidence in both cases.
@@ -270,7 +272,7 @@ function project(ledger,{aliases={},members=[],snapshots={},priorToLogging=null,
   for(const e of events.filter(e=>e.status!=='revoked'))for(const r of e.rows){
     const key=[e.kind,e.date,r.player||r.sourceIdentity].join('|');
     requireThat(e.kind==='flash'||!seen.has(key),'Overlapping event identity: '+key);seen.add(key);
-    rows.push({...r,eventId:e.id,kind:e.kind,date:e.date,partial:e.status==='partial'});
+    rows.push({...r,eventId:e.id,kind:e.kind,date:resultDate(e,r),partial:e.status==='partial'});
   }
   const memberMap=new Map();
   for(const m of members){const name=canonical(m.name,aliases);requireThat(!memberMap.has(name),'Duplicate current member');memberMap.set(name,{name,status:m.status});}

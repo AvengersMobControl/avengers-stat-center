@@ -1,3 +1,8 @@
+## 2026-11-21 — Roster editor access from the public site
+
+- The public Rosters page includes a Discord sign-in link to the protected Rosters view. The protected page shows **Manage rosters** after checking the signed-in account's roster editor permission.
+- Production uses the private `AVENGERS_ROSTER_OWNER_IDS` Vercel setting for both verified owner Discord accounts. Kraken review retains its separate authorization.
+
 ## 2026-11-21 — AV-2 Flash archive and November pot browser gate
 
 - Reconciled 57 original-backed AV-2 Flash results into six Friday-ending pools from September 25 through November 13. Thirty-eight previously recorded results move out of the numbered view without duplicate scoring. Nineteen previously unlogged results are added. Capture remains partial.

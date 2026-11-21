@@ -12,9 +12,10 @@ const sites={
   pages:'https://avengersmobcontrol.github.io/avengers-stat-center/'
 };
 function owner(req,env){
-  const id=String(env.AVENGERS_KRAKEN_REVIEWER_IDS||'').trim();
+  const ownerIds=String(env.AVENGERS_ROSTER_OWNER_IDS||'').split(',').map(id=>id.trim());
+  if(!ownerIds.every(id=>/^\d{17,22}$/.test(id)))return null;
   const member=auth.sessionFromRequest(req,env);
-  return /^\d{17,22}$/.test(id)&&member?.id===id ? member : null;
+  return member&&ownerIds.includes(member.id) ? member : null;
 }
 function revision(value){
   const number=Number(value);

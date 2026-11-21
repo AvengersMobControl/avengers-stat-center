@@ -43,19 +43,60 @@ test('duplicate adds, existing alias reassignment, invalid names and circular li
   assert.throws(()=>applyChanges(people,{},[{kind:'link',name:'AV-One',target:'AV-Two'},
     {kind:'link',name:'AV-Two',target:'AV-One'}]),/already points/);
 });
-test('the same signed-in owner gate rejects guests, a second member and invalid worker credentials',async()=>{
+test('the roster editor accepts both configured owners and rejects guests other members and invalid worker credentials',async()=>{
   const {owner}=require('../api/roster-editor.js');
-  const env={AUTH_SECRET:'test-only',AVENGERS_KRAKEN_REVIEWER_IDS:'123456789012345678'};
+  const first='123456789012345678',second='234567890123456789',other='345678901234567890';
+  const env={AUTH_SECRET:'test-only',AVENGERS_ROSTER_OWNER_IDS:first+', '+second,AVENGERS_KRAKEN_REVIEWER_IDS:first};
   function request(payload){
     const body=Buffer.from(JSON.stringify({exp:Math.floor(Date.now()/1000)+100,...payload})).toString('base64url');
     const sig=createHmac('sha256',env.AUTH_SECRET).update(body).digest('base64url');
     return {headers:{cookie:'avengers_session='+body+'.'+sig}};
   }
-  const signed=request({sub:env.AVENGERS_KRAKEN_REVIEWER_IDS});
+  const signed=request({sub:first});
   assert(sessionFromRequest(signed,env));
-  assert(owner(signed,env));
-  assert.equal(owner(request({sub:'234567890123456789'}),env),null);
-  assert.equal(owner(request({sub:env.AVENGERS_KRAKEN_REVIEWER_IDS,guest:true}),env),null);
-  assert.equal(owner(signed,{...env,AVENGERS_KRAKEN_REVIEWER_IDS:env.AVENGERS_KRAKEN_REVIEWER_IDS+',234567890123456789'}),null);
+  assert.equal(owner(signed,env).id,first);
+  assert.equal(owner(request({sub:second}),env).id,second);
+  assert.equal(owner(request({sub:other,username:'Owner'}),env),null);
+  assert.equal(owner(request({sub:first,guest:true}),env),null);
+  assert.equal(owner(signed,{...env,AVENGERS_ROSTER_OWNER_IDS:first+',invalid'}),null);
+  assert.equal(owner(signed,{...env,AVENGERS_ROSTER_OWNER_IDS:undefined}),null);
   assert.equal(await authorizedWorker({headers:{authorization:'Bearer not.a.jwt'}}),false);
+});
+
+test('the public Rosters page leads to Discord sign-in and only authorized sessions get the editor link',async()=>{
+  const {readFileSync}=require('node:fs');
+  const {runInNewContext}=require('node:vm');
+  const source=readFileSync(require.resolve('../roster-editor-link.js'),'utf8');
+  async function loadRosters(origin,allowed){
+    const links=[];
+    const fetchPaths=[];
+    let openedRosters=false;
+    await runInNewContext(source,{
+      location:{origin,search:'?page=rosters'},
+      URLSearchParams,
+      document:{
+        getElementById:()=>({prepend:toolbar=>links.push(toolbar.link)}),
+        querySelector:()=>({click:()=>{openedRosters=true;}}),
+        createElement:()=>({append(link){this.link=link;}})
+      },
+      fetch:async path=>{
+        fetchPaths.push(path);
+        return {ok:true,json:async()=>({allowed})};
+      }
+    });
+    return {links,fetchPaths,openedRosters};
+  }
+
+  const publicView=await loadRosters('https://avengersmobcontrol.github.io',false);
+  assert.equal(publicView.links[0].textContent,'Sign in with Discord');
+  assert.equal(publicView.links[0].href,'https://avengers-stat-center.vercel.app/?page=rosters');
+  assert.deepEqual(publicView.fetchPaths,[]);
+  const ownerView=await loadRosters('https://avengers-stat-center.vercel.app',true);
+  assert.equal(ownerView.openedRosters,true);
+  assert.deepEqual(ownerView.fetchPaths,['/api/roster-editor?view=capability']);
+  assert.equal(ownerView.links[0].textContent,'Manage rosters');
+  assert.equal(ownerView.links[0].href,'/api/roster-editor');
+  const otherView=await loadRosters('https://avengers-stat-center.vercel.app',false);
+  assert.equal(otherView.openedRosters,true);
+  assert.deepEqual(otherView.links,[]);
 });

@@ -1,19 +1,34 @@
 'use strict';
-(() => {
-  if(location.origin!=='https://avengers-stat-center.vercel.app')return;
+(async () => {
+  const signedInOrigin='https://avengers-stat-center.vercel.app';
+  const publicOrigin='https://avengersmobcontrol.github.io';
   const section=document.getElementById('page-rosters');
   if(!section)return;
-  if(new URLSearchParams(location.search).get('page')==='rosters')
-    document.querySelector('[data-page="rosters"]')?.click();
-  fetch('/api/roster-editor?view=capability',{cache:'no-store'}).then(async response=>{
-    if(!response.ok||!(await response.json()).allowed)return;
+
+  function addLink(label, href){
     const actions=document.createElement('div');
     actions.className='section-toolbar';
     const link=document.createElement('a');
     link.className='nav-btn';
-    link.href='/api/roster-editor';
-    link.textContent='Manage rosters';
+    link.href=href;
+    link.textContent=label;
     actions.append(link);
     section.prepend(actions);
-  }).catch(()=>{});
+  }
+
+  if(location.origin===publicOrigin){
+    addLink('Sign in with Discord',signedInOrigin+'/?page=rosters');
+    return;
+  }
+  if(location.origin!==signedInOrigin)return;
+
+  if(new URLSearchParams(location.search).get('page')==='rosters')
+    document.querySelector('[data-page="rosters"]')?.click();
+  try{
+    const response=await fetch('/api/roster-editor?view=capability',{cache:'no-store'});
+    if(response.ok&&(await response.json()).allowed===true)
+      addLink('Manage rosters','/api/roster-editor');
+  }catch{
+    // Keep private controls hidden when authorization cannot be verified.
+  }
 })();

@@ -1,3 +1,7 @@
+## 2026-11-21 — Separate roster editing and Kraken review permissions
+
+Roster editing is granted to the two verified Discord IDs approved by the roster owner and stored as a private production setting. Signed Discord member sessions are checked by ID on every interactive roster editor request. The public site can direct visitors to the signed-in Rosters page, where only those authorized accounts see the editor link.
+
 ## 2026-11-21 — Relocate only source-matched AV-2 Flash results
 
 When an original-backed pool row exactly matches an archived AV-2 result by canonical player, lines and rank, retain the original event reference on the pool row and suppress the duplicate from public projections. The old source remains available for audit. Keep each result's event-time clan and apply the four-result weekly cap.

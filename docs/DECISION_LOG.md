@@ -1,3 +1,7 @@
+## 2026-11-21 — Flash Star pot derivation
+
+When a numbered Flash lacks a recorded pot, use Stars ÷ displayed share from the highest-share corroborated AVENGERS main-lobby result. Require a majority of eligible main-lobby pairs to agree within 3% of their median to allow for rounding and reject accidentally grouped outside-lobby payouts. Display the result as an estimate. Estimated main-lobby rake uses only compatible payouts.
+
 ## 2026-11-20 — Numbered Flash set dates and AV-2 review slots
 
 - Preserve each confirmed event date. Use the explicit Flash set ID when present. A calendar week with one distinct result event per PF number and no conflicting explicit set IDs can use its earliest numbered event date for the shared display key. Ambiguous weeks keep their source grouping.

@@ -30,6 +30,32 @@ function numberedFlashSetIds(events){
   return ids;
 }
 
+function fillFlashPotEstimates(ledger){
+  for(const event of ledger.events){
+    const metadata=event.metadata;
+    if(event.kind!=='flash'||event.status==='revoked'||metadata?.pool||metadata?.potStars!=null||
+      ![1,2,3,4].includes(metadata?.flash))continue;
+    const candidates=event.rows.filter(row=>row.clan==='AVENGERS'&&row.metadata?.lobby==='main'&&
+      Number.isFinite(row.stars)&&row.stars>0&&Number.isFinite(row.metadata.share)&&
+      row.metadata.share>0&&row.metadata.share<=1)
+      .map(row=>({share:row.metadata.share,rank:row.metadata.rank,estimate:row.stars/row.metadata.share}));
+    if(candidates.length<2)continue;
+    // Displayed shares are rounded. Corroborate the main lobby before taking the highest-share row.
+    candidates.sort((a,b)=>a.estimate-b.estimate);
+    const middle=Math.floor(candidates.length/2);
+    const median=candidates.length%2?candidates[middle].estimate:
+      (candidates[middle-1].estimate+candidates[middle].estimate)/2;
+    const main=candidates.filter(row=>Math.abs(row.estimate/median-1)<=0.03);
+    if(main.length<2||main.length<=candidates.length/2)continue;
+    main.sort((a,b)=>b.share-a.share||(a.rank??Infinity)-(b.rank??Infinity));
+    metadata.clan='AVENGERS';
+    metadata.potStars=Math.round(main[0].estimate);
+    metadata.potStarsDisplay='≈'+metadata.potStars.toLocaleString('en-US');
+    metadata.potStarsBasis='Highest recorded main-lobby Star reward divided by its displayed share, corroborated by the other main-lobby payouts.';
+    metadata.estimatedPotStars=true;
+  }
+}
+
 function refreshHistoricalPayouts(ledger){
   const live=ledger.events.filter(e=>e.status!=='revoked'),proof=new Map();
   for(const e of live.filter(e=>e.kind!=='kraken'))for(const r of e.rows){
@@ -105,6 +131,7 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
   }
   for(const key of Object.keys(aliases))if(publicExcluded(key)||publicExcluded(aliases[key]))delete aliases[key];
   refreshHistoricalPayouts(ledger);
+  fillFlashPotEstimates(ledger);
   if(rosterChanges.changes.some(change=>change.kind==='link')){
     const rekey=event=>({...normalize({...event,rows:event.rows.map(row=>row.player&&resolve(row.player)!==row.player
       ? {...row,metadata:{...row.metadata,sourceDisplayName:row.metadata?.sourceDisplayName||row.player}}:row)},aliases),revision:event.revision});

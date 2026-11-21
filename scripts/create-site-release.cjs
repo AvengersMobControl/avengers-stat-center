@@ -30,6 +30,20 @@ function numberedFlashSetIds(events){
   return ids;
 }
 
+function rehomeVerifiedAv2FlashRows(ledger){
+  const numbered=new Map(ledger.events.filter(event=>event.kind==='flash'&&event.metadata?.flash)
+    .map(event=>[event.id,event]));
+  for(const event of ledger.events){
+    if(event.status==='revoked'||event.kind!=='flash'||event.metadata?.pool!=='av2-week')continue;
+    for(const row of event.rows){
+      const old=numbered.get(row.metadata?.legacyFlashEventId);
+      if(!old||row.clan!=='AV-2'||!row.metadata?.sourceImageSha256)continue;
+      old.rows=old.rows.filter(prior=>!(prior.clan==='AV-2'&&prior.player===row.player&&
+        prior.score===row.score&&prior.metadata?.rank===row.metadata.rank));
+    }
+  }
+}
+
 function fillFlashPotEstimates(ledger){
   for(const event of ledger.events){
     const metadata=event.metadata;
@@ -237,6 +251,7 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
     priorToLogging[target]=(priorToLogging[target]||0)+priorToLogging[name];
     delete priorToLogging[name];
   }
+  rehomeVerifiedAv2FlashRows(ledger);
   const p=project(ledger,{aliases,members:[...memberMap.values()].map(m=>({name:m.name,status:m.status})),snapshots,priorToLogging,arenaStart:D.meta.arenaStart});
   const metrics=require('../event-reward-metrics.js');
   for(const person of p.people)person.effort=Object.fromEntries(['piggy','space','flash'].map(kind=>[kind,metrics.summarize(person.history.filter(r=>r.kind===kind))]));

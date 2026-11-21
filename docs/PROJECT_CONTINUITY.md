@@ -1,3 +1,8 @@
+## 2026-11-21 — AV-2 Flash archive and November pot browser gate
+
+- Reconciled 57 original-backed AV-2 Flash results into six Friday-ending pools from September 25 through November 13. Thirty-eight previously recorded results move out of the numbered view without duplicate scoring. Nineteen previously unlogged results are added. Capture remains partial.
+- Fixed the browser gate that blocked deployment of the November pot backfill. It verifies historical rake and a valid rank display without assuming the number of historic pots remains fixed. It also verifies that all four November 10 cards display an estimated pot.
+
 ## 2026-11-21 — Recover missing Flash Star pots
 
 The November 3, 10 and 17 AVENGERS sets had confirmed participant rewards/shares but no event-level pot. The release derives missing main-lobby estimates from corroborated reward/share pairs. The primary estimate uses the highest-share corroborated AVENGERS result and excludes separately tagged lobbies and payout outliers. Previously recorded pots retain their existing sources. AV-2's independent pool has no shared lobby pot.

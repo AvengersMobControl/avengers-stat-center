@@ -1,3 +1,7 @@
+## 2026-11-21 — Relocate only source-matched AV-2 Flash results
+
+When an original-backed pool row exactly matches an archived AV-2 result by canonical player, lines and rank, retain the original event reference on the pool row and suppress the duplicate from public projections. The old source remains available for audit. Keep each result's event-time clan and apply the four-result weekly cap.
+
 ## 2026-11-21 — Flash Star pot derivation
 
 When a numbered Flash lacks a recorded pot, use Stars ÷ displayed share from the highest-share corroborated AVENGERS main-lobby result. Require a majority of eligible main-lobby pairs to agree within 3% of their median to allow for rounding and reject accidentally grouped outside-lobby payouts. Display the result as an estimate. Estimated main-lobby rake uses only compatible payouts.

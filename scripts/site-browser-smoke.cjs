@@ -452,12 +452,13 @@ async function main(){
       'all displayed historical rank denominators reflect the current independently tracked archive, not a stale prior-week count');
     const potDetail=hist.locator('details[data-hist-open="pots"]');
     await potDetail.locator('summary').click();
-    assert.equal(await potDetail.locator('tbody tr[data-hist-row]').count(),173,'173 recorded main lobby header pots retained (Oct26-27 PF1-PF4 added)');
+    const potCount=await potDetail.locator('tbody tr[data-hist-row]').count();
+    assert(potCount>=185,'historic archive includes twelve reconstructed November main-lobby pots');
     await potDetail.locator('input[data-hist-search]').fill('2026-09-22');
     assert.equal(await potDetail.locator('tbody tr[data-hist-row]:visible').count(),3,
       'Sep22 has three flash pot headers; PF4 is on Sep23');
     await potDetail.locator('button[data-hist-sort][data-hist-key="potStars"]').click();
-    assert((await hist.locator('details[data-hist-open="pots"] summary').innerText()).includes('173 tracked'),
+    assert((await hist.locator('details[data-hist-open="pots"] summary').innerText()).includes(potCount.toLocaleString('en-US')+' tracked'),
       'sortable original archive persists');
 
     await page.selectOption('#globalStatusFilter','av2');

@@ -35,15 +35,15 @@ function rehomeVerifiedAv2FlashRows(ledger){
     .map(event=>[event.id,event]));
   for(const event of ledger.events){
     if(event.status==='revoked'||event.kind!=='flash'||event.metadata?.pool!=='av2-week')continue;
-    for(const row of event.rows){
+    event.rows=event.rows.map(row=>{
       const old=numbered.get(row.metadata?.legacyFlashEventId);
-      if(!old||row.clan!=='AV-2'||!row.metadata?.sourceImageSha256)continue;
+      if(!old||row.clan!=='AV-2'||!row.metadata?.sourceImageSha256)return row;
       const prior=old.rows.find(candidate=>candidate.clan==='AV-2'&&candidate.player===row.player&&
         candidate.score===row.score&&candidate.metadata?.rank===row.metadata.rank);
-      if(!prior)continue;
-      row.metadata={...prior.metadata,...row.metadata,legacyFlashEventDate:old.date};
+      if(!prior)return row;
       old.rows=old.rows.filter(candidate=>candidate!==prior);
-    }
+      return {...row,metadata:{...prior.metadata,...row.metadata,legacyFlashEventDate:old.date}};
+    });
   }
 }
 
@@ -65,11 +65,10 @@ function fillFlashPotEstimates(ledger){
     const main=candidates.filter(row=>Math.abs(row.estimate/median-1)<=0.03);
     if(main.length<2||main.length<=candidates.length/2)continue;
     main.sort((a,b)=>b.share-a.share||(a.rank??Infinity)-(b.rank??Infinity));
-    metadata.clan='AVENGERS';
-    metadata.potStars=Math.round(main[0].estimate);
-    metadata.potStarsDisplay='≈'+metadata.potStars.toLocaleString('en-US');
-    metadata.potStarsBasis='Highest recorded main-lobby Star reward divided by its displayed share, corroborated by the other main-lobby payouts.';
-    metadata.estimatedPotStars=true;
+    const potStars=Math.round(main[0].estimate);
+    event.metadata={...metadata,clan:'AVENGERS',potStars,potStarsDisplay:'≈'+potStars.toLocaleString('en-US'),
+      potStarsBasis:'Star reward divided by displayed share from the highest-share corroborated main-lobby row.',
+      estimatedPotStars:true};
   }
 }
 

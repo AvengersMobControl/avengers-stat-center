@@ -72,8 +72,9 @@ test('four verified screenshots assemble as four results for one member, with pr
  ]}),/Conflicting final screenshots|conflicting original source/);
 });
 test('pooled Flash propagates four distinct results into profiles, rewards, ratings and recaps',()=>{
- const original=create(),evt=fixture();
- const r=create({updates:[...APPROVED,{approved:true,expectedRevision:0,event:evt}]});
+ const updates=APPROVED.filter(update=>update.event.id!==eventId);
+ const original=create({updates}),evt=fixture();
+ const r=create({updates:[...updates,{approved:true,expectedRevision:0,event:evt}]});
  const base=original.projection.people.find(p=>p.name==='AV-SiFra');
  const member=r.projection.people.find(p=>p.name==='AV-SiFra');
  assert(base&&member);
@@ -110,7 +111,8 @@ test('pooled Flash propagates four distinct results into profiles, rewards, rati
 });
 test('one-line Flash result is excluded from participation while one-line Big Pig remains unaffected',()=>{
  const evt=fixture([1,2,3,4]);
- const r=create({updates:[...APPROVED,{approved:true,expectedRevision:0,event:evt}]});
+ const updates=APPROVED.filter(update=>update.event.id!==eventId);
+ const r=create({updates:[...updates,{approved:true,expectedRevision:0,event:evt}]});
  const newRows=r.projection.people.find(p=>p.name==='AV-SiFra').history.filter(x=>x.eventId===eventId);
  assert.equal(newRows.length,3,'Flash one-line placeholder does not count');
  assert(!newRows.some(r=>r.score===1));

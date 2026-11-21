@@ -17,7 +17,9 @@
   }
 
   if(location.origin===publicOrigin){
-    addLink('Sign in with Discord',signedInOrigin+'/?page=rosters');
+    const login=new URL('/api/auth/discord/login',signedInOrigin);
+    login.searchParams.set('returnTo','/?page=rosters');
+    addLink('Sign in with Discord',login.href);
     return;
   }
   if(location.origin!==signedInOrigin)return;

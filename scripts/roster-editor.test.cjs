@@ -73,7 +73,7 @@ test('the public Rosters page leads to Discord sign-in and only authorized sessi
     let openedRosters=false;
     await runInNewContext(source,{
       location:{origin,search:'?page=rosters'},
-      URLSearchParams,
+      URL,URLSearchParams,
       document:{
         getElementById:()=>({prepend:toolbar=>links.push(toolbar.link)}),
         querySelector:()=>({click:()=>{openedRosters=true;}}),
@@ -89,7 +89,10 @@ test('the public Rosters page leads to Discord sign-in and only authorized sessi
 
   const publicView=await loadRosters('https://avengersmobcontrol.github.io',false);
   assert.equal(publicView.links[0].textContent,'Sign in with Discord');
-  assert.equal(publicView.links[0].href,'https://avengers-stat-center.vercel.app/?page=rosters');
+  const login=new URL(publicView.links[0].href);
+  assert.equal(login.origin,'https://avengers-stat-center.vercel.app');
+  assert.equal(login.pathname,'/api/auth/discord/login');
+  assert.equal(login.searchParams.get('returnTo'),'/?page=rosters');
   assert.deepEqual(publicView.fetchPaths,[]);
   const ownerView=await loadRosters('https://avengers-stat-center.vercel.app',true);
   assert.equal(ownerView.openedRosters,true);

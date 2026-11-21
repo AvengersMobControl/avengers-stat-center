@@ -38,8 +38,11 @@ function rehomeVerifiedAv2FlashRows(ledger){
     for(const row of event.rows){
       const old=numbered.get(row.metadata?.legacyFlashEventId);
       if(!old||row.clan!=='AV-2'||!row.metadata?.sourceImageSha256)continue;
-      old.rows=old.rows.filter(prior=>!(prior.clan==='AV-2'&&prior.player===row.player&&
-        prior.score===row.score&&prior.metadata?.rank===row.metadata.rank));
+      const prior=old.rows.find(candidate=>candidate.clan==='AV-2'&&candidate.player===row.player&&
+        candidate.score===row.score&&candidate.metadata?.rank===row.metadata.rank);
+      if(!prior)continue;
+      row.metadata={...prior.metadata,...row.metadata,legacyFlashEventDate:old.date};
+      old.rows=old.rows.filter(candidate=>candidate!==prior);
     }
   }
 }

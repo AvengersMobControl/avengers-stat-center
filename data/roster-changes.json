@@ -1,4 +1,25 @@
 {
-  "revision": 0,
-  "changes": []
+  "revision": 4,
+  "changes": [
+    {
+      "kind": "add",
+      "name": "AV-ayaz",
+      "status": "AV2"
+    },
+    {
+      "kind": "add",
+      "name": "AV-Clueless",
+      "status": "AV2"
+    },
+    {
+      "kind": "add",
+      "name": "AV-2-Babayaga",
+      "status": "AV2"
+    },
+    {
+      "kind": "add",
+      "name": "AV-2-XerO",
+      "status": "AV2"
+    }
+  ]
 }

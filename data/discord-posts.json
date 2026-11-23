@@ -213,6 +213,24 @@
       "approved": true,
       "authorization": "leader-standing-auto-discord-2026-10-26",
       "description": "AVENGERS Big Pig November 22 2026 results"
+    },
+    "weekly|weekly|2026-11-16|AVENGERS": {
+      "kind": "weekly",
+      "eventId": "weekly|2026-11-16",
+      "clan": "AVENGERS",
+      "file": "AVENGERS_Weekly_Recap_November_16_2026.png",
+      "sha256": "8baf3e0af880a61032509a2257860cc9c4fc835955d05faa7ea91a1584b40c0e",
+      "size": 2962339,
+      "template": "weekly-recap-poster-v1-20261109",
+      "body": "@everyone\n<:AV_Crown:1557571339500392568> **AVENGERS Weekly Recap — Nov 16–22** <:AV_Crown:1557571339500392568>\n\n📊 **The Week**\n50 racers, 173 logged results, **16,950,921 Sparks** across Space, four Piggy Flashes and Big Pig — paced by INTEN (1,278,858), Vadik-UA (1,190,651) and SB (1,063,673).\n\n<:Silvericebluerocketemojicutout3:1566910561059475456> **Space Race — Nov 20**\n49 racers, 8 lobbies, 7,017,726 Sparks. 32 of 47 returning racers beat their own average. 7-STAR topped Sparks (421,975); V8 led distance (490B). 7 new distance PBs, Vadik-UA's biggest: 255.6→441.7 (+72.8%).\n\n<:Goldenglasspiggybankemoji2:1566910563437649951> **Piggy Flashes — Nov 17–18**\n35 racers, 75 results. INTEN won PF1 (3,876), PF2 (3,652) and PF4 (4,167); Saberkong took PF3 (5,925). 3 new Flash PBs, led by Dubai (+64.6%).\n\n<:AV_Piggy:1557571539392663593> **Big Pig — Nov 22**\n49 racers banked 992,775 lines (34 of 47 beat their own average). INTEN (55,011), SB (54,529) and Vadik-UA (53,605) podiumed. 8 new line PBs, led by Dreadrixter-UA (+147.4%) with a rank jump from 36th to 19th.\n\n<:Glossy3DFlameEmoji2:1566910556496072846> **Milestones**\n441.7B Space PB (Vadik-UA) • 22,030 Piggy lines (Dreadrixter-UA) • 3,589 Flash-set lines (ColdCreeps) • 36→19 rank climb (Dreadrixter-UA)\n7 Space PBs · 3 Flash PBs · 8 Piggy line PBs · 5 improved Piggy rank PBs this week.\n\n<:AV_ThumbsUp:1557571088488206356> Welcome to the clan, AnotherRound and V8!\n\nFull results and PBs: https://avengersmobcontrol.github.io/avengers-stat-center/ <:GoldenRetrieverCodingSticker:1559680187820675102>",
+      "approved": true,
+      "authorization": "leader-standing-auto-discord-weekly-2026-11-09",
+      "description": "AVENGERS Weekly Recap November 16 2026 results",
+      "weekRefs": {
+        "space": "space|2026-11-20",
+        "flashSetId": "2026-11-17-A",
+        "piggy": "piggy|2026-11-22"
+      }
     }
   }
 }

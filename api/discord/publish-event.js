@@ -186,7 +186,7 @@ async function handler(req,res){
  const url=new URL(req.url,'https://avengers-stat-center.vercel.app');
  if(env.VERCEL_ENV!=='production'||env.AVENGERS_AUTO_PUBLISH_ENABLED!=='true')return answer(res,404,{ok:false});
  const action=url.searchParams.get('action'),key=url.searchParams.get('post')||'';
- if(!['preflight','send'].includes(action)||!tokenOkay(url.searchParams.get('token'),env)||!postKeys(env).includes(key))
+ if(!['preflight','send','diagRecent'].includes(action)||!tokenOkay(url.searchParams.get('token'),env)||!postKeys(env).includes(key))
   return answer(res,404,{ok:false});
  const expiry=Date.parse(env.AVENGERS_AUTO_PUBLISH_EXPIRES_UTC||'');
  if(!Number.isFinite(expiry)||Date.now()>expiry)return answer(res,410,{ok:false,reason:'expired'});
@@ -195,6 +195,27 @@ async function handler(req,res){
   if(!allowedClans(env).has(post.clan))throw Error('Clan not enabled for automatic posting');
   const {resolveSummaryDestination}=require('../../server/discord-summary-destination.cjs');
   const channel=resolveSummaryDestination({kind:post.kind,clan:post.clan},env).channelId;
+  // TEMPORARY, read-only (2026-11-23): two consecutive action=send attempts for this post both
+  // returned 502 and reconcile-send confirmed found:false for both -- diagnose WHERE send()'s
+  // own post+readback is diverging from a successful send, without ever posting again. Never
+  // sends/edits/deletes; reveals message structure (lengths, booleans), never message bytes.
+  // Removed in a same-day follow-up once root-caused.
+  if(action==='diagRecent'){
+   const bot=env.DISCORD_BOT_TOKEN;
+   if(typeof bot!=='string'||bot.length<30)return answer(res,200,{diag:true,botTokenAvailable:false});
+   const me=await discord(bot,'https://discord.com/api/v10/users/@me');
+   const messages=await discord(bot,'https://discord.com/api/v10/channels/'+channel+'/messages?limit=20');
+   const rows=messages.map(m=>{
+    const isMe=String(m.author?.id)===String(me.id);
+    const content=typeof m.content==='string'?m.content:'';
+    const contentMatches=content===post.body;
+    let commonPrefix=0;while(commonPrefix<content.length&&commonPrefix<post.body.length&&content[commonPrefix]===post.body[commonPrefix])commonPrefix++;
+    const att=(m.attachments||[]).find(a=>a.filename===post.file);
+    return {id:String(m.id),timestamp:m.timestamp,isMe,contentLen:content.length,expectedLen:post.body.length,contentMatches,commonPrefixLen:commonPrefix,
+     attachmentCount:(m.attachments||[]).length,hasExpectedFilename:!!att,attachmentContentType:att?.content_type||null,attachmentSize:att?.size??null};
+   });
+   return answer(res,200,{diag:true,botUserId:String(me.id),channel,messageCount:messages.length,rows});
+  }
   if(channel!==CHANNEL)throw Error('Unexpected Discord channel');
   const bot=env.DISCORD_BOT_TOKEN;
   if(typeof bot!=='string'||bot.length<30)throw Error('Discord bot token unavailable');

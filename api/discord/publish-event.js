@@ -188,7 +188,13 @@ async function handler(req,res){
  // top-level gate failed, never any byte of a token/hash. Removed in a same-day follow-up once
  // the weekly-recap send 404 is root-caused.
  if(url.searchParams.get('gateCheck')==='only-booleans-20261123'){
-  return answer(res,200,{diag:true,vercelEnvIsProduction:env.VERCEL_ENV==='production',enabledIsTrue:env.AVENGERS_AUTO_PUBLISH_ENABLED==='true'});
+  let tokenOkayResult=false,tokenOkayThrew=false;
+  try{tokenOkayResult=tokenOkay(url.searchParams.get('token'),env);}catch{tokenOkayThrew=true;}
+  return answer(res,200,{diag:true,vercelEnvIsProduction:env.VERCEL_ENV==='production',enabledIsTrue:env.AVENGERS_AUTO_PUBLISH_ENABLED==='true',
+   actionValid:['preflight','send'].includes(url.searchParams.get('action')),
+   tokenOkayResult,tokenOkayThrew,
+   postKeyIncluded:postKeys(env).includes(url.searchParams.get('post')||''),
+   postKeysCount:postKeys(env).length});
  }
  if(env.VERCEL_ENV!=='production'||env.AVENGERS_AUTO_PUBLISH_ENABLED!=='true')return answer(res,404,{ok:false});
  const action=url.searchParams.get('action'),key=url.searchParams.get('post')||'';

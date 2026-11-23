@@ -214,9 +214,9 @@
       "authorization": "leader-standing-auto-discord-2026-10-26",
       "description": "AVENGERS Big Pig November 22 2026 results"
     },
-    "weekly|weekly|2026-11-16|AVENGERS": {
+    "weekly|weekly|2026-11-16-v2|AVENGERS": {
       "kind": "weekly",
-      "eventId": "weekly|2026-11-16",
+      "eventId": "weekly|2026-11-16-v2",
       "clan": "AVENGERS",
       "file": "AVENGERS_Weekly_Recap_November_16_2026.png",
       "sha256": "8baf3e0af880a61032509a2257860cc9c4fc835955d05faa7ea91a1584b40c0e",

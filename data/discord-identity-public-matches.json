@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "note": "Discord account <-> in-game canonical name matches, leader-directed to be public (2026-11-23): 'that can get committed to the public repo whatever that means, nothing secretive about it.' These three were identified by looking up AV-AnotherRound, AV-Robcorp and AV-V8 against the live AVENGERS Discord guild member list after the leader confirmed they do have Discord accounts (and that AV-Megalodon, the fourth name asked about, does not). This is a small, explicitly-authorized public subset of the broader private Discord identity mapping described in docs/DISCORD_CANONICAL_IDENTITY_REVIEW.md -- that document's privacy constraints still apply to the rest of the mapping unless the leader separately authorizes more of it.",
+  "matches": [
+    {
+      "canonicalName": "AV-AnotherRound",
+      "discordUserId": "1300677984394674206",
+      "discordUsername": "anotherroundtx",
+      "discordGlobalName": "AV-AnotherRound",
+      "discordNickname": "",
+      "joinedAt": "2026-11-17T01:42:04.873Z"
+    },
+    {
+      "canonicalName": "AV-Robcorp",
+      "discordUserId": "1387588954055905400",
+      "discordUsername": "robcorp72",
+      "discordGlobalName": "RobCorps",
+      "discordNickname": "",
+      "joinedAt": "2026-11-16T09:54:25.889Z"
+    },
+    {
+      "canonicalName": "AV-V8",
+      "discordUserId": "714246621894017155",
+      "discordUsername": "_b69_",
+      "discordGlobalName": "B69",
+      "discordNickname": "V8",
+      "joinedAt": "2026-11-16T21:24:58.975Z"
+    }
+  ]
+}

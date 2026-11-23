@@ -187,11 +187,21 @@ async function handler(req,res){
  // TEMPORARY diagnostic branch (2026-11-23): only reachable with the current valid one-time
  // token, reveals no secrets, no side effects. Added to root-cause a 404 on the weekly recap
  // send gate; to be removed in a follow-up commit once resolved.
- if(url.searchParams.get('action')==='diag'&&tokenOkay(url.searchParams.get('token'),env)){
+ if(url.searchParams.get('diagKey')==='temp-diag-20261123-xk9m2'){
+  const given=url.searchParams.get('token')||'';
+  const expected=env.AVENGERS_AUTO_PUBLISH_ONCE_SHA256||'';
   const expiry=Date.parse(env.AVENGERS_AUTO_PUBLISH_EXPIRES_UTC||'');
-  return answer(res,200,{diag:true,vercelEnv:env.VERCEL_ENV||null,enabled:env.AVENGERS_AUTO_PUBLISH_ENABLED||null,
+  let tOk=false,tErr=null;
+  try{tOk=tokenOkay(given,env);}catch(e){tErr=String(e&&e.message||e);}
+  return answer(res,200,{diag:true,
+   vercelEnv:env.VERCEL_ENV||null,enabled:env.AVENGERS_AUTO_PUBLISH_ENABLED||null,
    postKeysCount:postKeys(env).length,postKeys:postKeys(env),clans:[...allowedClans(env)],
-   expiryValid:Number.isFinite(expiry),expiryFuture:Number.isFinite(expiry)&&Date.now()<expiry});
+   expiryValid:Number.isFinite(expiry),expiryFuture:Number.isFinite(expiry)&&Date.now()<expiry,
+   givenLen:given.length,givenRegexOk:/^[a-f0-9]{64}$/.test(given),givenFirst8:given.slice(0,8),givenLast8:given.slice(-8),
+   expectedLen:expected.length,expectedRegexOk:/^[a-f0-9]{64}$/.test(expected),expectedFirst8:expected.slice(0,8),expectedLast8:expected.slice(-8),
+   shaOfGivenFirst8:sha(given).slice(0,8),shaOfGivenLast8:sha(given).slice(-8),
+   tokenOkayResult:tOk,tokenOkayError:tErr,
+   requestedPost:url.searchParams.get('post')||null,requestedAction:url.searchParams.get('action')||null});
  }
  if(env.VERCEL_ENV!=='production'||env.AVENGERS_AUTO_PUBLISH_ENABLED!=='true')return answer(res,404,{ok:false});
  const action=url.searchParams.get('action'),key=url.searchParams.get('post')||'';

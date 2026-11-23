@@ -103,3 +103,67 @@ test('the public Rosters page leads to Discord sign-in and only authorized sessi
   assert.equal(otherView.openedRosters,true);
   assert.deepEqual(otherView.links,[]);
 });
+
+test('roster member searches narrow each selector without changing the other form',async()=>{
+  const {runInNewContext}=require('node:vm');
+  const {script}=require('../server/roster-editor-view.cjs');
+  let source;
+  script({setHeader(){},status(){return this;},send(body){source=body;}});
+  function picker(id){
+    let onInput;
+    const select={
+      value:'',
+      options:[],
+      nextElementSibling:{textContent:''},
+      replaceChildren(...options){this.options=options;this.value=options[0]?.value??'';},
+      add(option){this.options.push(option);}
+    };
+    const search={
+      value:'',
+      getAttribute:()=>id,
+      addEventListener(type,handler){assert.equal(type,'input');onInput=handler;},
+      type(value){this.value=value;onInput();}
+    };
+    return {select,search};
+  }
+  const status=picker('status-member'),link=picker('link-target');
+  const elements={'status-member':status.select,'link-target':link.select,
+    sync:{},feedback:{},'known-names':{replaceChildren(){}}};
+  const people=[
+    {name:'AV-HarryBallsagna',status:'Active'},
+    {name:'AV-AnotherRound',status:'AV2'},
+    {name:'AV-OlRose',status:'Inactive'}
+  ];
+  let refresh;
+  await runInNewContext(source,{
+    document:{
+      getElementById:id=>elements[id],
+      querySelectorAll:selector=>selector==='form'?[]:[status.search,link.search],
+      visibilityState:'visible'
+    },
+    fetch:async()=>({ok:true,json:async()=>({revision:0,published:0,people})}),
+    Option:class{constructor(label,value){this.label=label;this.value=value;}},
+    setInterval:callback=>{refresh=callback;}
+  });
+  await new Promise(resolve=>setImmediate(resolve));
+  const values=select=>select.options.map(option=>option.value);
+  assert.deepEqual(values(status.select),['',...people.map(member=>member.name)]);
+  status.select.value='AV-HarryBallsagna';
+  status.search.type('  BALLS  ');
+  assert.deepEqual(values(status.select),['','AV-HarryBallsagna']);
+  assert.equal(status.select.value,'AV-HarryBallsagna');
+  assert.equal(status.select.options[1].label,'AV-HarryBallsagna · AVENGERS');
+  assert.equal(status.select.nextElementSibling.textContent,'1 matching member');
+  assert.deepEqual(values(link.select),['',...people.map(member=>member.name)]);
+  link.search.type('round');
+  status.search.type('missing');
+  assert.deepEqual(values(status.select),['']);
+  assert.equal(status.select.value,'');
+  assert.equal(status.select.nextElementSibling.textContent,'No matching members');
+  refresh();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.deepEqual(values(link.select),['','AV-AnotherRound']);
+  assert.deepEqual(values(status.select),['']);
+  status.search.type('');
+  assert.deepEqual(values(status.select),['',...people.map(member=>member.name)]);
+});

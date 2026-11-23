@@ -2,6 +2,13 @@
 
 const options='<option value="">Select a status</option><option value="Active">AVENGERS</option>'+
  '<option value="AV2">AV-2</option><option value="Inactive">Inactive</option>';
+function memberPicker(id, name, label){
+  return '<label for="'+id+'-search">Search '+label.toLowerCase()+'</label>'+
+    '<input type="search" id="'+id+'-search" data-member-search placeholder="Type part of a name" autocomplete="off" aria-controls="'+id+'">'+
+    '<label for="'+id+'">'+label+'</label>'+
+    '<select id="'+id+'" name="'+name+'" data-members required></select>'+
+    '<p class="member-matches" role="status"></p>';
+}
 function page(res){
   res.setHeader('Content-Security-Policy',"default-src 'none'; script-src 'self'; connect-src 'self'; style-src 'unsafe-inline'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'");
   res.setHeader('Content-Type','text/html; charset=utf-8');
@@ -11,15 +18,15 @@ function page(res){
     '<style>body{background:#07101d;color:#ecf4ff;font:16px system-ui;margin:0}main{max-width:780px;margin:auto;padding:26px 18px}a{color:#9cddff}h2{font-size:1.17rem}p{color:#bbcae0}'+
     'fieldset{border:1px solid #334e70;border-radius:10px;background:#101e33;padding:16px;min-width:0}form+form{margin-top:18px}legend{font-weight:750;padding:0 7px}'+
     'label{display:block;margin:8px 0}input,select,button{font:inherit}input,select{color:inherit;background:#081423;border:1px solid #557499;border-radius:6px;padding:9px;width:100%;box-sizing:border-box}'+
-    'button{border:0;border-radius:6px;padding:9px 15px;font-weight:700;background:#9cddff;color:#082033;margin-top:10px}button:disabled{opacity:.5}[role=status]{min-height:1.4em}</style>'+
+    'button{border:0;border-radius:6px;padding:9px 15px;font-weight:700;background:#9cddff;color:#082033;margin-top:10px}button:disabled{opacity:.5}[role=status]{min-height:1.4em}.member-matches{margin:4px 0 0;font-size:.875rem}.member-matches:empty{display:none}</style>'+
     '<main><a href="/?page=rosters">Back to Stat Center</a><h1>Manage rosters</h1>'+
     '<p id="sync" aria-live="polite">Loading roster…</p><p id="feedback" role="status"></p>'+
     '<form data-kind="status"><fieldset disabled><legend>Change clan status</legend>'+
-    '<label>Member<select name="name" data-members required></select></label>'+
+    memberPicker('status-member','name','Member')+
     '<label>New status<select name="status" required>'+options+'</select></label><button>Save status</button></fieldset></form>'+
     '<form data-kind="link"><fieldset disabled><legend>Link two names</legend>'+
     '<label>Existing name or screenshot spelling to link<input name="name" list="known-names" maxlength="80" required></label>'+
-    '<label>Canonical name to keep<select name="target" data-members required></select></label>'+
+    memberPicker('link-target','target','Canonical name to keep')+
     '<p>The kept name receives the linked results. Past results keep their event-time clan.</p><button>Link names</button></fieldset></form>'+
     '<form data-kind="add"><fieldset disabled><legend>Add a member</legend>'+
     '<label>In-game name<input name="name" maxlength="80" required></label>'+
@@ -31,7 +38,29 @@ function browser(){
   const feedback=document.getElementById('feedback');
   const forms=[...document.querySelectorAll('form')];
   const controls=forms.map(form=>form.querySelector('fieldset'));
+  const statusLabel={Active:'AVENGERS',AV2:'AV-2',Inactive:'Inactive',Unassigned:'Unassigned'};
+  const pickers=[...document.querySelectorAll('[data-member-search]')].map(search=>{
+    const select=document.getElementById(search.getAttribute('aria-controls'));
+    return {search,select,matches:select.nextElementSibling};
+  });
+  let people=[];
   let revision=0;
+
+  function renderPicker({search,select,matches}){
+    const selected=select.value;
+    const query=search.value.trim().toLowerCase();
+    const visible=query?people.filter(member=>member.name.toLowerCase().includes(query)):people;
+    select.replaceChildren(new Option('Select a member',''));
+    for(const member of visible){
+      select.add(new Option(member.name+' · '+(statusLabel[member.status]||member.status),member.name));
+    }
+    if(visible.some(member=>member.name===selected))select.value=selected;
+    const message=query?(visible.length?visible.length+' matching member'+(visible.length===1?'':'s'):'No matching members'):'';
+    if(matches.textContent!==message)matches.textContent=message;
+  }
+
+  for(const picker of pickers)picker.search.addEventListener('input',()=>renderPicker(picker));
+
   async function read(){
     const r=await fetch('/api/roster-editor?view=state',{cache:'no-store'});
     const data=await r.json();
@@ -39,17 +68,9 @@ function browser(){
     revision=data.revision;
     sync.textContent=data.revision===data.published?'Roster is up to date.':
       (data.revision-data.published)+' saved change(s) waiting for website publication.';
-    for(const input of document.querySelectorAll('[data-members], #known-names')){
-      const selected=input.value;
-      input.replaceChildren();
-      if(input.tagName==='SELECT')input.add(new Option('Select a member',''));
-      const statusLabel={Active:'AVENGERS',AV2:'AV-2',Inactive:'Inactive',Unassigned:'Unassigned'};
-      for(const member of data.people){
-        const label=input.tagName==='SELECT'?member.name+' · '+(statusLabel[member.status]||member.status):member.name;
-        input.append(new Option(label,member.name));
-      }
-      if(selected)input.value=selected;
-    }
+    people=data.people;
+    pickers.forEach(renderPicker);
+    document.getElementById('known-names').replaceChildren(...people.map(member=>new Option(member.name,member.name)));
     controls.forEach(control=>{control.disabled=false;});
     return data;
   }
@@ -70,6 +91,8 @@ function browser(){
         throw Error(saved.error);
       }
       form.reset();
+      const picker=pickers.find(({select})=>select.form===form);
+      if(picker)renderPicker(picker);
       lastRequest=null;
       feedback.textContent='Saved. The site and importer will use the change after publication.';
       await read();

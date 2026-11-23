@@ -1,5 +1,5 @@
 {
-  "revision": 14,
+  "revision": 23,
   "changes": [
     {
       "kind": "add",
@@ -70,6 +70,51 @@
       "kind": "link",
       "name": "AV-VoDoS",
       "target": "AV-VaDoS"
+    },
+    {
+      "kind": "status",
+      "name": "AV-Royal",
+      "status": "Inactive"
+    },
+    {
+      "kind": "status",
+      "name": "AV-2Pipesis",
+      "status": "Inactive"
+    },
+    {
+      "kind": "status",
+      "name": "AV-fueravini",
+      "status": "Inactive"
+    },
+    {
+      "kind": "status",
+      "name": "AV-HECKTO",
+      "status": "Inactive"
+    },
+    {
+      "kind": "status",
+      "name": "DedHed",
+      "status": "Inactive"
+    },
+    {
+      "kind": "status",
+      "name": "GANESH",
+      "status": "Inactive"
+    },
+    {
+      "kind": "status",
+      "name": "Ibrahim",
+      "status": "Inactive"
+    },
+    {
+      "kind": "status",
+      "name": "kayesie",
+      "status": "Inactive"
+    },
+    {
+      "kind": "status",
+      "name": "Punchy",
+      "status": "Inactive"
     }
   ]
 }

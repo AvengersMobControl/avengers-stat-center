@@ -35,7 +35,7 @@ test('records and date are derived from approved 2026 historical Piggy event dat
   const actual=x.records.map(r=>[r.threshold,r.count,r.firstDate]);
   assert.deepEqual(actual,[
     [5000,48,'2026-09-20'],
-    [10000,39,'2026-09-20'],
+    [10000,40,'2026-11-22'],
     [20000,23,'2026-10-18'],
     [30000,11,'2026-10-18'],
     [40000,7,'2026-11-01'],

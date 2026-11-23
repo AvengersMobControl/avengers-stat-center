@@ -200,6 +200,19 @@
       "approved": true,
       "authorization": "leader-standing-auto-discord-2026-10-26",
       "description": "AVENGERS Piggy Flashes November 17 2026 results"
+    },
+    "piggy|piggy|2026-11-22|AVENGERS": {
+      "kind": "piggy",
+      "eventId": "piggy|2026-11-22",
+      "clan": "AVENGERS",
+      "file": "AVENGERS_Big_Pig_November_22_2026.png",
+      "sha256": "4361ea0e8217050392917a94738f9ea68bee883c56cd2726e1d047a555afe761",
+      "size": 1014562,
+      "template": "bigpig-poster-v3-20261026-candidate",
+      "body": "@everyone\n<:Goldenglasspiggybankemoji2:1566910563437649951> **AVENGERS Big Pig — November 22** <:AV_Piggy:1557571539392663593>\n\n📊 **The Numbers**\n49 racers banked **992,775 lines** (avg **20,261**/racer) — up **+25.0%** on our last-4 average! The AVENGERS lobby pot hit **99.43M Stars** — #1 of 17 lobby pots in the Arena era (#1 of 26 all-time)!\n\n<:AV_Crown:1557571339500392568> **Podium**\n🥇 INTEN — 55,011 lines\n🥈 SB — 54,529 lines\n🥉 Vadik-UA — 53,605 lines\n\n🌟 **Standout Stories**\nINTEN's 55,011 lines is the #11 Big Pig performance of all time (11/2,298) and #11 of the Arena era — 7 career wins and 25 podiums on his record! Vadik-UA blew up his own average by +685.7% (6,822 → 53,605) for a brand-new PB, up +108.7% on his old best.\n\n<:Glossy3DFlameEmoji2:1566910556496072846> **Personal Bests**\n8 new line PBs! Top gains:\n1. Dreadrixter-UA — 22,030 (+147.4%)\n2. Vadik-UA — 53,605 (+108.7%)\n3. atarIX — 17,895 (+105.0%)\n4. Dubai — 20,222 (+43.9%)\n5. RkHendrix — 11,193 (+30.4%)\n6. Mendoria — 38,529 (+28.3%)\n7. ziyad — 25,588 (+25.6%)\n35 of 47 returning racers beat their own average this race!\n\n<:AV_ThumbsUp:1557571088488206356> **Welcome to the Clan**\nAnotherRound — 32,871 lines, 9th place!\nV8 — 31,750 lines, 10th place!\n\n🚩 **Milestones**\nArena-era bests: most racers EVER to clear 5K+ (49) and 10K+ (41) lines in one Big Pig — #1 of 17 on both! 30K+: 11 racers, tying for #1 of 17.\n\nFull results and PBs: https://avengersmobcontrol.github.io/avengers-stat-center/",
+      "approved": true,
+      "authorization": "leader-standing-auto-discord-2026-10-26",
+      "description": "AVENGERS Big Pig November 22 2026 results"
     }
   }
 }

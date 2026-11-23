@@ -309,9 +309,10 @@ test('November 13 AV-2 departures retain inactive profiles and history',()=>{
    assert(D.members.some(m=>m.name===name&&m.status==='Inactive'));
  }
  const mick=BASE.projection.people.find(p=>p.name==='Mickzzz');
- assert.deepEqual(mick.history.map(h=>h.eventId).sort(),['kraken|nov','piggy|2026-10-23','space|2026-10-25']);
+ assert.deepEqual(mick.history.map(h=>h.eventId).sort(),['kraken|nov','piggy|2026-10-23','piggy|2026-11-22','space|2026-10-25']);
  assert.equal(mick.history.find(h=>h.eventId==='kraken|nov')?.score,0,'Nov 15 AV-2 zero-damage row preserves history without inventing Sparks');
- assert.equal(mick.totalSparks,16519+11357,'Mickzzz historical Sparks retained');
+ assert.equal(mick.history.find(h=>h.eventId==='piggy|2026-11-22')?.score,135,'Nov 22 AV-2 source result is retained under historical Mickzzz profile');
+ assert.equal(mick.totalSparks,16519+11357+15769,'Mickzzz historical and new Piggy Sparks retained');
  assert.equal(D.members.find(m=>m.name==='Basecreature').spacePB,9.45);
  assert.equal(R.byName['AV-Royal']?.status,'AV2','Royal exempt');
  assert.equal(BASE.projection.people.find(p=>p.name==='AV-Royal')?.status,'AV2');

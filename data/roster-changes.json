@@ -1,5 +1,5 @@
 {
-  "revision": 4,
+  "revision": 14,
   "changes": [
     {
       "kind": "add",
@@ -20,6 +20,56 @@
       "kind": "add",
       "name": "AV-2-XerO",
       "status": "AV2"
+    },
+    {
+      "kind": "status",
+      "name": "AV-CLJM",
+      "status": "Inactive"
+    },
+    {
+      "kind": "status",
+      "name": "AV-WolfLegend",
+      "status": "AV2"
+    },
+    {
+      "kind": "link",
+      "name": "AV-OblivX-SG",
+      "target": "AV-OblivX"
+    },
+    {
+      "kind": "link",
+      "name": "Pipes is",
+      "target": "AV-2Pipesis"
+    },
+    {
+      "kind": "link",
+      "name": "AC-HECKEDBy",
+      "target": "AV-HECKTO"
+    },
+    {
+      "kind": "link",
+      "name": "AV-Leon-CHE",
+      "target": "AV-Leon"
+    },
+    {
+      "kind": "link",
+      "name": "AV-LetsGo!",
+      "target": "AV-Rocket!!!"
+    },
+    {
+      "kind": "link",
+      "name": "AV-Spectis",
+      "target": "AV-Spectris"
+    },
+    {
+      "kind": "link",
+      "name": "AV-TwipSlayer",
+      "target": "AV-TwirpSlayer"
+    },
+    {
+      "kind": "link",
+      "name": "AV-VoDoS",
+      "target": "AV-VaDoS"
     }
   ]
 }

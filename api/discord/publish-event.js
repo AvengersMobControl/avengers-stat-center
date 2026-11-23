@@ -205,14 +205,19 @@ async function handler(req,res){
    if(typeof bot!=='string'||bot.length<30)return answer(res,200,{diag:true,botTokenAvailable:false});
    const me=await discord(bot,'https://discord.com/api/v10/users/@me');
    const messages=await discord(bot,'https://discord.com/api/v10/channels/'+channel+'/messages?limit=20');
+   const full=url.searchParams.get('full')==='1';
    const rows=messages.map(m=>{
     const isMe=String(m.author?.id)===String(me.id);
     const content=typeof m.content==='string'?m.content:'';
     const contentMatches=content===post.body;
     let commonPrefix=0;while(commonPrefix<content.length&&commonPrefix<post.body.length&&content[commonPrefix]===post.body[commonPrefix])commonPrefix++;
     const att=(m.attachments||[]).find(a=>a.filename===post.file);
-    return {id:String(m.id),timestamp:m.timestamp,isMe,contentLen:content.length,expectedLen:post.body.length,contentMatches,commonPrefixLen:commonPrefix,
+    const row={id:String(m.id),timestamp:m.timestamp,isMe,contentLen:content.length,expectedLen:post.body.length,contentMatches,commonPrefixLen:commonPrefix,
      attachmentCount:(m.attachments||[]).length,hasExpectedFilename:!!att,attachmentContentType:att?.content_type||null,attachmentSize:att?.size??null};
+    // full=1 additionally echoes this ALREADY-PUBLIC Discord message's own text next to the
+    // locally pinned post.body, for a direct diff -- never a secret, just our own prior post.
+    if(full&&isMe&&att)return {...row,actualContent:content,expectedContent:post.body};
+    return row;
    });
    return answer(res,200,{diag:true,botUserId:String(me.id),channel,messageCount:messages.length,rows});
   }

@@ -13,6 +13,7 @@ const {exportRelease}=require('./export-event-summary.cjs');
 const {root}=require('./load-site-data.cjs');
 
 const SELECTION=JSON.parse(fs.readFileSync(path.join(root,'data/ratings-poster-selection.json'),'utf8'));
+const DISCORD_BOUND=new Set(JSON.parse(fs.readFileSync(path.join(root,'data/discord-bound-members.json'),'utf8')).names);
 const HISTORY_DIR=path.join(root,'data/ratings-history');
 const CATEGORY_KEYS={
   piggy:['piggyPB','piggyArena','piggyLast3'],
@@ -34,10 +35,10 @@ function competitionRanks(list){
 function select(people){
   const sorted=people.slice().sort(byRating);
   const left=sorted.filter(p=>p.status==='Active');
-  const pinned=new Set(SELECTION.pinnedAv2||[]);
-  const av2All=sorted.filter(p=>p.status==='AV2');
-  const av2=[...av2All.filter(p=>pinned.has(p.name)),...av2All.filter(p=>!pinned.has(p.name))]
-    .slice(0,SELECTION.av2Slots).sort(byRating);
+  // Every current AV-2 member with a leader-confirmed Discord account is shown,
+  // regardless of rating -- no slot cap, no separate pinned-name list (leader rule,
+  // 2026-11-23, replacing the earlier top-32 + pinnedAv2 scheme).
+  const av2=sorted.filter(p=>p.status==='AV2'&&DISCORD_BOUND.has(p.name));
   const alumniSlots=SELECTION.totalPlayers-left.length-av2.length;
   if(alumniSlots<0)throw Error('Active + AV-2 slots exceed the '+SELECTION.totalPlayers+'-player poster');
   const alumni=sorted.filter(p=>p.status==='Inactive').slice(0,alumniSlots);

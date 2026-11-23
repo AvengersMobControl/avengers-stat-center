@@ -1,3 +1,7 @@
+## 2026-11-23 — Search the roster editor member lists
+
+- The clan-status member picker and the canonical-name picker support case-insensitive partial-name filtering. Each form has its own search and keeps the selected member only while that member matches.
+
 ## 2026-11-21 — Roster editor access from the public site
 
 - The public Rosters page includes a Discord sign-in link to the protected Rosters view. The protected page shows **Manage rosters** after checking the signed-in account's roster editor permission.

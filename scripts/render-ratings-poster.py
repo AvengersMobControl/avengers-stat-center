@@ -1,26 +1,36 @@
 #!/usr/bin/env python3
-"""Weekly Player Power Ratings poster (approved Nov 17 2026 100-player design).
+"""Weekly Player Power Ratings poster.
 
-Draws fresh data onto the approved master artwork
-(assets/ratings/RATINGS_MASTER_APPROVED_2026-11-17_3600x8000.png): the dated
-header line, the three count tiles, THE LEADERS cards, both ranking panels and
-the footer count/source lines. Everything else (art, borders, legend) is the
-approved master untouched. Input is the poster JSON written by
+*** PENDING LEADER APPROVAL (2026-11-23 candidate, not yet live) ***
+Points at the CANDIDATE master
+(assets/ratings/RATINGS_MASTER_CANDIDATE_2026-11-23_3600x9200.png), which (1)
+masks out the baked-in duplicate/"ghost" title-box defect found in the
+Nov 17 approved master between the stat tiles, and (2) extends the canvas by
+1200px to add THE 11 RATING METRICS benchmark table below the existing
+crown-legend box. Once the leader approves this candidate, rename it to
+RATINGS_MASTER_APPROVED_<date>_3600x9200.png, point MASTER at that file, and
+restore this docstring to describe it as the approved master.
+
+Draws fresh data onto the master artwork: the dated header line, the three
+count tiles, THE LEADERS cards, both ranking panels, the footer count/source
+lines, and (new) the 11-metric benchmark/leaders table. Everything else (art,
+borders, legend) is the master untouched. Input is the poster JSON written by
 scripts/export-ratings-poster.cjs; no numbers are typed by hand.
 
   python3 scripts/render-ratings-poster.py reports/ratings-2026-11-23.json reports/ratings-2026-11-23.png
 
-Writes <out> (1800x4000 Discord edition), <out stem>-FULL.png (3600x8000) and
-<out stem>-poster.json sidecar with SHA-256s and templateVersion.
+Writes <out> (half-size Discord edition), <out stem>-FULL.png (full master
+resolution) and <out stem>-poster.json sidecar with SHA-256s and
+templateVersion.
 """
 import argparse, datetime, hashlib, json
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[1]
-MASTER = ROOT / "assets/ratings/RATINGS_MASTER_APPROVED_2026-11-17_3600x8000.png"
+MASTER = ROOT / "assets/ratings/RATINGS_MASTER_CANDIDATE_2026-11-23_3600x9200.png"
 FONTS = ROOT / "assets/fonts"
-TEMPLATE = "ratings-poster-v1-20261119"
+TEMPLATE = "ratings-poster-v2-20261123"
 
 ap = argparse.ArgumentParser()
 ap.add_argument("report")
@@ -140,9 +150,73 @@ sha = (P.get("sourceGitSha") or "unknown")[:10]
 text((424, 7815), f'CATEGORY POINTS SHOWN TO 2 DECIMALS  //  TOTAL SHOWN TO 3  //  VERIFIED SOURCE {sha}',
      font("Medium", 30), HDR)
 
+# ---- THE 11 RATING METRICS (new 2026-11-23: benchmark table in the canvas
+# extension below the crown-legend box) -----------------------------------
+def fmt_metric(v, unit):
+    if v is None: return "—"
+    if unit == "B": return f'{v:,.1f}B'
+    if unit == "num1": return f'{v:,.1f}'
+    return f'{v:,.0f}'
+
+def metric_category(key):
+    if key.startswith("piggy"): return "piggy"
+    if key.startswith("space"): return "space"
+    if key.startswith("kraken"): return "kraken"
+    return "flash"
+
+CAT_COLOR = {"piggy": GOLD, "space": CYAN, "kraken": MAG, "flash": LAV}
+metrics = P.get("metrics", [])
+if metrics:
+    MX0, MX1 = 210, 3390
+    MY0, MY1 = 8060, 9140
+    d.rounded_rectangle((MX0, MY0, MX1, MY1), 14, fill=(18, 27, 64), outline=MAG, width=3)
+    text((MX0 + 40, MY0 + 78), "THE 11 RATING METRICS", font("Bold", 62), MAG)
+    text((MX0 + 40, MY0 + 122), "BENCHMARK FOR A PERFECT 1.000  //  GOLD = 1ST PLACE  //  SILVER = 2ND PLACE",
+         font("SemiBold", 32), HDR)
+    d.line((MX0 + 40, MY0 + 148, MX1 - 40, MY0 + 148), fill=(46, 60, 110), width=2)
+
+    col_metric_x, col_target_rx = MX0 + 40, MX0 + 1300
+    col_gold_x, col_gold_score_rx = MX0 + 1360, MX0 + 2120
+    col_silver_x, col_silver_score_rx = MX0 + 2180, MX0 + 3140
+    header_y = MY0 + 192
+    fh = font("SemiBold", 28)
+    text((col_metric_x, header_y), "METRIC", fh, ALUM)
+    text((col_target_rx, header_y), "TARGET", fh, ALUM, "rs")
+    text((col_gold_x, header_y), "GOLD · 1ST PLACE", fh, ALUM)
+    text((col_silver_x, header_y), "SILVER · 2ND PLACE", fh, ALUM)
+
+    rows_top, rows_bottom = MY0 + 212, MY1 - 30
+    pitch = (rows_bottom - rows_top) / len(metrics)
+    fm_label, fm_target, fm_name, fm_score = font("Bold", 36), font("Medium", 32), font("SemiBold", 32), font("Bold", 32)
+
+    def leader_cell(x0, score_rx, y_mid, y_crown, entry, metal):
+        color = GOLD if metal == "gold" else SILVER
+        if not entry:
+            text((x0, y_mid), "—", fm_name, ALUM)
+            return
+        cx = crown(x0, y_crown, 26, color) + 12
+        name_f, name, max_w = fm_name, entry["name"], (score_rx - 100) - cx
+        while name_f.getlength(name) > max_w and name_f.size > 20:
+            name_f = font("SemiBold", name_f.size - 2)
+        text((cx, y_mid), name, name_f, WHITE)
+        text((score_rx, y_mid), fmt_metric(entry["score"], m["unit"]), fm_score, color, "rs")
+
+    for i, m in enumerate(metrics):
+        y = rows_top + i * pitch; h = pitch - 4
+        if i % 2 == 0:
+            d.rounded_rectangle((MX0 + 24, y, MX1 - 24, y + h), 8, fill=NAVY_ROW)
+        else:
+            d.line((MX0 + 40, y - 2, MX1 - 40, y - 2), fill=(30, 44, 84), width=2)
+        d.rectangle((MX0 + 24, y + 8, MX0 + 32, y + h - 8), fill=CAT_COLOR[metric_category(m["key"])])
+        mid, cy = y + h * 0.68, y + h - 14
+        text((col_metric_x, mid), m["label"], fm_label, WHITE)
+        text((col_target_rx, mid), fmt_metric(m["target"], m["unit"]), fm_target, HDR, "rs")
+        leader_cell(col_gold_x, col_gold_score_rx, mid, cy, m["first"], "gold")
+        leader_cell(col_silver_x, col_silver_score_rx, mid, cy, m["second"], "silver")
+
 out = Path(a.out); full = out.with_name(out.stem + "-FULL.png")
 im.save(full, optimize=True)
-im.resize((1800, 4000), Image.LANCZOS).save(out, optimize=True)
+im.resize((im.width // 2, im.height // 2), Image.LANCZOS).save(out, optimize=True)
 sha256 = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
 side = dict(file=str(out), fullFile=str(full), sha256=sha256(out), fullSha256=sha256(full), templateVersion=TEMPLATE,
             date=P["date"], counts=C, sourceGitSha=P.get("sourceGitSha"), master=MASTER.name,

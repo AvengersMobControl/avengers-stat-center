@@ -11,6 +11,7 @@
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {exportRelease}=require('./export-event-summary.cjs');
 const {root}=require('./load-site-data.cjs');
+const {RATING_BENCHMARKS}=require('./event-projection-core.cjs');
 
 const SELECTION=JSON.parse(fs.readFileSync(path.join(root,'data/ratings-poster-selection.json'),'utf8'));
 const HISTORY_DIR=path.join(root,'data/ratings-history');
@@ -20,6 +21,39 @@ const CATEGORY_KEYS={
   kraken:['krakenPB','krakenLast5','krakenLatest'],
   flash:['flashDailyPB','flashDailyArena']
 };
+// Display metadata for the 11-metric benchmark table. unit controls how
+// render-ratings-poster.py formats the target/score numbers, matching the
+// site's own conventions (fmtNum for piggy/flash lines, fmtB for space
+// billion-lightyears, one-decimal plain number for kraken million-damage).
+const METRIC_DISPLAY={
+  piggyPB:{label:'Piggy PB',unit:'num'},
+  piggyArena:{label:'Piggy Arena Avg',unit:'num'},
+  piggyLast3:{label:'Piggy Last 3 Avg',unit:'num'},
+  spacePB:{label:'Space PB',unit:'B'},
+  spaceArena:{label:'Space Arena Avg',unit:'B'},
+  spaceLast3:{label:'Space Last 3 Avg',unit:'B'},
+  krakenPB:{label:'Kraken PB',unit:'num1'},
+  krakenLast5:{label:'Kraken Last 5 Avg',unit:'num1'},
+  krakenLatest:{label:'Kraken Latest',unit:'num1'},
+  flashDailyPB:{label:'Flash Daily PB',unit:'num'},
+  flashDailyArena:{label:'Flash Daily Arena Avg',unit:'num'}
+};
+// Benchmark/leaders table: all 11 rated metrics, their approved target and
+// weight (RATING_BENCHMARKS, sums to the 10-point base), and the current
+// gold/silver (1st/2nd) leader for each, straight from awardRatingCrowns'
+// ratingLeaders output (same source the per-player crown badges use).
+function metricsTable(ratingLeaders){
+  const leaderOf=(key,metal)=>{
+    const hit=(ratingLeaders?.[key]||[]).find(e=>e.metal===metal);
+    return hit?{name:hit.name,score:hit.score}:null;
+  };
+  return Object.keys(RATING_BENCHMARKS).map(key=>{
+    const {target,weight}=RATING_BENCHMARKS[key];
+    const disp=METRIC_DISPLAY[key]||{label:key,unit:'num'};
+    return {key,label:disp.label,unit:disp.unit,target,weight,
+      first:leaderOf(key,'gold'),second:leaderOf(key,'silver')};
+  });
+}
 const EPS=1e-9;
 const r3=v=>Math.round(v*1000)/1000;
 const byRating=(a,b)=>b.ratingAdjusted-a.ratingAdjusted||b.ratingTotal-a.ratingTotal||a.name.localeCompare(b.name);
@@ -105,7 +139,8 @@ function build(date){
       rankRule:'competition-ranking on full adjusted precision'},players};
   const poster={date,counts:{total:shown.length,avengers:left.length,av2:av2.length,alumni:alumni.length},
     leaders:shown.slice(0,3).map(p=>row(p)),
-    left:left.map(row),right:[...av2,...alumni].sort(byRating).map(row),sourceGitSha:snapshot.sourceGitSha};
+    left:left.map(row),right:[...av2,...alumni].sort(byRating).map(row),sourceGitSha:snapshot.sourceGitSha,
+    metrics:metricsTable(projection.ratingLeaders)};
   return {snapshot,poster,changes};
 }
 function gitSha(){try{return require('node:child_process').execSync('git rev-parse HEAD',{cwd:root}).toString().trim();}catch{return null;}}

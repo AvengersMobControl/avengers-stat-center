@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "note": "Weekly Player Power Ratings poster selection (leader-approved 100-player format, Nov 17 2026). Left panel: every current Active AVENGERS member. Right panel: the top av2Slots AV-2 members by adjusted rating (pinnedAv2 names are always kept), then the highest-rated Inactive alumni filling the rest up to totalPlayers. This rule reproduces the approved Nov 17 poster's 49 + 32 + 19 selection exactly.",
+  "totalPlayers": 100,
+  "av2Slots": 32,
+  "pinnedAv2": [],
+  "significantClimb": {
+    "places": 5,
+    "rating": 0.25
+  }
+}

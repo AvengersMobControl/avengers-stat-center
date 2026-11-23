@@ -33,13 +33,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / 'data' / 'discord-posts.json'
-NAMES = {'space': 'Space_Race', 'piggy': 'Big_Pig', 'flash': 'Piggy_Flashes', 'weekly': 'Weekly_Recap', 'kraken': 'Kraken'}
+NAMES = {'space': 'Space_Race', 'piggy': 'Big_Pig', 'flash': 'Piggy_Flashes', 'weekly': 'Weekly_Recap', 'kraken': 'Kraken', 'ratings': 'Player_Ratings'}
 AUTH_SINGLE_EVENT = 'leader-standing-auto-discord-2026-10-26'
 AUTH_WEEKLY = 'leader-standing-auto-discord-weekly-2026-11-09'
 # Kraken is explicitly excluded from the 2026-10-26 standing activation (AGENTS.md), so it never
 # gets AUTH_SINGLE_EVENT -- each Kraken send needs its own explicit leader direction and gets its
 # own date-stamped one-time tag (must match AUTH_KRAKEN_ONETIME in api/discord/publish-event.js).
 AUTH_KRAKEN_ONETIME = 'leader-directed-onetime-kraken-2026-11-18'
+AUTH_RATINGS = 'leader-standing-auto-discord-ratings-2026-11-19'
 
 
 def main():
@@ -74,7 +75,7 @@ def main():
     suffix = f'_{a.suffix}' if a.suffix else ''
     name = f'{clan}_{NAMES[a.kind]}_{d.strftime("%B")}_{d.day}_{d.year}{suffix}.png'
     key = f'{a.kind}|{a.event_id}|{a.clan}'
-    auth = AUTH_WEEKLY if a.kind == 'weekly' else AUTH_KRAKEN_ONETIME if a.kind == 'kraken' else AUTH_SINGLE_EVENT
+    auth = AUTH_WEEKLY if a.kind == 'weekly' else AUTH_RATINGS if a.kind == 'ratings' else AUTH_KRAKEN_ONETIME if a.kind == 'kraken' else AUTH_SINGLE_EVENT
     entry = dict(kind=a.kind, eventId=a.event_id, clan=a.clan, file=name, sha256=hashlib.sha256(src).hexdigest(),
                  size=len(src), template=a.template, body=body, approved=True, authorization=auth,
                  description=f'{a.clan} {NAMES[a.kind].replace("_", " ")} {d.strftime("%B")} {d.day} {d.year} results')
@@ -86,6 +87,12 @@ def main():
         if not re.fullmatch(r'\d{4}-\d{2}-\d{2}-[A-Za-z]', a.week_flash_set_id): raise SystemExit('Bad --week-flash-set-id')
         if not re.fullmatch(r'piggy\|\d{4}-\d{2}-\d{2}', a.week_piggy_event): raise SystemExit('Bad --week-piggy-event')
         entry['weekRefs'] = dict(space=a.week_space_event, flashSetId=a.week_flash_set_id, piggy=a.week_piggy_event)
+
+    if a.kind == 'ratings':
+        snap = ROOT / 'data' / 'ratings-history' / f'ratings-{date}.json'
+        if not snap.exists(): raise SystemExit(f'ratings kind requires the committed snapshot {snap.relative_to(ROOT)} (export-ratings-poster.cjs --save-snapshot)')
+        entry['ratingsRef'] = dict(snapshot=str(snap.relative_to(ROOT)), snapshotSha256=hashlib.sha256(snap.read_bytes()).hexdigest())
+        entry['description'] = f'{a.clan} Player Power Ratings {d.strftime("%B")} {d.day} {d.year}'
 
     data = json.loads(MANIFEST.read_text()) if MANIFEST.exists() else {'schemaVersion': 1, 'posts': {}}
     old = data['posts'].get(key)

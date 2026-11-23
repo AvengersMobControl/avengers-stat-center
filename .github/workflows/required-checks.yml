@@ -58,4 +58,4 @@ jobs:
           scripts/plan-event-summary-dispatch.test.cjs scripts/private-summary-publication-state.test.cjs
           scripts/private-dispatch-schema.test.cjs scripts/private-dispatch-role.test.cjs scripts/private-dispatch-readiness.test.cjs
           scripts/private-dispatch-ledger-adapter.test.cjs scripts/private-discord-authenticated-readback.test.cjs
-          scripts/audit-six-clan-leagues.test.cjs scripts/posthog-operations.test.cjs scripts/vercel-ignore-preview.test.cjs
+          scripts/audit-six-clan-leagues.test.cjs scripts/posthog-operations.test.cjs scripts/vercel-ignore-preview.test.cjs scripts/ratings-poster.test.cjs

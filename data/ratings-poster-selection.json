@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "note": "Weekly Player Power Ratings poster selection (leader-approved 100-player format, Nov 17 2026). Left panel: every current Active AVENGERS member. Right panel: the top av2Slots AV-2 members by adjusted rating (pinnedAv2 names are always kept), then the highest-rated Inactive alumni filling the rest up to totalPlayers. This rule reproduces the approved Nov 17 poster's 49 + 32 + 19 selection exactly.",
+  "note": "Weekly Player Power Ratings poster selection (leader-approved 100-player format, Nov 17 2026). Left panel: every current Active AVENGERS member. Right panel: pinnedAv2 names always kept, then the remaining av2Slots filled by the top AV-2 members by adjusted rating, then the highest-rated Inactive alumni filling the rest up to totalPlayers. pinnedAv2 is the leader's 2026-10-30 'five separately requested AV-2 accounts included even if their ratings are low' decision (docs/DECISION_LOG.md), restored here after the 2026-11-19 export (PR #242) shipped it empty and let AV-ItsNospace fall off the poster on normal rating movement.",
   "totalPlayers": 100,
   "av2Slots": 32,
-  "pinnedAv2": [],
+  "pinnedAv2": ["AV-HECKTO", "AV-KiraLoveZolika", "AV-ItsNospace", "AV-Frenchie2", "AV-Squishy"],
   "significantClimb": {
     "places": 5,
     "rating": 0.25

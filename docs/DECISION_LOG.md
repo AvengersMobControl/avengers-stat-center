@@ -1,3 +1,9 @@
+## 2026-11-23 — Leader authorizes publishing specific Discord identity matches
+
+- The leader explicitly stated the Discord-account-to-in-game-account mapping "can get committed to the public repo whatever that means, nothing secretive about it," then asked who AV-AnotherRound, AV-Robcorp and AV-V8 match to on the current Discord server (also confirming AV-Megalodon has no Discord account). This overrides, for this specific mapping, the privacy stance in `docs/DISCORD_CANONICAL_IDENTITY_REVIEW.md` that the identity mapping must never be committed to GitHub.
+- Looked up the three names against the live Discord guild member list (via a temporary read-only diagnostic, `api/discord/diag-members.js`, added and reverted the same day in PRs #275/#276) and committed the three confirmed matches to `data/discord-identity-public-matches.json`.
+- Scope: only these three explicitly-requested matches were made public. The rest of the private Discord identity mapping (`avengers_identity_private.discord_bindings` in Neon, 82+ rows) stays private under the existing policy unless the leader separately authorizes more of it.
+
 ## 2026-11-21 — Separate roster editing and Kraken review permissions
 
 Roster editing is granted to the two verified Discord IDs approved by the roster owner and stored as a private production setting. Signed Discord member sessions are checked by ID on every interactive roster editor request. The public site can direct visitors to the signed-in Rosters page, where only those authorized accounts see the editor link.

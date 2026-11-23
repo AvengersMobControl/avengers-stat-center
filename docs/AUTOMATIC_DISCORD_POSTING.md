@@ -35,8 +35,9 @@ On 2026-11-09 the leader extended this to the weekly recap, to be sent **alongsi
    Never print the token anywhere persistent.
 8. **Merge and wait for the deploy.** Squash-merge, then wait for the `Vercel` commit status on the merge SHA to report success.
 9. **Send.** From a short-lived Vercel sandbox (network allowlist `avengers-stat-center.vercel.app` only), call `GET https://avengers-stat-center.vercel.app/api/discord/publish-event?action=preflight&post=<url-encoded key>&token=<token>`. Continue only if it returns `ok:true` and `duplicateReserved:false`. Then call `action=send` exactly once per key.
-   - **Never retry a 502.** It means a possible send. Tell the leader.
+   - **Never retry a 502.** It means a possible send; the slot is left `manual_reconciliation_required`. Do not guess.
    - A 409 means the event was already posted.
+   - **Reconcile an ambiguous send yourself first, before asking the leader.** Call `GET https://avengers-stat-center.vercel.app/api/discord/reconcile-send?post=<url-encoded key>&token=<reconcile token>` (`AVENGERS_RECONCILE_TOKEN_SHA256`, a separate long-lived token from the one-time publish token — not burned after use). It only looks at a slot already flagged `manual_reconciliation_required`, reads the last 20 messages in the destination channel with the same bot credential, and records the receipt itself if and only if it finds a message from the bot whose body, attachment filename and attachment PNG SHA-256 are all byte-for-byte identical to the pinned post (`data/discord-posts.json`). It never sends, edits or deletes anything. `found:true` closes the loop exactly like a clean automatic send; `found:false` (any `reason`) means genuinely ask the leader to check Discord — do not retry `reconcile-send` in a loop, and do not fall back to guessing a message ID.
 10. **Close out.**
     - Confirm the receipt row in Neon (`message_receipts` joined to `publication_slots`).
     - Burn the token by setting `AVENGERS_AUTO_PUBLISH_ONCE_SHA256` to the sha256 of a fresh random value.

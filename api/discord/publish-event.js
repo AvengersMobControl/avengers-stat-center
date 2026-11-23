@@ -184,6 +184,12 @@ async function handler(req,res){
  if(req.method!=='GET')return answer(res,405,{ok:false});
  const env=process.env;
  const url=new URL(req.url,'https://avengers-stat-center.vercel.app');
+ // TEMPORARY, zero-secret-exposure gate check (2026-11-23): reveals only booleans about which
+ // top-level gate failed, never any byte of a token/hash. Removed in a same-day follow-up once
+ // the weekly-recap send 404 is root-caused.
+ if(url.searchParams.get('gateCheck')==='only-booleans-20261123'){
+  return answer(res,200,{diag:true,vercelEnvIsProduction:env.VERCEL_ENV==='production',enabledIsTrue:env.AVENGERS_AUTO_PUBLISH_ENABLED==='true'});
+ }
  if(env.VERCEL_ENV!=='production'||env.AVENGERS_AUTO_PUBLISH_ENABLED!=='true')return answer(res,404,{ok:false});
  const action=url.searchParams.get('action'),key=url.searchParams.get('post')||'';
  if(!['preflight','send'].includes(action)||!tokenOkay(url.searchParams.get('token'),env)||!postKeys(env).includes(key))

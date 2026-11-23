@@ -190,11 +190,17 @@ async function handler(req,res){
  if(url.searchParams.get('gateCheck')==='only-booleans-20261123'){
   let tokenOkayResult=false,tokenOkayThrew=false;
   try{tokenOkayResult=tokenOkay(url.searchParams.get('token'),env);}catch{tokenOkayThrew=true;}
+  const given=url.searchParams.get('token')||'';
+  const expected=env.AVENGERS_AUTO_PUBLISH_ONCE_SHA256||'';
   return answer(res,200,{diag:true,vercelEnvIsProduction:env.VERCEL_ENV==='production',enabledIsTrue:env.AVENGERS_AUTO_PUBLISH_ENABLED==='true',
    actionValid:['preflight','send'].includes(url.searchParams.get('action')),
    tokenOkayResult,tokenOkayThrew,
    postKeyIncluded:postKeys(env).includes(url.searchParams.get('post')||''),
-   postKeysCount:postKeys(env).length});
+   postKeysCount:postKeys(env).length,
+   // Structural only -- lengths and regex validity, never any character of either value.
+   givenLen:given.length,givenRegexOk:/^[a-f0-9]{64}$/.test(given),
+   expectedLen:expected.length,expectedRegexOk:/^[a-f0-9]{64}$/.test(expected),
+   expectedHasWhitespace:/\s/.test(expected),expectedHasUppercase:/[A-F]/.test(expected)});
  }
  if(env.VERCEL_ENV!=='production'||env.AVENGERS_AUTO_PUBLISH_ENABLED!=='true')return answer(res,404,{ok:false});
  const action=url.searchParams.get('action'),key=url.searchParams.get('post')||'';

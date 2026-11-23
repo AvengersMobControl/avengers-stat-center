@@ -1,0 +1,2650 @@
+{
+ "schemaVersion": 1,
+ "weekEndingLocal": "2026-11-22",
+ "timezone": "America/Chicago",
+ "generatedAtUtc": "2026-11-23T03:00:30.289Z",
+ "sourceGitSha": "b289249d2d2da50659c9896c74e2904f26f832c9",
+ "projectionVersion": "4427f1ca76a852294828b5aa53675b465bd4804c1c7820083dfdb32c280152ee",
+ "scope": {
+  "eligibleCrownCohort": "Active + AV2",
+  "overallRankCohort": "Active + AV2",
+  "posterTargetPlayers": 100,
+  "rankRule": "competition-ranking on full adjusted precision"
+ },
+ "players": [
+  {
+   "canonicalName": "AV-INTEN",
+   "status": "Active",
+   "ratingTotal": 10,
+   "ratingBonus": 0.4,
+   "ratingAdjusted": 10.4,
+   "overallRank": 1,
+   "posterRank": 1,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 3,
+    "space": 3,
+    "kraken": 3,
+    "flash": 1
+   },
+   "crowns": {
+    "gold": 4,
+    "silver": 2
+   },
+   "crownMetrics": {
+    "piggyPB": "silver",
+    "piggyArena": "gold",
+    "piggyLast3": "gold",
+    "krakenLast5": "silver",
+    "flashDailyPB": "gold",
+    "flashDailyArena": "gold"
+   }
+  },
+  {
+   "canonicalName": "AV-HarryBallsagna",
+   "status": "Active",
+   "ratingTotal": 10,
+   "ratingBonus": 0.2,
+   "ratingAdjusted": 10.2,
+   "overallRank": 2,
+   "posterRank": 2,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 3,
+    "space": 3,
+    "kraken": 3,
+    "flash": 1
+   },
+   "crowns": {
+    "gold": 1,
+    "silver": 3
+   },
+   "crownMetrics": {
+    "piggyLast3": "silver",
+    "krakenLast5": "gold",
+    "flashDailyPB": "silver",
+    "flashDailyArena": "silver"
+   }
+  },
+  {
+   "canonicalName": "AV-KKD",
+   "status": "Active",
+   "ratingTotal": 9.981142857142856,
+   "ratingBonus": 0.2,
+   "ratingAdjusted": 10.181142857142856,
+   "overallRank": 3,
+   "posterRank": 3,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 3,
+    "space": 3,
+    "kraken": 3,
+    "flash": 0.9811428571428571
+   },
+   "crowns": {
+    "gold": 1,
+    "silver": 2
+   },
+   "crownMetrics": {
+    "piggyArena": "silver",
+    "spaceArena": "silver",
+    "spaceLast3": "gold"
+   }
+  },
+  {
+   "canonicalName": "AV-Addicted",
+   "status": "Active",
+   "ratingTotal": 10,
+   "ratingBonus": 0.1,
+   "ratingAdjusted": 10.1,
+   "overallRank": 4,
+   "posterRank": 4,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 3,
+    "space": 3,
+    "kraken": 3,
+    "flash": 1
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 2
+   },
+   "crownMetrics": {
+    "krakenPB": "silver",
+    "krakenLatest": "silver"
+   }
+  },
+  {
+   "canonicalName": "AV-Zolika.x.TheBoss",
+   "status": "Active",
+   "ratingTotal": 9.84323076923077,
+   "ratingBonus": 0.2,
+   "ratingAdjusted": 10.04323076923077,
+   "overallRank": 5,
+   "posterRank": 5,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 3,
+    "space": 3,
+    "kraken": 3,
+    "flash": 0.8432307692307692
+   },
+   "crowns": {
+    "gold": 2,
+    "silver": 0
+   },
+   "crownMetrics": {
+    "spacePB": "gold",
+    "spaceArena": "gold"
+   }
+  },
+  {
+   "canonicalName": "AV-Lin",
+   "status": "Active",
+   "ratingTotal": 9.895182142857143,
+   "ratingBonus": 0,
+   "ratingAdjusted": 9.895182142857143,
+   "overallRank": 6,
+   "posterRank": 6,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 2.918125,
+    "space": 3,
+    "kraken": 3,
+    "flash": 0.9770571428571428
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-7-STAR",
+   "status": "Active",
+   "ratingTotal": 9.682207523809524,
+   "ratingBonus": 0.1,
+   "ratingAdjusted": 9.782207523809523,
+   "overallRank": 7,
+   "posterRank": 7,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 2.776231333333333,
+    "space": 3,
+    "kraken": 3,
+    "flash": 0.9059761904761905
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 2
+   },
+   "crownMetrics": {
+    "spacePB": "silver",
+    "spaceLast3": "silver"
+   }
+  },
+  {
+   "canonicalName": "AV-8!l...Bil",
+   "status": "Active",
+   "ratingTotal": 9.61115969187675,
+   "ratingBonus": 0,
+   "ratingAdjusted": 9.61115969187675,
+   "overallRank": 8,
+   "posterRank": 8,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 2.611159691876751,
+    "space": 3,
+    "kraken": 3,
+    "flash": 1
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Abu//npjp",
+   "status": "Active",
+   "ratingTotal": 9.548957450980392,
+   "ratingBonus": 0,
+   "ratingAdjusted": 9.548957450980392,
+   "overallRank": 9,
+   "posterRank": 9,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 2.6748574509803924,
+    "space": 2.9791,
+    "kraken": 3,
+    "flash": 0.895
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Mendoria",
+   "status": "Active",
+   "ratingTotal": 9.504104,
+   "ratingBonus": 0,
+   "ratingAdjusted": 9.504104,
+   "overallRank": 10,
+   "posterRank": 10,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 2.8521306666666666,
+    "space": 2.7655447619047617,
+    "kraken": 3,
+    "flash": 0.8864285714285713
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-SweetiePL",
+   "status": "AV2",
+   "ratingTotal": 9.467309523809524,
+   "ratingBonus": 0,
+   "ratingAdjusted": 9.467309523809524,
+   "overallRank": 11,
+   "posterRank": 11,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 3,
+    "space": 3,
+    "kraken": 2.467309523809524,
+    "flash": 1
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-JAMO",
+   "status": "Active",
+   "ratingTotal": 9.385189047619047,
+   "ratingBonus": 0,
+   "ratingAdjusted": 9.385189047619047,
+   "overallRank": 12,
+   "posterRank": 12,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 2.7365700000000004,
+    "space": 3,
+    "kraken": 3,
+    "flash": 0.6486190476190477
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-SB",
+   "status": "Active",
+   "ratingTotal": 9.34952077922078,
+   "ratingBonus": 0,
+   "ratingAdjusted": 9.34952077922078,
+   "overallRank": 13,
+   "posterRank": 13,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 3,
+    "space": 2.9255999999999998,
+    "kraken": 2.4947,
+    "flash": 0.9292207792207792
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-istanbuL",
+   "status": "Active",
+   "ratingTotal": 9.260833333333334,
+   "ratingBonus": 0,
+   "ratingAdjusted": 9.260833333333334,
+   "overallRank": 14,
+   "posterRank": 14,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 2.4150476190476193,
+    "space": 3,
+    "kraken": 3,
+    "flash": 0.8457857142857144
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Supreeth",
+   "status": "Active",
+   "ratingTotal": 9.227966666666667,
+   "ratingBonus": 0,
+   "ratingAdjusted": 9.227966666666667,
+   "overallRank": 15,
+   "posterRank": 15,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 2.2279666666666667,
+    "space": 3,
+    "kraken": 3,
+    "flash": 1
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV.Saberkong",
+   "status": "Active",
+   "ratingTotal": 8.943096999999998,
+   "ratingBonus": 0.1,
+   "ratingAdjusted": 9.043096999999998,
+   "overallRank": 16,
+   "posterRank": 16,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 3,
+    "space": 2.360525,
+    "kraken": 2.582572,
+    "flash": 1
+   },
+   "crowns": {
+    "gold": 1,
+    "silver": 0
+   },
+   "crownMetrics": {
+    "piggyPB": "gold"
+   }
+  },
+  {
+   "canonicalName": "AV.ziyad",
+   "status": "Active",
+   "ratingTotal": 8.820725714285715,
+   "ratingBonus": 0,
+   "ratingAdjusted": 8.820725714285715,
+   "overallRank": 17,
+   "posterRank": 17,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 2.5601257142857143,
+    "space": 3,
+    "kraken": 2.7881,
+    "flash": 0.4725
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Obajoba",
+   "status": "Active",
+   "ratingTotal": 8.818351904761904,
+   "ratingBonus": 0,
+   "ratingAdjusted": 8.818351904761904,
+   "overallRank": 18,
+   "posterRank": 18,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 2.3518986580086576,
+    "space": 2.944381818181818,
+    "kraken": 3,
+    "flash": 0.5220714285714286
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-CHEN1972",
+   "status": "Active",
+   "ratingTotal": 8.798429316526612,
+   "ratingBonus": 0,
+   "ratingAdjusted": 8.798429316526612,
+   "overallRank": 19,
+   "posterRank": 19,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 2.6559027450980395,
+    "space": 2.982,
+    "kraken": 2.1605265714285715,
+    "flash": 1
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Pablin",
+   "status": "AV2",
+   "ratingTotal": 8.737976825396826,
+   "ratingBonus": 0,
+   "ratingAdjusted": 8.737976825396826,
+   "overallRank": 20,
+   "posterRank": 20,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 2.375010158730159,
+    "space": 2.6426666666666665,
+    "kraken": 3,
+    "flash": 0.7202999999999999
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Vadik-UA",
+   "status": "Active",
+   "ratingTotal": 8.585638793650796,
+   "ratingBonus": 0,
+   "ratingAdjusted": 8.585638793650796,
+   "overallRank": 21,
+   "posterRank": 21,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 2.4809200000000002,
+    "space": 2.7357902222222226,
+    "kraken": 2.966285714285714,
+    "flash": 0.40264285714285714
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-SiFra",
+   "status": "AV2",
+   "ratingTotal": 8.311592142857142,
+   "ratingBonus": 0,
+   "ratingAdjusted": 8.311592142857142,
+   "overallRank": 22,
+   "posterRank": 22,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 2.3941808333333334,
+    "space": 1.9513732142857139,
+    "kraken": 3,
+    "flash": 0.9660380952380953
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-I.S.O",
+   "status": "Active",
+   "ratingTotal": 8.138561015406163,
+   "ratingBonus": 0,
+   "ratingAdjusted": 8.138561015406163,
+   "overallRank": 23,
+   "posterRank": 23,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 2.0179199439775912,
+    "space": 2.387525,
+    "kraken": 3,
+    "flash": 0.7331160714285714
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Chuck",
+   "status": "Active",
+   "ratingTotal": 8.049933015873016,
+   "ratingBonus": 0,
+   "ratingAdjusted": 8.049933015873016,
+   "overallRank": 24,
+   "posterRank": 24,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 2.2218933333333335,
+    "space": 2.05468253968254,
+    "kraken": 3,
+    "flash": 0.7733571428571429
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Megalodon",
+   "status": "Active",
+   "ratingTotal": 7.869964666666666,
+   "ratingBonus": 0,
+   "ratingAdjusted": 7.869964666666666,
+   "overallRank": 25,
+   "posterRank": 25,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 1.8841218095238095,
+    "space": 1.9858428571428575,
+    "kraken": 3,
+    "flash": 1
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Nicefellow",
+   "status": "Active",
+   "ratingTotal": 7.56673362244898,
+   "ratingBonus": 0,
+   "ratingAdjusted": 7.56673362244898,
+   "overallRank": 26,
+   "posterRank": 26,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 2.5120408333333333,
+    "space": 1.2826723809523808,
+    "kraken": 3,
+    "flash": 0.7720204081632653
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-McNasty",
+   "status": "Active",
+   "ratingTotal": 7.41611380952381,
+   "ratingBonus": 0,
+   "ratingAdjusted": 7.41611380952381,
+   "overallRank": 27,
+   "posterRank": 27,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 1.9615233333333335,
+    "space": 2.0603761904761906,
+    "kraken": 3,
+    "flash": 0.39421428571428574
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Rita",
+   "status": "AV2",
+   "ratingTotal": 7.290234761904761,
+   "ratingBonus": 0,
+   "ratingAdjusted": 7.290234761904761,
+   "overallRank": 28,
+   "posterRank": 28,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 2.0046738095238092,
+    "space": 1.7892038095238094,
+    "kraken": 3,
+    "flash": 0.4963571428571429
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-HN",
+   "status": "Active",
+   "ratingTotal": 7.048340851370851,
+   "ratingBonus": 0,
+   "ratingAdjusted": 7.048340851370851,
+   "overallRank": 29,
+   "posterRank": 29,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 1.3698497402597403,
+    "space": 1.7869752380952382,
+    "kraken": 3,
+    "flash": 0.891515873015873
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-ShielDBreaker",
+   "status": "Active",
+   "ratingTotal": 7.028894761904762,
+   "ratingBonus": 0,
+   "ratingAdjusted": 7.028894761904762,
+   "overallRank": 30,
+   "posterRank": 30,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 2.0250947619047617,
+    "space": 1.4713857142857143,
+    "kraken": 2.5409,
+    "flash": 0.9915142857142857
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-UANGELES",
+   "status": "Active",
+   "ratingTotal": 6.894704229691877,
+   "ratingBonus": 0,
+   "ratingAdjusted": 6.894704229691877,
+   "overallRank": 31,
+   "posterRank": 31,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 1.9488547058823529,
+    "space": 1.709397142857143,
+    "kraken": 3,
+    "flash": 0.23645238095238097
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-BigPapi",
+   "status": "AV2",
+   "ratingTotal": 6.718042063492065,
+   "ratingBonus": 0,
+   "ratingAdjusted": 6.718042063492065,
+   "overallRank": 32,
+   "posterRank": 32,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 1.6049404761904762,
+    "space": 1.8810873015873015,
+    "kraken": 2.643942857142857,
+    "flash": 0.5880714285714286
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-KitKat",
+   "status": "Active",
+   "ratingTotal": 6.695937233893557,
+   "ratingBonus": 0,
+   "ratingAdjusted": 6.695937233893557,
+   "overallRank": 33,
+   "posterRank": 33,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 1.6001475910364147,
+    "space": 1.4427482142857144,
+    "kraken": 2.989845,
+    "flash": 0.6631964285714286
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-J1M",
+   "status": "Active",
+   "ratingTotal": 6.6436264597657235,
+   "ratingBonus": 0,
+   "ratingAdjusted": 6.6436264597657235,
+   "overallRank": 34,
+   "posterRank": 34,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 1.9594912324929972,
+    "space": 1.1212910714285713,
+    "kraken": 3,
+    "flash": 0.5628441558441559
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV<STAR-LORD>",
+   "status": "Active",
+   "ratingTotal": 6.512876453781513,
+   "ratingBonus": 0,
+   "ratingAdjusted": 6.512876453781513,
+   "overallRank": 35,
+   "posterRank": 37,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 1.4903439775910365,
+    "space": 1.4834619047619046,
+    "kraken": 2.940534857142857,
+    "flash": 0.5985357142857143
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Hoops",
+   "status": "Active",
+   "ratingTotal": 6.400583891402714,
+   "ratingBonus": 0,
+   "ratingAdjusted": 6.400583891402714,
+   "overallRank": 36,
+   "posterRank": 38,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 1.0487699719887955,
+    "space": 1.897847252747253,
+    "kraken": 3,
+    "flash": 0.45396666666666663
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-J",
+   "status": "AV2",
+   "ratingTotal": 6.128763174603174,
+   "ratingBonus": 0.2,
+   "ratingAdjusted": 6.328763174603174,
+   "overallRank": 37,
+   "posterRank": 39,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 1.0599409523809524,
+    "space": 1.6039571428571426,
+    "kraken": 3,
+    "flash": 0.46486507936507937
+   },
+   "crowns": {
+    "gold": 2,
+    "silver": 0
+   },
+   "crownMetrics": {
+    "krakenPB": "gold",
+    "krakenLatest": "gold"
+   }
+  },
+  {
+   "canonicalName": "AV-Deviantdan",
+   "status": "Active",
+   "ratingTotal": 6.174928179271709,
+   "ratingBonus": 0,
+   "ratingAdjusted": 6.174928179271709,
+   "overallRank": 38,
+   "posterRank": 40,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 1.2407043697478992,
+    "space": 1.433375595238095,
+    "kraken": 3,
+    "flash": 0.5008482142857142
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-SMILINGBANDIT",
+   "status": "Active",
+   "ratingTotal": 6.078123242296918,
+   "ratingBonus": 0,
+   "ratingAdjusted": 6.078123242296918,
+   "overallRank": 39,
+   "posterRank": 41,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 1.349740980392157,
+    "space": 1.2516590476190477,
+    "kraken": 3,
+    "flash": 0.4767232142857143
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-ColdCreeps",
+   "status": "Active",
+   "ratingTotal": 6.023701879551821,
+   "ratingBonus": 0,
+   "ratingAdjusted": 6.023701879551821,
+   "overallRank": 40,
+   "posterRank": 42,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 1.3076193557422968,
+    "space": 1.353589880952381,
+    "kraken": 2.931180142857143,
+    "flash": 0.4313125
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV.atarIX",
+   "status": "Active",
+   "ratingTotal": 6.01990380952381,
+   "ratingBonus": 0,
+   "ratingAdjusted": 6.01990380952381,
+   "overallRank": 41,
+   "posterRank": 43,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 1.5368657142857143,
+    "space": 1.256752380952381,
+    "kraken": 3,
+    "flash": 0.22628571428571428
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-MotherboardBeans",
+   "status": "Active",
+   "ratingTotal": 5.893423324175824,
+   "ratingBonus": 0,
+   "ratingAdjusted": 5.893423324175824,
+   "overallRank": 42,
+   "posterRank": 45,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 1.3160046428571428,
+    "space": 1.3708142857142858,
+    "kraken": 2.7580714285714287,
+    "flash": 0.448532967032967
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-OblivX",
+   "status": "AV2",
+   "ratingTotal": 5.868778825396825,
+   "ratingBonus": 0,
+   "ratingAdjusted": 5.868778825396825,
+   "overallRank": 43,
+   "posterRank": 46,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 1.9556711111111111,
+    "space": 1.57955,
+    "kraken": 1.9090862857142856,
+    "flash": 0.4244714285714286
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Adigarian",
+   "status": "Active",
+   "ratingTotal": 5.7579336904761895,
+   "ratingBonus": 0,
+   "ratingAdjusted": 5.7579336904761895,
+   "overallRank": 44,
+   "posterRank": 47,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 1.5048717857142857,
+    "space": 0.8854666666666666,
+    "kraken": 3,
+    "flash": 0.3675952380952381
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Squishy",
+   "status": "AV2",
+   "ratingTotal": 5.747862190476191,
+   "ratingBonus": 0,
+   "ratingAdjusted": 5.747862190476191,
+   "overallRank": 45,
+   "posterRank": 48,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 0.9038993333333334,
+    "space": 1.8783771428571425,
+    "kraken": 2.3353,
+    "flash": 0.6302857142857143
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-V8",
+   "status": "Active",
+   "ratingTotal": 5.726333333333333,
+   "ratingBonus": 0,
+   "ratingAdjusted": 5.726333333333333,
+   "overallRank": 46,
+   "posterRank": 49,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 2.436309523809524,
+    "space": 2.816666666666667,
+    "kraken": 0,
+    "flash": 0.4733571428571428
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-DaG",
+   "status": "Active",
+   "ratingTotal": 5.7075609775910365,
+   "ratingBonus": 0,
+   "ratingAdjusted": 5.7075609775910365,
+   "overallRank": 47,
+   "posterRank": 50,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 1.3936849299719887,
+    "space": 1.1261333333333334,
+    "kraken": 2.8252855714285716,
+    "flash": 0.36245714285714287
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Mr.Mar.Berry",
+   "status": "Active",
+   "ratingTotal": 5.659448383753501,
+   "ratingBonus": 0,
+   "ratingAdjusted": 5.659448383753501,
+   "overallRank": 48,
+   "posterRank": 51,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 1.3953027170868348,
+    "space": 1.1169809523809524,
+    "kraken": 2.7419325714285714,
+    "flash": 0.4052321428571428
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Dubai",
+   "status": "Active",
+   "ratingTotal": 5.636230476190477,
+   "ratingBonus": 0,
+   "ratingAdjusted": 5.636230476190477,
+   "overallRank": 49,
+   "posterRank": 53,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 1.9049114285714284,
+    "space": 2.116704761904762,
+    "kraken": 1.1089,
+    "flash": 0.5057142857142858
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Derya",
+   "status": "AV2",
+   "ratingTotal": 5.5279,
+   "ratingBonus": 0,
+   "ratingAdjusted": 5.5279,
+   "overallRank": 50,
+   "posterRank": 55,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 2,
+    "space": 2,
+    "kraken": 1.1863285714285716,
+    "flash": 0.3415714285714285
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-KNAVEN",
+   "status": "Active",
+   "ratingTotal": 5.414369142857142,
+   "ratingBonus": 0,
+   "ratingAdjusted": 5.414369142857142,
+   "overallRank": 51,
+   "posterRank": 57,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 0.7672829523809525,
+    "space": 1.3851219047619048,
+    "kraken": 3,
+    "flash": 0.2619642857142857
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-JefhKintz05",
+   "status": "AV2",
+   "ratingTotal": 5.292219341136455,
+   "ratingBonus": 0,
+   "ratingAdjusted": 5.292219341136455,
+   "overallRank": 52,
+   "posterRank": 58,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 1.7490399159663865,
+    "space": 1.9387863095238096,
+    "kraken": 1.3382468571428572,
+    "flash": 0.26614625850340135
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-AnotherRound",
+   "status": "Active",
+   "ratingTotal": 5.259688095238095,
+   "ratingBonus": 0,
+   "ratingAdjusted": 5.259688095238095,
+   "overallRank": 53,
+   "posterRank": 59,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 2.4870214285714285,
+    "space": 2.772666666666667,
+    "kraken": 0,
+    "flash": 0
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Jess-PT",
+   "status": "AV2",
+   "ratingTotal": 5.212448857142857,
+   "ratingBonus": 0,
+   "ratingAdjusted": 5.212448857142857,
+   "overallRank": 54,
+   "posterRank": 60,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 1.238337142857143,
+    "space": 1.0529942857142858,
+    "kraken": 2.8306888571428575,
+    "flash": 0.09042857142857143
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV#Rafa#Tun",
+   "status": "AV2",
+   "ratingTotal": 5.17742219020979,
+   "ratingBonus": 0,
+   "ratingAdjusted": 5.17742219020979,
+   "overallRank": 55,
+   "posterRank": 61,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 1.3565645714285712,
+    "space": 1.298735410989011,
+    "kraken": 2.06833,
+    "flash": 0.4537922077922078
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-ZIBBY",
+   "status": "AV2",
+   "ratingTotal": 5.102627142857142,
+   "ratingBonus": 0,
+   "ratingAdjusted": 5.102627142857142,
+   "overallRank": 56,
+   "posterRank": 62,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 1.2372914285714285,
+    "space": 2,
+    "kraken": 0.8653357142857143,
+    "flash": 1
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-neez",
+   "status": "AV2",
+   "ratingTotal": 5.076693968253967,
+   "ratingBonus": 0,
+   "ratingAdjusted": 5.076693968253967,
+   "overallRank": 57,
+   "posterRank": 63,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 0.953642380952381,
+    "space": 0.9521396825396824,
+    "kraken": 2.8233404761904763,
+    "flash": 0.3475714285714286
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-no",
+   "status": "AV2",
+   "ratingTotal": 5.013335330532213,
+   "ratingBonus": 0,
+   "ratingAdjusted": 5.013335330532213,
+   "overallRank": 58,
+   "posterRank": 65,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 0.7839887114845938,
+    "space": 1.022764761904762,
+    "kraken": 2.9780104285714284,
+    "flash": 0.22857142857142856
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Fred",
+   "status": "Active",
+   "ratingTotal": 4.952204285714286,
+   "ratingBonus": 0,
+   "ratingAdjusted": 4.952204285714286,
+   "overallRank": 59,
+   "posterRank": 67,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 0.8735138095238095,
+    "space": 1.3448,
+    "kraken": 2.5676999999999994,
+    "flash": 0.16619047619047622
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Dreadrixter-UA",
+   "status": "Active",
+   "ratingTotal": 4.886932380952381,
+   "ratingBonus": 0,
+   "ratingAdjusted": 4.886932380952381,
+   "overallRank": 60,
+   "posterRank": 69,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 1.763675238095238,
+    "space": 2.3708285714285715,
+    "kraken": 0,
+    "flash": 0.7524285714285714
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-TigerMx",
+   "status": "AV2",
+   "ratingTotal": 4.807868047619048,
+   "ratingBonus": 0,
+   "ratingAdjusted": 4.807868047619048,
+   "overallRank": 61,
+   "posterRank": 70,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 1.2541482857142858,
+    "space": 1.3153161904761905,
+    "kraken": 1.805132142857143,
+    "flash": 0.4332714285714286
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-TRINITY",
+   "status": "AV2",
+   "ratingTotal": 4.718397619047619,
+   "ratingBonus": 0,
+   "ratingAdjusted": 4.718397619047619,
+   "overallRank": 62,
+   "posterRank": 71,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 0.8996547619047619,
+    "space": 1.0117571428571428,
+    "kraken": 2.2916999999999996,
+    "flash": 0.5152857142857143
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Finnie",
+   "status": "AV2",
+   "ratingTotal": 4.686819619047619,
+   "ratingBonus": 0,
+   "ratingAdjusted": 4.686819619047619,
+   "overallRank": 63,
+   "posterRank": 72,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 1.3787621904761906,
+    "space": 1.208707142857143,
+    "kraken": 1.8021895714285714,
+    "flash": 0.2971607142857143
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-EventHorizon",
+   "status": "AV2",
+   "ratingTotal": 4.655569661172161,
+   "ratingBonus": 0,
+   "ratingAdjusted": 4.655569661172161,
+   "overallRank": 64,
+   "posterRank": 73,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 0.8954491666666666,
+    "space": 1.075592857142857,
+    "kraken": 2.427665,
+    "flash": 0.25686263736263737
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-RkHendrix",
+   "status": "Active",
+   "ratingTotal": 4.653461512605041,
+   "ratingBonus": 0,
+   "ratingAdjusted": 4.653461512605041,
+   "overallRank": 65,
+   "posterRank": 74,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 0.9410996078431372,
+    "space": 0.5937476190476191,
+    "kraken": 3,
+    "flash": 0.11861428571428571
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Caklet",
+   "status": "AV2",
+   "ratingTotal": 4.518253333333334,
+   "ratingBonus": 0,
+   "ratingAdjusted": 4.518253333333334,
+   "overallRank": 66,
+   "posterRank": 75,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 0.9560271428571429,
+    "space": 0.7012071428571429,
+    "kraken": 2.4458285714285712,
+    "flash": 0.41519047619047617
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-TheOli",
+   "status": "AV2",
+   "ratingTotal": 4.344726428571428,
+   "ratingBonus": 0,
+   "ratingAdjusted": 4.344726428571428,
+   "overallRank": 67,
+   "posterRank": 76,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 0.5260252380952382,
+    "space": 0.8858619047619046,
+    "kraken": 2.6036821428571426,
+    "flash": 0.3291571428571428
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-FrenchieUSA",
+   "status": "AV2",
+   "ratingTotal": 4.217613982683982,
+   "ratingBonus": 0,
+   "ratingAdjusted": 4.217613982683982,
+   "overallRank": 68,
+   "posterRank": 77,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 0.45809255411255406,
+    "space": 0.48545000000000005,
+    "kraken": 3,
+    "flash": 0.2740714285714286
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-OlRose",
+   "status": "AV2",
+   "ratingTotal": 4.140640952380952,
+   "ratingBonus": 0,
+   "ratingAdjusted": 4.140640952380952,
+   "overallRank": 69,
+   "posterRank": 78,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 1.1872980952380954,
+    "space": 0.917742857142857,
+    "kraken": 2.0356,
+    "flash": 0
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-EXCALIBUR",
+   "status": "AV2",
+   "ratingTotal": 4.10452271978022,
+   "ratingBonus": 0,
+   "ratingAdjusted": 4.10452271978022,
+   "overallRank": 70,
+   "posterRank": 79,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 1.3048061904761905,
+    "space": 1.058384249084249,
+    "kraken": 1.5288267857142857,
+    "flash": 0.2125054945054945
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Robcorp",
+   "status": "Active",
+   "ratingTotal": 3.9632706666666664,
+   "ratingBonus": 0,
+   "ratingAdjusted": 3.9632706666666664,
+   "overallRank": 71,
+   "posterRank": 80,
+   "posterPanel": "AVENGERS",
+   "categoryBasePoints": {
+    "piggy": 1.9656228571428573,
+    "space": 1.077409523809524,
+    "kraken": 0.49523828571428574,
+    "flash": 0.425
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-MONSTER",
+   "status": "AV2",
+   "ratingTotal": 3.7786454545454546,
+   "ratingBonus": 0,
+   "ratingAdjusted": 3.7786454545454546,
+   "overallRank": 72,
+   "posterRank": 82,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 1.2824883116883117,
+    "space": 1.1839428571428572,
+    "kraken": 1.1245571428571428,
+    "flash": 0.18765714285714286
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-DrDetroit",
+   "status": "AV2",
+   "ratingTotal": 3.4505369523809524,
+   "ratingBonus": 0,
+   "ratingAdjusted": 3.4505369523809524,
+   "overallRank": 73,
+   "posterRank": 85,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 0.17639666666666667,
+    "space": 0.4510857142857143,
+    "kraken": 2.5079117142857146,
+    "flash": 0.31514285714285717
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Starred",
+   "status": "AV2",
+   "ratingTotal": 3.432285428571429,
+   "ratingBonus": 0,
+   "ratingAdjusted": 3.432285428571429,
+   "overallRank": 74,
+   "posterRank": 86,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 0.32410714285714287,
+    "space": 0.3772285714285714,
+    "kraken": 2.662521142857143,
+    "flash": 0.06842857142857142
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Brisket",
+   "status": "AV2",
+   "ratingTotal": 3.3623545238095236,
+   "ratingBonus": 0,
+   "ratingAdjusted": 3.3623545238095236,
+   "overallRank": 75,
+   "posterRank": 87,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 1.0473890476190477,
+    "space": 0.9149297619047619,
+    "kraken": 1.3114999999999999,
+    "flash": 0.08853571428571429
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-2.SURVIVOR",
+   "status": "AV2",
+   "ratingTotal": 2.8912714285714283,
+   "ratingBonus": 0,
+   "ratingAdjusted": 2.8912714285714283,
+   "overallRank": 76,
+   "posterRank": 90,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 0.5409571428571429,
+    "space": 0.8285142857142859,
+    "kraken": 1.5217999999999998,
+    "flash": 0
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Oakcliff",
+   "status": "AV2",
+   "ratingTotal": 2.8875033333333335,
+   "ratingBonus": 0,
+   "ratingAdjusted": 2.8875033333333335,
+   "overallRank": 77,
+   "posterRank": 91,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 0.2872652380952381,
+    "space": 0.3467952380952381,
+    "kraken": 2.2023,
+    "flash": 0.05114285714285714
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-CRISPIN.97",
+   "status": "AV2",
+   "ratingTotal": 2.88247,
+   "ratingBonus": 0,
+   "ratingAdjusted": 2.88247,
+   "overallRank": 78,
+   "posterRank": 92,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 0.4371380952380952,
+    "space": 0.24779047619047617,
+    "kraken": 2.1342557142857146,
+    "flash": 0.06328571428571429
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-CLJM",
+   "status": "AV2",
+   "ratingTotal": 2.824880428571429,
+   "ratingBonus": 0,
+   "ratingAdjusted": 2.824880428571429,
+   "overallRank": 79,
+   "posterRank": 93,
+   "posterPanel": "AV-2",
+   "categoryBasePoints": {
+    "piggy": 0.7548982857142857,
+    "space": 0.9753428571428571,
+    "kraken": 0.5452107142857143,
+    "flash": 0.5494285714285714
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Royal",
+   "status": "AV2",
+   "ratingTotal": 2.575814285714286,
+   "ratingBonus": 0,
+   "ratingAdjusted": 2.575814285714286,
+   "overallRank": 80,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 1.2183285714285714,
+    "space": 0.9156285714285715,
+    "kraken": 0,
+    "flash": 0.4418571428571429
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Fahad",
+   "status": "AV2",
+   "ratingTotal": 2.0951714285714282,
+   "ratingBonus": 0,
+   "ratingAdjusted": 2.0951714285714282,
+   "overallRank": 81,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 0.02737142857142857,
+    "space": 0.032228571428571426,
+    "kraken": 2.0135,
+    "flash": 0.02207142857142857
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-JOKER",
+   "status": "AV2",
+   "ratingTotal": 1.904502380952381,
+   "ratingBonus": 0,
+   "ratingAdjusted": 1.904502380952381,
+   "overallRank": 82,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 0.7469619047619047,
+    "space": 0.27295714285714284,
+    "kraken": 0.7415833333333333,
+    "flash": 0.143
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-KiraLoveZolika",
+   "status": "AV2",
+   "ratingTotal": 1.7625096190476193,
+   "ratingBonus": 0,
+   "ratingAdjusted": 1.7625096190476193,
+   "overallRank": 83,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 0.6052929523809524,
+    "space": 0.2520095238095238,
+    "kraken": 0.9052071428571429,
+    "flash": 0
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-ItsNospace",
+   "status": "AV2",
+   "ratingTotal": 1.507962761904762,
+   "ratingBonus": 0,
+   "ratingAdjusted": 1.507962761904762,
+   "overallRank": 84,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 0.10999704761904763,
+    "space": 0.18046571428571426,
+    "kraken": 1.2175,
+    "flash": 0
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "TheHemperor",
+   "status": "AV2",
+   "ratingTotal": 0.41676161904761905,
+   "ratingBonus": 0,
+   "ratingAdjusted": 0.41676161904761905,
+   "overallRank": 85,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 0.026959523809523808,
+    "space": 0.11988542857142859,
+    "kraken": 0.24646428571428572,
+    "flash": 0.023452380952380954
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-ayaz",
+   "status": "AV2",
+   "ratingTotal": 0.3822928571428571,
+   "ratingBonus": 0,
+   "ratingAdjusted": 0.3822928571428571,
+   "overallRank": 86,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 0.3822928571428571,
+    "space": 0,
+    "kraken": 0,
+    "flash": 0
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Clueless",
+   "status": "AV2",
+   "ratingTotal": 0.3548461904761905,
+   "ratingBonus": 0,
+   "ratingAdjusted": 0.3548461904761905,
+   "overallRank": 87,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 0.3548461904761905,
+    "space": 0,
+    "kraken": 0,
+    "flash": 0
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-KO",
+   "status": "AV2",
+   "ratingTotal": 0.3191395238095239,
+   "ratingBonus": 0,
+   "ratingAdjusted": 0.3191395238095239,
+   "overallRank": 88,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 0.07719428571428572,
+    "space": 0.11402857142857142,
+    "kraken": 0.08453571428571428,
+    "flash": 0.04338095238095238
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV2-Thoszi",
+   "status": "AV2",
+   "ratingTotal": 0.28490238095238096,
+   "ratingBonus": 0,
+   "ratingAdjusted": 0.28490238095238096,
+   "overallRank": 89,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 0.0029833333333333335,
+    "space": 0.2819190476190476,
+    "kraken": 0,
+    "flash": 0
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-HECKTO",
+   "status": "AV2",
+   "ratingTotal": 0.1744785714285714,
+   "ratingBonus": 0,
+   "ratingAdjusted": 0.1744785714285714,
+   "overallRank": 90,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 0.028192857142857145,
+    "space": 0.1255,
+    "kraken": 0,
+    "flash": 0.020785714285714286
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV2-Froyo",
+   "status": "AV2",
+   "ratingTotal": 0.1230252380952381,
+   "ratingBonus": 0,
+   "ratingAdjusted": 0.1230252380952381,
+   "overallRank": 91,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 0.021006190476190477,
+    "space": 0.07821904761904762,
+    "kraken": 0.0238,
+    "flash": 0
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV2-MayyaZ",
+   "status": "AV2",
+   "ratingTotal": 0.09833142857142857,
+   "ratingBonus": 0,
+   "ratingAdjusted": 0.09833142857142857,
+   "overallRank": 92,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 0.049645714285714286,
+    "space": 0.048685714285714284,
+    "kraken": 0,
+    "flash": 0
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-2-Babayaga",
+   "status": "AV2",
+   "ratingTotal": 0.0967452380952381,
+   "ratingBonus": 0,
+   "ratingAdjusted": 0.0967452380952381,
+   "overallRank": 93,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 0.0967452380952381,
+    "space": 0,
+    "kraken": 0,
+    "flash": 0
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-LittleZ",
+   "status": "AV2",
+   "ratingTotal": 0.07904571428571427,
+   "ratingBonus": 0,
+   "ratingAdjusted": 0.07904571428571427,
+   "overallRank": 94,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 0.061188571428571426,
+    "space": 0,
+    "kraken": 0,
+    "flash": 0.017857142857142856
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-2-XerO",
+   "status": "AV2",
+   "ratingTotal": 0.07407190476190476,
+   "ratingBonus": 0,
+   "ratingAdjusted": 0.07407190476190476,
+   "overallRank": 95,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 0.07407190476190476,
+    "space": 0,
+    "kraken": 0,
+    "flash": 0
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "Punchy",
+   "status": "AV2",
+   "ratingTotal": 0.06753428571428571,
+   "ratingBonus": 0,
+   "ratingAdjusted": 0.06753428571428571,
+   "overallRank": 96,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 0.009462857142857143,
+    "space": 0.032228571428571426,
+    "kraken": 0.025842857142857147,
+    "flash": 0
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "Ibrahim",
+   "status": "AV2",
+   "ratingTotal": 0.06587142857142858,
+   "ratingBonus": 0,
+   "ratingAdjusted": 0.06587142857142858,
+   "overallRank": 97,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 0,
+    "space": 0.006857142857142857,
+    "kraken": 0.059014285714285714,
+    "flash": 0
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "DedHed",
+   "status": "AV2",
+   "ratingTotal": 0.022710514285714287,
+   "ratingBonus": 0,
+   "ratingAdjusted": 0.022710514285714287,
+   "overallRank": 98,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 0.007611428571428572,
+    "space": 0.0013419428571428572,
+    "kraken": 0.013757142857142857,
+    "flash": 0
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Frenchie2",
+   "status": "AV2",
+   "ratingTotal": 0.02125357142857143,
+   "ratingBonus": 0,
+   "ratingAdjusted": 0.02125357142857143,
+   "overallRank": 99,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 0,
+    "space": 0,
+    "kraken": 0.02125357142857143,
+    "flash": 0
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-fueravini",
+   "status": "AV2",
+   "ratingTotal": 0.011935714285714286,
+   "ratingBonus": 0,
+   "ratingAdjusted": 0.011935714285714286,
+   "overallRank": 100,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 0,
+    "space": 0.008914285714285715,
+    "kraken": 0.0030214285714285716,
+    "flash": 0
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-2Pipesis",
+   "status": "AV2",
+   "ratingTotal": 0.006857142857142857,
+   "ratingBonus": 0,
+   "ratingAdjusted": 0.006857142857142857,
+   "overallRank": 101,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 0,
+    "space": 0.006857142857142857,
+    "kraken": 0,
+    "flash": 0
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "GANESH",
+   "status": "AV2",
+   "ratingTotal": 0.0034971428571428575,
+   "ratingBonus": 0,
+   "ratingAdjusted": 0.0034971428571428575,
+   "overallRank": 102,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 0.0034971428571428575,
+    "space": 0,
+    "kraken": 0,
+    "flash": 0
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "kayesie",
+   "status": "AV2",
+   "ratingTotal": 0.0023989714285714285,
+   "ratingBonus": 0,
+   "ratingAdjusted": 0.0023989714285714285,
+   "overallRank": 103,
+   "posterRank": null,
+   "posterPanel": null,
+   "categoryBasePoints": {
+    "piggy": 0,
+    "space": 0.0014989714285714285,
+    "kraken": 0.0009,
+    "flash": 0
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-WolfLegend",
+   "status": "Inactive",
+   "ratingTotal": 6.599646938775511,
+   "ratingBonus": 0,
+   "ratingAdjusted": 6.599646938775511,
+   "overallRank": null,
+   "posterRank": 35,
+   "posterPanel": "ALUMNI",
+   "categoryBasePoints": {
+    "piggy": 2,
+    "space": 2,
+    "kraken": 1.6095857142857144,
+    "flash": 0.9900612244897959
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Rex",
+   "status": "Inactive",
+   "ratingTotal": 6.540075,
+   "ratingBonus": 0,
+   "ratingAdjusted": 6.540075,
+   "overallRank": null,
+   "posterRank": 36,
+   "posterPanel": "ALUMNI",
+   "categoryBasePoints": {
+    "piggy": 2,
+    "space": 2,
+    "kraken": 1.6256464285714285,
+    "flash": 0.9144285714285714
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-jacko",
+   "status": "Inactive",
+   "ratingTotal": 5.9513925,
+   "ratingBonus": 0,
+   "ratingAdjusted": 5.9513925,
+   "overallRank": null,
+   "posterRank": 44,
+   "posterPanel": "ALUMNI",
+   "categoryBasePoints": {
+    "piggy": 2,
+    "space": 1.337257142857143,
+    "kraken": 1.998135357142857,
+    "flash": 0.616
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Animosity",
+   "status": "Inactive",
+   "ratingTotal": 5.6363677430902435,
+   "ratingBonus": 0,
+   "ratingAdjusted": 5.6363677430902435,
+   "overallRank": null,
+   "posterRank": 52,
+   "posterPanel": "ALUMNI",
+   "categoryBasePoints": {
+    "piggy": 1.606058901098901,
+    "space": 1.5769818181818183,
+    "kraken": 1.6813032142857143,
+    "flash": 0.7720238095238094
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Bubba0816",
+   "status": "Inactive",
+   "ratingTotal": 5.635006857142857,
+   "ratingBonus": 0,
+   "ratingAdjusted": 5.635006857142857,
+   "overallRank": null,
+   "posterRank": 54,
+   "posterPanel": "ALUMNI",
+   "categoryBasePoints": {
+    "piggy": 1.6792925714285714,
+    "space": 1.3957714285714284,
+    "kraken": 1.8365142857142858,
+    "flash": 0.7234285714285714
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-GNSK",
+   "status": "Inactive",
+   "ratingTotal": 5.515011952380952,
+   "ratingBonus": 0,
+   "ratingAdjusted": 5.515011952380952,
+   "overallRank": null,
+   "posterRank": 56,
+   "posterPanel": "ALUMNI",
+   "categoryBasePoints": {
+    "piggy": 1.4790571428571428,
+    "space": 1.4309485714285715,
+    "kraken": 1.8536776666666666,
+    "flash": 0.7513285714285715
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-INFINITY",
+   "status": "Inactive",
+   "ratingTotal": 5.023467428571429,
+   "ratingBonus": 0,
+   "ratingAdjusted": 5.023467428571429,
+   "overallRank": null,
+   "posterRank": 64,
+   "posterPanel": "ALUMNI",
+   "categoryBasePoints": {
+    "piggy": 1.4365874285714286,
+    "space": 1.5087085714285715,
+    "kraken": 1.1498142857142857,
+    "flash": 0.9283571428571429
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-LuckY",
+   "status": "Inactive",
+   "ratingTotal": 5,
+   "ratingBonus": 0,
+   "ratingAdjusted": 5,
+   "overallRank": null,
+   "posterRank": 66,
+   "posterPanel": "ALUMNI",
+   "categoryBasePoints": {
+    "piggy": 2,
+    "space": 2,
+    "kraken": 0,
+    "flash": 1
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-jacko-mini",
+   "status": "Inactive",
+   "ratingTotal": 4.888426452380952,
+   "ratingBonus": 0,
+   "ratingAdjusted": 4.888426452380952,
+   "overallRank": null,
+   "posterRank": 68,
+   "posterPanel": "ALUMNI",
+   "categoryBasePoints": {
+    "piggy": 1.8981142857142856,
+    "space": 0.6743428571428571,
+    "kraken": 1.5979454999999998,
+    "flash": 0.7180238095238095
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-LEO",
+   "status": "Inactive",
+   "ratingTotal": 3.8040714285714285,
+   "ratingBonus": 0,
+   "ratingAdjusted": 3.8040714285714285,
+   "overallRank": null,
+   "posterRank": 81,
+   "posterPanel": "ALUMNI",
+   "categoryBasePoints": {
+    "piggy": 1.7774285714285716,
+    "space": 1.9042857142857144,
+    "kraken": 0,
+    "flash": 0.12235714285714286
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Timmy",
+   "status": "Inactive",
+   "ratingTotal": 3.514951428571429,
+   "ratingBonus": 0,
+   "ratingAdjusted": 3.514951428571429,
+   "overallRank": null,
+   "posterRank": 83,
+   "posterPanel": "ALUMNI",
+   "categoryBasePoints": {
+    "piggy": 1.29638,
+    "space": 1.8094285714285716,
+    "kraken": 0,
+    "flash": 0.40914285714285714
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-23",
+   "status": "Inactive",
+   "ratingTotal": 3.5123592380952378,
+   "ratingBonus": 0,
+   "ratingAdjusted": 3.5123592380952378,
+   "overallRank": null,
+   "posterRank": 84,
+   "posterPanel": "ALUMNI",
+   "categoryBasePoints": {
+    "piggy": 0.7514925714285714,
+    "space": 0.9057904761904763,
+    "kraken": 1.5657428571428569,
+    "flash": 0.28933333333333333
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-AG",
+   "status": "Inactive",
+   "ratingTotal": 3.3225895000000003,
+   "ratingBonus": 0,
+   "ratingAdjusted": 3.3225895000000003,
+   "overallRank": null,
+   "posterRank": 88,
+   "posterPanel": "ALUMNI",
+   "categoryBasePoints": {
+    "piggy": 1.5399862857142856,
+    "space": 0.4851428571428571,
+    "kraken": 0.9627460714285714,
+    "flash": 0.33471428571428574
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-BeerMan",
+   "status": "Inactive",
+   "ratingTotal": 3.1238262857142858,
+   "ratingBonus": 0,
+   "ratingAdjusted": 3.1238262857142858,
+   "overallRank": null,
+   "posterRank": 89,
+   "posterPanel": "ALUMNI",
+   "categoryBasePoints": {
+    "piggy": 0.9285965714285715,
+    "space": 0.5501428571428572,
+    "kraken": 1.6450868571428572,
+    "flash": 0
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Suwako",
+   "status": "Inactive",
+   "ratingTotal": 2.806811238095238,
+   "ratingBonus": 0,
+   "ratingAdjusted": 2.806811238095238,
+   "overallRank": null,
+   "posterRank": 94,
+   "posterPanel": "ALUMNI",
+   "categoryBasePoints": {
+    "piggy": 0.886564761904762,
+    "space": 0.26059047619047615,
+    "kraken": 1.4789417142857144,
+    "flash": 0.18071428571428572
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "Iam",
+   "status": "Inactive",
+   "ratingTotal": 2.7146911362942614,
+   "ratingBonus": 0,
+   "ratingAdjusted": 2.7146911362942614,
+   "overallRank": null,
+   "posterRank": 95,
+   "posterPanel": "ALUMNI",
+   "categoryBasePoints": {
+    "piggy": 1.2092764835164835,
+    "space": 0.34852063492063495,
+    "kraken": 0.886894017857143,
+    "flash": 0.27
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-SHAH-G",
+   "status": "Inactive",
+   "ratingTotal": 2.5733695238095238,
+   "ratingBonus": 0,
+   "ratingAdjusted": 2.5733695238095238,
+   "overallRank": null,
+   "posterRank": 96,
+   "posterPanel": "ALUMNI",
+   "categoryBasePoints": {
+    "piggy": 0.4686242857142857,
+    "space": 0.7027238095238095,
+    "kraken": 1.0200214285714286,
+    "flash": 0.382
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-STI44ERS",
+   "status": "Inactive",
+   "ratingTotal": 2.391038095238095,
+   "ratingBonus": 0,
+   "ratingAdjusted": 2.391038095238095,
+   "overallRank": null,
+   "posterRank": 97,
+   "posterPanel": "ALUMNI",
+   "categoryBasePoints": {
+    "piggy": 0.6747071428571428,
+    "space": 0.6073142857142857,
+    "kraken": 0.6673499999999999,
+    "flash": 0.4416666666666667
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-Anamiko",
+   "status": "Inactive",
+   "ratingTotal": 2.285682476190476,
+   "ratingBonus": 0,
+   "ratingAdjusted": 2.285682476190476,
+   "overallRank": null,
+   "posterRank": 98,
+   "posterPanel": "ALUMNI",
+   "categoryBasePoints": {
+    "piggy": 0.3148708571428571,
+    "space": 0.09310476190476191,
+    "kraken": 1.8424211428571429,
+    "flash": 0.03528571428571429
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-LemonBlue",
+   "status": "Inactive",
+   "ratingTotal": 2.1337942857142855,
+   "ratingBonus": 0,
+   "ratingAdjusted": 2.1337942857142855,
+   "overallRank": null,
+   "posterRank": 99,
+   "posterPanel": "ALUMNI",
+   "categoryBasePoints": {
+    "piggy": 1.188032380952381,
+    "space": 0.5523809523809524,
+    "kraken": 0,
+    "flash": 0.3933809523809524
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  },
+  {
+   "canonicalName": "AV-InvincibleSpy",
+   "status": "Inactive",
+   "ratingTotal": 2.058808885714286,
+   "ratingBonus": 0,
+   "ratingAdjusted": 2.058808885714286,
+   "overallRank": null,
+   "posterRank": 100,
+   "posterPanel": "ALUMNI",
+   "categoryBasePoints": {
+    "piggy": 0.18542857142857144,
+    "space": 0.1345856,
+    "kraken": 1.7042232857142858,
+    "flash": 0.03457142857142857
+   },
+   "crowns": {
+    "gold": 0,
+    "silver": 0
+   },
+   "crownMetrics": {}
+  }
+ ]
+}

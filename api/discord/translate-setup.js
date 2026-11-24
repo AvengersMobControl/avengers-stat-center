@@ -42,6 +42,24 @@ module.exports=async function handler(req,res){
    const m=await discord(env,path,{method:'PATCH',body:JSON.stringify({content:howto.body,allowed_mentions:{parse:[]}})});
    return res.status(200).json({ok:true,messageId:m.id,readbackMatches:m.content===howto.body});
   }
+  if(action==='diagnose'){
+   // Why members might not see the command: command list, per-command permission
+   // overrides, @everyone's "Use Application Commands", and channel overwrites.
+   const USE_APP=1n<<31n,g=env.DISCORD_GUILD_ID,app=env.DISCORD_CLIENT_ID;
+   const cmds=await discord(env,'/applications/'+app+'/guilds/'+g+'/commands');
+   let perms=null;try{perms=await discord(env,'/applications/'+app+'/guilds/'+g+'/commands/permissions');}catch(e){perms='unreadable: '+e.message;}
+   const roles=await discord(env,'/guilds/'+g+'/roles');
+   const everyone=roles.find(r=>r.id===g);
+   const chans=await discord(env,'/guilds/'+g+'/channels');
+   const denied=chans.filter(c=>(c.permission_overwrites||[]).some(o=>(o.id===g||roles.some(r=>r.id===o.id))&&(BigInt(o.deny||0)&USE_APP)))
+    .map(c=>({name:c.name,deniedFor:c.permission_overwrites.filter(o=>BigInt(o.deny||0)&USE_APP).map(o=>o.id===g?'@everyone':(roles.find(r=>r.id===o.id)?.name||o.id))}));
+   const me=await discord(env,'/users/@me');
+   const member=await discord(env,'/guilds/'+g+'/members/'+me.id);
+   return res.status(200).json({ok:true,commands:cmds.map(c=>({name:c.name,type:c.type,default_member_permissions:c.default_member_permissions,contexts:c.contexts,integration_types:c.integration_types})),
+    commandPermissionOverrides:perms,everyoneCanUseAppCommands:!!(BigInt(everyone.permissions)&USE_APP),
+    rolesWithAppCommands:roles.filter(r=>BigInt(r.permissions)&USE_APP).map(r=>r.name),
+    channelsDenyingAppCommands:denied,botRoles:member.roles.map(id=>roles.find(r=>r.id===id)?.name||id)});
+  }
   if(action==='selftest')return res.status(200).json({ok:true,translation:await translate('Great job in Big Pig this week, team!','es',{env,oidc:req.headers['x-vercel-oidc-token']})});
   if(action==='channels'){
    const ch=await discord(env,'/guilds/'+env.DISCORD_GUILD_ID+'/channels');

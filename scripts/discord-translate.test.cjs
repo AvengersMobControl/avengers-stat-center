@@ -3,10 +3,16 @@ const test=require('node:test'),assert=require('node:assert/strict');
 const t=require('../server/discord-translate.cjs');
 const fs=require('node:fs');
 
-test('language list matches the website dropdown exactly',()=>{
+test('bot languages = every website language, plus Swedish and Hindi',()=>{
  const html=fs.readFileSync(require('node:path').join(__dirname,'..','index.html'),'utf8');
- const site=[...html.matchAll(/<option value="([a-zA-Z-]+)">/g)].map(m=>m[1]).filter(v=>t.LANGUAGES.some(l=>l[0]===v)||/^(en|es|de|hu|nl|fr|pt|uk|pl|tr|ar|ar-TN|vi|ja|zh-TW)$/.test(v));
- assert.deepEqual(t.LANGUAGES.map(l=>l[0]),[...new Set(site)]);
+ const site=new Set([...html.matchAll(/<option value="([a-zA-Z-]+)">/g)].map(m=>m[1]).filter(v=>/^(en|es|de|hu|nl|fr|pt|uk|pl|tr|ar|ar-TN|vi|ja|zh-TW|sv|hi)$/.test(v)));
+ const bot=t.LANGUAGES.map(l=>l[0]);
+ for(const code of site)assert.ok(bot.includes(code),code+' missing from bot');
+ assert.deepEqual(bot.filter(c=>!site.has(c)).sort(),['hi','sv'].filter(c=>!site.has(c)).sort());
+ assert.equal(bot.length,17);
+});
+test('Swedish and Hindi Discord locales map correctly',()=>{
+ assert.equal(t.languageForLocale('sv-SE'),'sv');assert.equal(t.languageForLocale('hi'),'hi');
 });
 test('Discord locales map to site languages, unsupported ones to English',()=>{
  assert.equal(t.languageForLocale('es-ES'),'es');assert.equal(t.languageForLocale('pt-BR'),'pt');
@@ -16,7 +22,7 @@ test('Discord locales map to site languages, unsupported ones to English',()=>{
 test('the menu offers all 15 languages, preselected, and round-trips its message reference',()=>{
  const m=t.menu('1403361698177618081','1470175579058999386','hu','Change my language');
  const sel=m[0].components[0];
- assert.equal(sel.options.length,15);assert.equal(sel.options.find(o=>o.default).value,'hu');
+ assert.equal(sel.options.length,17);assert.equal(sel.options.find(o=>o.default).value,'hu');
  assert.deepEqual(t.parseCustomId(sel.custom_id),{channelId:'1403361698177618081',messageId:'1470175579058999386'});
 });
 test('only the single Translate command is registered',()=>{assert.deepEqual(t.COMMANDS.map(c=>c.name),['Translate']);});

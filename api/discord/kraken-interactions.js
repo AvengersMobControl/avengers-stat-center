@@ -52,6 +52,18 @@ async function handler(req,res){
  let body;
  try{body=JSON.parse(raw.toString('utf8'));}catch{return answer(res,400,{error:'Invalid JSON'});}
  if(body.type===1)return answer(res,200,{type:1});
+ // Message translation (leader 2026-11-23): "Translate" / "Translate to…" message commands
+ // and their language dropdown share this signed endpoint (one per Discord app).
+ const translator=require('../../server/discord-translate.cjs');
+ if(translator.isTranslate(body)){
+  if(String(body.guild_id)!==process.env.DISCORD_GUILD_ID)
+   return answer(res,200,{type:4,data:{flags:64,content:'Translation is available only in the AVENGERS server.'}});
+  try{
+   const reply=await translator.handle(body,{oidc:req.headers['x-vercel-oidc-token']});
+   if(reply)return answer(res,200,reply);
+  }catch{}
+  return answer(res,200,{type:4,data:{flags:64,content:'Sorry, translation is unavailable right now.'}});
+ }
  if(body.type!==2||body.data?.name!=='kraken')return answer(res,400,{error:'Unsupported interaction'});
  if(String(body.guild_id)!==process.env.DISCORD_GUILD_ID)
   return answer(res,200,{type:4,data:{flags:64,content:'This command is available only in the AVENGERS server.'}});

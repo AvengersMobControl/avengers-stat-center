@@ -1,9 +1,7 @@
 {
-  "schemaVersion": 1,
-  "note": "Weekly Player Power Ratings poster selection (leader-approved 100-player format, Nov 17 2026). Left panel: every current Active AVENGERS member. Right panel: the top av2Slots AV-2 members by adjusted rating (pinnedAv2 names are always kept), then the highest-rated Inactive alumni filling the rest up to totalPlayers. This rule reproduces the approved Nov 17 poster's 49 + 32 + 19 selection exactly.",
+  "schemaVersion": 2,
+  "note": "Weekly Player Power Ratings poster selection (leader rule, 2026-11-23, replacing the Nov 17/Oct 30 top-32-AV-2 + pinned-names scheme -- see docs/DECISION_LOG.md). Left panel: every current Active AVENGERS member. Right panel: every current AV-2 member whose canonical name appears in data/discord-bound-members.json (no slot cap -- all of them are shown), then the highest-rated Inactive alumni filling the rest up to totalPlayers.",
   "totalPlayers": 100,
-  "av2Slots": 32,
-  "pinnedAv2": [],
   "significantClimb": {
     "places": 5,
     "rating": 0.25

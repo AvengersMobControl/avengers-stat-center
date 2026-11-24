@@ -1,12 +1,13 @@
 'use strict';
 // Private, on-demand Discord message translation (leader request 2026-11-23).
-// Two message commands (right-click / long-press a message -> Apps):
-//   "Translate"     -> the reader's own Discord language (English if unsupported)
-//   "Translate to…" -> a dropdown of the site's 15 languages
+// One message command (right-click / long-press a message -> Apps -> Translate):
+// translates into the reader's saved language, else their Discord language, else
+// English. Every reply has a "Change my language" dropdown of the site's 15
+// languages (leader 2026-11-23 trimmed the separate "Translate to…" command).
 // Replies are always ephemeral (only the person who asked sees them). The only thing
 // stored is each member's chosen language (Discord user ID + language code, private
 // Neon table avengers_translate_private.language_preferences). Picking a language in
-// either menu saves it; "Translate" then uses it. Message text goes only to the
+// the menu saves it; "Translate" then uses it. Message text goes only to the
 // Vercel AI Gateway for the translation and is never stored.
 // Languages match the website's language dropdown (index.html).
 const LANGUAGES=[
@@ -18,7 +19,7 @@ const LANGUAGES=[
  ['vi','Tiếng Việt','Vietnamese'],['ja','日本語','Japanese'],
  ['zh-TW','繁體中文（台灣）','Traditional Chinese as used in Taiwan']];
 const BY_CODE=new Map(LANGUAGES.map(l=>[l[0],l]));
-const COMMANDS=[{name:'Translate',type:3,dm_permission:false},{name:'Translate to…',type:3,dm_permission:false}];
+const COMMANDS=[{name:'Translate',type:3,dm_permission:false}];
 const MODEL='anthropic/claude-haiku-5.5';
 const GATEWAY='https://ai-gateway.vercel.sh/v1/chat/completions';
 const API='https://discord.com/api/v10';
@@ -35,10 +36,6 @@ function languageForLocale(locale){
 function menu(channelId,messageId,preset,placeholder='Choose a language'){
  return [{type:1,components:[{type:3,custom_id:'tr:'+channelId+':'+messageId,placeholder,
   options:LANGUAGES.map(([value,label])=>({label,value,default:value===preset}))}]}];
-}
-function picker(channelId,messageId,preset){
- return {type:4,data:{flags:64,content:'Translate this message into (your choice is saved for next time):',
-  components:menu(channelId,messageId,preset)}};
 }
 
 // ---- saved language preference (private Neon) ----
@@ -136,7 +133,6 @@ async function handle(body,{env=process.env,oidc,httpFetch=fetch,defer=waitUntil
   const msg=body.data.resolved?.messages?.[id];
   const ref={channelId:String(body.channel_id||msg?.channel_id||''),messageId:id};
   const code=(await savedLanguage(store,userId))||languageForLocale(body.locale);
-  if(body.data.name==='Translate to…')return picker(ref.channelId,id,code);
   const text=String(msg?.content||'').trim();
   if(!text)return nothing;
   return respond(5,text,code,ref);
@@ -155,4 +151,4 @@ async function handle(body,{env=process.env,oidc,httpFetch=fetch,defer=waitUntil
 const isTranslate=body=>(body.type===2&&body.data?.type===3&&COMMANDS.some(c=>c.name===body.data?.name))||
  (body.type===3&&String(body.data?.custom_id||'').startsWith('tr:'));
 
-module.exports={LANGUAGES,COMMANDS,MODEL,languageForLocale,picker,menu,prefStore,parseCustomId,translate,handle,isTranslate,render};
+module.exports={LANGUAGES,COMMANDS,MODEL,languageForLocale,menu,prefStore,parseCustomId,translate,handle,isTranslate,render};

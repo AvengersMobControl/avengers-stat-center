@@ -1,5 +1,5 @@
 {
-  "revision": 23,
+  "revision": 24,
   "changes": [
     {
       "kind": "add",
@@ -115,6 +115,11 @@
       "kind": "status",
       "name": "Punchy",
       "status": "Inactive"
+    },
+    {
+      "kind": "status",
+      "name": "IrmaFerkengerd",
+      "status": "Active"
     }
   ]
 }

@@ -2,15 +2,16 @@
 // Private, on-demand Discord message translation (leader request 2026-11-23).
 // One message command (right-click / long-press a message -> Apps -> Translate):
 // translates into the reader's saved language, else their Discord language, else
-// English. Every reply has a "Change my language" dropdown of the 17
+// English. Every reply has a "Change my language" dropdown of the 18
 // languages (leader 2026-11-23 trimmed the separate "Translate to…" command).
 // Replies are always ephemeral (only the person who asked sees them). The only thing
 // stored is each member's chosen language (Discord user ID + language code, private
 // Neon table avengers_translate_private.language_preferences). Picking a language in
 // the menu saves it; "Translate" then uses it. Message text goes only to the
 // Vercel AI Gateway for the translation and is never stored.
-// Languages: the website's language dropdown (index.html) plus Swedish and Hindi
-// (leader 2026-11-24). Discord locales sv-SE and hi map to them.
+// Languages: the website's language dropdown (index.html): 18 incl. Swedish, Hindi and
+// Hinglish (leader 2026-11-24). Discord locales sv-SE and hi map to Swedish/Hindi;
+// Hinglish has no Discord locale, so members pick it once from the menu.
 const LANGUAGES=[
  ['en','English','English'],['es','Español','Spanish'],['de','Deutsch','German'],
  ['hu','Magyar','Hungarian'],['nl','Nederlands','Dutch'],['fr','Français','French'],
@@ -19,7 +20,8 @@ const LANGUAGES=[
  ['ar-TN','تونسي — Tunisian Arabic','Tunisian Arabic (Derja), written in Arabic script'],
  ['vi','Tiếng Việt','Vietnamese'],['ja','日本語','Japanese'],
  ['zh-TW','繁體中文（台灣）','Traditional Chinese as used in Taiwan'],
- ['sv','Svenska','Swedish'],['hi','हिन्दी','Hindi (Devanagari script)']];
+ ['sv','Svenska','Swedish'],['hi','हिन्दी','Hindi (Devanagari script)'],
+ ['hi-Latn','Hinglish (Roman)','Hinglish: casual Hindi mixed with English, written in Latin (English) letters, the way Indian gamers chat; keep common English game words in English']];
 const BY_CODE=new Map(LANGUAGES.map(l=>[l[0],l]));
 const COMMANDS=[{name:'Translate',type:3,dm_permission:false}];
 const MODEL='anthropic/claude-haiku-5.5';

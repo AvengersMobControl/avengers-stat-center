@@ -3,8 +3,11 @@
 // Two message commands (right-click / long-press a message -> Apps):
 //   "Translate"     -> the reader's own Discord language (English if unsupported)
 //   "Translate to…" -> a dropdown of the site's 15 languages
-// Replies are always ephemeral (only the person who asked sees them). Nothing is
-// stored; message text goes only to the Vercel AI Gateway for the translation.
+// Replies are always ephemeral (only the person who asked sees them). The only thing
+// stored is each member's chosen language (Discord user ID + language code, private
+// Neon table avengers_translate_private.language_preferences). Picking a language in
+// either menu saves it; "Translate" then uses it. Message text goes only to the
+// Vercel AI Gateway for the translation and is never stored.
 // Languages match the website's language dropdown (index.html).
 const LANGUAGES=[
  ['en','English','English'],['es','Español','Spanish'],['de','Deutsch','German'],
@@ -29,11 +32,38 @@ function languageForLocale(locale){
  if(base!=='zh'&&BY_CODE.has(base))return base;
  return 'en';
 }
-function picker(channelId,messageId,locale){
- const preset=languageForLocale(locale);
- return {type:4,data:{flags:64,content:'Translate this message into:',components:[{type:1,components:[{
-  type:3,custom_id:'tr:'+channelId+':'+messageId,placeholder:'Choose a language',
-  options:LANGUAGES.map(([value,label])=>({label,value,default:value===preset}))}]}]}};
+function menu(channelId,messageId,preset,placeholder='Choose a language'){
+ return [{type:1,components:[{type:3,custom_id:'tr:'+channelId+':'+messageId,placeholder,
+  options:LANGUAGES.map(([value,label])=>({label,value,default:value===preset}))}]}];
+}
+function picker(channelId,messageId,preset){
+ return {type:4,data:{flags:64,content:'Translate this message into (your choice is saved for next time):',
+  components:menu(channelId,messageId,preset)}};
+}
+
+// ---- saved language preference (private Neon) ----
+function prefStore(env=process.env){
+ const url=env.AVENGERS_TRANSLATE_DATABASE_URL||env.AVENGERS_KRAKEN_DATABASE_URL;
+ if(!url)return null;
+ const {neon}=require('@neondatabase/serverless');
+ const sql=neon(url,{fullResults:false});
+ return {
+  async get(userId){
+   const rows=await sql.query('SELECT language_code FROM avengers_translate_private.language_preferences WHERE discord_user_id=$1',[userId]);
+   return BY_CODE.has(rows[0]?.language_code)?rows[0].language_code:null;
+  },
+  async set(userId,code){
+   await sql.query('INSERT INTO avengers_translate_private.language_preferences(discord_user_id,language_code) VALUES($1,$2) '+
+    'ON CONFLICT (discord_user_id) DO UPDATE SET language_code=EXCLUDED.language_code,updated_at=now()',[userId,code]);
+  }};
+}
+async function savedLanguage(store,userId){
+ if(!store||!/^\d{17,22}$/.test(userId||''))return null;
+ try{return await store.get(userId);}catch{return null;}
+}
+async function saveLanguage(store,userId,code){
+ if(!store||!/^\d{17,22}$/.test(userId||'')||!BY_CODE.has(code))return false;
+ try{await store.set(userId,code);return true;}catch{return false;}
 }
 function parseCustomId(id){
  const m=/^tr:(\d{17,22}):(\d{17,22})$/.exec(String(id||''));
@@ -62,7 +92,7 @@ async function translate(text,code,{env=process.env,oidc,httpFetch=fetch,timeout
 }
 function render(code,translated){
  const lang=BY_CODE.get(code)||BY_CODE.get('en');
- return clip('**'+lang[1]+'**\n'+translated);
+ return clip('**'+lang[1]+'**\n'+translated,1850)+'\n-# Wrong language? Pick yours below; it is saved for next time.';
 }
 async function fetchMessage(channelId,messageId,env=process.env,httpFetch=fetch){
  const r=await httpFetch(API+'/channels/'+channelId+'/messages/'+messageId,{
@@ -71,10 +101,10 @@ async function fetchMessage(channelId,messageId,env=process.env,httpFetch=fetch)
  const m=await r.json();
  return String(m.content||'');
 }
-async function editOriginal(appId,token,content,httpFetch=fetch){
+async function editOriginal(appId,token,content,components,httpFetch=fetch){
  await httpFetch(API+'/webhooks/'+appId+'/'+token+'/messages/@original',{method:'PATCH',
   headers:{'Content-Type':'application/json'},signal:AbortSignal.timeout(8000),
-  body:JSON.stringify({content,components:[],allowed_mentions:{parse:[]}})});
+  body:JSON.stringify({content,components,allowed_mentions:{parse:[]}})});
 }
 // Vercel's background-work hook (the same one @vercel/functions' waitUntil uses).
 function waitUntil(){
@@ -83,42 +113,46 @@ function waitUntil(){
 }
 
 // Returns the immediate interaction response; schedules the slow part in the background.
-async function handle(body,{env=process.env,oidc,httpFetch=fetch,defer=waitUntil()}={}){
+async function handle(body,{env=process.env,oidc,httpFetch=fetch,defer=waitUntil(),store=prefStore(env)}={}){
  const appId=String(body.application_id||''),token=String(body.token||'');
+ const userId=String(body.member?.user?.id||body.user?.id||'');
  const nothing={type:4,data:{flags:64,content:'There is no text in that message to translate.'}};
  async function work(text,code){
-  let content;
-  try{content=render(code,await translate(text,code,{env,oidc,httpFetch}));}
-  catch{content='Sorry, the translation did not work this time. Please try again in a minute.';}
-  return content;
+  try{return render(code,await translate(text,code,{env,oidc,httpFetch}));}
+  catch{return 'Sorry, the translation did not work this time. Please try again in a minute.';}
  }
- function respond(deferredType,text,code){
+ function respond(deferredType,text,code,ref){
+  const components=menu(ref.channelId,ref.messageId,code,'Change my language');
   if(defer){
-   defer(work(text,code).then(c=>editOriginal(appId,token,c,httpFetch)).catch(()=>{}));
+   defer(work(text,code).then(c=>editOriginal(appId,token,c,components,httpFetch)).catch(()=>{}));
    return deferredType===6?{type:6}:{type:5,data:{flags:64}};
   }
   return work(text,code).then(content=>deferredType===6?
-   {type:7,data:{content,components:[]}}:{type:4,data:{flags:64,content,allowed_mentions:{parse:[]}}});
+   {type:7,data:{content,components,allowed_mentions:{parse:[]}}}:
+   {type:4,data:{flags:64,content,components,allowed_mentions:{parse:[]}}});
  }
  if(body.type===2&&body.data?.type===3){
   const id=String(body.data.target_id||'');
   const msg=body.data.resolved?.messages?.[id];
-  if(body.data.name==='Translate to…')return picker(String(body.channel_id||msg?.channel_id||''),id,body.locale);
+  const ref={channelId:String(body.channel_id||msg?.channel_id||''),messageId:id};
+  const code=(await savedLanguage(store,userId))||languageForLocale(body.locale);
+  if(body.data.name==='Translate to…')return picker(ref.channelId,id,code);
   const text=String(msg?.content||'').trim();
   if(!text)return nothing;
-  return respond(5,text,languageForLocale(body.locale));
+  return respond(5,text,code,ref);
  }
  if(body.type===3){
   const ref=parseCustomId(body.data?.custom_id),code=body.data?.values?.[0];
   if(!ref||!BY_CODE.has(code))return {type:4,data:{flags:64,content:'That translation menu has expired.'}};
+  await saveLanguage(store,userId,code);
   let text='';
   try{text=(await fetchMessage(ref.channelId,ref.messageId,env,httpFetch)).trim();}catch{}
-  if(!text)return {type:7,data:{content:'That message is no longer available, or has no text.',components:[]}};
-  return respond(6,text,code);
+  if(!text)return {type:7,data:{content:'Saved your language. That message is no longer available, or has no text.',components:[]}};
+  return respond(6,text,code,ref);
  }
  return null;
 }
 const isTranslate=body=>(body.type===2&&body.data?.type===3&&COMMANDS.some(c=>c.name===body.data?.name))||
  (body.type===3&&String(body.data?.custom_id||'').startsWith('tr:'));
 
-module.exports={LANGUAGES,COMMANDS,MODEL,languageForLocale,picker,parseCustomId,translate,handle,isTranslate,render};
+module.exports={LANGUAGES,COMMANDS,MODEL,languageForLocale,picker,menu,prefStore,parseCustomId,translate,handle,isTranslate,render};

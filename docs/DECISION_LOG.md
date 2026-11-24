@@ -4,6 +4,11 @@
 - Looked up the three names against the live Discord guild member list (via a temporary read-only diagnostic, `api/discord/diag-members.js`, added and reverted the same day in PRs #275/#276) and committed the three confirmed matches to `data/discord-identity-public-matches.json`.
 - Scope: only these three explicitly-requested matches were made public. The rest of the private Discord identity mapping (`avengers_identity_private.discord_bindings` in Neon, 82+ rows) stays private under the existing policy unless the leader separately authorizes more of it.
 
+
+## 2026-11-23 — Private Discord message translation with saved language
+
+Leader request: members can translate any message into the website's 15 languages. Message commands **Translate** (uses the member's saved language, else their Discord language, else English) and **Translate to…** (15-language dropdown). Every translation reply carries a "Change my language" dropdown; picking a language in either menu saves it. Replies are ephemeral, mentions never ping, message text is never stored. Saved preference = Discord user ID + language code only, in private Neon `avengers_translate_private.language_preferences` (migration 008, applied 2026-11-23; kraken runtime role has SELECT/INSERT/UPDATE only). Translation via Vercel AI Gateway (`anthropic/claude-haiku-5.5`). Commands are registered once through the token-guarded `api/discord/translate-setup.js`.
+
 ## 2026-11-21 — Separate roster editing and Kraken review permissions
 
 Roster editing is granted to the two verified Discord IDs approved by the roster owner and stored as a private production setting. Signed Discord member sessions are checked by ID on every interactive roster editor request. The public site can direct visitors to the signed-in Rosters page, where only those authorized accounts see the editor link.

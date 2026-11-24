@@ -1,8 +1,9 @@
 {
  "key": "translate-howto-2026-11-23",
- "channelName": "general",
  "body": "@everyone\n🌍 **New: translate any message in our Discord!**\n\nOur bot can now translate messages into any of the 15 languages on our website.\n\n**How to use it**\n📱 **Phone:** long-press a message → **Apps** → **Translate**\n💻 **Computer:** right-click a message → **Apps** → **Translate**\n\n• **Translate** shows the message in your language. Only you can see it.\n• **Translate to…** lets you pick from all 15 languages. Your choice is saved, so next time just tap **Translate**.\n• Wrong language? Use the **Change my language** menu under any translation.\n\n**Languages:** English, Español, Deutsch, Magyar, Nederlands, Français, Português, Українська, Polski, Türkçe, العربية, تونسي, Tiếng Việt, 日本語, 繁體中文\n\n**Arabic speakers:** Discord doesn't offer Arabic as an app language, so use **Translate to…** once and pick العربية or تونسي. After that, **Translate** remembers it.",
  "allowedMentions": [
   "everyone"
- ]
+ ],
+ "channelId": "1403361698991177811",
+ "channelLabel": "🗣️general-chat💬"
 }

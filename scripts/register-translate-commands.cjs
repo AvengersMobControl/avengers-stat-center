@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 'use strict';
-// Registers the "Translate" and "Translate to…" message commands in the AVENGERS
+// Registers the "Translate" message command in the AVENGERS
 // guild only. Dry run unless --apply. Never touches /kraken or the endpoint URL.
 const {COMMANDS}=require('../server/discord-translate.cjs');
 async function register(env=process.env,httpFetch=fetch){

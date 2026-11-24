@@ -13,12 +13,13 @@ test('Discord locales map to site languages, unsupported ones to English',()=>{
  assert.equal(t.languageForLocale('zh-TW'),'zh-TW');assert.equal(t.languageForLocale('zh-CN'),'en');
  assert.equal(t.languageForLocale('ko'),'en');assert.equal(t.languageForLocale('en-US'),'en');assert.equal(t.languageForLocale('uk'),'uk');
 });
-test('picker is private and preselects the reader language',()=>{
- const p=t.picker('1403361698177618081','1470175579058999386','hu');
- assert.equal(p.data.flags,64);const opts=p.data.components[0].components[0].options;
- assert.equal(opts.length,15);assert.equal(opts.find(o=>o.default).value,'hu');
- assert.deepEqual(t.parseCustomId(p.data.components[0].components[0].custom_id),{channelId:'1403361698177618081',messageId:'1470175579058999386'});
+test('the menu offers all 15 languages, preselected, and round-trips its message reference',()=>{
+ const m=t.menu('1403361698177618081','1470175579058999386','hu','Change my language');
+ const sel=m[0].components[0];
+ assert.equal(sel.options.length,15);assert.equal(sel.options.find(o=>o.default).value,'hu');
+ assert.deepEqual(t.parseCustomId(sel.custom_id),{channelId:'1403361698177618081',messageId:'1470175579058999386'});
 });
+test('only the single Translate command is registered',()=>{assert.deepEqual(t.COMMANDS.map(c=>c.name),['Translate']);});
 test('Translate defers privately and edits in the translation in the background',async()=>{
  const calls=[];let bg;
  const httpFetch=async(url,init)=>{calls.push([url,init]);
@@ -59,11 +60,6 @@ test('picking a language saves it, and Translate then uses the saved language',a
  assert.match(r.data.content,/العربية/);
  const sel=r.data.components[0].components[0];
  assert.equal(sel.options.find(o=>o.default).value,'ar');assert.equal(sel.placeholder,'Change my language');
-});
-test('Translate to… preselects the saved language',async()=>{
- const store=memStore();store.m.set(U,'pl');
- const r=await t.handle({type:2,locale:'de',channel_id:'1403361698177618081',member:{user:{id:U}},data:{type:3,name:'Translate to…',target_id:'1470175579058999386',resolved:{messages:{}}}},{store});
- assert.equal(r.data.components[0].components[0].options.find(o=>o.default).value,'pl');
 });
 test('a database outage never blocks translation',async()=>{
  const broken={get:async()=>{throw Error('down');},set:async()=>{throw Error('down');}};

@@ -52,7 +52,7 @@ async function handler(req,res){
  let body;
  try{body=JSON.parse(raw.toString('utf8'));}catch{return answer(res,400,{error:'Invalid JSON'});}
  if(body.type===1)return answer(res,200,{type:1});
- // Message translation (leader 2026-11-23): "Translate" / "Translate to…" message commands
+ // Message translation (leader 2026-11-23): the "Translate" message command
  // and their language dropdown share this signed endpoint (one per Discord app).
  const translator=require('../../server/discord-translate.cjs');
  if(translator.isTranslate(body)){

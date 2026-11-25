@@ -1,3 +1,8 @@
+## 2026-11-24 — Canonical Elgatogordo and Frank registration identities
+
+- Leader confirmed `IrmaFerkengerd` → `AV.Elgatogordo` (surviving canonical name, retain Active status saved in roster revision 24). `AV-FrankAbagnale` → `AV-Addicted` was already established; reaffirmed. Preserve accepted source spellings, historical scores, event-time clans, rewards, and existing Discord account identity. No other roster transfers authorized. Both were visible in the November 24 Piggy registration screenshots.
+- Canonical projection and Discord-bound poster list updated; regression added. Deployment verification pending.
+
 ## 2026-11-23 — Player Power Ratings poster: AV-2 selection is now "tied to a Discord account," not top-32
 
 - **Supersedes** the Oct 30/Nov 19 "top 32 AV-2 by rating (+ a pinned-names list)" rule, which had gone stale: by Nov 23 it had silently dropped AV-ItsNospace (rank 37 of 56 AV-2 by rating) from the poster even though the leader's Oct 30 decision said five specific AV-2 accounts must always be included regardless of rating. PR #273 had attempted to fix this by restoring that five-name pinned list, but the leader indicated that still wasn't the actual rule (twice) and the correct rule turned out to be structurally different, so #273 is closed unmerged in favor of this entry.

@@ -121,6 +121,10 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
   aliases['AV-ZolikaLoveKira']='AV-Zolika.x.TheBoss';
   assert(Number.isInteger(rosterChanges.revision)&&rosterChanges.revision===rosterChanges.changes.length,'Invalid roster revision');
   const historicalAliases={...aliases};
+  // Leader-confirmed November 24 rename: retain accepted event source spellings.
+  delete aliases['AV.Elgatogordo'];
+  aliases['IrmaFerkengerd']='AV.Elgatogordo';
+  aliases['AV-FrankAbagnale']='AV-Addicted';
   const candidates=[...migration.ledger.events,...updates.map(u=>u.event)].flatMap(e=>
     e.rows.filter(row=>row.player).map(row=>({name:row.player,status:'Inactive'})));
   candidates.push(...(legacy.AVENGERS_DATA.members||[]),...(legacy.AVENGERS_MEMBER_TIMEZONES.rows||[])

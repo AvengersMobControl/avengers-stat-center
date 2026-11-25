@@ -1,3 +1,8 @@
+## 2026-11-24 — Canonical Elgatogordo and Frank registration identities
+
+- Leader confirmed `IrmaFerkengerd` → `AV.Elgatogordo` (surviving canonical name, retain Active status saved in roster revision 24). `AV-FrankAbagnale` → `AV-Addicted` was already established; reaffirmed. Preserve accepted source spellings, historical scores, event-time clans, rewards, and existing Discord account identity. No other roster transfers authorized. Both were visible in the November 24 Piggy registration screenshots.
+- Canonical projection and Discord-bound poster list updated; regression added. Deployment verification pending.
+
 ## 2026-11-23 — Search the roster editor member lists
 
 - The clan-status member picker and the canonical-name picker support case-insensitive partial-name filtering. Each form has its own search and keeps the selected member only while that member matches.

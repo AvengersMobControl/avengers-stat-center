@@ -991,3 +991,16 @@ test('archived AV-2 Flash results are counted once in the corresponding weekly p
     }
   }
 });
+
+
+test('November 24 canonical rename preserves registered identity and current status',()=>{
+ const release=createRelease();
+ const p=release.projection.people;
+ const w=boot(release), D=w.AVENGERS_DATA;
+ assert.equal(D.resolvePlayerName('IrmaFerkengerd'),'AV.Elgatogordo');
+ assert.equal(D.resolvePlayerName('AV-FrankAbagnale'),'AV-Addicted');
+ assert.equal(p.filter(x=>x.name==='AV.Elgatogordo'&&x.status==='Active').length,1);
+ assert(!p.some(x=>x.name==='IrmaFerkengerd'));
+ assert.equal(p.filter(x=>x.name==='AV-Addicted').length,1);
+ assert.equal(w.AVENGERS_MEMBER_TIMEZONES.rows.filter(x=>x.name==='AV.Elgatogordo'&&x.status==='Active').length,1);
+});

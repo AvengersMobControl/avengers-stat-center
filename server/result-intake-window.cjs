@@ -8,6 +8,8 @@ const TZ='America/Chicago';
 const FORMAT=new Intl.DateTimeFormat('en-US',{timeZone:TZ,year:'numeric',month:'2-digit',
   day:'2-digit',weekday:'short',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
 const FRIDAY=['piggyFlash1','piggyFlash2','piggyFlash3','piggyFlash4','space','piggy','av2'];
+// Leader-confirmed no Space Race on November 27: require Big Pig after all four Flash sets.
+const FRIDAY_NOV27=['piggyFlash1','piggyFlash2','piggyFlash3','piggyFlash4','piggy','av2'];
 // Kraken is monthly and manual-only; keep its channel configuration for explicit imports.
 const SUNDAY=['piggy','space','av2'];
 function local(nowMs){
@@ -34,7 +36,7 @@ function dateMinusDays(p,days){
 function activeWindow(nowMs=Date.now()){
   const p=local(nowMs),clock=p.hour*60+p.minute;
   let mode,startMinute,endMinute;
-  if(p.weekday==='Fri'&&clock>=120&&clock<=450){mode='friday';startMinute=120;endMinute=450;}
+  if(p.weekday==='Fri'&&clock>=135&&clock<=450){mode='friday';startMinute=135;endMinute=450;}
   else if(p.weekday==='Sun'&&clock>=960&&clock<=1110){mode='sunday';startMinute=960;endMinute=1110;}
   else return null;
   const start=centralWallMillis(p,Math.floor(startMinute/60),startMinute%60);
@@ -50,11 +52,12 @@ function activeWindow(nowMs=Date.now()){
     // the controller. 21 days is a safe initial bound, not a weekly cutoff.
     av2:start-21*86400000
   };
-  const channels=mode==='friday'?FRIDAY:SUNDAY;
+  const nov27BigPig=mode==='friday'&&localStamp(p)==='2026-11-27';
+  const channels=mode==='friday'?(nov27BigPig?FRIDAY_NOV27:FRIDAY):SUNDAY;
   return {id:mode+'-'+localStamp(p),mode,timeZone:TZ,startMs:start,endMs:end,
     minutesLeft:Math.max(0,Math.floor((end-nowMs)/60000)),
-    cutoffs:lookbacks,channels,primary:mode==='friday'?'space':'piggy',
-    fallback:mode==='friday'?'piggy':'space'};
+    cutoffs:lookbacks,channels,primary:nov27BigPig?'piggy':mode==='friday'?'space':'piggy',
+    fallback:nov27BigPig?'space':mode==='friday'?'piggy':'space'};
 }
 function channelCutoff(w,channel){
   if(channel.startsWith('piggyFlash'))return w.cutoffs.flash;

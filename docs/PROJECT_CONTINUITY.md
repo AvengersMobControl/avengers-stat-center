@@ -1,3 +1,8 @@
+## 2026-11-26 — Next Friday result collection begins at 02:15
+
+- On Friday Nov 27 the leader confirms four AVENGERS numbered Flash results plus Big Pig; **no Space Race** is expected. Friday source collector and publication task start at 02:15 America/Chicago (07:30 end audit). Event publication to the independently verified live site supersedes source-only scan success.
+- The 50/50 member roster screenshots provided Nov 26 are the authoritative in-game comparison for name/roster exceptions; do not rewrite current statuses without supported identity resolution. Other Fridays' normal Space-first conditional remains unchanged.
+
 ## 2026-11-23 — Search the roster editor member lists
 
 - The clan-status member picker and the canonical-name picker support case-insensitive partial-name filtering. Each form has its own search and keeps the selected member only while that member matches.

@@ -6,11 +6,15 @@ This collector never sends Discord messages, generates posters or updates the
 public event ledger. It only captures original screenshots, proves their bytes,
 and checks whether a guarded publication run reached the live website.
 
+## November 26 leader override — Friday November 27, 2026
+
+Friday scanning and ChatGPT publication begin at **02:15 Central**, retaining the **07:30 final live-site verification**. On November 27 there will be **no Space Race**. Four AVENGERS numbered Flash sets and Friday **Big Pig** are required; do not scan/await Space or mark it missing. Process all final screenshots including lobbies/supplements and delayed AV-2 independently; send identity/roster exceptions before no-shows. Main goal is to PUBLISH verified eligible rows to the live site, not merely collect screenshots. Other Friday dates retain the ordinary Space/Piggy fallback. These directives supersede prior 02:00 start and Space-first instructions for the named Friday.
+
 ## Collection windows (America/Chicago; DST-aware)
 
 | Window | Priority, lookbacks and fallback |
 | --- | --- |
-| Friday **02:00–07:30** | **First all four Piggy Flash channels**: every posted screenshot since prior Monday 06:00. **Then Space Race**: every posted screenshot since prior Wednesday 06:00, including all lobbies (6 typical, 7+ possible). Space usually ends Friday 02:00 but can end earlier. If no final Space result, use Friday Piggy (same Wednesday lookback) instead. **Always check delayed AV-2**, including final AV-2 Piggy Flash posts in the mixed AV-2 channel (monthly Kraken channel excluded; leader provides it manually). |
+| Friday **02:15–07:30** | **First all four Piggy Flash channels**: every posted screenshot since prior Monday 06:00. **Then Space Race**: every posted screenshot since prior Wednesday 06:00, including all lobbies (6 typical, 7+ possible). Space usually ends Friday 02:00 but can end earlier. If no final Space result, use Friday Piggy (same Wednesday lookback) instead. **Always check delayed AV-2**, including final AV-2 Piggy Flash posts in the mixed AV-2 channel (monthly Kraken channel excluded; leader provides it manually). |
 | Sunday **16:00–18:30** | **Big Piggy first**, usually ending at 16:00, with posted screenshots since prior Friday 02:00. If no final Piggy, check Sunday Space (since prior Wednesday 06:00). **Always check AV-2**, including late Piggy Flash results from earlier in the week; no Kraken-channel scans, even when AV-2 is late/incomplete. |
 
 **Monthly Kraken is manual only**: neither Friday nor Sunday scheduled polling accesses the Kraken channel or treats Kraken as a required website-publication result. When the leader provides the monthly AVENGERS/AV-2 screenshots separately, use the existing manual import and verification process; preserve all Kraken records. The direct authenticated manual Kraken source path remains available.
@@ -66,7 +70,7 @@ separate ChatGPT Friday/Sunday website-publication tasks.
 ## Failure alert to the leader
 
 The TWO existing ChatGPT automations were rescheduled, not duplicated:
-Friday 02:00 and 07:30 Central; Sunday 16:00 and 18:30 Central. The early run
+Friday 02:15 and 07:30 Central; Sunday 16:00 and 18:30 Central. The early run
 is responsible for final screenshots and website publication. The window-end
 run checks the live Pages manifest, event ledger/projection, Flash channel
 coverage and AV-2 source holds. If any required result did not reach the site,

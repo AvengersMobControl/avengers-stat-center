@@ -991,3 +991,30 @@ test('archived AV-2 Flash results are counted once in the corresponding weekly p
     }
   }
 });
+
+test('November 27 authoritative in-game roster corrections retain historical records and editor revision',()=>{
+  const actual=createRelease();
+  const expected={
+    'AV-Chuck':'AV2',
+    'AV-SiFra':'Active',
+    'AV-WolfLegend':'Active',
+    'AV-FARTING-ALBERT':'Active',
+    'AV.Elgatogordo':'Active'
+  };
+  for(const [name,status] of Object.entries(expected)){
+    const matches=actual.projection.people.filter(p=>p.name===name);
+    assert.equal(matches.length,1,'exactly one profile '+name);
+    assert.equal(matches[0].status,status,name+' current assignment');
+  }
+  assert.equal(actual.projection.people.filter(p=>p.status==='Active').length,50);
+  assert.equal(actual.projection.people.filter(p=>p.status==='AV2').length,46);
+  assert(!actual.projection.people.some(p=>p.name==='IrmaFerkengerd'),'old Irma alias does not split historical profile');
+  assert.equal(actual.projection.people.find(p=>p.name==='AV.Elgatogordo').history.length,2,'prior Irma events retained');
+  assert.equal(actual.projection.people.find(p=>p.name==='AV-FARTING-ALBERT').history.length,0,'new profile has no invented events');
+  assert.equal(actual.globals.AVENGERS_DATA.aliasMap['IrmaFerkengerd'],'AV.Elgatogordo');
+  const approved=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/roster-changes.json'),'utf8'));
+  assert.equal(approved.revision,24,'private roster editor revision remains unchanged');
+  const next={revision:approved.revision+1,changes:[...approved.changes,{kind:'status',name:'AV-FARTING-ALBERT',status:'AV2'}]};
+  const projected=createRelease({rosterChanges:next});
+  assert.equal(projected.projection.people.find(p=>p.name==='AV-FARTING-ALBERT').status,'AV2','a future signed-in owner edit can supersede the correction');
+});

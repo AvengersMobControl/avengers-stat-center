@@ -125,7 +125,28 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
     e.rows.filter(row=>row.player).map(row=>({name:row.player,status:'Inactive'})));
   candidates.push(...(legacy.AVENGERS_DATA.members||[]),...(legacy.AVENGERS_MEMBER_TIMEZONES.rows||[])
     .map(row=>({name:row.profileName||row.name,status:row.status})));
-  const managed=applyChanges(candidates,aliases,rosterChanges.changes);
+  // November 27 leader-confirmed in-game 50/50 screenshot correction.
+  // Apply AFTER the first 24 roster editor revisions, and BEFORE any future
+  // owner-submitted revisions. Do not change the private editor queue/revision.
+  // Current assignments and aliases only; historical event-time data stays.
+  const leaderNov27Corrections=[
+    {kind:'status',name:'AV-Chuck',status:'AV2'},
+    {kind:'status',name:'AV-SiFra',status:'Active'},
+    {kind:'status',name:'AV-WolfLegend',status:'Active'},
+    {kind:'add',name:'AV-FARTING-ALBERT',status:'Active'},
+    {kind:'add',name:'AV.Elgatogordo',status:'Active'},
+    {kind:'link',name:'IrmaFerkengerd',target:'AV.Elgatogordo'}
+  ];
+  const rosterEditorCutover=24;
+  const hasCutover=rosterChanges.changes.length>=rosterEditorCutover &&
+    rosterChanges.changes[rosterEditorCutover-1]?.kind==='status' &&
+    rosterChanges.changes[rosterEditorCutover-1]?.name==='IrmaFerkengerd';
+  const effectiveChanges=hasCutover?[
+    ...rosterChanges.changes.slice(0,rosterEditorCutover),
+    ...leaderNov27Corrections,
+    ...rosterChanges.changes.slice(rosterEditorCutover)
+  ]:rosterChanges.changes;
+  const managed=applyChanges(candidates,aliases,effectiveChanges);
   Object.assign(aliases,managed.aliases);
   const resolve=n=>canonical(n,aliases);
   let ledger=migration.ledger;

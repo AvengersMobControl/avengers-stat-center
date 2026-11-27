@@ -231,6 +231,19 @@
         "flashSetId": "2026-11-17-A",
         "piggy": "piggy|2026-11-22"
       }
+    },
+    "piggy|piggy|2026-11-27|AVENGERS": {
+      "kind": "piggy",
+      "eventId": "piggy|2026-11-27",
+      "clan": "AVENGERS",
+      "file": "AVENGERS_Big_Pig_November_27_2026.png",
+      "sha256": "478e6de177f2276b86a94c9a98ac3245d7138529b041007f714399541025aa61",
+      "size": 972806,
+      "template": "bigpig-poster-v3-20261026-candidate",
+      "body": "@everyone\n🐷 **AVENGERS Big Pig — November 27** 🐷 <:AV_Piggy:1557571539392663593>\n\n**The Numbers**\n49 racers put up **902,944 lines** (avg **18,427**/player) — down 9% from last week but **+9.3%** above our last-4 average. Lobby pot: **90.36M** — #6 of 18 Arena-era AVENGERS Big Pig pots (#6 of 27 all-time).\n\n**Podium** <:AV_Crown:1557571339500392568>\n🥇 AnotherRound — 57,475 lines\n🥈 7-STAR — 48,041 lines\n🥉 INTEN — 47,429 lines\n\n**Standout stories**\nAnotherRound didn't just top the board — this is his first-ever #1 finish, jumping from 9th last week, and it lands him #10 all-time out of 2,347 logged Big Pig results. Huge.\n7-STAR put up the week's biggest leap over his own average: +250.7% (48,041 vs a 13,698 average over 36 races), plus a new personal-best line count and a finishing-place PB (3rd → 2nd).\n\n**Personal Bests** <:Glossy3DFlameEmoji2:1566910556496072846> — 4 new line PBs this week\n1. Elgatogordo — 8,600 → 34,200 (+297.7%)\n2. AnotherRound — 32,871 → 57,475 (+74.9%)\n3. istanbuL — 22,460 → 30,233 (+34.6%)\n4. 7-STAR — 42,640 → 48,041 (+12.7%)\n\nFinishing-place PBs: AnotherRound (9th→1st), 7-STAR (3rd→2nd), Elgatogordo (9th→7th), istanbuL (13th→10th), Dubai (20th→16th), atarIX (22nd→20th).\n\n25 of 49 racers beat their own average this race.\n\n**New Faces**\nNo first-time Big Pig racers this week.\n\n**Milestones**\n47 racers cleared 5K+ lines (#4 of 18 Arena-era), 11 cleared 30K+ (tied #1 of 18), and AnotherRound is the lone 50K+ racer this week (tied #7 of 18).\n\n<:AV_ThumbsUp:1557571088488206356> Great week, AVENGERS — keep it up!\n\nFull results and PBs: https://avengersmobcontrol.github.io/avengers-stat-center/",
+      "approved": true,
+      "authorization": "leader-standing-auto-discord-2026-10-26",
+      "description": "AVENGERS Big Pig November 27 2026 results"
     }
   }
 }

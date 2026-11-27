@@ -1,3 +1,8 @@
+## 2026-11-26 — Friday Nov 27 publication exception and 02:15 collection start
+
+- Leader confirms four AVENGERS Piggy Flash final sets and Friday Big Pig; **NO Space Race** this week. Start Friday automation and bounded source intake at **02:15 America/Chicago**; keep 07:30 independent website release verification. This Friday only, exclude Space from scan and stop/failure requirements; Big Pig is required primary after PF1–PF4. Later Fridays retain normal Space/Piggy fallback.
+- Website publication is the priority, with independent exact live Pages SHA/ledger/projection validation; Vercel collector is source-only. AV-2 final sources can publish independently and late data remains eligible; Kraken monthly/manual-only. The leader's 50-player current roster screenshots are the comparison baseline for identifying uncertain player names, never a license to overwrite the canonical catalog without reconciliation.
+
 ## 2026-11-23 — Player Power Ratings poster: AV-2 selection is now "tied to a Discord account," not top-32
 
 - **Supersedes** the Oct 30/Nov 19 "top 32 AV-2 by rating (+ a pinned-names list)" rule, which had gone stale: by Nov 23 it had silently dropped AV-ItsNospace (rank 37 of 56 AV-2 by rating) from the poster even though the leader's Oct 30 decision said five specific AV-2 accounts must always be included regardless of rating. PR #273 had attempted to fix this by restoring that five-name pinned list, but the leader indicated that still wasn't the actual rule (twice) and the correct rule turned out to be structurally different, so #273 is closed unmerged in favor of this entry.

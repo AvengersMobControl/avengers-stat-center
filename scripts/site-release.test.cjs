@@ -998,7 +998,7 @@ test('November 27 authoritative in-game roster corrections retain historical rec
     'AV-Chuck':'AV2',
     'AV-SiFra':'Active',
     'AV-WolfLegend':'Active',
-    'AV-FARTING-ALBERT':'Active',
+    'AV-Robcorp':'Active',
     'AV.Elgatogordo':'Active'
   };
   for(const [name,status] of Object.entries(expected)){
@@ -1006,15 +1006,28 @@ test('November 27 authoritative in-game roster corrections retain historical rec
     assert.equal(matches.length,1,'exactly one profile '+name);
     assert.equal(matches[0].status,status,name+' current assignment');
   }
-  assert.equal(actual.projection.people.filter(p=>p.status==='Active').length,50);
+  assert.equal(actual.projection.people.filter(p=>p.status==='Active').length,49);
   assert.equal(actual.projection.people.filter(p=>p.status==='AV2').length,46);
   assert(!actual.projection.people.some(p=>p.name==='IrmaFerkengerd'),'old Irma alias does not split historical profile');
-  assert.equal(actual.projection.people.find(p=>p.name==='AV.Elgatogordo').history.length,2,'prior Irma events retained');
-  assert.equal(actual.projection.people.find(p=>p.name==='AV-FARTING-ALBERT').history.length,0,'new profile has no invented events');
+  assert.equal(actual.projection.people.find(p=>p.name==='AV.Elgatogordo').history.filter(h=>h.eventId!=='piggy|2026-11-27').length,2,'prior Irma events retained');
+  assert(!actual.projection.people.some(p=>p.name==='AV-FARTING-ALBERT'),'withdrawn player has no fabricated profile');
+  assert.equal(actual.globals.AVENGERS_DATA.aliasMap['AV-RobCorps'],'AV-Robcorp');
   assert.equal(actual.globals.AVENGERS_DATA.aliasMap['IrmaFerkengerd'],'AV.Elgatogordo');
   const approved=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/roster-changes.json'),'utf8'));
   assert.equal(approved.revision,24,'private roster editor revision remains unchanged');
-  const next={revision:approved.revision+1,changes:[...approved.changes,{kind:'status',name:'AV-FARTING-ALBERT',status:'AV2'}]};
+  const next={revision:approved.revision+1,changes:[...approved.changes,{kind:'status',name:'AV-WolfLegend',status:'AV2'}]};
   const projected=createRelease({rosterChanges:next});
-  assert.equal(projected.projection.people.find(p=>p.name==='AV-FARTING-ALBERT').status,'AV2','a future signed-in owner edit can supersede the correction');
+  assert.equal(projected.projection.people.find(p=>p.name==='AV-WolfLegend').status,'AV2','a future signed-in owner edit can supersede the correction');
+});
+
+
+test('November 27 Big Pig preserves 49 eligible final ranks and canonical identities',()=>{
+  const release=createRelease();
+  const e=release.ledger.events.find(x=>x.id==='piggy|2026-11-27');
+  assert(e); assert.equal(e.rows.length,49); assert.equal(e.sources.length,2);
+  assert.equal(e.rows.reduce((s,r)=>s+r.score,0),902944);
+  assert.equal(e.rows.reduce((s,r)=>s+r.sparks,0),9025141);
+  assert.equal(e.rows.find(r=>r.player==='AV.Elgatogordo').score,34200);
+  assert.equal(e.rows.find(r=>r.player==='AV-Robcorp').score,14260);
+  assert(!e.rows.some(r=>/FARTING/i.test(r.player)));
 });

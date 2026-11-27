@@ -8,11 +8,11 @@ const {scanChannel}=require('../server/result-source-intake.cjs');
 const H=3600000;
 function ts(x){return Date.parse(x);}
 function stamp(t){return new Date(t).toISOString();}
-const winterFriday=ts('2026-11-20T08:00:00.000Z');
-const summerFriday=ts('2027-07-02T07:00:00.000Z');
+const winterFriday=ts('2026-11-20T08:15:00.000Z');
+const summerFriday=ts('2027-07-02T07:15:00.000Z');
 const winterSunday=ts('2026-11-22T22:00:00.000Z');
 const summerSunday=ts('2027-07-04T21:00:00.000Z');
-test('Friday 02:00–07:30 Chicago correctly tracks winter, summer and precise boundaries',()=>{
+test('Friday 02:15–07:30 Chicago correctly tracks winter, summer and precise boundaries',()=>{
  const a=activeWindow(winterFriday),b=activeWindow(summerFriday);
  assert.equal(a.id,'friday-2026-11-20');assert.equal(b.id,'friday-2027-07-02');
  assert.equal(a.startMs,winterFriday);assert.equal(b.startMs,summerFriday);
@@ -41,14 +41,14 @@ test('Sunday 16:00–18:30 Chicago tracks winter, summer and Monday UTC spill',(
  assert(!a.channels.includes('kraken'));
 });
 test('outside the two scheduled windows cannot start a source scan',()=>{
- for(const s of ['2026-11-18T16:00:00Z','2026-11-20T07:55:00Z','2026-11-20T14:00:00Z',
-  '2026-11-22T19:00:00Z','2026-11-23T01:00:00Z','2027-07-02T06:55:00Z']){
+ for(const s of ['2026-11-18T16:00:00Z','2026-11-20T08:14:00Z','2026-11-20T14:00:00Z',
+  '2026-11-22T19:00:00Z','2026-11-23T01:00:00Z','2027-07-02T07:14:00Z']){
   assert.equal(activeWindow(ts(s)),null,s);
  }
  const v=JSON.parse(fs.readFileSync('vercel.json','utf8'));
  assert.equal(v.crons.length,3);
  assert.equal(v.crons.find(x=>x.path==='/api/discord/result-intake-friday')?.schedule,
-  '*/5 7-13 * * 5','UTC Friday cron covers 02:00 CT in both CST and CDT');
+  '*/5 7-13 * * 5','UTC Friday cron includes 02:15 CT in both CST and CDT; server gates out earlier ticks');
  assert(!v.crons.some(x=>x.schedule==='*/5 * * * *'),'no always-on every-5-minute cron');
  assert(v.crons.every(x=>/result-intake-(friday|sunday|monday)/.test(x.path)));
  assert.equal(new Set(v.crons.map(x=>x.path)).size,3,'each UTC cron path distinct');
@@ -108,6 +108,34 @@ test('publication gate requires all four Flash images and final Space source in 
  assert.equal(missed.websitePublished,false,'missing fourth Flash blocks stop');
  const noScan=allDone(w);delete noScan.piggyFlash2;
  assert.equal(publicationCoverage(w,noScan,source,events).websitePublished,false);
+});
+test('November 27 Friday: first allowed scan 02:15, four Flashes plus Big Pig required and no Space scan',()=>{
+ const before=ts('2026-11-27T08:14:00Z'),w=activeWindow(ts('2026-11-27T08:15:00Z'));
+ assert.equal(activeWindow(before),null);
+ assert(w);assert.equal(w.startMs,ts('2026-11-27T08:15:00Z'));
+ assert.equal(w.id,'friday-2026-11-27');
+ assert.deepEqual(w.channels,['piggyFlash1','piggyFlash2','piggyFlash3','piggyFlash4','piggy','av2']);
+ assert(!w.channels.includes('space'));
+ assert.equal(w.primary,'piggy');
+ assert.deepEqual(chooseNext(w,{},2),['piggyFlash1','piggyFlash2']);
+ const hashes=['a','b','c','d','e'].map(x=>x.repeat(64));
+ const source=rows(w,[
+  ['piggyFlash1','2026-11-24T14:00:00Z',hashes[0],81],
+  ['piggyFlash2','2026-11-25T14:00:00Z',hashes[1],82],
+  ['piggyFlash3','2026-11-26T14:00:00Z',hashes[2],83],
+  ['piggyFlash4','2026-11-26T15:00:00Z',hashes[3],84],
+  ['piggy','2026-11-27T08:10:00Z',hashes[4],85]]);
+ const flashes=[1,2,3,4].map(i=>({kind:'flash',id:'flash|2026-11-24|'+i,date:'2026-11-24',
+  sources:['reviewed-image-sha256:'+hashes[i-1]]}));
+ const withPiggy=[...flashes,{kind:'piggy',id:'piggy|2026-11-27',date:'2026-11-27',
+  sources:['reviewed-image-sha256:'+hashes[4]]}];
+ const completed=publicationCoverage(w,allDone(w),source,withPiggy);
+ assert.equal(completed.websitePublished,true,'published Big Pig plus PF1-PF4 is sufficient without Space');
+ assert.equal(completed.mainKind,'piggy');
+ assert.equal(publicationCoverage(w,allDone(w),source,flashes).websitePublished,false,
+  'four Flash sets alone cannot satisfy required Big Pig publication');
+ assert.equal(publicationCoverage(w,allDone(w),source,withPiggy.slice(1)).websitePublished,false,
+  'each numbered Flash source must be live');
 });
 test('Sunday can fall back to Space when Piggy final is missing',()=>{
  const w=activeWindow(winterSunday),hash='9'.repeat(64);

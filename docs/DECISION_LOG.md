@@ -1,3 +1,9 @@
+## 2026-11-27 — Leader-confirmed 50/50 in-game current roster
+
+- Leader provided screenshots of 50 AVENGERS members. Correct current assignments only: AV-Chuck -> AV-2; AV-SiFra and AV-WolfLegend -> AVENGERS; AV-FARTING-ALBERT is a new AVENGERS member. Earlier leader-confirmed IrmaFerkengerd is the same existing account now displayed as AV.Elgatogordo, preserving its past results.
+- Apply these corrections after protected roster-editor revisions 1–24 without consuming a new private editor revision; later owner-entered changes take precedence. Preserve all historical event-time clans, source evidence and rewards. Projected roster: 50 Active, 46 AV-2. No fictional performance rows for Farting Albert.
+- Scheduler reasoning effort is not controllable using the available automation update controls: do not claim that High/Think has been forced. Website source capture is not proof of publication; require independently verified Pages commit, release and player-row audit.
+
 ## 2026-11-26 — Friday Nov 27 publication exception and 02:15 collection start
 
 - Leader confirms four AVENGERS Piggy Flash final sets and Friday Big Pig; **NO Space Race** this week. Start Friday automation and bounded source intake at **02:15 America/Chicago**; keep 07:30 independent website release verification. This Friday only, exclude Space from scan and stop/failure requirements; Big Pig is required primary after PF1–PF4. Later Fridays retain normal Space/Piggy fallback.

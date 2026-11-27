@@ -133,9 +133,10 @@ function create({updates=JSON.parse(fs.readFileSync(path.join(root,'data/approve
     {kind:'status',name:'AV-Chuck',status:'AV2'},
     {kind:'status',name:'AV-SiFra',status:'Active'},
     {kind:'status',name:'AV-WolfLegend',status:'Active'},
-    {kind:'add',name:'AV-FARTING-ALBERT',status:'Active'},
+    // Leader withdrew FARTING-ALBERT; no profile or result is to be created.
     {kind:'add',name:'AV.Elgatogordo',status:'Active'},
-    {kind:'link',name:'IrmaFerkengerd',target:'AV.Elgatogordo'}
+    {kind:'link',name:'IrmaFerkengerd',target:'AV.Elgatogordo'},
+    {kind:'link',name:'AV-RobCorps',target:'AV-Robcorp'}
   ];
   const rosterEditorCutover=24;
   const hasCutover=rosterChanges.changes.length>=rosterEditorCutover &&

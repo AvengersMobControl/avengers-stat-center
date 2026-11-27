@@ -1,5 +1,11 @@
 # AVENGERS Mob Control — Agent Operating Instructions
 
+## November 26, 2026 — Friday November 27 Big Pig and four Flashes; no Space Race
+
+- First Friday collection/publication is **02:15 AM Central**, end-of-window audit **07:30 AM**. Publish eligible final rows promptly to the live website, not merely to a collector/PR. This Friday's required results are AVENGERS Flash PF1–PF4, Friday Big Pig, plus independently verified delayed AV-2; there is **no Space Race on November 27**. Do not poll/wait for it or mark missing Space as a failure. Future Fridays retain the normal Space/Piggy conditional unless superseded.
+- The leader supplied screenshots of the complete 50/50 current AVENGERS roster on November 26. Compare screenshot spellings through established aliases; flag mismatches to the leader before any no-show conclusions, and do not invent new player identities or change roster assignments solely because someone was absent from results.
+- Historical catch-up, Kraken, Discord/PNG distribution and unrelated changes are outside Friday website publication scope. The collector is source-only; release requires accepted original-bound rows and independent live Pages SHA/version/event verification.
+
 ## November 20, 2026 — REQUIRED identity/roster exception report on each result pull
 
 - While pulling weekly final screenshots, immediately give the leader a concise **Uncertain names / roster discrepancies** list, with raw displayed spelling, possible existing canonical identity, source event/rank and precise reason for the question. Do this before the final no-show list or claiming complete row coverage, even if previously known profiles are involved. Do not silently drop suspicious results, create guessed new members or mislabel existing players as new.
